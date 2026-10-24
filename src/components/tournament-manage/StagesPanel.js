@@ -161,6 +161,8 @@ export default function StagesPanel({ tournamentRef, token, can = {}, showToast,
   // the rounds of the plan it last wrote.
   const [ffa, setFfa] = useState(null);
   const [ffaRounds, setFfaRounds] = useState([]);
+  // The split league builder (P3 W3a): its numbers while open.
+  const [split, setSplit] = useState(null);
   const [loading, setLoading] = useState(true);
   const [problem, setProblem] = useState('');
   const [busy, setBusy] = useState(false);
@@ -653,6 +655,48 @@ export default function StagesPanel({ tournamentRef, token, can = {}, showToast,
       })));
       setFfaRounds(body.data.rounds || []);
       setFfa(null);
+    } catch {
+      networkFail();
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  // A split league as a plan (P3 W3a): one league, then a top league and a
+  // bottom league that keep the points each side won. The server writes the
+  // three stages and the lines that carry the points into them.
+  const buildSplit = async () => {
+    if (!split) return;
+    setBusy(true);
+    setProblem('');
+    try {
+      const query = new URLSearchParams({ kind: 'split_league', entrants: split.entrants,
+        legs: split.legs, top: split.top });
+      const res = await fetch(`${API}/tournament/${tournamentRef}/stages/preset/?${query}`, { headers: auth });
+      const body = await res.json().catch(() => ({}));
+      if (!res.ok || body.status !== 'success') {
+        setProblem(apiMessage(tt, body, 'stages.splitFailed', 'That split league could not be built.'));
+        return;
+      }
+      const labelOf = kind => {
+        if (kind === 'top') return tt('stages.splitTop', 'Top league');
+        if (kind === 'bottom') return tt('stages.splitBottom', 'Bottom league');
+        return tt('stages.splitLeague', 'League');
+      };
+      const made = (body.data.stages || []).map(s => ({
+        ...blank(s.format),
+        label: labelOf(s.kind),
+        advances: s.advances,
+        settings: { ...defaultSettings(s.format), ...s.settings },
+      }));
+      setDraft(made);
+      setDraftLines((body.data.lines || []).map(l => ({
+        ...newLine(made[l.source].key, made[l.target].key, l.place_to),
+        place_from: l.place_from,
+        carry_points: Boolean(l.carry_points),
+      })));
+      setFfaRounds([]);
+      setSplit(null);
     } catch {
       networkFail();
     } finally {
@@ -1966,6 +2010,43 @@ export default function StagesPanel({ tournamentRef, token, can = {}, showToast,
                         onClick={() => setFfa({ entrants: entrants.length || 24, lobby_size: 12, through: 4,
                                                 maps: 4, final_maps: 6 })}>
                   {tt('stages.ffaOpen', 'Build a free for all bracket')}
+                </button>
+              )}
+              <p className={styles.subhead}>{tt('stages.splitTitle', 'A split league')}</p>
+              <p className={styles.note}>
+                {tt('stages.splitHint', 'Everybody plays one league. Its top places play on in a top league and the rest in a bottom league, each keeping the points it won. This replaces the stages above.')}
+              </p>
+              {split ? (
+                <>
+                  <div className={styles.fields}>
+                    {[
+                      ['entrants', tt('stages.splitEntrants', 'Entrants expected'), 6, 5000],
+                      ['legs', tt('stages.splitLegs', 'Times each pair meets (1 or 2)'), 1, 2],
+                      ['top', tt('stages.splitTopPlaces', 'Places that play on in the top league'), 3,
+                        Math.max(3, split.entrants - 3)],
+                    ].map(([key, label, low, high]) => (
+                      <label key={key} className={styles.field}>
+                        <span className={styles.fieldLabel}>{label}</span>
+                        <input className={styles.number} type="number" min={low} max={high} inputMode="numeric"
+                               value={split[key]} disabled={busy}
+                               onChange={e => setSplit(prev => ({ ...prev, [key]: e.target.value }))} />
+                      </label>
+                    ))}
+                  </div>
+                  <div className={styles.editorActions}>
+                    <button type="button" className={styles.save} onClick={buildSplit} disabled={busy}>
+                      {tt('stages.splitBuild', 'Write the plan')}
+                    </button>
+                    <button type="button" className={styles.quiet} onClick={() => setSplit(null)} disabled={busy}>
+                      {tt('ui.cancel.0f8e', 'Cancel')}
+                    </button>
+                  </div>
+                </>
+              ) : (
+                <button type="button" className={styles.ghost} disabled={busy}
+                        onClick={() => setSplit({ entrants: entrants.length || 12, legs: 2,
+                                                  top: Math.floor((entrants.length || 12) / 2) })}>
+                  {tt('stages.splitOpen', 'Build a split league')}
                 </button>
               )}
             </div>
