@@ -48,6 +48,9 @@ test('an empty name takes the format name, translated', () => {
 
 test('a custom bracket takes its preset name', () => {
   assert.equal(stageName(tt, 'Custom bracket', 'custom_bracket', 'compass'), 'fr:stages.customPreset.compass');
+  // A stage switched to another format keeps the old automatic name (24 Oct).
+  assert.equal(stageName(tt, 'Single elimination', 'custom_bracket', 'compass'), 'fr:stages.customPreset.compass');
+  assert.equal(stageName(tt, 'Round robin', 'swiss'), 'fr:format.label.swiss');
 });
 
 test('a summary is looked up by its key', () => {

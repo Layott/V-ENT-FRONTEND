@@ -163,7 +163,11 @@ export const stageName = (tt, label, format, preset) => {
     ? formatKey(format)
     : Object.keys(SERVER_NAME).find((k) => SERVER_NAME[k].toLowerCase() === lower) || null;
   if (!key) return text;
-  if (!text || lower === SERVER_NAME[key].toLowerCase()) return stageFormatLabel(tt, { format: key, preset });
+  // Any format's own name counts, not only this stage's: a stage switched from
+  // single elimination to a compass draw kept "Single elimination" as its name
+  // (live walk, 24 October 2026). Nobody types a format's name for another format.
+  const automatic = Object.values(SERVER_NAME).some((n) => n.toLowerCase() === lower);
+  if (!text || automatic) return stageFormatLabel(tt, { format: key, preset });
   return text;
 };
 
