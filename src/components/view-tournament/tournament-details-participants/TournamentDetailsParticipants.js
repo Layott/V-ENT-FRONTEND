@@ -1,5 +1,6 @@
 'use client';
 
+import { useViewer } from '@/lib/gating';
 import { apiMessage } from '@/lib/apiMessage';
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import Link from 'next/link';
@@ -62,12 +63,17 @@ const TournamentDetailsParticipants = ({
   const [searchQuery, setSearchQuery] = useState('');
   const [showGalleryView, setShowGalleryView] = useState(false);
   const tournamentId = tournament?.id;
+  // A draft answers its creator only, so the token goes with the request;
+  // the request never waits for it (a public page loads signed out too).
+  const { token } = useViewer();
   const fetchParticipants = useCallback(async () => {
     if (!tournamentId) return;
     setLoading(true);
     setError(null);
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/tournament/get-tournament-participants/${tournamentId}/`);
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/tournament/get-tournament-participants/${tournamentId}/`, {
+        headers: token ? { Authorization: `Bearer ${token}` } : {},
+      });
       const data = await res.json();
       if (data.status === 'success') {
         const raw = Array.isArray(data.data) ? data.data : data.data?.participants || data.data?.results || [];
@@ -81,7 +87,7 @@ const TournamentDetailsParticipants = ({
     } finally {
       setLoading(false);
     }
-  }, [tournamentId, tt]);
+  }, [tournamentId, tt, token]);
   useEffect(() => { fetchParticipants(); }, [fetchParticipants]);
 
   // Client-side search filter

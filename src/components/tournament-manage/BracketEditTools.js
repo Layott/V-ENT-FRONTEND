@@ -60,7 +60,8 @@ export default function BracketEditTools({ tournamentRef, token, showToast }) {
     if (!tournamentRef) { setLoading(false); return; }
     try {
       const [p, s, e] = await Promise.all([
-        fetch(`${API}/tournament/get-tournament-participants/${tournamentRef}/`).then(r => r.json()),
+        // With the token: a draft's entrants answer its organiser only.
+        fetch(`${API}/tournament/get-tournament-participants/${tournamentRef}/`, { headers: auth }).then(r => r.json()),
         fetch(`${API}/tournament/${tournamentRef}/stages/`, { headers: auth }).then(r => r.json()),
         fetch(`${API}/tournament/${tournamentRef}/bracket/edits/`, { headers: auth }).then(r => r.json()),
       ]);
