@@ -1,3 +1,4 @@
+import ServedSummary from '@/components/seo/ServedSummary';
 import { Suspense } from 'react';
 import RunOfShowScreen from '@/components/run-of-show/RunOfShowScreen';
 import { fetchForMetadata, privateMetadata } from '@/lib/seo';
@@ -25,8 +26,12 @@ const SharedRunOfShow = async props => {
   const data = await fetchForMetadata(
     `/run-of-show/${encodeURIComponent(token)}/`, { revalidate: 0 });
 
+  // The served HTML names the page and says what it is (inbox 517): the
+  // words the route gives a search result, under its own h1.
+  const described = await generateMetadata(props);
+
   return (
-    <Suspense fallback={<div style={{ minHeight: '100vh', backgroundColor: '#131316' }} />}>
+    <Suspense fallback={<ServedSummary title={described?.title} description={described?.description} />}>
       <RunOfShowScreen
         sheet={data?.sheet || null}
         token={token}

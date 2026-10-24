@@ -1,3 +1,4 @@
+import ServedSummary from '@/components/seo/ServedSummary';
 import { Suspense } from 'react';
 import JsonLd from '@/components/seo/JsonLd';
 import { breadcrumbLd, buildMetadata, clamp, fetchRecordForMetadata, unavailableMetadata, missingMetadata, currentLocale } from '@/lib/seo';
@@ -54,6 +55,9 @@ export default async function ProfileByUsername(props) {
   const params = await props.params;
   const username = decodeURIComponent(params.username);
   const profile = await load(username);
+  // The served HTML names the person and says who they are (inbox 517): the
+  // words the route gives a search result, under its own h1.
+  const described = await generateMetadata(props);
 
   return (
     <>
@@ -80,7 +84,7 @@ export default async function ProfileByUsername(props) {
         />
       )}
       <Suspense
-        fallback={<div style={{ minHeight: '100vh', backgroundColor: '#131316' }} />}
+        fallback={<ServedSummary title={described?.title} description={described?.description} />}
       >
         <ProfileClient username={username} />
       </Suspense>
