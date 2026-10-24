@@ -245,3 +245,35 @@
 
 .chip:focus-visible,
 .widgetLink:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
+
+/* The light theme, asked for with theme=light in a snippet. The widgets'
+   stylesheets read these --bv-* names and keep the dark values as their
+   fallbacks, so a frame that does not ask for light is drawn as before. Off-white
+   surfaces stepping down from the page, dark ink, and every text colour at
+   least 4.5:1 on the surface it sits on. */
+.frame[data-theme="light"] {
+  /* The app's highlight gold and win green are drawn for a dark page; on this
+     one they fall to about 1.5:1 and 2.1:1, so winner scores and through rows
+     would vanish. Deeper values of the same two, about 5:1 on these surfaces.
+     An organiser's accent is set inline and still wins. */
+  --v-ent-light-gold: #7a5a0c;
+  --v-ent-success-light: #1d6b33;
+  --bv-text: #1b1b1f;
+  --bv-text-soft: #3a3a40;
+  --bv-muted: #4d4e55;
+  --bv-surface: #fbfaf7;
+  --bv-surface-2: #e2ded5;
+  --bv-surface-3: #d6d1c6;
+  --bv-tint: #ebe8e1;
+  --bv-scrim: rgba(27, 27, 31, 0.5);
+  --bv-gold-text: #6f520a;
+  --bv-gold-tint: #f1e6c8;
+  --bv-gold-fill: #c99a3a;
+  --bv-on-gold: #1b1b1f;
+  --bv-on-red: #fbfaf7;
+  --bv-loss-text: #a3190f;
+  --bv-loss-tint: #f6dcd8;
+  --bv-win-text: #155f29;
+  --bv-focus: #1b1b1f;
+  --bv-connector: #8c8c93;
+}

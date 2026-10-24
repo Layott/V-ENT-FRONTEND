@@ -11,12 +11,12 @@
  * public plan. All public, all read without an
  * account (token null), and each keeps itself current with backoff.
  *
- * The bracket and the standings are drawn light on dark, as on V-ENT, in the
- * organiser's accent and font; the schedule takes the light page too.
+ * Every widget takes the look the snippet asks for: dark, as on V-ENT, unless
+ * the snippet says theme=light. The bracket, the standings and the path take
+ * the organiser's accent and font through the app's variables either way.
  */
 import { useEffect, useState } from 'react';
 import { useLanguage } from '@/i18n/LanguageProvider';
-import { THEMED_WIDGETS } from '@/lib/embedLook';
 import BracketVisualizer from '@/components/view-tournament/bracket-visualizer/BracketVisualizer';
 import EmbedFrame from './EmbedFrame';
 import EmbedStandings from './EmbedStandings';
@@ -28,8 +28,10 @@ export default function EmbedTournamentWidget({ widget, slug, initial, failed, l
   const { t: tt } = useLanguage();
   const [origin, setOrigin] = useState('');
   useEffect(() => { setOrigin(window.location.origin); }, []);
-  const themed = THEMED_WIDGETS.includes(widget);
-  const frameLook = themed ? look : { ...look, theme: 'dark' };
+  const frameLook = look;
+  // The tournament page's own components read the app's variables, so they
+  // take the organiser's accent through them; the card and the schedule do not.
+  const appTokens = ['bracket', 'standings', 'path'].includes(widget);
 
   const t = initial;
   if (failed || !t) {
@@ -48,7 +50,7 @@ export default function EmbedTournamentWidget({ widget, slug, initial, failed, l
   const name = t.tournament_title || t.name || t.title;
 
   return (
-    <EmbedFrame kind="tournament" slug={slug} look={frameLook} appTokens={!themed} wide>
+    <EmbedFrame kind="tournament" slug={slug} look={frameLook} appTokens={appTokens} wide>
       <header className={styles.widgetHead}>
         <h1 className={styles.widgetTitle}>{name}</h1>
         <a className={styles.widgetLink} href={`${origin}/tournaments/${encodeURIComponent(slug)}`}
