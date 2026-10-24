@@ -17,10 +17,12 @@ import { fixture, standings, table } from './table';
  * @param cols     which numbers the table shows: any of p, w, d, l, pts
  * @param sides    draw Home and Away over the results (a league)
  * @param times    { intro, results, table, end }: how long each step holds
+ * @param rowH     the height of a table row, when the default is too tall for the stage
  */
-export function roundsScene({ key, players, rounds, heading, cols, sides = false, times }) {
+export function roundsScene({ key, players, rounds, heading, cols, sides = false, times, rowH: rowHeight }) {
   const st = new Story(key);
   const names = players.map((p) => p.name);
+  const rowH = rowHeight || (names.length > 4 ? 28 : 32);
   const COLS = {
     p: { k: 'played' }, w: { k: 'won' }, d: { k: 'drawn' }, l: { k: 'lost' }, pts: { k: 'pts', weight: 700 },
   };
@@ -31,7 +33,7 @@ export function roundsScene({ key, players, rounds, heading, cols, sides = false
     x: x0,
     y: 40,
     w: width,
-    rowH: names.length > 4 ? 28 : 32,
+    rowH,
     names,
     cols: cols.map((c, i) => ({ ...COLS[c], x: width - 18 - (cols.length - 1 - i) * step })),
   });
