@@ -137,3 +137,16 @@
   .card { flex-wrap: wrap; }
   .open { width: 100%; justify-content: center; }
 }
+
+/* Who you are on a stall, beside its name: filled, never a ring. */
+.chips { display: inline-flex; gap: 0.4rem; flex-wrap: wrap; }
+
+.roleChip {
+  display: inline-block;
+  padding: 0.18rem 0.55rem;
+  border-radius: 8px;
+  font-size: 0.72rem;
+  font-weight: var(--fw-semi-bold);
+  background-color: #2a2b30;
+  color: var(--v-ent-gold);
+}

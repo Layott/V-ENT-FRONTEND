@@ -913,3 +913,33 @@
     gap: 0.5rem;
   }
 }
+
+/* Where a promo code works: tickets or the event's shop. Filled chips with
+   aria-pressed, never a ring. */
+.scopeRow {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin-bottom: 0.6rem;
+}
+
+.scopeChip,
+.scopeChipOn {
+  min-height: 44px;
+  padding: 0 1rem;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.scopeChip { background-color: #2a2b30; color: rgba(255, 255, 255, 0.6); }
+.scopeChipOn { background-color: #3a3b42; color: #fff; }
+
+.shopBadge {
+  background-color: #2a2b30;
+  color: var(--v-ent-gold);
+  font-size: 0.68rem;
+  padding: 3px 8px;
+  border-radius: 8px;
+}

@@ -26,16 +26,33 @@ import Header from '@/components/header/Header';
 import MobileHeader from '@/components/mobile-header/MobileHeader';
 import BottomMenu from '@/components/bottom-menu/BottomMenu';
 import Avatar from '@/components/avatar/Avatar';
+import DateField from '@/components/date-field/DateField';
+import UserChip from '@/components/user-chip/UserChip';
 import { apiMessage } from '@/lib/apiMessage';
 import { useAutoRefresh } from '@/lib/useLiveData';
-import { formatDateTime, formatNumber } from '@/lib/datetime';
+import { formatDateTime, formatNumber, isoToLocalInput, localInputToISO } from '@/lib/datetime';
 import { mediaUrl } from '@/lib/mediaUrl';
 import { useT } from '@/i18n/LanguageProvider';
 import styles from './stall.module.css';
 
 const EMPTY_PRODUCT = {
   name: '', description: '', price: '', stock: '', variants: '', can_deliver: false,
+  category: '', discount_kind: '', discount_value: '', low_stock_at: '',
 };
+
+// Refund choices in words a stallholder can read out to a buyer.
+const REFUND_CHOICES = [
+  ['none', 'stall.refundNone', 'No refunds'],
+  ['until_event_start', 'stall.refundUntilStart', 'Until the event starts'],
+  ['until_collected', 'stall.refundUntilCollected', 'Until collected'],
+];
+
+// '' is no discount at all, so the empty string is the "none" chip.
+const DISCOUNT_CHOICES = [
+  ['', 'stall.discountNone', 'No discount'],
+  ['percent', 'stall.discountPercent', 'Percent off'],
+  ['amount', 'stall.discountAmount', 'Naira off'],
+];
 
 const StallPage = props => {
   const params = use(props.params);
@@ -66,6 +83,16 @@ const StallPage = props => {
   // own words, and it cannot be translated or styled.
   const [sending, setSending] = useState(null);
   const [tracking, setTracking] = useState('');
+  // A staffer gets a 404 for the stall itself, because the stall is the
+  // owner's to change, but their orders still load. That is a mode of this
+  // page, not an error: they see the orders and nothing else.
+  const [staffOnly, setStaffOnly] = useState(false);
+  // The owner's pickup and refund draft, copied in when the tab opens.
+  const [settings, setSettings] = useState({
+    refund_policy: 'none', pickup_location: '', pickup_opens_at: '', pickup_closes_at: '',
+  });
+  const [newStaff, setNewStaff] = useState('');
+  const [removingStaff, setRemovingStaff] = useState(null);
 
   const say = (message) => {
     setNotice(message);
@@ -91,7 +118,13 @@ const StallPage = props => {
     if (out?.status === 'success') {
       setStall(out.data.stall);
       setProducts(out.data.products || []);
+      setStaffOnly(false);
       setError(null);
+    } else if (out?.code === 'NOT_FOUND') {
+      // Staff are refused the stall and admitted to its orders; whether this
+      // person is staff is the orders answer's to say (its `role`), so a
+      // stranger or a wrong address is never greeted as part of the team.
+      setStall(null);
     } else {
       setError(apiMessage(tt, out, 'api.somethingWentWrong', 'Something went wrong.'));
     }
@@ -102,11 +135,14 @@ const StallPage = props => {
   const loadOrders = useCallback(async () => {
     const out = await api('/orders/');
     if (out?.status === 'success') {
+      setStaffOnly(out.data.role === 'staff');
       setOrders(out.data.orders || []);
       setSummary({ open: out.data.open || 0, to_deliver: out.data.to_deliver || 0 });
       setMoney({ items_ngn: out.data.items_ngn || 0, fees_ngn: out.data.fees_ngn || 0,
                  kept_ngn: out.data.kept_ngn || 0, paid_vc: out.data.paid_vc || 0,
                  carry_ngn: out.data.carry_ngn || 0 });
+    } else {
+      setError(apiMessage(tt, out, 'api.somethingWentWrong', 'Something went wrong.'));
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [api]);
@@ -141,6 +177,10 @@ const StallPage = props => {
           name: draft.name, description: draft.description,
           price: Number(draft.price || 0), stock: Number(draft.stock || 0),
           variants: draft.variants, can_deliver: draft.can_deliver,
+          category: draft.category,
+          discount_kind: draft.discount_kind,
+          discount_value: draft.discount_kind ? Number(draft.discount_value || 0) : 0,
+          low_stock_at: Number(draft.low_stock_at || 0),
         }),
       });
     } else {
@@ -155,6 +195,10 @@ const StallPage = props => {
       // failure nobody saw.
       form.append('variants', draft.variants);
       form.append('can_deliver', draft.can_deliver ? 'true' : 'false');
+      form.append('category', draft.category);
+      form.append('discount_kind', draft.discount_kind);
+      form.append('discount_value', draft.discount_kind ? String(Number(draft.discount_value || 0)) : '0');
+      form.append('low_stock_at', String(Number(draft.low_stock_at || 0)));
       if (image) form.append('image', image);
       out = await fetch(
         `${process.env.NEXT_PUBLIC_API_URL}/event/vendor/${encodeURIComponent(slug)}/products/`,
@@ -256,6 +300,67 @@ const StallPage = props => {
     else loadStall();
   };
 
+  // The owner's pickup window and refund choice. The draft is copied in when
+  // the tab opens, so a refresh under somebody typing a place name does not
+  // take their typing with it.
+  const openSettings = () => {
+    setSettings({
+      refund_policy: stall?.refund_policy || 'none',
+      pickup_location: stall?.pickup_location || '',
+      pickup_opens_at: isoToLocalInput(stall?.pickup_opens_at),
+      pickup_closes_at: isoToLocalInput(stall?.pickup_closes_at),
+    });
+    setTab('settings');
+  };
+
+  const saveSettings = async () => {
+    if (busy) return;
+    setBusy(true);
+    // The window is typed in the reader's own zone and sent as an instant.
+    const out = await api('/', {
+      method: 'PATCH',
+      body: JSON.stringify({
+        refund_policy: settings.refund_policy,
+        pickup_location: settings.pickup_location.trim(),
+        pickup_opens_at: localInputToISO(settings.pickup_opens_at),
+        pickup_closes_at: localInputToISO(settings.pickup_closes_at),
+      }),
+    });
+    setBusy(false);
+    if (out?.status !== 'success') {
+      return say(apiMessage(tt, out, 'api.saveFailed', 'Could not change it'));
+    }
+    say(tt('stall.settingsSaved', 'Saved.'));
+    loadStall();
+  };
+
+  const addStaff = async () => {
+    const username = newStaff.trim().replace(/^@/, '');
+    if (busy || !username) return;
+    setBusy(true);
+    const out = await api('/staff/', { method: 'POST', body: JSON.stringify({ username }) });
+    setBusy(false);
+    if (out?.status !== 'success') {
+      return say(apiMessage(tt, out, 'api.saveFailed', 'Could not add them'));
+    }
+    setNewStaff('');
+    say(tt('stall.staffAdded', 'Added. They can see the orders on this stall from now on.'));
+    loadStall();
+  };
+
+  const removeStaff = async (username) => {
+    if (busy) return;
+    setRemovingStaff(null);
+    setBusy(true);
+    const out = await api(`/staff/${encodeURIComponent(username)}/`, { method: 'DELETE' });
+    setBusy(false);
+    if (out?.status !== 'success') {
+      return say(apiMessage(tt, out, 'api.saveFailed', 'Could not remove them'));
+    }
+    say(tt('stall.staffRemoved', 'Taken off the stall.'));
+    loadStall();
+  };
+
   const setOpen = async (next) => {
     const out = await api('/', { method: 'PATCH', body: JSON.stringify({ status: next }) });
     if (out?.status !== 'success') {
@@ -273,12 +378,19 @@ const StallPage = props => {
       name: p.name, description: p.description || '',
       price: String(p.price_ngn ?? ''), stock: String(p.stock ?? ''),
       variants: (p.variants || []).join(', '), can_deliver: !!p.can_deliver,
+      category: p.category || '',
+      discount_kind: p.discount_kind || '',
+      discount_value: p.discount_kind ? String(p.discount_value ?? '') : '',
+      low_stock_at: p.low_stock_at ? String(p.low_stock_at) : '',
     });
   };
 
   const set = (key) => (e) => setDraft((d) => ({
     ...d, [key]: e.target.type === 'checkbox' ? e.target.checked : e.target.value,
   }));
+
+  // A staffer has no settings and no product list, so their one tab is orders.
+  const activeTab = staffOnly ? 'orders' : tab;
 
   const deliveries = useMemo(
     () => orders.filter((o) => o.fulfilment === 'deliver'), [orders]);
@@ -313,12 +425,26 @@ const StallPage = props => {
           {error && <p className={styles.error}>{error}</p>}
           {notice && <p className={styles.notice}>{notice}</p>}
 
+          {staffOnly && !stall && (
+            <div className={styles.head}>
+              <div className={styles.headText}>
+                <h1 className={styles.title}>{tt('stall.staffTitle', 'Orders you help with')}</h1>
+                <p className={styles.muted}>
+                  {tt('stall.staffBlurb', 'You are on the team for this stall. You can mark orders ready, collected, sent and arrived. Only the owner changes prices, products and settings.')}
+                </p>
+              </div>
+            </div>
+          )}
+
           {stall && (
             <>
               <div className={styles.head}>
                 <Avatar src={mediaUrl(stall.logo)} name={stall.name} size={56} rounded={false} />
                 <div className={styles.headText}>
                   <h1 className={styles.title}>{stall.name}</h1>
+                  {stall.kind === 'organiser' && <span className={styles.pillOn}>
+                    {tt('stall.eventShop', 'Event shop')}
+                  </span>}
                   <p className={styles.muted}>{stall.description || tt('stall.noDescription', 'No description yet.')}</p>
                   <button type="button" className={styles.ghost} onClick={aboutOpen ? () => setAboutOpen(false) : openAbout}>
                     {aboutOpen ? tt('ui.cancel.77df', 'Cancel') : tt('stall.editAbout', 'Change the name, description or pictures')}
@@ -395,21 +521,33 @@ const StallPage = props => {
                 </div>
               )}
 
-              <div className={styles.tabs} role="tablist">
-                <button type="button" aria-pressed={tab === 'shop'}
-                        className={tab === 'shop' ? styles.tabOn : styles.tab}
-                        onClick={() => setTab('shop')}>
-                  {tt('stall.tabShop', 'What I sell')}
-                </button>
-                <button type="button" aria-pressed={tab === 'orders'}
-                        className={tab === 'orders' ? styles.tabOn : styles.tab}
-                        onClick={() => setTab('orders')}>
-                  {tt('stall.tabOrders', 'Orders')}
-                  {summary.open > 0 && <span className={styles.count}>{formatNumber(summary.open)}</span>}
-                </button>
-              </div>
+            </>
+          )}
 
-              {tab === 'shop' && (
+          {(stall || staffOnly) && (
+            <>
+              {!staffOnly && (
+                <div className={styles.tabs} role="tablist">
+                  <button type="button" aria-pressed={activeTab === 'shop'}
+                          className={activeTab === 'shop' ? styles.tabOn : styles.tab}
+                          onClick={() => setTab('shop')}>
+                    {tt('stall.tabShop', 'What I sell')}
+                  </button>
+                  <button type="button" aria-pressed={activeTab === 'orders'}
+                          className={activeTab === 'orders' ? styles.tabOn : styles.tab}
+                          onClick={() => setTab('orders')}>
+                    {tt('stall.tabOrders', 'Orders')}
+                    {summary.open > 0 && <span className={styles.count}>{formatNumber(summary.open)}</span>}
+                  </button>
+                  <button type="button" aria-pressed={activeTab === 'settings'}
+                          className={activeTab === 'settings' ? styles.tabOn : styles.tab}
+                          onClick={openSettings}>
+                    {tt('stall.tabSettings', 'Settings and staff')}
+                  </button>
+                </div>
+              )}
+
+              {activeTab === 'shop' && (
                 <>
                   {products.length === 0
                     ? <p className={styles.muted}>
@@ -425,9 +563,14 @@ const StallPage = props => {
                                 {!p.is_active && <span className={styles.pillOff}>
                                   {tt('stall.hidden', 'Hidden')}
                                 </span>}
+                                {p.low_stock && <span className={styles.lowChip}>
+                                  {tt('stall.lowStock', 'Low stock')}
+                                </span>}
                               </span>
                               <span className={styles.muted}>
-                                {formatNumber(p.price_vc)} VC
+                                {(p.sale_price_vc ?? p.price_vc) < p.price_vc
+                                  ? <><s>{formatNumber(p.price_vc)} VC</s>{' '}{formatNumber(p.sale_price_vc)} VC</>
+                                  : <>{formatNumber(p.price_vc)} VC</>}
                                 {' · '}
                                 {p.stock > 0
                                   ? tt('stall.inStock', '{n} left').replace('{n}', formatNumber(p.stock))
@@ -437,6 +580,7 @@ const StallPage = props => {
                               {p.variants?.length > 0 && (
                                 <span className={styles.muted}>{p.variants.join(' · ')}</span>
                               )}
+                              {p.category && <span className={styles.muted}>{p.category}</span>}
                             </div>
                             <div className={styles.rowActions}>
                               <button type="button" className={styles.ghost}
@@ -495,6 +639,48 @@ const StallPage = props => {
                         {tt('stall.pVariantsHelp', 'Leave this empty when there is nothing to choose.')}
                       </span>
                     </label>
+                    <label className={styles.field}>
+                      <span className={styles.label}>{tt('stall.pCategory', 'Category')}</span>
+                      <input className={styles.input} value={draft.category} onChange={set('category')}
+                             maxLength={40} autoComplete="off" name="product-category"
+                             placeholder={tt('stall.pCategoryPlaceholder', 'Merch, food, drinks')} />
+                    </label>
+                    <div className={styles.fieldWide}>
+                      <span className={styles.label}>{tt('stall.pDiscount', 'Discount')}</span>
+                      <div className={styles.chipRow}>
+                        {DISCOUNT_CHOICES.map(([value, key, fallback]) => (
+                          <button key={value || 'none'} type="button"
+                                  aria-pressed={draft.discount_kind === value}
+                                  className={draft.discount_kind === value ? styles.tabOn : styles.tab}
+                                  onClick={() => setDraft((d) => ({ ...d, discount_kind: value }))}>
+                            {tt(key, fallback)}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                    {draft.discount_kind && (
+                      <label className={styles.field}>
+                        <span className={styles.label}>
+                          {draft.discount_kind === 'percent'
+                            ? tt('stall.pDiscountPercent', 'Percent off')
+                            : tt('stall.pDiscountAmount', 'Naira off')}
+                        </span>
+                        <input className={styles.input} inputMode="numeric" value={draft.discount_value}
+                               onChange={set('discount_value')}
+                               placeholder={draft.discount_kind === 'percent' ? '10' : '500'} />
+                        <span className={styles.help}>
+                          {draft.discount_kind === 'percent'
+                            ? tt('stall.pDiscountPercentHint', 'Up to 100.')
+                            : tt('stall.pDiscountAmountHint', 'Naira taken off the price.')}
+                        </span>
+                      </label>
+                    )}
+                    <label className={styles.field}>
+                      <span className={styles.label}>{tt('stall.pLowStock', 'Warn me when fewer than this are left')}</span>
+                      <input className={styles.input} inputMode="numeric" value={draft.low_stock_at}
+                             onChange={set('low_stock_at')} placeholder="0" />
+                      <span className={styles.help}>{tt('stall.pLowStockHint', 'Zero means never warn.')}</span>
+                    </label>
                     <label className={styles.fieldWide}>
                       <span className={styles.label}>{tt('stall.pDescription', 'Description')}</span>
                       <textarea className={styles.textarea} rows={2} value={draft.description}
@@ -526,9 +712,9 @@ const StallPage = props => {
                 </>
               )}
 
-              {tab === 'orders' && (
+              {activeTab === 'orders' && (
                 <>
-                  {money && (money.items_ngn > 0 || money.carry_ngn > 0) && (
+                  {!staffOnly && money && (money.items_ngn > 0 || money.carry_ngn > 0) && (
                     <div className={styles.moneyRow}>
                       <span>{tt('stall.moneySold', 'Sold: {n} naira').replace('{n}', formatNumber(money.items_ngn))}</span>
                       <span>{tt('stall.moneyFees', 'Service fee: {n} naira').replace('{n}', formatNumber(money.fees_ngn))}</span>
@@ -555,11 +741,14 @@ const StallPage = props => {
                                   ? styles.pillOff : styles.pillOn}>
                                   {tt(`orders.${o.status}`, o.status)}
                                 </span>
+                                {o.buyer_here && <span className={styles.hereChip}>
+                                  {tt('stall.buyerHere', 'Here')}
+                                </span>}
                               </span>
                               <span className={styles.muted}>
                                 {o.buyer_name} · {formatNumber(o.total_vc)} VC · {formatDateTime(o.created_at)}
                               </span>
-                              {o.status !== 'cancelled' && (o.fee_ngn > 0 || o.vendor_ngn > 0) && (
+                              {!staffOnly && o.status !== 'cancelled' && (o.fee_ngn > 0 || o.vendor_ngn > 0) && (
                                 <span className={styles.muted}>
                                   {tt('stall.orderMoney', 'Fee {fee} naira{onBuyer}, yours {kept} naira, {paid} VC paid')
                                     .replace('{fee}', formatNumber(o.fee_ngn))
@@ -629,13 +818,13 @@ const StallPage = props => {
                                   {tt('stall.markDelivered', 'Arrived')}
                                 </button>
                               )}
-                              {['paid', 'ready'].includes(o.status) && cancelling !== o.id && (
+                              {!staffOnly && ['paid', 'ready'].includes(o.status) && cancelling !== o.id && (
                                 <button type="button" className={styles.ghost} disabled={busy}
                                         onClick={() => setCancelling(o.id)}>
                                   {tt('stall.cancelOrder', 'Cancel and refund')}
                                 </button>
                               )}
-                              {['paid', 'ready'].includes(o.status) && cancelling === o.id && (
+                              {!staffOnly && ['paid', 'ready'].includes(o.status) && cancelling === o.id && (
                                 <>
                                   <button type="button" className={styles.danger} disabled={busy}
                                           onClick={() => { setCancelling(null); moveOrder(o, 'cancelled'); }}>
@@ -654,6 +843,106 @@ const StallPage = props => {
                           </li>
                         ))}
                       </ul>}
+                </>
+              )}
+
+              {activeTab === 'settings' && !staffOnly && (
+                <>
+                  <h2 className={styles.sub}>{tt('stall.pickupHeading', 'Pickup and refunds')}</h2>
+                  <div className={styles.form}>
+                    <label className={styles.fieldWide}>
+                      <span className={styles.label}>{tt('stall.pickupPlace', 'Where people collect')}</span>
+                      <input className={styles.input} maxLength={160} value={settings.pickup_location}
+                             autoComplete="off" name="pickup-place"
+                             onChange={e => setSettings(s => ({ ...s, pickup_location: e.target.value }))}
+                             placeholder={tt('stall.pickupPlacePlaceholder', 'The merch tent by the main gate')} />
+                    </label>
+                    <label className={styles.field}>
+                      <span className={styles.label}>{tt('stall.pickupOpens', 'Collection opens')}</span>
+                      <DateField withTime value={settings.pickup_opens_at}
+                                 onChange={e => setSettings(s => ({ ...s, pickup_opens_at: e.target.value }))} />
+                      <span className={styles.help}>
+                        {stall.pickup_opens_at
+                          ? tt('stall.pickupSaved', 'Saved: {when}').replace('{when}', formatDateTime(stall.pickup_opens_at))
+                          : tt('stall.pickupNotSet', 'Not set yet.')}
+                      </span>
+                    </label>
+                    <label className={styles.field}>
+                      <span className={styles.label}>{tt('stall.pickupCloses', 'Collection closes')}</span>
+                      <DateField withTime value={settings.pickup_closes_at}
+                                 onChange={e => setSettings(s => ({ ...s, pickup_closes_at: e.target.value }))} />
+                      <span className={styles.help}>
+                        {stall.pickup_closes_at
+                          ? tt('stall.pickupSaved', 'Saved: {when}').replace('{when}', formatDateTime(stall.pickup_closes_at))
+                          : tt('stall.pickupNotSet', 'Not set yet.')}
+                      </span>
+                    </label>
+                    <div className={styles.fieldWide}>
+                      <span className={styles.label}>{tt('stall.refundHeading', 'What a buyer can get back')}</span>
+                      <div className={styles.chipRow}>
+                        {REFUND_CHOICES.map(([value, key, fallback]) => (
+                          <button key={value} type="button"
+                                  aria-pressed={settings.refund_policy === value}
+                                  className={settings.refund_policy === value ? styles.tabOn : styles.tab}
+                                  onClick={() => setSettings(s => ({ ...s, refund_policy: value }))}>
+                            {tt(key, fallback)}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                    <div className={styles.fieldWide}>
+                      <button type="button" className={styles.primary} disabled={busy} onClick={saveSettings}>
+                        {busy ? tt('ui.saving', 'Saving...') : tt('ui.save', 'Save')}
+                      </button>
+                    </div>
+                  </div>
+
+                  <h2 className={styles.sub}>{tt('stall.staffHeading', 'Staff')}</h2>
+                  <p className={styles.muted}>
+                    {tt('stall.staffExplain', 'Staff can mark orders ready, collected, sent and arrived. They cannot change prices, products or settings, and they cannot cancel an order.')}
+                  </p>
+                  {stall.staff?.length > 0
+                    ? <ul className={styles.list}>
+                        {stall.staff.map((s) => (
+                          <li key={s.username} className={styles.row}>
+                            <div className={styles.rowBody}>
+                              <UserChip user={{ username: s.username, full_name: s.name }} size={32} />
+                            </div>
+                            <div className={styles.rowActions}>
+                              {removingStaff === s.username
+                                ? <>
+                                    <button type="button" className={styles.danger} disabled={busy}
+                                            onClick={() => removeStaff(s.username)}>
+                                      {tt('stall.staffRemoveConfirm', 'Take {name} off the stall?')
+                                        .replace('{name}', s.name || s.username)}
+                                    </button>
+                                    <button type="button" className={styles.ghost}
+                                            onClick={() => setRemovingStaff(null)}>
+                                      {tt('stall.keep', 'Keep it')}
+                                    </button>
+                                  </>
+                                : <button type="button" className={styles.danger} disabled={busy}
+                                          onClick={() => setRemovingStaff(s.username)}>
+                                    {tt('ui.remove', 'Remove')}
+                                  </button>}
+                            </div>
+                          </li>
+                        ))}
+                      </ul>
+                    : <p className={styles.muted}>{tt('stall.noStaff', 'Nobody else is on this stall yet.')}</p>}
+                  <div className={styles.form}>
+                    <label className={styles.fieldWide}>
+                      <span className={styles.label}>{tt('stall.staffAddLabel', 'Add someone by their username')}</span>
+                      <input className={styles.input} value={newStaff} autoComplete="off" name="staff-username"
+                             onChange={e => setNewStaff(e.target.value)} />
+                    </label>
+                    <div className={styles.fieldWide}>
+                      <button type="button" className={styles.primary}
+                              disabled={busy || !newStaff.trim()} onClick={addStaff}>
+                        {tt('stall.staffAdd', 'Add to the stall')}
+                      </button>
+                    </div>
+                  </div>
                 </>
               )}
             </>
