@@ -198,7 +198,7 @@ const ConnectedKeysPanel = ({
       </div>
 
       <div className={styles.card}>
-        <h3 className={shared.cardTitle}>{tt('keys.listTitle', 'Connected keys')}</h3>
+        <h3 className={shared.cardTitle}>{tt('keys.listTitle', 'Your keys')}</h3>
         {listing && keys.length === 0 && !listError && (
           <p className={styles.sub}>{tt('keys.loading', 'Loading...')}</p>
         )}

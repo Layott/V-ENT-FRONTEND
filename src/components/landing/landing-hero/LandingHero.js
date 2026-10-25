@@ -119,7 +119,7 @@ const LandingHero = ({
               </h1>
             </div>
             <div className={styles.heroWelcomeTextContainer}>
-              <p>{tt("ui.welcome.v.ent.ultimate.3370", "Welcome to V-ENT, the ultimate platform where gaming, anime, and community converge. Whether you're a competitive esports player, a casual gamer, or an anime enthusiast, V-ENT offers tournaments, a vibrant marketplace, and unique features to help you immerse yourself in what you love most. Connect, compete, and engage in a community built for fans by fans.")}</p>
+              <p>{tt("landing.heroBlurb", "V-ENT is where gamers and anime fans meet. Enter tournaments whose brackets run themselves, buy tickets to events, build a team and climb the rankings. Joining is free, and you can look around without an account.")}</p>
               {/* Said plainly, and next to the thing it describes. Somebody
                   who has just read what the site is should not have to guess
                   whether they can look before joining. */}
