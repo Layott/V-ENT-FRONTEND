@@ -64,7 +64,7 @@
   align-items: center;
   gap: 0.5rem;
   width: calc(100% - 1.5rem);
-  border-radius: 5px;
+  border-radius: 8px;
   transition: all ease-in-out 0.5s;
 
 }
@@ -75,7 +75,7 @@
   height: 100%;
   padding: 0.5rem 0.75rem;
   width: 100%;
-  border-radius: 5px;
+  border-radius: 8px;
   background-color: transparent;
   
 }
@@ -92,7 +92,7 @@
   height: 100%;
   padding: 0.5rem 0.75rem;
   width: 100%;
-  border-radius: 5px;
+  border-radius: 8px;
   transition: all ease-in-out 0.5s;
   background-color: transparent;
   cursor: pointer;
@@ -114,7 +114,7 @@
   height: 100%;
   padding: 0.5rem 0.75rem;
   width: 100%;
-  border-radius: 5px;
+  border-radius: 8px;
 }
 
 /* The badge alone is pushed right, via margin-left on .comingSoon.
@@ -161,7 +161,7 @@
   font-size: 0.6rem;
   background-color: rgba(251, 198, 75, 0.24);
   padding: 3px 5px;
-  border-radius: 3px;
+  border-radius: 8px;
 }
 
 .betaPill {
@@ -169,7 +169,7 @@
   background-color: rgba(212, 175, 55, 0.24);
   color: var(--v-ent-light-gold);
   padding: 3px 5px;
-  border-radius: 3px;
+  border-radius: 8px;
   font-family: "ClashGrotesk-Variable", sans-serif;
 }
 

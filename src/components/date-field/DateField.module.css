@@ -23,7 +23,7 @@
   width: 100%;
   min-height: 38px;
   background-color: var(--overlay-gray);
-  border-radius: 6px;
+  border-radius: 8px;
   padding: 0.5rem 0.6rem;
   color: #fff;
   font-family: inherit;
@@ -88,7 +88,7 @@
   width: 44px;
   height: 44px;
   margin: -12px -12px -12px -16px;
-  border-radius: 4px;
+  border-radius: 8px;
   color: rgba(255, 255, 255, 0.45);
   font-size: 0.8rem;
   cursor: pointer;
@@ -144,7 +144,7 @@
   height: 28px;
   flex-shrink: 0;
   background-color: rgba(255, 255, 255, 0.06);
-  border-radius: 6px;
+  border-radius: 8px;
   color: rgba(255, 255, 255, 0.75);
   cursor: pointer;
   outline: none;
@@ -182,7 +182,7 @@
 .day {
   height: 32px;
   background-color: transparent;
-  border-radius: 6px;
+  border-radius: 8px;
   color: rgba(255, 255, 255, 0.85);
   font-family: 'ClashGrotesk-Variable', sans-serif;
   font-size: 0.8rem;
@@ -236,7 +236,7 @@
 
 .timeSelect {
   background-color: rgba(255, 255, 255, 0.08);
-  border-radius: 5px;
+  border-radius: 8px;
   padding: 4px 5px;
   color: #fff;
   font-family: 'ClashGrotesk-Variable', sans-serif;
@@ -263,7 +263,7 @@
 .footBtn {
   flex: 1;
   background-color: rgba(255, 255, 255, 0.07);
-  border-radius: 7px;
+  border-radius: 8px;
   padding: 7px 10px;
   color: rgba(255, 255, 255, 0.8);
   font-family: 'ClashGrotesk-Variable', sans-serif;

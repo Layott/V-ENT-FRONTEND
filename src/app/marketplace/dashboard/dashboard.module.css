@@ -55,7 +55,7 @@
   align-items: center;
   gap: 0.4rem;
   padding: 0.6rem 1rem;
-  border-radius: 6px;
+  border-radius: 8px;
   text-decoration: none;
   font-family: inherit;
   font-size: var(--fs-p-size-mobile);
@@ -140,7 +140,7 @@
   font-size: var(--fs-p-size-mobile);
   font-weight: var(--fw-medium);
   padding: 0.5rem 0.95rem;
-  border-radius: 6px;
+  border-radius: 8px;
   cursor: pointer;
   white-space: nowrap;
   transition: background-color 0.2s, color 0.2s;
@@ -206,7 +206,7 @@
 .listingThumb {
   width: 40px;
   height: 40px;
-  border-radius: 4px;
+  border-radius: 8px;
   object-fit: cover;
   flex-shrink: 0;
 }
@@ -226,7 +226,7 @@
 
 .statusBadge {
   padding: 3px 8px;
-  border-radius: 4px;
+  border-radius: 8px;
   font-size: 0.7rem;
   font-weight: var(--fw-medium);
   text-transform: capitalize;
@@ -254,7 +254,7 @@
 .iconBtn {
   height: 30px;
   padding: 0 0.6rem;
-  border-radius: 5px;
+  border-radius: 8px;
   font-family: inherit;
   font-size: 0.75rem;
   font-weight: var(--fw-medium);

@@ -90,7 +90,7 @@
   background-color: rgba(23, 24, 26, 0.7);
   backdrop-filter: blur(6px);
 
-  border-radius: 6px;
+  border-radius: 8px;
   color: #fff;
   font-family: "ClashGrotesk-Variable", sans-serif;
   font-size: 0.78rem;
@@ -223,7 +223,7 @@
   padding: 0.55rem 1rem;
   background-color: #303136;
 
-  border-radius: 6px;
+  border-radius: 8px;
   color: #fff;
   font-family: "ClashGrotesk-Variable", sans-serif;
   font-size: 0.82rem;
@@ -266,7 +266,7 @@
   padding: 0;
   background-color: #303136;
 
-  border-radius: 6px;
+  border-radius: 8px;
   color: #A7A6A6;
   display: inline-flex;
   align-items: center;
@@ -286,7 +286,7 @@
   right: 0;
   background-color: #303136;
 
-  border-radius: 6px;
+  border-radius: 8px;
   min-width: 180px;
   z-index: 300;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
@@ -406,7 +406,7 @@
   padding: 0.5rem 1rem;
   background: transparent;
   border: none;
-  border-radius: 6px;
+  border-radius: 8px;
   color: #A7A6A6;
   font-family: "ClashGrotesk-Variable", sans-serif;
   font-size: 0.82rem;
@@ -551,7 +551,7 @@
 
 .reportSelect, .reportText {
   background: rgba(255, 255, 255, 0.06);
-  border-radius: 9px;
+  border-radius: 10px;
   color: #fff;
   font-family: 'ClashGrotesk-Variable', sans-serif;
   font-size: 0.9rem;
@@ -567,7 +567,7 @@
 
 .reportSend, .reportCancel {
   align-items: center;
-  border-radius: 9px;
+  border-radius: 10px;
   cursor: pointer;
   display: inline-flex;
   font-family: 'ClashGrotesk-Variable', sans-serif;

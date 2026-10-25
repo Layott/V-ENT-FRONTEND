@@ -210,7 +210,7 @@
 .mini {
   align-items: center;
   background: var(--chip);
-  border-radius: 3px;
+  border-radius: 8px;
   display: inline-flex;
   height: 58px;
   justify-content: center;

@@ -54,7 +54,7 @@
   padding: 0.55rem 1rem;
   font-size: var(--fs-p-size-mobile);
   font-weight: var(--fw-semi-bold);
-  border-radius: 6px;
+  border-radius: 8px;
   cursor: pointer;
   text-decoration: none;
   transition: background-color 0.25s, transform 0.15s;
@@ -97,7 +97,7 @@
   font-size: var(--fs-p-size-mobile);
   font-weight: var(--fw-medium);
   padding: 0.45rem 0.9rem;
-  border-radius: 6px;
+  border-radius: 8px;
   cursor: pointer;
   white-space: nowrap;
   transition: background-color 0.2s, color 0.2s;
@@ -124,7 +124,7 @@
   gap: 0.4rem;
   background-color: var(--overlay-gray);
 
-  border-radius: 6px;
+  border-radius: 8px;
   padding: 0.45rem 0.75rem;
   flex: 1 1 240px;
   min-width: 200px;
@@ -161,7 +161,7 @@
   appearance: none;
   background-color: var(--overlay-gray);
 
-  border-radius: 6px;
+  border-radius: 8px;
   color: var(--primary-bg);
   font-family: inherit;
   font-size: var(--fs-p-size-mobile);
@@ -192,7 +192,7 @@
   cursor: pointer;
   height: 38px;
   padding: 0 0.7rem;
-  border-radius: 6px;
+  border-radius: 8px;
   background-color: var(--overlay-gray);
 
   user-select: none;
@@ -282,7 +282,7 @@
   font-size: 0.7rem;
   font-weight: var(--fw-semi-bold);
   padding: 3px 8px;
-  border-radius: 4px;
+  border-radius: 8px;
   display: inline-flex;
   align-items: center;
   gap: 0.3rem;
@@ -368,7 +368,7 @@
   padding: 2px 6px;
   background-color: rgba(255, 255, 255, 0.08);
   color: rgba(255, 255, 255, 0.7);
-  border-radius: 3px;
+  border-radius: 8px;
   letter-spacing: 0.04em;
 }
 
@@ -420,7 +420,7 @@
 .statBlock {
   flex: 1;
   background-color: #1a1a1d;
-  border-radius: 7px;
+  border-radius: 8px;
   padding: 0.5rem 0.75rem;
   display: flex;
   flex-direction: column;
@@ -462,7 +462,7 @@
   font-size: var(--fs-p-size-mobile);
   font-weight: var(--fw-semi-bold);
   padding: 0.5rem 0.75rem;
-  border-radius: 5px;
+  border-radius: 8px;
   cursor: pointer;
 
   transition: background-color 0.2s, opacity 0.2s;
@@ -514,7 +514,7 @@
   height: 0.7rem;
   background-color: #1f2024;
   background-size: 200% 100%;
-  border-radius: 3px;
+  border-radius: 8px;
   margin-bottom: 0.4rem;
 
 }
@@ -561,7 +561,7 @@
   padding: 0.55rem 1rem;
   font-size: var(--fs-p-size-mobile);
   font-weight: var(--fw-semi-bold);
-  border-radius: 6px;
+  border-radius: 8px;
   text-decoration: none;
   margin-top: 0.5rem;
 }
@@ -670,7 +670,7 @@
 
 .followKind {
   background: rgba(229, 185, 78, 0.18);
-  border-radius: 5px;
+  border-radius: 8px;
   color: #E5B94E;
   flex: 0 0 auto;
   font-size: 0.72rem;

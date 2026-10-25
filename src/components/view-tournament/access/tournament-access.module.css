@@ -35,7 +35,7 @@
 
 .count {
   background-color: rgba(212, 175, 55, 0.16);
-  border-radius: 6px;
+  border-radius: 8px;
   color: var(--v-ent-light-gold, #E8C760);
   font-size: 0.74rem;
   padding: 0.15rem 0.42rem;
@@ -79,7 +79,7 @@
   display: inline-flex;
   align-items: center;
   gap: 0.35rem;
-  border-radius: 9px;
+  border-radius: 10px;
   cursor: pointer;
   font-family: 'ClashGrotesk-Variable', sans-serif;
   font-size: 0.82rem;
@@ -140,7 +140,7 @@
 .input {
   width: 90px;
   background-color: rgba(255, 255, 255, 0.08);
-  border-radius: 9px;
+  border-radius: 10px;
   color: #fff;
   font-family: 'ClashGrotesk-Variable', sans-serif;
   font-size: 0.9rem;

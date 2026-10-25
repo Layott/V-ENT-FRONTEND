@@ -95,7 +95,7 @@
   align-items: center;
   justify-content: center;
   padding: 5px;
-  border-radius: 5px;
+  border-radius: 8px;
   transition: all ease-in-out 0.5s;
   background-color: #303136;
 
@@ -282,7 +282,7 @@
   font-size: 0.85rem;
   cursor: pointer;
   padding: 8px 10px;
-  border-radius: 6px;
+  border-radius: 8px;
   color: rgba(255, 255, 255, 0.85);
   text-decoration: none;
 }
@@ -303,7 +303,7 @@
   outline: none;
   margin-top: 0.35rem;
   padding: 8px 10px;
-  border-radius: 6px;
+  border-radius: 8px;
   background-color: var(--v-ent-red);
   color: #FFF;
   font-size: 0.85rem;
@@ -398,7 +398,7 @@
   .viewProfile {
     font-size: 0.95rem;
     padding: 5px 15px;
-    border-radius: 6px;
+    border-radius: 8px;
   }
   .logoutBTN {
     width: 110px;
@@ -412,7 +412,7 @@
 }
 .headerLoginBtn {
   padding: 0.45rem 1.1rem;
-  border-radius: 6px;
+  border-radius: 8px;
   font-size: 0.85rem;
   font-weight: var(--fw-semi-bold);
   white-space: nowrap;

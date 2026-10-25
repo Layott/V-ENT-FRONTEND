@@ -26,6 +26,7 @@ import CancelControl from '@/components/cancel-control/CancelControl';
 import styles from './my-events.module.css';
 import { useT } from '@/i18n/LanguageProvider';
 import { plural } from '@/lib/plural';
+import BackLink from '@/components/back-link/BackLink';
 const MyEventsPage = () => {
   const tt = useT();
   const {
@@ -99,6 +100,7 @@ const MyEventsPage = () => {
       <main className={styles.mainContainer}>
         <Sidebar />
         <div className={styles.rightPane}>
+          <BackLink href="/events">{tt('back.toEvents', 'Back to events')}</BackLink>
           <div className={styles.headRow}>
             <div>
               <h1 className={styles.pageTitle}>{tt('myEvents.title', 'My events')}</h1>

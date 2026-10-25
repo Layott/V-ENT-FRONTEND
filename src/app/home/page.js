@@ -410,12 +410,15 @@ const HomePage = () => {
                 <p className={styles.heroTagline}>{motivation}</p>
               </div>
 
+              {/* One main action, then the quiet ones (apple-design review, inbox
+                  547): three equal buttons in gold, red and grey said nothing
+                  about which came first. */}
               <div className={styles.heroActions}>
-                <Link href="/wallets" className={`btn goldBTN ${styles.heroBtn}`}>
-                  <LuPlus className={styles.heroBtnIcon} /> {tt("ui.top.up.wallet.155f", "Top up wallet")}
-                </Link>
                 <Link href="/tournaments" className={`btn redBTN ${styles.heroBtn}`}>
                   <LuGamepad2 className={styles.heroBtnIcon} /> {tt("ui.find.tournament.9e7f", "Find tournament")}
+                </Link>
+                <Link href="/wallets" className={`${styles.heroBtn} ${styles.heroBtnGhost}`}>
+                  <LuPlus className={styles.heroBtnIcon} /> {tt("ui.top.up.wallet.155f", "Top up wallet")}
                 </Link>
                 <Link href="/teams" className={`${styles.heroBtn} ${styles.heroBtnGhost}`}>
                   <FaUsers className={styles.heroBtnIcon} /> {tt("ui.create.team.8d82", "Create team")}

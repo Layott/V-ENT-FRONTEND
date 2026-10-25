@@ -60,7 +60,7 @@
   align-items: center;
   gap: 0.4rem;
   padding: 0.55rem 1rem;
-  border-radius: 6px;
+  border-radius: 8px;
   background-color: var(--overlay-gray);
 
   color: rgba(255, 255, 255, 0.85);
@@ -82,7 +82,7 @@
   align-items: center;
   gap: 0.35rem;
   padding: 0.55rem 1.25rem;
-  border-radius: 6px;
+  border-radius: 8px;
   font-size: var(--fs-p-size-mobile);
   font-weight: var(--fw-semi-bold);
   text-decoration: none;
@@ -241,7 +241,7 @@
   align-items: center;
   gap: 0.45rem;
   background-color: var(--overlay-gray);
-  border-radius: 6px;
+  border-radius: 8px;
   padding: 0.5rem 0.85rem;
 
   flex: 1 1 220px;
@@ -273,7 +273,7 @@
   align-items: center;
   gap: 0.35rem;
   padding: 0.5rem 1rem;
-  border-radius: 6px;
+  border-radius: 8px;
   background-color: var(--overlay-gray);
 
   color: rgba(255, 255, 255, 0.8);
@@ -306,7 +306,7 @@
   align-items: center;
   gap: 0.25rem;
   padding: 0.5rem 0.9rem;
-  border-radius: 6px;
+  border-radius: 8px;
   background-color: transparent;
 
   color: var(--v-ent-red);
@@ -350,7 +350,7 @@
 .filterInput {
   background-color: var(--overlay-gray);
 
-  border-radius: 6px;
+  border-radius: 8px;
   color: var(--primary-bg);
   font-family: inherit;
   font-size: var(--fs-p-size-mobile);
@@ -376,7 +376,7 @@
   width: 100%;
   background-color: var(--overlay-gray);
 
-  border-radius: 6px;
+  border-radius: 8px;
   color: var(--primary-bg);
   font-family: inherit;
   font-size: var(--fs-p-size-mobile);
@@ -547,7 +547,7 @@
 
 .emptyBtn {
   padding: 0.55rem 1.25rem;
-  border-radius: 6px;
+  border-radius: 8px;
   font-size: var(--fs-p-size-mobile);
   font-weight: var(--fw-semi-bold);
   border: none;

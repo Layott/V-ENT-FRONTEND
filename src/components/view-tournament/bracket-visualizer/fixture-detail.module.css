@@ -111,7 +111,7 @@
 
 .seatNo {
   background-color: var(--bv-gold-tint, rgba(212, 175, 55, 0.14));
-  border-radius: 6px;
+  border-radius: 8px;
   color: var(--v-ent-light-gold, #E8C760);
   font-size: 0.68rem;
   letter-spacing: 0.05em;

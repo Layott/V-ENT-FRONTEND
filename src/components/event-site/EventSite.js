@@ -18,6 +18,7 @@ import { formatDateRange, formatWithZone } from '@/lib/datetime';
 import { paintDocument, siteStyle } from '@/lib/siteTheme';
 import EventTickets from './EventTickets';
 import styles from './event-site.module.css';
+import BackLink from '@/components/back-link/BackLink';
 
 function Section({ id, title, surface = false, children }) {
   return (
@@ -153,6 +154,7 @@ export default function EventSite({ event: e, preview = false }) {
       </header>
 
       <main className={styles.body}>
+        <BackLink href={`/events/${encodeURIComponent(slug)}`}>{tt('back.toEvent', 'Back to event')}</BackLink>
         {order.map((key) => draw[key]).filter(Boolean)}
       </main>
 

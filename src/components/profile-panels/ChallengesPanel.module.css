@@ -95,7 +95,7 @@
 .outcome {
   display: inline-block;
   padding: 0.24rem 0.6rem;
-  border-radius: 6px;
+  border-radius: 8px;
   font-size: 0.72rem;
   font-weight: var(--fw-semi-bold);
   text-transform: uppercase;

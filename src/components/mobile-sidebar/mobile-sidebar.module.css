@@ -14,7 +14,11 @@
      sit on top of the last item in the list. */
   padding-bottom: 84px;
   transform: translateX(100%);
-  transition: transform 0.5s ease-in-out;
+  /* In fast and settling, out a little faster, on one curve (apple-design
+     review, inbox 547): it was half a second each way on a slow-start curve.
+     Vertical scrolling stays the browser's; a sideways drag is ours. */
+  transition: transform 200ms cubic-bezier(0.32, 0.72, 0, 1);
+  touch-action: pan-y;
 
   /* The drawer scrolls itself.
    *
@@ -33,6 +37,13 @@
 
 .mobileSidebar.open {
   transform: translateX(0);
+  transition-duration: 280ms;
+}
+
+/* Following a finger: no easing between the finger and the panel. */
+.mobileSidebar.dragging {
+  transform: translateX(var(--drag, 0px));
+  transition: none;
 }
 
 .logoutButton {
@@ -41,7 +52,7 @@
   height: 100%;
   padding: 0.5rem 0.75rem;
   width: 100%;
-  border-radius: 5px;
+  border-radius: 8px;
   background-color: #131316;
   
 }
@@ -59,8 +70,8 @@
   height: 100%;
   padding: 0.5rem 0.75rem;
   width: 100%;
-  border-radius: 5px;
-  transition: all ease-in-out 0.5s;
+  border-radius: 8px;
+  transition: background-color 150ms ease-out, color 150ms ease-out;
 
   background-color: #131316;
   cursor: pointer;
@@ -88,8 +99,8 @@
   justify-content: flex-end;
   gap: 0.5rem;
   width: calc(100% - 3rem);
-  border-radius: 5px;
-  transition: all ease-in-out 0.5s;
+  border-radius: 8px;
+  transition: background-color 150ms ease-out, color 150ms ease-out;
 
 }
 
@@ -120,7 +131,7 @@
   height: 100%;
   padding: 0.5rem 0.75rem;
   width: 100%;
-  border-radius: 5px;
+  border-radius: 8px;
 }
 
 /* The badge alone is pushed right, via margin-left on .comingSoon.
@@ -173,7 +184,7 @@
   font-size: 0.6rem;
   background-color: rgba(251, 198, 75, 0.24);
   padding: 3px 5px;
-  border-radius: 3px;
+  border-radius: 8px;
   white-space: nowrap;
 }
 
@@ -226,7 +237,7 @@
 .subLink {
   flex: 1;
   padding: 0.5rem 0.9rem;
-  border-radius: 6px;
+  border-radius: 8px;
   background: rgba(255, 255, 255, 0.045);
   color: rgba(255, 255, 255, 0.72);
   font-size: 0.85rem;

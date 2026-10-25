@@ -11,6 +11,7 @@ import Sidebar from '@/components/sidebar/Sidebar';
 import TransactionTable from '@/components/wallet/TransactionTable';
 import styles from '../wallets.module.css';
 import { useT } from '@/i18n/LanguageProvider';
+import BackLink from '@/components/back-link/BackLink';
 const HistoryContent = () => {
   const tt = useT();
   const {
@@ -64,6 +65,7 @@ const HistoryContent = () => {
         <Sidebar />
 
         <div className={styles.rightPaneContainer}>
+          <BackLink href="/wallets">{tt('back.toWallets', 'Back to wallets')}</BackLink>
           <div className={styles.pageHeader}>
             <div className={styles.pageHeaderLeft}>
               <h1 className={styles.pageTitle}>{tt("ui.transaction.history.4ed3", "Transaction History")}</h1>

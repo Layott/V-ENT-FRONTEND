@@ -33,7 +33,7 @@
   gap: 0.75rem;
   background-color: #303136;
 
-  border-radius: 5px;
+  border-radius: 8px;
   padding: 0.75rem 0.9rem;
   cursor: pointer;
   transition: background-color 0.2s, background 0.2s;
@@ -147,7 +147,7 @@
 .fileThumb {
   width: 52px;
   height: 52px;
-  border-radius: 6px;
+  border-radius: 8px;
   object-fit: cover;
   flex-shrink: 0;
   background-color: var(--overlay-gray);
@@ -188,7 +188,7 @@
   color: rgba(212, 175, 55, 0.95);
   cursor: pointer;
   padding: 0.25rem 0.45rem;
-  border-radius: 4px;
+  border-radius: 8px;
   transition: background 0.2s;
 }
 
@@ -204,7 +204,7 @@
   font-family: "ClashGrotesk-Variable", sans-serif;
   font-size: 0.74rem;
   padding: 0.25rem 0.45rem;
-  border-radius: 4px;
+  border-radius: 8px;
   transition: color 0.2s, background 0.2s;
 }
 

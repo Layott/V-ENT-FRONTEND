@@ -17,6 +17,7 @@ import styles from './create-organization.module.css';
 import { useT } from '@/i18n/LanguageProvider';
 import { useTx } from '@/i18n/LanguageProvider';
 import { ORG_REGIONS } from '@/constants/countries';
+import BackLink from '@/components/back-link/BackLink';
 const STEPS = [{
   id: 1,
   label: 'Identity'
@@ -254,6 +255,7 @@ const CreateOrganizationContent = () => {
         <Sidebar />
 
         <div className={styles.rightPaneContainer}>
+          <BackLink href="/organizations">{tt('back.toOrganizations', 'Back to organizations')}</BackLink>
           <div className={styles.wizardHeader}>
             <div>
               <h1 className={styles.wizardTitle}>{tt("ui.create.organization.a194", "Create Organization")}</h1>

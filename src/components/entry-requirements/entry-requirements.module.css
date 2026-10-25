@@ -62,7 +62,7 @@
   flex-shrink: 0;
   margin-top: 2px;
   background-color: var(--v-ent-red);
-  border-radius: 6px;
+  border-radius: 8px;
   color: #fff;
   font-size: 0.74rem;
   font-weight: 600;
@@ -107,7 +107,7 @@
   width: 28px;
   height: 28px;
   background-color: rgba(255, 255, 255, 0.08);
-  border-radius: 6px;
+  border-radius: 8px;
   color: rgba(255, 255, 255, 0.7);
   cursor: pointer;
   outline: none;
@@ -203,7 +203,7 @@
   gap: 0.15rem;
   width: 100%;
   background-color: rgba(255, 255, 255, 0.06);
-  border-radius: 9px;
+  border-radius: 10px;
   padding: 0.55rem 0.7rem;
   cursor: pointer;
   text-align: left;
@@ -263,7 +263,7 @@
 .save {
   align-self: flex-start;
   background-color: var(--v-ent-red);
-  border-radius: 9px;
+  border-radius: 10px;
   padding: 10px 22px;
   color: #fff;
   font-family: 'ClashGrotesk-Variable', sans-serif;

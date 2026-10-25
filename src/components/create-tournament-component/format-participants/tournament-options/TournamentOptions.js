@@ -138,7 +138,10 @@ const Toggle = ({
 const TABLE_KEYS = new Set(['round_robin', 'league', 'ladder', 'aggregate_2v2', 'league_phase']);
 const TournamentOptions = ({
   formData = {},
-  updateFormData
+  updateFormData,
+  // On a tournament that already runs (the edit page): the same settings, and
+  // the intro says when a change takes effect.
+  live = false
 }) => {
   const tx = useTx();
   const tt = useT();
@@ -160,7 +163,9 @@ const TournamentOptions = ({
       <div className={createTournamentStyles.innerCreateSubSectionContainer}>
         <h3 className={createTournamentStyles.tournamentTypeH3}>{tt("ui.tournament.settings.3aa2", "Tournament Settings")}</h3>
         <p className={styles.sectionIntro}>
-          {tt("ui.these.decide.who.can.4b61", "These decide who can enter, how the draw is made, and what happens when somebody\n          does not turn up. You can change them until the bracket is generated.")}
+          {live
+            ? tt("opts.liveIntro", "Changes apply from the moment you save. A stage that is already drawn keeps its draw and seeding; check-in, timing, score and no-show rules apply to every match not finished yet.")
+            : tt("ui.these.decide.who.can.4b61", "These decide who can enter, how the draw is made, and what happens when somebody\n          does not turn up. You can change them until the bracket is generated.")}
         </p>
 
         {/* ---------------------------------------------------- check-in */}

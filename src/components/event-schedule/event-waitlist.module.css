@@ -38,7 +38,7 @@
 
 .primary {
   background-color: var(--v-ent-red);
-  border-radius: 9px;
+  border-radius: 10px;
   padding: 10px 20px;
   color: #fff;
   font-family: 'ClashGrotesk-Variable', sans-serif;
@@ -54,7 +54,7 @@
 
 .ghost {
   background-color: rgba(255, 255, 255, 0.08);
-  border-radius: 9px;
+  border-radius: 10px;
   padding: 9px 16px;
   color: rgba(255, 255, 255, 0.8);
   font-family: 'ClashGrotesk-Variable', sans-serif;

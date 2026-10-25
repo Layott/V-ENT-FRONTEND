@@ -81,7 +81,7 @@
   font-size: var(--fs-p-size-mobile);
   font-weight: var(--fw-medium);
   padding: 0.55rem 0.85rem;
-  border-radius: 6px;
+  border-radius: 8px;
   cursor: pointer;
   white-space: nowrap;
   transition: background-color 0.2s, color 0.2s;
@@ -154,7 +154,7 @@
   font-size: var(--fs-p-size-mobile);
   font-weight: var(--fw-semi-bold);
   padding: 0.55rem 1.4rem;
-  border-radius: 6px;
+  border-radius: 8px;
   cursor: pointer;
   transition: background-color 0.25s;
 }

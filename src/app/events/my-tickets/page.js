@@ -20,6 +20,7 @@ import { useTx } from '@/i18n/LanguageProvider';
 import UserChip from '@/components/user-chip/UserChip';
 import VendorOrders from '@/components/vendor-orders/VendorOrders';
 import { fuzzyMatches } from '@/lib/fuzzy';
+import BackLink from '@/components/back-link/BackLink';
 const STATUS_FILTERS = [{
   id: 'all'
 }, {
@@ -307,6 +308,7 @@ const MyTickets = () => {
         <Sidebar />
 
         <div className={styles.rightPaneContainer}>
+          <BackLink href="/events">{tt('back.toEvents', 'Back to events')}</BackLink>
           <div className={styles.headerRow}>
             <div>
               <h1 className={styles.pageTitle}>

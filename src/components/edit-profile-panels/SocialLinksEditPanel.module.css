@@ -19,7 +19,7 @@
 .socialIconWrap {
   width: 24px;
   height: 24px;
-  border-radius: 6px;
+  border-radius: 8px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -88,7 +88,7 @@
   height: 42px;
   background: #303136;
 
-  border-radius: 6px;
+  border-radius: 8px;
   color: rgba(255, 255, 255, 0.45);
   cursor: pointer;
   display: inline-flex;

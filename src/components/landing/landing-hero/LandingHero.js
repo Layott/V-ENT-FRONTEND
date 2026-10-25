@@ -10,7 +10,6 @@ import topLeftImage from '@/images/top_left.jpeg';
 import topRightImage from '@/images/top_right.jpg';
 import bottomRightImage from '@/images/bottom_right.jpg';
 import bottomLeftImage from '@/images/bottom_left.jpg';
-import tunnelPattern from '@/images/tunnel_pattern.svg';
 import landingStyles from '@/styles/landing/landing.module.css';
 import profileStyles from '@/styles/profile/profile-page.module.css';
 import styles from './landing-hero.module.css';
@@ -62,7 +61,7 @@ const LandingHero = ({
     setOpen(false);
   };
   return <div className={styles.landingHeroContainer}>
-      <Image src={tunnelPattern} alt="" aria-hidden="true" />
+      {/* The perspective grid behind the hero is gone: a graph-paper background is one of the generated-site tells (apple-design review, inbox 547). */}
 
       <div className={styles.innerLandingHeroContainer}>
         <header className={styles.headerContainer}>

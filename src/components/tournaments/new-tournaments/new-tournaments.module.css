@@ -63,7 +63,7 @@
 .viewDetailsBTN,
 .registerBTN {
   font-size: 0.8rem;
-  border-radius: 4px;
+  border-radius: 8px;
   font-family: "ClashGrotesk-Medium", sans-serif;
   cursor: pointer;
 }

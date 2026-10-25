@@ -17,6 +17,7 @@ import { useT } from '@/i18n/LanguageProvider';
 import { useTx } from '@/i18n/LanguageProvider';
 import CurrencyChoice from '@/components/pay/CurrencyChoice';
 import { QUOTE_CODES, useCurrencyQuotes } from '@/lib/payCurrency';
+import BackLink from '@/components/back-link/BackLink';
 const QUICK_AMOUNTS_VC = [1000, 5000, 10000, 50000];
 const STEPS = [{
   n: 1,
@@ -250,6 +251,7 @@ const TopupPage = () => {
         <Sidebar />
 
         <div className={styles.rightPaneContainer}>
+          <BackLink href="/wallets">{tt('back.toWallets', 'Back to wallets')}</BackLink>
           <div className={styles.pageHeader}>
             <div className={styles.pageHeaderLeft}>
               <h1 className={styles.pageTitle}>{tt("ui.top.up.wallet.1875", "Top Up Wallet")}</h1>

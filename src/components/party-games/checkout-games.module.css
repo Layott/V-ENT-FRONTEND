@@ -65,7 +65,7 @@
   flex: none;
   width: 18px;
   height: 18px;
-  border-radius: 5px;
+  border-radius: 8px;
   background: #3b3c43;
 }
 
@@ -112,7 +112,7 @@
 
 .redTag {
   display: inline-block;
-  border-radius: 6px;
+  border-radius: 8px;
   padding: 2px 7px;
   font-size: 0.7rem;
   font-weight: 600;

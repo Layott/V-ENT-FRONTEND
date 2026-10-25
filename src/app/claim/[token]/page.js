@@ -21,6 +21,7 @@ import { VENT } from '@/app/api/auth/[...nextauth]/route';
 import styles from './claim.module.css';
 import { useT } from '@/i18n/LanguageProvider';
 import { useTx } from '@/i18n/LanguageProvider';
+import BackLink from '@/components/back-link/BackLink';
 const MIN_PASSWORD_LENGTH = 8;
 const ClaimAccount = () => {
   const tx = useTx();
@@ -125,6 +126,7 @@ const ClaimAccount = () => {
     return <div className={styles.pageContainer}>
         <AuthHeader />
         <main className={styles.mainContainer}>
+          <BackLink href="/">{tt('back.toHome', 'Back to home')}</BackLink>
           <CircularProgress size={28} sx={{
           color: 'var(--v-ent-red)'
         }} />
@@ -136,6 +138,7 @@ const ClaimAccount = () => {
     return <div className={styles.pageContainer}>
         <AuthHeader />
         <main className={styles.mainContainer}>
+          <BackLink href="/">{tt('back.toHome', 'Back to home')}</BackLink>
           <h1>{tt("ui.link.has.expired.a6b1", "This link has expired")}</h1>
           <p className={styles.muted}>{loadError}</p>
           <p className={styles.muted}>
@@ -155,6 +158,7 @@ const ClaimAccount = () => {
   return <div className={styles.pageContainer}>
       <AuthHeader />
       <main className={styles.mainContainer}>
+        <BackLink href="/">{tt('back.toHome', 'Back to home')}</BackLink>
         <p className={styles.eyebrow}>{tt("ui.founding.member.8330", "Founding member #")}{reservation.position}</p>
         <h1>{tt("ui.claim.account.102f", "Claim your account")}</h1>
         <p className={styles.muted}>

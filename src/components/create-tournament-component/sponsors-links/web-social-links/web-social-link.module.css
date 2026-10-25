@@ -54,7 +54,7 @@
   background-color: var(--v-ent-gold);
   color: var(--primary-bg);
   border: none;
-  border-radius: 4px;
+  border-radius: 8px;
   cursor: pointer;
   text-align: center;
 }
@@ -109,7 +109,7 @@
 .cancelBTN {
   padding: 10px 20px;
   border: none;
-  border-radius: 4px;
+  border-radius: 8px;
   cursor: pointer;
 }
 

@@ -40,7 +40,7 @@
   gap: 0.4rem;
   background-color: #303136;
 
-  border-radius: 6px;
+  border-radius: 8px;
   padding: 0.45rem 0.75rem;
 }
 
@@ -66,7 +66,7 @@
 
   color: #fff;
   padding: 0.55rem 1rem;
-  border-radius: 6px;
+  border-radius: 8px;
   font-family: "ClashGrotesk-Variable", sans-serif;
   font-size: 0.82rem;
   cursor: pointer;
@@ -200,7 +200,7 @@
   align-items: center;
   background: rgba(255, 255, 255, 0.06);
   color: #A7A6A6;
-  border-radius: 4px;
+  border-radius: 8px;
   padding: 0.18rem 0.4rem;
   font-family: "ClashGrotesk-Variable", sans-serif;
   font-size: 0.66rem;
@@ -217,7 +217,7 @@
   gap: 0.35rem;
   background: var(--page-bg, #131316);
 
-  border-radius: 6px;
+  border-radius: 8px;
   padding: 0.35rem 0.55rem;
   transition: background-color 0.2s;
 }
@@ -253,7 +253,7 @@
   background: transparent;
 
   color: #A7A6A6;
-  border-radius: 6px;
+  border-radius: 8px;
   padding: 0.4rem 0.55rem;
   font-family: "ClashGrotesk-Variable", sans-serif;
   font-size: 0.72rem;
@@ -281,7 +281,7 @@
   background: rgba(212, 175, 55, 0.1);
 
   color: var(--v-ent-gold);
-  border-radius: 6px;
+  border-radius: 8px;
   padding: 0.4rem 0.55rem;
   font-family: "ClashGrotesk-Variable", sans-serif;
   font-size: 0.72rem;
@@ -373,7 +373,7 @@
   gap: 0.45rem;
   background: #303136;
 
-  border-radius: 6px;
+  border-radius: 8px;
   padding: 0.55rem 0.8rem;
   margin-bottom: 1rem;
 }
@@ -419,7 +419,7 @@
 .modalGameCover {
   width: 100%;
   aspect-ratio: 3/4;
-  border-radius: 6px;
+  border-radius: 8px;
   overflow: hidden;
   background: #0a0a0c;
 }

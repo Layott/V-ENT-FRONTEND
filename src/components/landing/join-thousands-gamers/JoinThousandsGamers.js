@@ -1,92 +1,49 @@
 "use client";
 
-import { apiMessage } from '@/lib/apiMessage';
+// The last section of the home page: what an account is for, and the way in.
+//
+// It was a waitlist: "Join thousands of gamers and anime fans waiting for the
+// ultimate platform launch", with an email box. The platform has launched, the
+// number was never measured, and a waitlist for something open is a dead end
+// (apple-design review, inbox 547, 25 October 2026). Somebody signed in is sent
+// to their own home instead of being asked to sign up again.
+
+import Link from 'next/link';
 import joinThousandsGamers from '@/images/join_thousands.jpeg';
-import profileStyles from '@/styles/profile/profile-page.module.css';
 import landingStyles from '@/styles/landing/landing.module.css';
 import styles from './join-thousands-gamers.module.css';
-import axios from 'axios';
-import React, { useRef, useState } from 'react';
-import { useBotChallenge } from '@/lib/botChallenge';
-import BotTrap from '@/components/bot-trap/BotTrap';
-import Link from 'next/link';
-import MessageSnackbar from '@/components/Snackbar/MessageSnackbar';
-import CircularProgress from '@mui/material/CircularProgress';
 import { useT } from '@/i18n/LanguageProvider';
+import { useViewer } from '@/lib/gating';
+
 const JoinThousandsGamers = () => {
   const tt = useT();
-  const [email, setEmail] = useState('');
-  const [open, setOpen] = useState(false);
-  const [snackbarMessage, setSnackbarMessage] = useState('');
-  const [snackbarType, setSnackbarType] = useState('success');
-  const [loading, setLoading] = useState(false); // Add loading state
-  const { take: takeChallenge, prime: primeChallenge } = useBotChallenge({ eager: false });
-  const trapRef = useRef(null);
-
-  const handleSubmit = async e => {
-    e.preventDefault();
-    setLoading(true); // Set loading to true when starting the request
-
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
-      setEmail('');
-      setSnackbarMessage(tt("msg.pleaseEnterAValidEmail", "Please enter a valid email address"));
-      setSnackbarType('error');
-      setOpen(true);
-      setLoading(false);
-      return;
-    }
-    try {
-      const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/auth/add-email-to-waitlist/`, {
-        email, challenge: await takeChallenge(), website: trapRef.current?.value || ''
-      });
-      setSnackbarMessage(apiMessage(tt, response.data, "api.successfullyJoinedTheWaitlist", "Successfully joined the waitlist!"));
-      setSnackbarType('success');
-      setEmail('');
-    } catch (error) {
-      setSnackbarMessage(apiMessage(tt, error.response.data, "api.somethingWentWrong", "Something went wrong"));
-      setSnackbarType('error');
-      setEmail('');
-    } finally {
-      setLoading(false);
-      setOpen(true);
-    }
-  };
-  const handleCloseSnackbar = () => {
-    setOpen(false);
-  };
+  const viewer = useViewer();
   return <div className={`${landingStyles.joinThousandsGamersContainer} ${styles.joinThousandsGamersContainer}`}>
         <div className={styles.innerJoinThousandsGamersContainer} style={{
       backgroundImage: `url(${joinThousandsGamers.src})`,
-      backgroundSize: 'cover',
-      backgroundColor: 'rgba(0, 0, 0, 1)'
+      backgroundSize: 'cover'
     }}>
           <div className={styles.joinThousandsGamersContent}>
             <div className={styles.joinThousandsGamersTop}>
-              <h2>
-                {tt("ui.join.thousands.gamers.anime.f79d", "Join thousands of gamers and anime fans waiting for the ultimate platform launch.")}
-              </h2>
+              <h2>{tt('landing.joinHeading', 'Enter tournaments, buy event tickets and follow your teams.')}</h2>
             </div>
             <div className={styles.joinThousandsGamersBottom}>
               <div className={styles.joinThousandsGamersTextContainer}>
-                <p>{tt("ui.don.t.miss.chance.b54e", "Don’t miss your chance to be part of something epic!")}</p>
+                <p>{tt('landing.joinBody', 'A free account is all it takes. Organisers run their tournaments and events from the same account.')}</p>
               </div>
-              <div className={styles.joinThousandsGamersInputContainer}>
-                <form onSubmit={handleSubmit} className={styles.formContainer}>
-                  <BotTrap inputRef={trapRef} />
-                  <div className={styles.inputGroup}>
-                    <label htmlFor="">{tt("ui.email.address.852c", "Email Address:")}</label>
-                    <input type="text" placeholder={tt("ui.enter.email.address.c099", "Enter your email address")} value={email} onFocus={primeChallenge} onChange={e => setEmail(e.target.value)} />
-                  </div>
-                  <Link href={'/signup'} className={`${profileStyles.waitlistBTN} ${profileStyles.loginBTN}`}>
-                    {tt("ui.signup.894b", "Signup")}
-                  </Link>
-                </form>
+              <div className={styles.joinActions}>
+                {viewer.signedIn ? (
+                  <Link href="/home" className="btn redBTN">{tt('landing.openApp', 'Go to my V-ENT')}</Link>
+                ) : !viewer.loading && (
+                  <>
+                    <Link href="/signup" className="btn redBTN">{tt('landing.createAccount', 'Create a free account')}</Link>
+                    <Link href="/tournaments" className={`btn ${styles.quietBtn}`}>{tt('landing.browse', 'Browse tournaments')}</Link>
+                  </>
+                )}
               </div>
             </div>
           </div>
         </div>
-        <MessageSnackbar open={open} handleClose={handleCloseSnackbar} message={snackbarMessage} type={snackbarType} />
       </div>;
 };
 export default JoinThousandsGamers;

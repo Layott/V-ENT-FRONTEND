@@ -138,7 +138,7 @@
   font-size: var(--fs-p-size-mobile);
   font-weight: var(--fw-medium);
   padding: 0.45rem 0.9rem;
-  border-radius: 6px;
+  border-radius: 8px;
   cursor: pointer;
   white-space: nowrap;
   transition: background-color 0.2s, color 0.2s;
@@ -167,7 +167,7 @@
   gap: 0.4rem;
   background-color: var(--overlay-gray);
 
-  border-radius: 6px;
+  border-radius: 8px;
   padding: 0.45rem 0.75rem;
   flex: 1 1 240px;
   min-width: 200px;
@@ -204,7 +204,7 @@
   appearance: none;
   background-color: var(--overlay-gray);
 
-  border-radius: 6px;
+  border-radius: 8px;
   color: var(--primary-bg);
   font-family: inherit;
   font-size: var(--fs-p-size-mobile);
@@ -477,7 +477,7 @@
   justify-content: center;
   background-color: rgba(255, 255, 255, 0.06);
   color: rgba(255, 255, 255, 0.7);
-  border-radius: 6px;
+  border-radius: 8px;
   padding: 3px 8px;
   font-size: 0.78rem;
   font-weight: var(--fw-semi-bold);
@@ -633,7 +633,7 @@
   font-size: var(--fs-p-size-mobile);
   font-weight: var(--fw-semi-bold);
   padding: 3px 8px;
-  border-radius: 6px;
+  border-radius: 8px;
 }
 
 .trendUp {
@@ -661,7 +661,7 @@
   font-size: 0.78rem;
   font-weight: var(--fw-semi-bold);
   padding: 0.4rem 0.75rem;
-  border-radius: 5px;
+  border-radius: 8px;
 
   cursor: pointer;
   white-space: nowrap;
@@ -722,7 +722,7 @@
   right: 0.85rem;
   background-color: rgba(255, 255, 255, 0.06);
 
-  border-radius: 6px;
+  border-radius: 8px;
   width: 28px;
   height: 28px;
   color: rgba(255, 255, 255, 0.7);
@@ -1037,7 +1037,7 @@
   background-color: rgba(251, 198, 75, 0.18);
   color: rgb(251, 198, 75);
 
-  border-radius: 6px;
+  border-radius: 8px;
   padding: 4px 10px;
   font-size: 0.78rem;
   font-weight: var(--fw-semi-bold);
@@ -1048,7 +1048,7 @@
   color: rgba(255, 255, 255, 0.7);
   background-color: rgba(255, 255, 255, 0.05);
 
-  border-radius: 6px;
+  border-radius: 8px;
   padding: 4px 10px;
 }
 

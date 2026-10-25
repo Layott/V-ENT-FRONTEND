@@ -226,7 +226,7 @@
   background-color: #303136;
 
   padding: 10px 13px;
-  border-radius: 5px;
+  border-radius: 8px;
   width: calc(100% - 87px);
   color: #B2B3BD;
   cursor: text;
@@ -282,7 +282,7 @@
   padding: 0.4rem;
   gap: 0.35rem;
   height: calc(100% - 3px);
-  border-radius: 5px;
+  border-radius: 8px;
   cursor: pointer;
   transition: transform 0.15s ease-in-out, box-shadow 0.15s ease-in-out, border 0.5s ease-in-out;
   max-height: 35px;

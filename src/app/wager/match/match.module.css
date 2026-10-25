@@ -173,7 +173,7 @@
   color: rgba(251, 198, 75, 0.95);
   background-color: rgba(251, 198, 75, 0.1);
   padding: 0.3rem 0.7rem;
-  border-radius: 6px;
+  border-radius: 8px;
   margin: 0;
 }
 
@@ -251,7 +251,7 @@
   gap: 0.25rem;
   background-color: rgba(251, 198, 75, 0.1);
   padding: 0.2rem 0.55rem;
-  border-radius: 4px;
+  border-radius: 8px;
   white-space: nowrap;
 }
 
@@ -264,7 +264,7 @@
 .oddsBtn {
   background-color: var(--overlay-gray);
 
-  border-radius: 6px;
+  border-radius: 8px;
   padding: 0.7rem 0.85rem;
   cursor: pointer;
   display: flex;
@@ -366,7 +366,7 @@
   background: transparent;
 
   color: rgba(255, 255, 255, 0.6);
-  border-radius: 4px;
+  border-radius: 8px;
   width: 24px;
   height: 24px;
   display: none;
@@ -396,7 +396,7 @@
 
 .slipItem {
   background-color: #1a1a1e;
-  border-radius: 6px;
+  border-radius: 8px;
   padding: 0.65rem;
   display: flex;
   align-items: flex-start;
@@ -473,7 +473,7 @@
   width: 100%;
   background-color: #1a1a1e;
 
-  border-radius: 6px;
+  border-radius: 8px;
   color: var(--primary-bg);
   font-family: inherit;
   font-size: 1rem;
@@ -497,7 +497,7 @@
 
   color: rgba(255, 255, 255, 0.7);
   padding: 0.4rem;
-  border-radius: 6px;
+  border-radius: 8px;
   font-family: inherit;
   font-size: 0.75rem;
   cursor: pointer;
@@ -535,7 +535,7 @@
   background-color: rgba(237, 28, 36, 0.1);
   color: #ef9a9a;
   padding: 0.5rem 0.75rem;
-  border-radius: 6px;
+  border-radius: 8px;
   font-size: 0.78rem;
   margin: 0;
 }
@@ -556,7 +556,7 @@
 }
 
 .primaryBtn {
-  border-radius: 6px;
+  border-radius: 8px;
   padding: 0.65rem 1rem;
   font-family: inherit;
   font-size: 0.9rem;
@@ -573,7 +573,7 @@
   background: transparent;
   color: var(--primary-bg);
 
-  border-radius: 6px;
+  border-radius: 8px;
   padding: 0.6rem 1rem;
   font-family: inherit;
   font-size: 0.9rem;

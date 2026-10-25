@@ -27,6 +27,7 @@ import { formatDate } from '@/lib/datetime';
 import { useAutoRefresh } from '@/lib/useLiveData';
 import { roleWord, whatLine } from '@/components/invitations/inviteWords';
 import styles from '../invitations.module.css';
+import BackLink from '@/components/back-link/BackLink';
 
 const API = process.env.NEXT_PUBLIC_API_URL;
 
@@ -106,6 +107,7 @@ export default function InvitationPage() {
       <main className={styles.mainContainer}>
         <Sidebar />
         <div className={styles.rightPaneContainer}>
+          <BackLink href="/invitations">{tt('back.toInvitations', 'Back to invitations')}</BackLink>
           {state === 'loading' && <div className={styles.skeletonCard} aria-busy="true" />}
 
           {state === 'missing' && (

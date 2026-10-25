@@ -137,7 +137,7 @@
   font-size: 0.85rem;
   transition: border 0.5s ease-in-out;
 
-  border-radius: 5px;
+  border-radius: 8px;
   width: 110px;
   text-align: center;
 }
@@ -169,7 +169,7 @@
   flex: 1 1 0;
   min-width: 0;
   padding: 0.25rem 0.15rem;
-  border-radius: 5px;
+  border-radius: 8px;
   transition: background-color 120ms ease-in-out;
 }
 
@@ -185,7 +185,7 @@
   height: 100%;
   width: 100%;
   min-width: 0;
-  border-radius: 5px;
+  border-radius: 8px;
   /* The label sits under the icon and is the part that has to give. It stays
      on one line and is centred; the size below is what makes "Tournaments"
      fit a 68px column without being cut. */
@@ -258,7 +258,7 @@
   font-size: 0.6rem;
   background-color: rgba(251, 198, 75, 0.24);
   padding: 3px 5px;
-  border-radius: 3px;
+  border-radius: 8px;
   display: flex;
   flex-direction: column;
   width: 50px;

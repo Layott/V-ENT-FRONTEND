@@ -36,6 +36,7 @@ import { useT } from '@/i18n/LanguageProvider';
 import LegacyIdRoute from '@/components/legacy-id-route/LegacyIdRoute';
 import BackLink from '@/components/back-link/BackLink';
 import { authHeader } from '@/lib/authHeader';
+import TournamentOptions from '@/components/create-tournament-component/format-participants/tournament-options/TournamentOptions';
 
 const API = process.env.NEXT_PUBLIC_API_URL;
 
@@ -100,6 +101,12 @@ export const EditTournamentContent = ({ slug: slugFromPath }) => {
   const [tournamentId, setTournamentId] = useState(null);
   const [original, setOriginal] = useState(null);
   const [form, setForm] = useState(null);
+  // The 22 organiser settings (auto-confirm, check-in, no-shows ...), editable
+  // once the tournament is live too (inbox 549, CEO 25 October 2026: "i thought
+  // we had done already"). The endpoint merges them onto what is stored, so a
+  // change to one never wipes the others.
+  const [options, setOptions] = useState(null);
+  const [originalOptions, setOriginalOptions] = useState(null);
   const [formats, setFormats] = useState([]);
   // The organisations this person may run a tournament in the name of. The
   // same short list both wizards and the event console fill their picker from,
@@ -207,6 +214,8 @@ export const EditTournamentContent = ({ slug: slugFromPath }) => {
       };
       setOriginal(shaped);
       setForm(shaped);
+      setOriginalOptions(t.options || {});
+      setOptions(t.options || {});
     } catch (err) {
       console.error('Load tournament error:', err);
       setError(tt('api.networkError', 'Could not reach the server.'));
@@ -227,7 +236,11 @@ export const EditTournamentContent = ({ slug: slugFromPath }) => {
     return Object.keys(form).filter((k) => form[k] !== original[k]);
   }, [form, original]);
 
-  const dirty = changed.length > 0 || !!logo || !!banner || !!rulesDoc;
+  const optionsChanged = useMemo(
+    () => !!options && JSON.stringify(options) !== JSON.stringify(originalOptions || {}),
+    [options, originalOptions]);
+
+  const dirty = changed.length > 0 || optionsChanged || !!logo || !!banner || !!rulesDoc;
 
   const save = async () => {
     if (saving || !tournamentId) return;
@@ -242,6 +255,7 @@ export const EditTournamentContent = ({ slug: slugFromPath }) => {
       if (hasFiles) {
         const fd = new FormData();
         changed.forEach((k) => fd.append(k, form[k] === null ? '' : String(form[k])));
+        if (optionsChanged) fd.append('options', JSON.stringify(options));
         if (logo) fd.append('tournament_logo', logo);
         if (banner) fd.append('tournament_banner', banner);
         if (rulesDoc) fd.append('rules_document', rulesDoc);
@@ -249,6 +263,7 @@ export const EditTournamentContent = ({ slug: slugFromPath }) => {
       } else {
         const payload = {};
         changed.forEach((k) => { payload[k] = form[k]; });
+        if (optionsChanged) payload.options = options;
         init = {
           method: 'PUT',
           headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
@@ -596,6 +611,9 @@ export const EditTournamentContent = ({ slug: slugFromPath }) => {
                 )}
               </div>
 
+              <TournamentOptions formData={{ options: options || {} }} live
+                                 updateFormData={(key, value) => { if (key === 'options') setOptions(value); }} />
+
               <p className={styles.sectionHead}>{tt('tEdit.secLinks', 'Where people can follow it')}</p>
               <div className={styles.socialGrid}>
                 {SOCIALS.map(([key, label]) => (
@@ -616,7 +634,7 @@ export const EditTournamentContent = ({ slug: slugFromPath }) => {
                   {saving ? tt('ui.saving', 'Saving...') : tt('ui.save', 'Save')}
                 </button>
                 {dirty && <span className={styles.hint}>
-                  {plural(tt, changed.length + (logo ? 1 : 0) + (banner ? 1 : 0) + (rulesDoc ? 1 : 0),
+                  {plural(tt, changed.length + (optionsChanged ? 1 : 0) + (logo ? 1 : 0) + (banner ? 1 : 0) + (rulesDoc ? 1 : 0),
                     'tEdit.pendingOne', '{n} change not saved yet',
                     'tEdit.pending', '{n} changes not saved yet')}
                 </span>}

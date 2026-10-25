@@ -4,6 +4,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { useT } from '@/i18n/LanguageProvider';
 import styles from './docs.module.css';
+import BackLink from '@/components/back-link/BackLink';
 
 // The reference an outside developer reads before writing a line against V-ENT.
 //
@@ -49,6 +50,7 @@ export default function DocsClient({ index, sso }) {
 
   return (
     <main className={styles.page}>
+      <BackLink href="/partners">{t('back.toPartners', 'Back to partners')}</BackLink>
       <header className={styles.hero}>
         <p className={styles.kicker}>{t('docs.kicker', 'V-ENT for developers')}</p>
         <h1 className={styles.title}>{t('docs.title', 'Build on V-ENT')}</h1>

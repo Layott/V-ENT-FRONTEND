@@ -32,7 +32,7 @@
 
 .input {
   background-color: rgba(255, 255, 255, 0.08);
-  border-radius: 9px;
+  border-radius: 10px;
   color: #fff;
   font-family: 'ClashGrotesk-Variable', sans-serif;
   font-size: 0.9rem;
@@ -47,7 +47,7 @@
 .ghost,
 .assign,
 .iconBtn {
-  border-radius: 9px;
+  border-radius: 10px;
   cursor: pointer;
   font-family: 'ClashGrotesk-Variable', sans-serif;
   font-size: 0.83rem;
@@ -113,7 +113,7 @@
   align-items: center;
   gap: 0.45rem;
   background-color: rgba(212, 175, 55, 0.14);
-  border-radius: 7px;
+  border-radius: 8px;
   color: var(--v-ent-light-gold, #E8C760);
   font-family: 'ClashGrotesk-Variable', sans-serif;
   font-size: 0.76rem;
@@ -125,7 +125,7 @@
 
 .count {
   background-color: rgba(0, 0, 0, 0.25);
-  border-radius: 5px;
+  border-radius: 8px;
   font-size: 0.7rem;
   padding: 0 0.32rem;
 }
@@ -157,7 +157,7 @@
   height: 26px;
   flex-shrink: 0;
   background-color: rgba(255, 255, 255, 0.1);
-  border-radius: 7px;
+  border-radius: 8px;
   color: rgba(255, 255, 255, 0.75);
   font-size: 0.76rem;
 }

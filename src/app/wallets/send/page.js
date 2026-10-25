@@ -19,6 +19,7 @@ import { useT } from '@/i18n/LanguageProvider';
 import { useTx } from '@/i18n/LanguageProvider';
 import UserChip from '@/components/user-chip/UserChip';
 import { plural } from '@/lib/plural';
+import BackLink from '@/components/back-link/BackLink';
 
 const STEPS = [{
   n: 1,
@@ -392,6 +393,7 @@ const SendPage = () => {
         <Sidebar />
 
         <div className={styles.rightPaneContainer}>
+          <BackLink href="/wallets">{tt('back.toWallets', 'Back to wallets')}</BackLink>
           <div className={styles.pageHeader}>
             <div className={styles.pageHeaderLeft}>
               <h1 className={styles.pageTitle}>{tt("ui.send.vent.coins.6a21", "Send VENT COINS")}</h1>

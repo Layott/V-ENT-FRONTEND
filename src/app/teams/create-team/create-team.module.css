@@ -105,7 +105,7 @@
   justify-content: center;
   font-size: 1.5rem;
   color: var(--primary-bg);
-  border-radius: 9px;
+  border-radius: 10px;
 }
 
 .uploadCaption {
@@ -165,7 +165,7 @@
 .textarea {
   background-color: #1a1a1d;
 
-  border-radius: 6px;
+  border-radius: 8px;
   padding: 0.6rem 0.85rem;
   color: var(--primary-bg);
   font-family: inherit;
@@ -308,7 +308,7 @@
   font-size: var(--fs-p-size-mobile);
   font-weight: var(--fw-semi-bold);
   padding: 0.6rem 1.4rem;
-  border-radius: 6px;
+  border-radius: 8px;
   cursor: pointer;
   transition: background-color 0.2s;
 }
@@ -320,7 +320,7 @@
   font-size: var(--fs-p-size-mobile);
   font-weight: var(--fw-semi-bold);
   padding: 0.65rem 1.6rem;
-  border-radius: 6px;
+  border-radius: 8px;
   cursor: pointer;
 }
 

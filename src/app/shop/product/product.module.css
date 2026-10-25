@@ -59,7 +59,7 @@
 .thumb {
   width: 64px;
   height: 64px;
-  border-radius: 6px;
+  border-radius: 8px;
   overflow: hidden;
   background-color: var(--overlay-gray);
 
@@ -142,7 +142,7 @@
   top: 0.85rem;
   left: 0.85rem;
   padding: 4px 10px;
-  border-radius: 4px;
+  border-radius: 8px;
   color: #fff;
   font-size: 0.7rem;
   font-weight: var(--fw-bold);
@@ -298,7 +298,7 @@
 .variantChip {
   min-width: 44px;
   padding: 0.5rem 0.85rem;
-  border-radius: 6px;
+  border-radius: 8px;
   background-color: #131316;
 
   color: var(--primary-bg);
@@ -332,7 +332,7 @@
   align-items: center;
   gap: 0.45rem;
   padding: 0.45rem 0.7rem;
-  border-radius: 6px;
+  border-radius: 8px;
   background-color: rgba(255, 255, 255, 0.04);
   color: var(--primary-bg);
   font-family: inherit;
@@ -370,7 +370,7 @@
   text-transform: capitalize;
   background-color: rgba(0, 0, 0, 0.45);
   padding: 1px 6px;
-  border-radius: 3px;
+  border-radius: 8px;
   font-size: 0.75rem;
 }
 
@@ -381,7 +381,7 @@
   gap: 0.4rem;
   background-color: #131316;
 
-  border-radius: 6px;
+  border-radius: 8px;
   padding: 0.3rem 0.45rem;
   width: fit-content;
 }
@@ -389,7 +389,7 @@
 .qtyBtn {
   width: 28px;
   height: 28px;
-  border-radius: 4px;
+  border-radius: 8px;
   background-color: rgba(255, 255, 255, 0.05);
 
   color: var(--primary-bg);
@@ -434,7 +434,7 @@
   flex: 1;
   min-width: 160px;
   padding: 0.7rem 1rem;
-  border-radius: 6px;
+  border-radius: 8px;
   font-family: inherit;
   font-size: 0.95rem;
   font-weight: var(--fw-semi-bold);
@@ -455,7 +455,7 @@
   flex: 1;
   min-width: 160px;
   padding: 0.7rem 1rem;
-  border-radius: 6px;
+  border-radius: 8px;
   background-color: transparent;
 
   color: var(--primary-bg);
@@ -479,7 +479,7 @@
 .iconAction {
   width: 44px;
   height: 44px;
-  border-radius: 6px;
+  border-radius: 8px;
   background-color: transparent;
 
   color: var(--primary-bg);
@@ -506,7 +506,7 @@
 .toast {
   margin-top: 0.4rem;
   padding: 0.55rem 0.85rem;
-  border-radius: 6px;
+  border-radius: 8px;
   background-color: rgba(212, 175, 55, 0.14);
 
   color: var(--v-ent-light-gold);
@@ -712,7 +712,7 @@
   top: 0.4rem;
   left: 0.4rem;
   padding: 2px 7px;
-  border-radius: 4px;
+  border-radius: 8px;
   background-color: var(--v-ent-red);
   color: #fff;
   font-size: 0.6rem;

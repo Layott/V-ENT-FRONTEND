@@ -22,6 +22,7 @@ import BottomMenu from '@/components/bottom-menu/BottomMenu';
 import { GamesJoinedNote } from '@/components/party-games/CheckoutGames';
 import styles from './confirmed.module.css';
 import { returnReference } from '@/lib/payReturn';
+import BackLink from '@/components/back-link/BackLink';
 
 const API = process.env.NEXT_PUBLIC_API_URL;
 
@@ -76,6 +77,7 @@ function Confirmed() {
       <MobileHeader />
 
       <main className={styles.main}>
+        <BackLink href="/events">{tt('back.toEvents', 'Back to events')}</BackLink>
         {state === 'working' && <>
           <h1 className={styles.title}>{tt('confirmed.checking', 'Checking the payment')}</h1>
           <p className={styles.sub}>

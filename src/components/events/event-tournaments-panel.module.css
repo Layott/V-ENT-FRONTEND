@@ -62,7 +62,7 @@
 .game {
   flex: 0 0 auto;
   background-color: #3d3e45;
-  border-radius: 7px;
+  border-radius: 8px;
   color: rgba(255, 255, 255, 0.8);
   font-size: 0.78rem;
   padding: 0.25rem 0.5rem;
