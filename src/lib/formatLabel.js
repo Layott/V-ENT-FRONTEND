@@ -101,6 +101,11 @@ export const formatKey = (value) => {
  * bad row is visible instead of silent.
  */
 export const formatLabel = (tt, value, empty = '-') => {
+  // A stage whose format is chosen later (P4c) is not in the catalogue, and its
+  // raw key "undecided" reached the overview and the format card (walk, 25 Oct).
+  if (String(value || '').trim().toLowerCase() === 'undecided') {
+    return tt('stages.undecidedName', 'Format to be decided');
+  }
   const key = formatKey(value);
   if (!key) return value ? String(value) : empty;
   return tt(`format.label.${key}`, FALLBACK[key]);

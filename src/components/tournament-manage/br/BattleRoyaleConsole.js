@@ -916,7 +916,11 @@ export default function BattleRoyaleConsole({ tournamentRef, token, gameTitle = 
                     {match.status === 'entered' && (
                       <p className={styles.matchMeta}>
                         {match.results.filter(r => r.played).slice(0, 3)
-                          .map(r => `${r.placement}. ${r.name} (${r.total})`).join('   ')}
+                          // A stage scored by time shows each time, not the
+                          // placement points it does not count (walk, 25 Oct).
+                          .map(r => `${r.placement}. ${r.name} (${current.settings?.score_by === 'time'
+                            ? (r.duration_ms != null ? formatDuration(r.duration_ms) : tt('br.dnf', 'DNF'))
+                            : r.total})`).join('   ')}
                         {match.mvp && ` · ${tt('br.mvpIs', 'MVP {name}').replace('{name}', match.mvp.username ? `@${match.mvp.username}` : match.mvp.name)}`}
                       </p>
                     )}
