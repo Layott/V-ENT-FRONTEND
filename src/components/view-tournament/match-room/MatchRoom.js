@@ -24,7 +24,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { IoClose } from 'react-icons/io5';
 import { useT } from '@/i18n/LanguageProvider';
 import { apiMessage } from '@/lib/apiMessage';
-import { formatWithZone, isoToLocalInput, localInputToISO } from '@/lib/datetime';
+import { formatDateTime, formatWithZone, isoToLocalInput, localInputToISO } from '@/lib/datetime';
 import DateField from '@/components/date-field/DateField';
 import { roomText, statusWord } from './matchWords';
 import styles from './match-room.module.css';
@@ -70,6 +70,11 @@ export default function MatchRoom({ matchId, tournamentRef, token, canRecord = f
   const [roomCode, setRoomCode] = useState('');
   const [roomPassword, setRoomPassword] = useState('');
   const [when, setWhen] = useState('');
+  const [station, setStation] = useState('');
+  const [wave, setWave] = useState('');
+  // A save that would clash with another match waits here: the clashes the
+  // server named, and the same request again with allow_clash set.
+  const [clash, setClash] = useState(null);
   // A two-leg tie is entered leg by leg; the totals are what they add up to.
   const [legs, setLegs] = useState([['', ''], ['', '']]);
   const [disputing, setDisputing] = useState(false);
@@ -94,6 +99,8 @@ export default function MatchRoom({ matchId, tournamentRef, token, canRecord = f
         if (!quiet) setRoomCode(got.body.data.room_code || '');
         if (!quiet) setRoomPassword(got.body.data.room_password || '');
         if (!quiet) setWhen(got.body.data.scheduled_at ? isoToLocalInput(got.body.data.scheduled_at) : '');
+        if (!quiet) setStation(got.body.data.station || '');
+        if (!quiet) setWave(got.body.data.wave || '');
       } else {
         if (!quiet) setProblem(apiMessage(tt, got.body, 'match.loadFailed', 'This match could not be opened.'));
       }
@@ -145,10 +152,13 @@ export default function MatchRoom({ matchId, tournamentRef, token, canRecord = f
   const hostSlot = match?.room_host === 'p2' ? 2 : match?.room_host === 'p1' ? 1 : null;
   const iHost = slot && hostSlot === slot;
 
-  const run = async (fn, okText) => {
+  // `onClash` is given by the saves that can clash with another match; it
+  // repeats the same save with allow_clash set, for "Keep it anyway".
+  const run = async (fn, okText, onClash) => {
     setBusy(true);
     setProblem('');
     setNote('');
+    setClash(null);
     try {
       const got = await fn();
       if (got.ok) {
@@ -156,6 +166,10 @@ export default function MatchRoom({ matchId, tournamentRef, token, canRecord = f
         await load();
         if (onChanged) onChanged();
         return true;
+      }
+      if (onClash && got.status === 409 && got.body?.code === 'MATCH_CLASH') {
+        setClash({ clashes: got.body.data?.clashes || [], retry: onClash });
+        return false;
       }
       setProblem(apiMessage(tt, got.body, 'match.actionFailed', 'That did not go through.'));
       return false;
@@ -198,11 +212,30 @@ export default function MatchRoom({ matchId, tournamentRef, token, canRecord = f
 
   // Staff move one match. The time typed is the organiser's own clock, so it
   // becomes an instant here, where the zone is known.
-  const moveMatch = () => run(
+  const moveMatch = (allow = false) => run(
     () => call(`/tournament/match/${matchId}/time/`, {
-      method: 'POST', token, body: { scheduled_at: localInputToISO(when) },
+      method: 'POST', token, body: { scheduled_at: localInputToISO(when), allow_clash: allow },
     }),
-    tt('match.moved', 'Match moved. Both sides have been told.'));
+    tt('match.moved', 'Match moved. Both sides have been told.'),
+    () => moveMatch(true));
+
+  // Staff set the station and the wave. An empty box clears it.
+  const placeMatch = (allow = false) => run(
+    () => call(`/tournament/match/${matchId}/place/`, {
+      method: 'POST', token, body: { station: station.trim(), wave: wave.trim(), allow_clash: allow },
+    }),
+    tt('match.placed', 'Station and wave saved.'),
+    () => placeMatch(true));
+
+  const clashLine = c => {
+    const when = formatDateTime(c.scheduled_at);
+    const tournament = c.tournament?.title || '';
+    return c.kind === 'person'
+      ? tt('match.clashPerson', '{person} is due at another match in {tournament} at {time}')
+        .replace('{person}', () => c.person).replace('{tournament}', () => tournament).replace('{time}', () => when)
+      : tt('match.clashStation', '{station} already has a match in {tournament} at {time}')
+        .replace('{station}', () => c.station).replace('{tournament}', () => tournament).replace('{time}', () => when);
+  };
   const staff = Boolean(canRecord || match?.can_record);
 
   const report = () => {
@@ -381,6 +414,12 @@ export default function MatchRoom({ matchId, tournamentRef, token, canRecord = f
               <div><dt>{tt('match.startsLabel', 'Starts')}</dt>
                 <dd>{formatWithZone(match.scheduled_at)}</dd></div>
             )}
+            {match.station && (
+              <div><dt>{tt('match.stationLabel', 'Station')}</dt><dd>{match.station}</dd></div>
+            )}
+            {match.wave && (
+              <div><dt>{tt('match.waveLabel', 'Wave')}</dt><dd>{match.wave}</dd></div>
+            )}
             {match.forfeit_reason === 'no_show' && (
               <div><dt>{tt('match.forfeit', 'Forfeit')}</dt>
                 <dd>{noShowSide
@@ -401,6 +440,27 @@ export default function MatchRoom({ matchId, tournamentRef, token, canRecord = f
 
           {note && <p className={styles.ok} role="status">{note}</p>}
           {problem && <p className={styles.problem} role="alert">{problem}</p>}
+
+          {clash && (
+            <section className={styles.block} role="alert">
+              <p className={styles.blockTitle}>{tt('match.clashTitle', 'This clashes with another match')}</p>
+              <ul className={styles.previewList}>
+                {clash.clashes.map((c, i) => (
+                  <li key={i} className={styles.previewRow}>{clashLine(c)}</li>
+                ))}
+              </ul>
+              <div className={styles.row}>
+                <button type="button" className={styles.primary} disabled={busy}
+                        onClick={() => clash.retry()}>
+                  {tt('match.clashKeep', 'Keep it anyway')}
+                </button>
+                <button type="button" className={styles.quiet} disabled={busy}
+                        onClick={() => setClash(null)}>
+                  {tt('match.clashDismiss', 'Dismiss')}
+                </button>
+              </div>
+            </section>
+          )}
 
           {/* ---------------------------------------------------- check-in */}
           {open && bothKnown && match.check_in?.deadline && (
@@ -485,8 +545,27 @@ export default function MatchRoom({ matchId, tournamentRef, token, canRecord = f
                              className={styles.input} ariaLabel={tt('match.startsLabel', 'Starts')} />
                 </label>
                 <button type="button" className={styles.quiet}
-                        disabled={busy || !when} onClick={moveMatch}>
+                        disabled={busy || !when} onClick={() => moveMatch()}>
                   {tt('match.move', 'Move the match')}
+                </button>
+              </div>
+              <p className={styles.muted}>
+                {tt('match.placeHelp', 'Which station and which wave this match is played on. Both sides see it.')}
+              </p>
+              <div className={styles.row}>
+                <label className={styles.field}>
+                  <span className={styles.label}>{tt('match.stationLabel', 'Station')}</span>
+                  <input className={styles.input} value={station} maxLength={40}
+                         onChange={e => setStation(e.target.value)} disabled={busy} />
+                </label>
+                <label className={styles.field}>
+                  <span className={styles.label}>{tt('match.waveLabel', 'Wave')}</span>
+                  <input className={styles.input} value={wave} maxLength={40}
+                         onChange={e => setWave(e.target.value)} disabled={busy} />
+                </label>
+                <button type="button" className={styles.quiet} disabled={busy}
+                        onClick={() => placeMatch()}>
+                  {tt('match.placeSave', 'Save station and wave')}
                 </button>
               </div>
             </section>

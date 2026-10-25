@@ -111,6 +111,11 @@ const Fixture = ({ match, tt, onOpen, mine, format }) => {
             `${formatDayShort(match.scheduled_at)}, ${formatTime(match.scheduled_at)}`)}
         </span>
       )}
+      {(match.station || match.wave) && (
+        <span className={styles.fixtureNote}>
+          {[match.station, match.wave].filter(Boolean).join(', ')}
+        </span>
+      )}
       {(match.status === 'bye' || match.forfeit_reason || (decided && !winner)
         || match.status === 'disputed' || match.status === 'pending_opponent_confirm') && (
         <span className={styles.fixtureNote}>

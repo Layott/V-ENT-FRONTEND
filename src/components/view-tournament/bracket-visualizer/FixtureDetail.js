@@ -179,6 +179,13 @@ export default function FixtureDetail({ match, onClose, format }) {
             {tt('fixture.startsAt', 'Starts {time}.').replace('{time}', formatWithZone(match.scheduled_at))}
           </p>
         )}
+        {/* Where, beside when: the grid opens this and not the match room, so
+            a player reading the grid needs the station here too (walk, 25 Oct). */}
+        {!done && (match?.station || match?.wave) && (
+          <p className={styles.state}>
+            {[match.station, match.wave].filter(Boolean).join(', ')}
+          </p>
+        )}
       </div>
     </div>
   );
