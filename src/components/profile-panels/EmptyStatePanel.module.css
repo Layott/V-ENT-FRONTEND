@@ -52,7 +52,7 @@
 
 .welcomeBtn {
   padding: 0.5rem 1rem;
-  border-radius: 5px;
+  border-radius: 8px;
   background-color: var(--v-ent-red);
 
   color: #fff;
@@ -178,7 +178,7 @@
 
 .stateBtn {
   padding: 0.55rem 1.1rem;
-  border-radius: 5px;
+  border-radius: 8px;
   border: none;
   font-family: "Fraunces", sans-serif;
   font-size: 0.82rem;

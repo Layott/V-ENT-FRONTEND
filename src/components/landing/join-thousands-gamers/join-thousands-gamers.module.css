@@ -90,7 +90,7 @@
   background-color: #303136;
   font-size: 0.8rem;
   width: 100%;
-  border-radius: 5px;
+  border-radius: 8px;
   transition: border ease-in-out 0.5s;
 }
 
@@ -106,7 +106,7 @@
 }
 
 .joinThousandsGamersInputContainer button {
-  border-radius: 5px;
+  border-radius: 8px;
 }
 
 @media only screen and (min-width: 500px) {
@@ -171,5 +171,62 @@
   }
   .inputGroup input::placeholder {
     font-size: 0.95rem;
+  }
+}
+/* The way in, in place of the waitlist form (inbox 547). */
+.joinActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.joinActions a {
+  display: inline-flex;
+  align-items: center;
+  padding: 0 18px;
+  min-height: 44px;
+}
+
+.quietBtn {
+  background-color: #303136;
+  color: var(--white);
+}
+
+/* One centred column: heading, one plain sentence, the way in. The split
+   row above was laid out for the waitlist form, and left the sentence at
+   1.65rem beside two buttons (look walk, 25 October 2026). */
+.joinThousandsGamersContent {
+  gap: 1.25rem;
+  padding: 4rem 1.5rem;
+}
+.joinThousandsGamersTop h2 {
+  text-align: center;
+  font-size: 1.75rem;
+  line-height: 1.15;
+}
+.joinThousandsGamersBottom {
+  flex-direction: column;
+  gap: 1.25rem;
+}
+.joinThousandsGamersTextContainer {
+  width: 100%;
+  justify-content: center;
+}
+.joinThousandsGamersTextContainer p {
+  width: auto;
+  max-width: 46ch;
+  margin: 0;
+  font-family: inherit;
+  font-size: 1.05rem;
+  line-height: 1.5;
+  text-align: center;
+  color: rgba(255, 255, 255, 0.85);
+}
+.joinActions {
+  justify-content: center;
+}
+@media only screen and (min-width: 1024px) {
+  .joinThousandsGamersTop h2 {
+    font-size: 2.25rem;
   }
 }

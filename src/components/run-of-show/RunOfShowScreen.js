@@ -22,10 +22,14 @@ import { useT } from '@/i18n/LanguageProvider';
 import { useViewer } from '@/lib/gating';
 import RunOfShow, { RunOfShowLoader } from './RunOfShow';
 import styles from './run-of-show-screen.module.css';
+import BackLink from '@/components/back-link/BackLink';
 
 export default function RunOfShowScreen({ sheet, kind, ownerRef, token, sharePath }) {
   const tt = useT();
   const viewer = useViewer();
+
+  const backHref = kind === 'event' ? `/events/${encodeURIComponent(ownerRef)}` : kind === 'tournament' ? `/tournaments/${encodeURIComponent(ownerRef)}` : '/';
+  const backWords = kind === 'event' ? tt('back.toEvent', 'Back to event') : kind === 'tournament' ? tt('back.toTournament', 'Back to tournament') : tt('back.toHome', 'Back to home');
 
   return (
     <div className={styles.page}>
@@ -36,6 +40,7 @@ export default function RunOfShowScreen({ sheet, kind, ownerRef, token, sharePat
         <Sidebar />
 
         <div className={styles.pane}>
+          <BackLink href={backHref}>{backWords}</BackLink>
           {sheet ? (
             <>
               <RunOfShow sheet={sheet} />

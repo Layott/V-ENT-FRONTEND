@@ -75,7 +75,7 @@
 
 .badge {
   padding: 2px 7px;
-  border-radius: 6px;
+  border-radius: 8px;
   font-size: 0.7rem;
   font-weight: var(--fw-semi-bold);
   background: rgba(255, 255, 255, 0.07);

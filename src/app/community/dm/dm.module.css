@@ -110,7 +110,7 @@
   align-items: center;
   justify-content: center;
   font-family: inherit;
-  border-radius: 6px;
+  border-radius: 8px;
   transition: background 0.2s, color 0.2s;
 }
 
@@ -282,7 +282,7 @@
 .dmError {
   margin: 0 1rem 0.5rem;
   padding: 0.45rem 0.75rem;
-  border-radius: 6px;
+  border-radius: 8px;
   font-size: 0.8rem;
   color: #ef9a9a;
   background-color: rgba(237, 28, 36, 0.12);

@@ -411,7 +411,7 @@
 
 .plateBox {
   background: var(--row);
-  border-radius: 4px;
+  border-radius: 8px;
   padding: 44px 76px;
   text-align: center;
 }

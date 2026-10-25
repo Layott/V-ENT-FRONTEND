@@ -18,6 +18,7 @@ import useGames from '@/hooks/useGames';
 import { useT } from '@/i18n/LanguageProvider';
 import { useTx } from '@/i18n/LanguageProvider';
 import { COUNTRIES } from '@/constants/countries';
+import BackLink from '@/components/back-link/BackLink';
 // The one country list, alphabetical (inbox 443). This page had its own seven,
 // in no order, so a team from anywhere else could not say where it was from.
 const REGIONS = COUNTRIES;
@@ -127,6 +128,7 @@ const CreateTeam = () => {
         <Sidebar />
 
         <div className={styles.rightPaneContainer}>
+          <BackLink href="/teams">{tt('back.toTeams', 'Back to teams')}</BackLink>
           <div className={styles.headerRow}>
             <div>
               <h1 className={styles.pageTitle}>{tt("ui.create.new.team.f67f", "Create a new team")}</h1>

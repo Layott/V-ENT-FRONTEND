@@ -10,17 +10,18 @@ import topLeftImage from '@/images/top_left.jpeg';
 import topRightImage from '@/images/top_right.jpg';
 import bottomRightImage from '@/images/bottom_right.jpg';
 import bottomLeftImage from '@/images/bottom_left.jpg';
-import tunnelPattern from '@/images/tunnel_pattern.svg';
 import landingStyles from '@/styles/landing/landing.module.css';
 import profileStyles from '@/styles/profile/profile-page.module.css';
 import styles from './landing-hero.module.css';
 import MessageSnackbar from '@/components/Snackbar/MessageSnackbar';
 import CircularProgress from '@mui/material/CircularProgress';
 import { useT } from '@/i18n/LanguageProvider';
+import { useViewer } from '@/lib/gating';
 const LandingHero = ({
   formRef
 }) => {
   const tt = useT();
+  const viewer = useViewer();
   const [email, setEmail] = useState('');
   const [open, setOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState('');
@@ -60,7 +61,7 @@ const LandingHero = ({
     setOpen(false);
   };
   return <div className={styles.landingHeroContainer}>
-      <Image src={tunnelPattern} alt="" aria-hidden="true" />
+      {/* The perspective grid behind the hero is gone: a graph-paper background is one of the generated-site tells (apple-design review, inbox 547). */}
 
       <div className={styles.innerLandingHeroContainer}>
         <header className={styles.headerContainer}>
@@ -83,13 +84,25 @@ const LandingHero = ({
               {tt("landing.browse", "Browse tournaments")}
             </Link>
 
-            <Link href="/login" className={`${profileStyles.waitlistBTN} ${styles.signupBTN}`}>
-              {tt("ui.login.4e5a", "Login")}
-            </Link>
+            {/* Somebody already signed in was offered Login and Signup here
+                (apple-design walk, 25 October 2026). Nothing is decided while
+                the session is still being asked for. */}
+            {viewer.signedIn && (
+              <Link href="/home" className={`${profileStyles.waitlistBTN} ${styles.loginBTN}`}>
+                {tt("landing.openApp", "Go to my V-ENT")}
+              </Link>
+            )}
+            {!viewer.loading && !viewer.signedIn && (
+              <>
+                <Link href="/login" className={`${profileStyles.waitlistBTN} ${styles.signupBTN}`}>
+                  {tt("ui.login.4e5a", "Login")}
+                </Link>
 
-            <Link href="/signup" className={`${profileStyles.waitlistBTN} ${styles.loginBTN}`}>
-              {tt("ui.signup.894b", "Signup")}
-            </Link>
+                <Link href="/signup" className={`${profileStyles.waitlistBTN} ${styles.loginBTN}`}>
+                  {tt("ui.signup.894b", "Signup")}
+                </Link>
+              </>
+            )}
           </div>
         </header>
 

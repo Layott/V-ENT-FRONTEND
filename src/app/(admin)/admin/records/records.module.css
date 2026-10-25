@@ -132,7 +132,7 @@
 
 .tag {
   padding: 2px 7px;
-  border-radius: 6px;
+  border-radius: 8px;
   font-size: 0.68rem;
   font-weight: var(--fw-semi-bold);
   white-space: nowrap;

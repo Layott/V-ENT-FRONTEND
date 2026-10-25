@@ -312,7 +312,7 @@
   display: inline-block;
   font-size: 0.7rem;
   font-weight: 600;
-  border-radius: 6px;
+  border-radius: 8px;
   padding: 2px 7px;
 }
 
@@ -360,7 +360,7 @@
 .meter {
   width: 120px;
   height: 6px;
-  border-radius: 3px;
+  border-radius: 8px;
   background: #33343a;
   overflow: hidden;
 }
@@ -369,7 +369,7 @@
   display: block;
   height: 100%;
   background: var(--v-ent-gold);
-  border-radius: 3px;
+  border-radius: 8px;
 }
 
 .actions {

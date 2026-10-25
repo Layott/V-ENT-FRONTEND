@@ -83,7 +83,7 @@
   justify-content: center;
   font-size: 1.2rem;
   color: var(--primary-bg);
-  border-radius: 7px;
+  border-radius: 8px;
 }
 
 .uploadCaption {
@@ -115,7 +115,7 @@
 .textarea {
   background-color: #1a1a1d;
 
-  border-radius: 6px;
+  border-radius: 8px;
   padding: 0.6rem 0.85rem;
   color: var(--primary-bg);
   font-family: inherit;
@@ -259,7 +259,7 @@
   font-size: var(--fs-p-size-mobile);
   font-weight: var(--fw-semi-bold);
   padding: 0.6rem 1.5rem;
-  border-radius: 6px;
+  border-radius: 8px;
   cursor: pointer;
 }
 

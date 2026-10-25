@@ -23,6 +23,7 @@ import { useTx } from '@/i18n/LanguageProvider';
 import { sameUser, usernameOf } from '@/lib/gating';
 import SharedWallet from '@/components/shared-wallet/SharedWallet';
 import { linkTo, shareLink } from '@/lib/share';
+import BackLink from '@/components/back-link/BackLink';
 const ALL_TABS = [{
   id: 'overview',
   label: 'Overview'
@@ -190,6 +191,7 @@ export const TeamProfileContent = ({
         <Sidebar />
 
         <div className={styles.rightPaneContainer}>
+          <BackLink href="/teams">{tt('back.toTeams', 'Back to teams')}</BackLink>
           {loading && <p className={styles.stateText}>{tt("ui.loading.team.b4a7", "Loading team…")}</p>}
           {!loading && error && <p className={styles.errorText}>{error}</p>}
 

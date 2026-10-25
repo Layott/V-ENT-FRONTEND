@@ -125,7 +125,7 @@ a.acctRow {
 .acctLogo {
   width: 34px;
   height: 34px;
-  border-radius: 6px;
+  border-radius: 8px;
   background-color: var(--overlay-gray);
   display: flex;
   align-items: center;

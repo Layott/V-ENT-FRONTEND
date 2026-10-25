@@ -78,7 +78,7 @@ const OverviewPanel = ({
           {interests.length === 0 ? <p style={{
           color: 'rgba(255,255,255,0.45)',
           fontSize: '0.82rem',
-          fontFamily: 'Inter'
+          fontFamily: 'ClashGrotesk-Variable, sans-serif'
         }}>
               {tt("ui.no.interests.added.yet.2b2d", "No interests added yet.")}
             </p> : <div className={styles.chipRow}>
@@ -96,7 +96,7 @@ const OverviewPanel = ({
           {gamingAccounts.length === 0 ? <p style={{
           color: 'rgba(255,255,255,0.45)',
           fontSize: '0.82rem',
-          fontFamily: 'Inter'
+          fontFamily: 'ClashGrotesk-Variable, sans-serif'
         }}>
               {tt("ui.no.gaming.accounts.linked.0ee8", "No gaming accounts linked.")}
             </p> : <div className={styles.acctList}>
@@ -132,7 +132,7 @@ const OverviewPanel = ({
           {socialLinks.length === 0 ? <p style={{
           color: 'rgba(255,255,255,0.45)',
           fontSize: '0.82rem',
-          fontFamily: 'Inter'
+          fontFamily: 'ClashGrotesk-Variable, sans-serif'
         }}>
               {tt("ui.no.social.links.added.0edb", "No social links added.")}
             </p> : <div className={styles.socialGrid}>
@@ -263,7 +263,7 @@ const OverviewPanel = ({
           {achievements.length === 0 ? <p style={{
           color: 'rgba(255,255,255,0.45)',
           fontSize: '0.82rem',
-          fontFamily: 'Inter',
+          fontFamily: 'ClashGrotesk-Variable, sans-serif',
           textAlign: 'center',
           padding: '1.5rem 0'
         }}>

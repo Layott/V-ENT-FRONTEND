@@ -115,7 +115,7 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  border-radius: 9px;
+  border-radius: 10px;
   cursor: pointer;
   font-family: 'ClashGrotesk-Variable', sans-serif;
   font-size: 0.82rem;
@@ -153,7 +153,7 @@
   flex: 1 1 150px;
   min-width: 0;
   background-color: rgba(255, 255, 255, 0.08);
-  border-radius: 9px;
+  border-radius: 10px;
   padding: 12px;
   min-height: 44px;
   color: #fff;

@@ -20,6 +20,7 @@ import DateField from '@/components/date-field/DateField';
 import MembersPanel from './MembersPanel';
 import { API, request } from './circuitWords';
 import styles from './circuits.module.css';
+import BackLink from '@/components/back-link/BackLink';
 
 function useSaver(tt) {
   const [busy, setBusy] = useState(false);
@@ -410,6 +411,7 @@ export default function LeagueManage({ slug }) {
 
   return (
     <div className={styles.container}>
+      <BackLink href={`/circuits/leagues/${encodeURIComponent(slug)}`}>{tt('back.toLeague', 'Back to league')}</BackLink>
       <div className={styles.heroTop}>
         <div>
           <h1 className={styles.pageTitle}>{league.name}</h1>

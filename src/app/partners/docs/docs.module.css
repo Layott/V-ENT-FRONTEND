@@ -169,7 +169,7 @@
 
 .inlineCode {
   padding: 0.12rem 0.42rem;
-  border-radius: 6px;
+  border-radius: 8px;
   background: rgba(255, 255, 255, 0.08);
   font-family: ui-monospace, "Cascadia Mono", Menlo, Consolas, monospace;
   font-size: 0.82rem;

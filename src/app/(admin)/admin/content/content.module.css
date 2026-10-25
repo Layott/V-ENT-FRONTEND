@@ -36,7 +36,7 @@
 .tabCount {
   background-color: var(--v-ent-red);
   color: #fff;
-  border-radius: 6px;
+  border-radius: 8px;
   padding: 0.05rem 0.4rem;
   font-size: 0.72rem;
   font-weight: var(--fw-bold);

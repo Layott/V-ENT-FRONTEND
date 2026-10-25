@@ -14,7 +14,7 @@
 .avatarFallback {
   width: 36px;
   height: 36px;
-  border-radius: 6px;
+  border-radius: 8px;
   background-color: rgba(255, 255, 255, 0.1);
   display: flex;
   align-items: center;

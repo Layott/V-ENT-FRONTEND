@@ -24,7 +24,7 @@
 .btn {
   height: 38px;
   padding: 0 1.25rem;
-  border-radius: 6px;
+  border-radius: 8px;
   font-family: inherit;
   font-size: var(--fs-p-size-mobile);
   font-weight: var(--fw-semi-bold);
@@ -302,7 +302,7 @@
 .rosterInput {
   background-color: #28292d;
 
-  border-radius: 6px;
+  border-radius: 8px;
   color: var(--primary-bg);
   font-family: inherit;
   font-size: 0.78rem;
@@ -319,7 +319,7 @@
   height: 38px;
   background-color: transparent;
 
-  border-radius: 6px;
+  border-radius: 8px;
   color: var(--v-ent-red);
   cursor: pointer;
   font-family: inherit;
@@ -335,7 +335,7 @@
   margin-top: 0.4rem;
   background: transparent;
 
-  border-radius: 6px;
+  border-radius: 8px;
   color: rgba(255,255,255,0.65);
   font-family: inherit;
   font-size: 0.78rem;
@@ -460,7 +460,7 @@
   color: #f59e0b;
   font-size: 0.8rem;
   padding: 0.7rem 1rem;
-  border-radius: 6px;
+  border-radius: 8px;
   margin-bottom: 1rem;
 }
 

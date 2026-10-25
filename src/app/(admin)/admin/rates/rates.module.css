@@ -87,7 +87,7 @@
   color: rgba(255, 255, 255, 0.65);
   font-size: 0.72rem;
   padding: 2px 7px;
-  border-radius: 5px;
+  border-radius: 8px;
 }
 
 .rateBox {
@@ -101,7 +101,7 @@
   font-family: 'ClashGrotesk-Variable', sans-serif;
   font-size: 0.85rem;
   padding: 7px 10px;
-  border-radius: 7px;
+  border-radius: 8px;
 }
 
 .rateInput:focus {
@@ -140,7 +140,7 @@
   font-family: 'ClashGrotesk-Variable', sans-serif;
   font-size: 0.76rem;
   padding: 6px 12px;
-  border-radius: 7px;
+  border-radius: 8px;
   cursor: pointer;
   margin-left: auto;
 }

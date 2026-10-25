@@ -58,7 +58,7 @@
   align-items: center;
   justify-content: center;
   padding: 5px;
-  border-radius: 5px;
+  border-radius: 8px;
   transition: all ease-in-out 0.5s;
   background-color: #303136;
 
@@ -133,7 +133,7 @@
   padding: 5px 7px;
   border: none;
   outline: none;
-  border-radius: 5px;
+  border-radius: 8px;
   cursor: pointer;
   transition: all ease-in-out 0.5s;
   background-color: rgba(255, 255, 255, 0.04);
@@ -246,7 +246,7 @@
   align-items: center;
   justify-content: center;
   padding: 4px 4px;
-  border-radius: 4px;
+  border-radius: 8px;
   transition: all ease-in-out 0.5s;
 }
 
@@ -291,7 +291,7 @@
   padding: 5px 9px;
   font-size: 0.8rem;
   cursor: pointer;
-  border-radius: 6px;
+  border-radius: 8px;
   transition: all ease-in-out 0.5s;
   font-family: "ClashGrotesk-Medium", sans-serif;
   display: flex;
@@ -373,7 +373,7 @@
   flex-direction: row;
   align-items: center;
   background-color: #303136;
-  border-radius: 5px;
+  border-radius: 8px;
 }
 
 .rowCountSelector label {

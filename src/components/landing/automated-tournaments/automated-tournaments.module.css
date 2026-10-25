@@ -196,3 +196,31 @@
     min-height: 580px;
   }
 }
+/* Live tournaments in place of the two pictures (inbox 547). */
+.liveList {
+  display: grid;
+  gap: 12px;
+  width: 100%;
+  max-width: 520px;
+}
+
+.liveSkeleton {
+  height: 132px;
+  border-radius: 14px;
+  background-color: var(--overlay-gray);
+}
+
+.liveEmpty {
+  color: rgba(255, 255, 255, 0.7);
+  line-height: 1.5;
+}
+
+/* Side by side, the words stay level with the first card instead of sinking
+   to the bottom of a column the three live cards make tall. */
+@media only screen and (min-width: 850px) {
+  .leftAutomatedTournaments {
+    align-self: flex-start;
+    position: sticky;
+    top: 6rem;
+  }
+}

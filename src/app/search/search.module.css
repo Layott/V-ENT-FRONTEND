@@ -130,7 +130,7 @@
   background-color: var(--v-ent-red);
   color: var(--white);
 
-  border-radius: 6px;
+  border-radius: 8px;
   padding: 0.45rem 1rem;
   font-family: "ClashGrotesk-Variable", sans-serif;
   font-size: 0.8rem;
@@ -355,7 +355,7 @@
   font-family: "ClashGrotesk-Variable", sans-serif;
   font-size: 0.82rem;
   padding: 0.5rem 2rem 0.5rem 0.8rem;
-  border-radius: 6px;
+  border-radius: 8px;
   height: auto;
   cursor: pointer;
 }
@@ -383,7 +383,7 @@
   font-family: "ClashGrotesk-Variable", sans-serif;
   font-size: 0.82rem;
   padding: 0.55rem 0.8rem;
-  border-radius: 6px;
+  border-radius: 8px;
   outline: none;
   transition: background-color 0.2s;
 }
@@ -720,7 +720,7 @@
   font-family: "Fraunces", sans-serif;
   font-size: 0.6rem;
   padding: 3px 8px;
-  border-radius: 4px;
+  border-radius: 8px;
   letter-spacing: 0.05em;
 }
 
@@ -730,7 +730,7 @@
   font-family: "ClashGrotesk-Variable", sans-serif;
   font-size: 0.65rem;
   padding: 3px 9px;
-  border-radius: 4px;
+  border-radius: 8px;
   text-transform: capitalize;
   backdrop-filter: blur(4px);
 }
@@ -751,7 +751,7 @@
   font-family: "ClashGrotesk-Variable", sans-serif;
   font-size: 0.68rem;
   padding: 2px 8px;
-  border-radius: 4px;
+  border-radius: 8px;
   text-transform: uppercase;
   letter-spacing: 0.05em;
 }
@@ -884,7 +884,7 @@
   font-family: "Fraunces", sans-serif;
   font-size: 0.62rem;
   padding: 3px 8px;
-  border-radius: 4px;
+  border-radius: 8px;
   letter-spacing: 0.05em;
 }
 
@@ -986,7 +986,7 @@
   font-family: "ClashGrotesk-Variable", sans-serif;
   font-size: 0.7rem;
   padding: 2px 8px;
-  border-radius: 4px;
+  border-radius: 8px;
 }
 
 /* ─── LISTING / PRODUCT CARD ─── */
@@ -1027,7 +1027,7 @@
   font-family: "ClashGrotesk-Variable", sans-serif;
   font-size: 0.65rem;
   padding: 3px 8px;
-  border-radius: 4px;
+  border-radius: 8px;
   text-transform: capitalize;
   backdrop-filter: blur(4px);
 }
@@ -1041,7 +1041,7 @@
   font-family: "ClashGrotesk-Variable", sans-serif;
   font-size: 0.62rem;
   padding: 3px 8px;
-  border-radius: 4px;
+  border-radius: 8px;
   text-transform: capitalize;
   backdrop-filter: blur(4px);
 }
@@ -1055,7 +1055,7 @@
   font-family: "Fraunces", sans-serif;
   font-size: 0.6rem;
   padding: 3px 8px;
-  border-radius: 4px;
+  border-radius: 8px;
   letter-spacing: 0.05em;
 }
 
@@ -1178,7 +1178,7 @@
   font-family: "Fraunces", sans-serif;
   font-size: 0.62rem;
   padding: 3px 8px;
-  border-radius: 4px;
+  border-radius: 8px;
   text-transform: uppercase;
   letter-spacing: 0.05em;
 }
@@ -1288,7 +1288,7 @@
   font-family: "Fraunces", sans-serif;
   font-size: 0.62rem;
   padding: 2px 8px;
-  border-radius: 4px;
+  border-radius: 8px;
   text-transform: uppercase;
   letter-spacing: 0.05em;
 }
@@ -1329,7 +1329,7 @@
   font-family: "ClashGrotesk-Variable", sans-serif;
   font-size: 0.62rem;
   padding: 3px 8px;
-  border-radius: 4px;
+  border-radius: 8px;
   text-transform: uppercase;
   letter-spacing: 0.05em;
   backdrop-filter: blur(4px);
@@ -1404,7 +1404,7 @@
   font-family: "ClashGrotesk-Variable", sans-serif;
   font-size: 0.7rem;
   padding: 2px 8px;
-  border-radius: 4px;
+  border-radius: 8px;
 }
 
 .amvFeatured {
@@ -1416,7 +1416,7 @@
   font-family: "Fraunces", sans-serif;
   font-size: 0.6rem;
   padding: 3px 8px;
-  border-radius: 4px;
+  border-radius: 8px;
   letter-spacing: 0.06em;
 }
 
@@ -1514,7 +1514,7 @@
   font-family: "Fraunces", sans-serif;
   font-size: 0.6rem;
   padding: 3px 8px;
-  border-radius: 4px;
+  border-radius: 8px;
   letter-spacing: 0.05em;
 }
 

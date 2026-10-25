@@ -43,7 +43,7 @@
   gap: 0.45rem;
   font-size: var(--fs-p-size-mobile);
   font-weight: var(--fw-semi-bold);
-  border-radius: 5px;
+  border-radius: 8px;
   flex-shrink: 0;
 }
 
@@ -59,7 +59,7 @@
   align-items: center;
   gap: 0.5rem;
   background-color: var(--overlay-gray);
-  border-radius: 6px;
+  border-radius: 8px;
   padding: 0.55rem 0.85rem;
 
   flex: 1;
@@ -82,7 +82,7 @@
   padding: 0 2rem 0 0.85rem;
   background-color: var(--overlay-gray) !important;
 
-  border-radius: 6px;
+  border-radius: 8px;
   color: var(--primary-bg);
   font-family: inherit;
   font-size: var(--fs-p-size-mobile);
@@ -179,7 +179,7 @@
   color: #fff;
   font-size: 0.72rem;
   font-weight: var(--fw-medium);
-  border-radius: 3px;
+  border-radius: 8px;
 }
 .amvBody { padding: 0.85rem 1rem 1rem; display: flex; flex-direction: column; gap: 0.25rem; }
 .amvTitle {

@@ -50,6 +50,9 @@ const Signup = () => {
   const [emailError, setEmailError] = useState("");
   const [isEmailLoading, setIsEmailLoading] = useState(false);
   const [usernameError, setUsernameError] = useState("");
+  const [confirmError, setConfirmError] = useState("");
+  const emailTimer = useRef(null);
+  const emailCheck = useRef(null);
   const [usernameEditable, setUsernameEditable] = useState(true);
   const [usernameFree, setUsernameFree] = useState(false);
   const usernameSeq = useRef(0);
@@ -67,6 +70,60 @@ const Signup = () => {
   const handleCloseSnackbar = () => {
     setOpen(false);
   };
+  const checkEmail = async value => {
+    const controller = new AbortController();
+    emailCheck.current = controller;
+    try {
+      const response = await fetch(VENT.USER_VERIFICATION, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        signal: controller.signal,
+          body: JSON.stringify({
+          email: value
+        })
+      });
+      const data = await response.json();
+      if (data.status === 'success' && data.username) {
+        setFormData(prev => ({
+          ...prev,
+          username: data.username
+        }));
+        setUsernameEditable(false);
+        setUsernameError("");
+      } else {
+        // No existing username for email, allow manual entry
+        setFormData(prev => ({
+          ...prev,
+          username: ""
+        }));
+        setUsernameEditable(true);
+        setUsernameError("");
+      }
+    } catch (err) {
+      if (err?.name === "AbortError") return;
+      setEmailError(tt('msg.verifyFailed', "Verification failed. Try again."));
+      clearError(setEmailError);
+      setUsernameEditable(true);
+    } finally {
+      // Only the newest check may say it has finished.
+      if (emailCheck.current === controller) setIsEmailLoading(false);
+    }
+  };
+
+  // What is wrong with a field, said under it when it is left, and kept until
+  // it is right (it used to vanish after a second and a half).
+  const handleBlur = e => {
+    const { name, value } = e.target;
+    if (name === "email" && value && !emailRegex.test(value)) {
+      setEmailError(tt("msg.emailBad", "Enter a valid email address"));
+    }
+    if (name === "confirmPassword" && value && value !== password) {
+      setConfirmError(tt("ui.passwords.do.not.match.f7c3", "Passwords do not match."));
+    }
+  };
+
   const handleInputChange = async e => {
     const {
       name,
@@ -76,48 +133,20 @@ const Signup = () => {
       ...formData,
       [name]: value
     });
+    if (name === "confirmPassword") setConfirmError("");
     if (name === "email") {
+      // Nothing is said while somebody is still typing: a half-typed address
+      // is not wrong yet, and the check used to fire on every keystroke
+      // (apple-design review, inbox 547). It waits for a 150ms pause, the
+      // newest one wins, and leaving the field says it if it is still wrong.
       setEmailError("");
-      setIsEmailLoading(true);
+      clearTimeout(emailTimer.current);
+      emailCheck.current?.abort();
       if (!emailRegex.test(value)) {
-        setEmailError(tt('msg.emailBad', "Invalid email address"));
-        clearError(setEmailError);
         setIsEmailLoading(false);
-        return;
-      }
-      try {
-        const response = await fetch(VENT.USER_VERIFICATION, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify({
-            email: value
-          })
-        });
-        const data = await response.json();
-        if (data.status === 'success' && data.username) {
-          setFormData(prev => ({
-            ...prev,
-            username: data.username
-          }));
-          setUsernameEditable(false);
-          setUsernameError("");
-        } else {
-          // No existing username for email, allow manual entry
-          setFormData(prev => ({
-            ...prev,
-            username: ""
-          }));
-          setUsernameEditable(true);
-          setUsernameError("");
-        }
-      } catch (err) {
-        setEmailError(tt('msg.verifyFailed', "Verification failed. Try again."));
-        clearError(setEmailError);
-        setUsernameEditable(true);
-      } finally {
-        setIsEmailLoading(false);
+      } else {
+        setIsEmailLoading(true);
+        emailTimer.current = setTimeout(() => checkEmail(value), 150);
       }
     }
     if (name === "username" && usernameEditable) {
@@ -280,10 +309,10 @@ const Signup = () => {
 
                         <div className={generalStyles.inputGroup}>
                             <label>{tt("ui.email.address.852c", "Email Address:")}</label>
-                            <input type="email" name="email" placeholder={tt("ui.enter.email.address.c099", "Enter your email address")} value={formData.email} onChange={handleInputChange} required />
+                            <input type="email" name="email" placeholder={tt("ui.enter.email.address.c099", "Enter your email address")} value={formData.email} onChange={handleInputChange} onBlur={handleBlur} required />
                                 {isEmailLoading ? <CircularProgress size={20} sx={{
               color: 'red'
-            }} /> : emailError && <p className={styles.errorMessage}>{emailError}</p>}
+            }} /> : emailError && <p className={styles.errorMessage} role="alert">{emailError}</p>}
                         </div>
 
 
@@ -307,11 +336,12 @@ const Signup = () => {
                         <div className={generalStyles.inputGroup}> 
                             <label>{tt("ui.confirm.password.7fdb", "Confirm Password:")}</label>
                             <div className={generalStyles.passwordContainer}>
-                                <input type={showPassword ? "password" : "text"} name="confirmPassword" placeholder={tt("ui.re.enter.password.e764", "Re-enter your password")} value={formData.confirmPassword} onChange={handleInputChange} required disabled={!isPasswordValid(password)} />
+                                <input type={showPassword ? "password" : "text"} name="confirmPassword" placeholder={tt("ui.re.enter.password.e764", "Re-enter your password")} value={formData.confirmPassword} onChange={handleInputChange} onBlur={handleBlur} required disabled={!isPasswordValid(password)} />
                                 <span onClick={togglePasswordVisibility} className={generalStyles.togglePassword}>
                                     {showPassword ? <FaRegEyeSlash /> : <MdOutlineRemoveRedEye />}
                                 </span>
                             </div>
+                            {confirmError && <p className={styles.errorMessage} role="alert">{confirmError}</p>}
                         </div>
 
                         <button type="submit" className={`btn redBTN ${generalStyles.formBTN}`}>

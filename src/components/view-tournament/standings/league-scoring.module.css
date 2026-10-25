@@ -115,7 +115,7 @@
 
 .problem {
   background: var(--bv-loss-tint, rgba(237, 28, 36, 0.14));
-  border-radius: 9px;
+  border-radius: 10px;
   color: var(--bv-loss-text, #ff9a9e);
   font-size: 0.85rem;
   margin: 0;

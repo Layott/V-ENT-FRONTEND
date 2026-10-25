@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { LuChevronDown } from 'react-icons/lu';
 import { useComingSoon } from '@/lib/platformModules';
 import { useRoutePath } from '@/lib/routePath';
@@ -51,6 +51,39 @@ const MobileSidebar = ({
   // A group starts open when you are already somewhere inside it, so the menu
   // shows you where you are rather than making you find it again.
   const [openGroups, setOpenGroups] = useState({});
+
+  // Drag to close (apple-design review, inbox 547). The panel follows the
+  // finger to the right from where it was grabbed; let go past a third of the
+  // way or with a flick and it closes, otherwise it settles back. A drag only
+  // counts once it has moved 10px and more sideways than up or down, so the
+  // list still scrolls. Mouse drags are left alone: the close button is there.
+  const drag = useRef(null);
+  const [dragX, setDragX] = useState(0);
+  const onPointerDown = e => {
+    if (!isOpen || e.pointerType === 'mouse') return;
+    drag.current = { x: e.clientX, y: e.clientY, t: e.timeStamp, decided: false, sideways: false };
+  };
+  const onPointerMove = e => {
+    const d = drag.current;
+    if (!d) return;
+    const dx = e.clientX - d.x;
+    const dy = e.clientY - d.y;
+    if (!d.decided) {
+      if (Math.abs(dx) < 10 && Math.abs(dy) < 10) return;
+      d.decided = true;
+      d.sideways = dx > 0 && Math.abs(dx) > Math.abs(dy);
+    }
+    if (d.sideways) setDragX(Math.max(0, dx));
+  };
+  const onPointerEnd = e => {
+    const d = drag.current;
+    drag.current = null;
+    if (!d || !d.sideways) return;
+    const dx = Math.max(0, e.clientX - d.x);
+    const speed = dx / Math.max(1, e.timeStamp - d.t);
+    setDragX(0);
+    if (dx > (e.currentTarget.offsetWidth || 360) / 3 || speed > 0.6) closeSidebar();
+  };
   const toggleGroup = key => setOpenGroups(g => ({ ...g, [key]: !g[key] }));
 
   // Function to Check if the Route is Active
@@ -66,7 +99,10 @@ const MobileSidebar = ({
     // middleware also accepts, so pressing Logout did not sign anybody out.
     await logOut();
   };
-  return <div className={`${styles.mobileSidebar} quietScroll ${isOpen ? styles.open : ''}`}>
+  return <div className={`${styles.mobileSidebar} quietScroll ${isOpen ? styles.open : ''} ${dragX ? styles.dragging : ''}`}
+    style={dragX ? { '--drag': `${dragX}px` } : undefined}
+    onPointerDown={onPointerDown} onPointerMove={onPointerMove}
+    onPointerUp={onPointerEnd} onPointerCancel={onPointerEnd}>
 
         <nav className={styles.sidebarNav}>
             <ul className={styles.sidebarList}>

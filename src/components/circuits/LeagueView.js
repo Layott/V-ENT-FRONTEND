@@ -20,6 +20,7 @@ import Avatar from '@/components/avatar/Avatar';
 import { cameWords, zoneClass, zoneWords } from './CircuitRanking';
 import { API, entrantWord, regionWord, request } from './circuitWords';
 import styles from './circuits.module.css';
+import BackLink from '@/components/back-link/BackLink';
 
 /** "Top 2 go up to Division 1. Bottom 2 go down to Division 3." */
 export function divisionRule(tt, league, above, below) {
@@ -142,6 +143,7 @@ export default function LeagueView({ slug }) {
 
   return (
     <div className={styles.container}>
+      <BackLink href="/circuits">{tt('back.toCircuits', 'Back to circuits')}</BackLink>
       <header className={styles.hero}>
         <div className={styles.heroTop}>
           <div className={styles.chips}>

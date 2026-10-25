@@ -98,7 +98,7 @@
   background-color: rgba(237, 28, 36, 0.85);
   color: #fff;
   font-size: 0.66rem;
-  border-radius: 3px;
+  border-radius: 8px;
   font-family: "ClashGrotesk-Variable", sans-serif;
   text-transform: uppercase;
   letter-spacing: 0.06em;
@@ -186,7 +186,7 @@
 
 .chipCount {
   background-color: rgba(255, 255, 255, 0.1);
-  border-radius: 7px;
+  border-radius: 8px;
   padding: 0.02rem 0.35rem;
   margin-left: 0.3rem;
   font-size: 0.7rem;
@@ -269,7 +269,7 @@
   background-color: var(--v-ent-success, #4caf50);
   color: #0e1a10;
   border: none;
-  border-radius: 9px;
+  border-radius: 10px;
   padding: 0.45rem 0.85rem;
   margin-right: 0.6rem;
   font-family: inherit;

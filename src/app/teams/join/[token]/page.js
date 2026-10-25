@@ -25,6 +25,7 @@ import BottomMenu from '@/components/bottom-menu/BottomMenu';
 import { apiMessage } from '@/lib/apiMessage';
 import { useT } from '@/i18n/LanguageProvider';
 import styles from './join.module.css';
+import BackLink from '@/components/back-link/BackLink';
 
 const API = process.env.NEXT_PUBLIC_API_URL || '';
 
@@ -89,6 +90,7 @@ const JoinByLink = ({ token }) => {
       <main className={styles.main}>
         <Sidebar />
         <div className={styles.content}>
+          <BackLink href="/teams">{tt('back.toTeams', 'Back to teams')}</BackLink>
           <div className={styles.card}>
             {loading && <p className={styles.muted}>{tt('ui.loading', 'Loading...')}</p>}
 

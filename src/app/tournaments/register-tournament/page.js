@@ -15,6 +15,7 @@ import styles from './register-tournament.module.css';
 import { useT } from '@/i18n/LanguageProvider';
 import { useTx } from '@/i18n/LanguageProvider';
 import { returnReference } from '@/lib/payReturn';
+import BackLink from '@/components/back-link/BackLink';
 
 // Thin wrapper: loads the real tournament (real entry_fee_price + prize_pool)
 // and mounts the shared TournamentRegister modal flow (Mode → Team → Roster →
@@ -90,6 +91,7 @@ const RegisterTournamentContent = ({
         <Sidebar />
 
         <div className={styles.rightPaneContainer}>
+          <BackLink href="/tournaments">{tt('back.toTournaments', 'Back to tournaments')}</BackLink>
           <h1 className={styles.srOnlyTitle}>
             {tournament?.tournament_title
               ? tt("registerTournament.titleNamed", "Register for {name}")

@@ -18,6 +18,7 @@ import Header from '@/components/header/Header';
 import MobileHeader from '@/components/mobile-header/MobileHeader';
 import BottomMenu from '@/components/bottom-menu/BottomMenu';
 import styles from './find-ticket.module.css';
+import BackLink from '@/components/back-link/BackLink';
 
 const API = process.env.NEXT_PUBLIC_API_URL;
 
@@ -60,6 +61,7 @@ export default function FindTicket() {
       <MobileHeader />
 
       <main className={styles.main}>
+        <BackLink href="/events">{tt('back.toEvents', 'Back to events')}</BackLink>
         <h1 className={styles.title}>{tt('find.title', 'Find your ticket')}</h1>
         <p className={styles.sub}>
           {tt('find.sub', 'Bought without an account? Your email address and the code from the confirmation will bring it back.')}
