@@ -23,6 +23,7 @@ import { ventFetch, API as TOURNAMENT_API, toTournamentArray } from '@/component
 import MembersPanel from './MembersPanel';
 import { API, REGIONS, entrantWord, regionWord, request } from './circuitWords';
 import styles from './circuits.module.css';
+import BackLink from '@/components/back-link/BackLink';
 
 const gameId = (g) => g?.game_id ?? g?.id;
 const gameTitle = (g) => g?.game_title ?? g?.title ?? g?.name ?? '';
@@ -579,6 +580,7 @@ export default function CircuitManage({ slug }) {
 
   return (
     <div className={styles.container}>
+      <BackLink href={`/circuits/${encodeURIComponent(slug)}`}>{tt('back.toCircuit', 'Back to circuit')}</BackLink>
       <div className={styles.heroTop}>
         <div>
           <h1 className={styles.pageTitle}>{circuit.name}</h1>

@@ -24,7 +24,7 @@
 .link:focus-visible {
   outline: 2px solid var(--v-ent-red);
   outline-offset: 2px;
-  border-radius: 4px;
+  border-radius: 8px;
 }
 
 /* Beside a control rather than in place of one: a like button, a join button. */

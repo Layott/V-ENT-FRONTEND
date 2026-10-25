@@ -72,12 +72,12 @@
 }
 
 .waitlistBTN:nth-child(2) {
-  border-radius: 5px;
+  border-radius: 8px;
   width: 120px;
 }
 
 .signupBTN, .loginBTN {
-  border-radius: 5px;
+  border-radius: 8px;
   width: 80px;
   margin: 0;
   background-color: var(--v-ent-red);
@@ -504,4 +504,16 @@
   .browseLink {
     min-height: 44px;
   }
+}
+
+/* Display type tightens as it grows (apple-design review, inbox 547): the
+   112px headline words inherited -0.16px from a 16px h1, so they set loose. */
+.headlineWord {
+  letter-spacing: -0.02em;
+}
+
+/* "Go to my V-ENT" stays on one line beside Browse. */
+.loginBTN,
+.signupBTN {
+  white-space: nowrap;
 }

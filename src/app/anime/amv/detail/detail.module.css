@@ -173,7 +173,7 @@
   padding: 0 1rem;
   font-size: var(--fs-p-size-mobile);
   font-weight: var(--fw-semi-bold);
-  border-radius: 5px;
+  border-radius: 8px;
   flex-shrink: 0;
 }
 
@@ -202,7 +202,7 @@
 .tagRow { display: flex; gap: 0.4rem; flex-wrap: wrap; }
 .tagChip {
   padding: 0.2rem 0.55rem;
-  border-radius: 4px;
+  border-radius: 8px;
   background-color: rgba(255, 255, 255, 0.06);
   color: rgba(255, 255, 255, 0.7);
   font-size: 0.72rem;
@@ -229,7 +229,7 @@
   padding: 0.55rem 0.85rem;
   background-color: #1a1b1f;
 
-  border-radius: 6px;
+  border-radius: 8px;
   color: var(--primary-bg);
   font-family: inherit;
   font-size: var(--fs-p-size-mobile);
@@ -240,7 +240,7 @@
 .commentBtn {
   height: 38px;
   padding: 0 1.1rem;
-  border-radius: 6px;
+  border-radius: 8px;
   font-weight: var(--fw-semi-bold);
   font-size: var(--fs-p-size-mobile);
   flex-shrink: 0;
@@ -292,7 +292,7 @@
   background-size: cover;
   background-position: center;
   background-color: #303136;
-  border-radius: 5px;
+  border-radius: 8px;
   flex-shrink: 0;
 }
 .relatedDuration {

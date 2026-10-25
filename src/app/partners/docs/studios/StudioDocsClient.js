@@ -6,6 +6,7 @@ import { useT } from '@/i18n/LanguageProvider';
 import { formatNumber } from '@/lib/datetime';
 import { deliveryKindLabel, studioEventLabel } from '@/components/studio-portal/studioLabels';
 import styles from '../docs.module.css';
+import BackLink from '@/components/back-link/BackLink';
 
 // The guide for game studios, beside the API reference and in the same
 // voice: every example runnable, every table read from the live catalogue
@@ -89,6 +90,7 @@ export default function StudioDocsClient({ catalogue }) {
 
   return (
     <main className={styles.page}>
+      <BackLink href="/partners/docs">{t('back.toPartnerDocs', 'Back to partner docs')}</BackLink>
       <header className={styles.hero}>
         <p className={styles.kicker}>{t('partners.studioDocs.kicker', 'V-ENT for game studios')}</p>
         <h1 className={styles.title}>{t('partners.studioDocs.title', 'Run V-ENT tournaments inside your game')}</h1>

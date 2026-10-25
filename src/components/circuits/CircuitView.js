@@ -20,6 +20,7 @@ import CircuitRanking from './CircuitRanking';
 import { divisionRule } from './LeagueView';
 import { API, entrantWord, regionWord, request, seasonDates } from './circuitWords';
 import styles from './circuits.module.css';
+import BackLink from '@/components/back-link/BackLink';
 
 const TABS = [
   ['ranking', 'circuit.tab.ranking', 'Ranking'],
@@ -159,6 +160,7 @@ export default function CircuitView({ slug }) {
 
   return (
     <div className={styles.container}>
+      <BackLink href="/circuits">{tt('back.toCircuits', 'Back to circuits')}</BackLink>
       <header className={styles.hero}>
         <div className={styles.heroTop}>
           <div className={styles.chips}>

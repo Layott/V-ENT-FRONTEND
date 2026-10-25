@@ -94,7 +94,7 @@
 .errorBtn {
   height: 38px;
   padding: 0 1.25rem;
-  border-radius: 6px;
+  border-radius: 8px;
   font-family: inherit;
   font-size: var(--fs-p-size-mobile);
   font-weight: var(--fw-semi-bold);

@@ -68,7 +68,7 @@
 .thumb {
   width: 70px;
   height: 70px;
-  border-radius: 6px;
+  border-radius: 8px;
   overflow: hidden;
 
   cursor: pointer;
@@ -114,7 +114,7 @@
 
 .metaPill {
   padding: 4px 10px;
-  border-radius: 4px;
+  border-radius: 8px;
   background-color: rgba(255, 255, 255, 0.08);
   color: rgba(255, 255, 255, 0.75);
   font-size: 0.75rem;
@@ -216,7 +216,7 @@
 
 .sellerBadgeChip {
   padding: 1px 6px;
-  border-radius: 3px;
+  border-radius: 8px;
   font-size: 0.65rem;
   background: rgba(212, 175, 55, 0.18);
   color: var(--v-ent-gold);
@@ -228,7 +228,7 @@
 .sellerVisitBtn {
   height: 32px;
   padding: 0 0.7rem;
-  border-radius: 5px;
+  border-radius: 8px;
   background-color: transparent;
 
   color: var(--primary-bg);
@@ -267,7 +267,7 @@
 .primaryBtn {
   width: 100%;
   padding: 0.8rem;
-  border-radius: 6px;
+  border-radius: 8px;
   border: none;
   font-family: inherit;
   font-size: var(--fs-p-size-desktop);
@@ -288,7 +288,7 @@
 .ghostBtn {
   flex: 1;
   padding: 0.7rem;
-  border-radius: 6px;
+  border-radius: 8px;
   background-color: transparent;
 
   color: var(--primary-bg);
@@ -307,7 +307,7 @@
 .heartBtn {
   width: 44px;
   height: 44px;
-  border-radius: 6px;
+  border-radius: 8px;
   background-color: transparent;
 
   color: rgba(255, 255, 255, 0.65);
@@ -332,7 +332,7 @@
 
   color: var(--v-ent-gold);
   padding: 0.75rem 1rem;
-  border-radius: 6px;
+  border-radius: 8px;
   font-size: var(--fs-p-size-mobile);
 }
 
@@ -341,7 +341,7 @@
 
   color: #ff8a8f;
   padding: 0.75rem 1rem;
-  border-radius: 6px;
+  border-radius: 8px;
   font-size: var(--fs-p-size-mobile);
 }
 
@@ -591,7 +591,7 @@
   width: 100%;
   background-color: #303136;
 
-  border-radius: 6px;
+  border-radius: 8px;
   color: var(--primary-bg);
   font-family: inherit;
   font-size: var(--fs-p-size-desktop);
@@ -613,7 +613,7 @@
 .modalPrimary {
   flex: 1;
   padding: 0.7rem;
-  border-radius: 6px;
+  border-radius: 8px;
   border: none;
   background-color: var(--v-ent-gold);
   color: #fff;
@@ -630,7 +630,7 @@
 .modalSecondary {
   flex: 1;
   padding: 0.7rem;
-  border-radius: 6px;
+  border-radius: 8px;
 
   background-color: transparent;
   color: var(--primary-bg);

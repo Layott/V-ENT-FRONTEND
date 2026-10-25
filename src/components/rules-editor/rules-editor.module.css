@@ -167,7 +167,7 @@
   align-items: center;
   gap: 0.6rem;
   background-color: rgba(255, 255, 255, 0.05);
-  border-radius: 9px;
+  border-radius: 10px;
   padding: 0.5rem 0.7rem;
 }
 
@@ -179,7 +179,7 @@
   height: 22px;
   flex-shrink: 0;
   background-color: var(--v-ent-red);
-  border-radius: 6px;
+  border-radius: 8px;
   color: #fff;
   font-size: 0.74rem;
   font-weight: 600;
@@ -203,7 +203,7 @@
   width: 28px;
   height: 28px;
   background-color: rgba(255, 255, 255, 0.08);
-  border-radius: 6px;
+  border-radius: 8px;
   color: rgba(255, 255, 255, 0.7);
   cursor: pointer;
   outline: none;
@@ -246,7 +246,7 @@
 .save {
   align-self: flex-start;
   background-color: var(--v-ent-red);
-  border-radius: 9px;
+  border-radius: 10px;
   padding: 10px 22px;
   color: #fff;
   font-family: 'ClashGrotesk-Variable', sans-serif;
@@ -266,7 +266,7 @@
 
 .locked {
   background-color: rgba(229, 185, 78, 0.12);
-  border-radius: 9px;
+  border-radius: 10px;
   padding: 0.65rem 0.85rem;
   color: #E5B94E;
   font-size: 0.82rem;

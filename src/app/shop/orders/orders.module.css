@@ -65,7 +65,7 @@
   font-weight: var(--fw-semi-bold);
   text-decoration: none;
   padding: 0.5rem 0.85rem;
-  border-radius: 6px;
+  border-radius: 8px;
   background-color: rgba(255, 255, 255, 0.06);
 
   transition: background-color 0.2s;
@@ -161,7 +161,7 @@
   width: 56px;
   height: 56px;
   object-fit: cover;
-  border-radius: 6px;
+  border-radius: 8px;
 
   background-color: #303136;
 }
@@ -169,7 +169,7 @@
 .orderThumbMore {
   width: 56px;
   height: 56px;
-  border-radius: 6px;
+  border-radius: 8px;
   background-color: rgba(255, 255, 255, 0.06);
 
   display: inline-flex;
@@ -400,7 +400,7 @@
   padding: 0.65rem 0.85rem;
   background-color: rgba(237, 28, 36, 0.1);
 
-  border-radius: 6px;
+  border-radius: 8px;
   color: var(--v-ent-light-red);
   font-size: 0.85rem;
   font-weight: var(--fw-semi-bold);
@@ -414,7 +414,7 @@
   padding: 0.5rem 0.95rem;
   background-color: rgba(255, 255, 255, 0.06);
 
-  border-radius: 6px;
+  border-radius: 8px;
   color: var(--primary-bg);
   font-size: 0.85rem;
   font-weight: var(--fw-semi-bold);
@@ -453,7 +453,7 @@
   width: 56px;
   height: 56px;
   object-fit: cover;
-  border-radius: 6px;
+  border-radius: 8px;
   display: block;
   background-color: #303136;
 }
@@ -582,7 +582,7 @@
 
 .shopBtn {
   padding: 0.65rem 1.25rem;
-  border-radius: 6px;
+  border-radius: 8px;
   border: none;
   font-family: inherit;
   font-size: 0.95rem;

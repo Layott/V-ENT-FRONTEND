@@ -100,7 +100,7 @@
 /* A filled card, never a ruled one. */
 .card {
   background: var(--panel);
-  border-radius: 4px;
+  border-radius: 8px;
 }
 
 /* The bar down the left of a card. Six pixels of fill, not a stroke. */

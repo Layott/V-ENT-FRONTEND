@@ -40,7 +40,7 @@
 .input {
   width: 100%;
   background-color: rgba(255, 255, 255, 0.08);
-  border-radius: 9px;
+  border-radius: 10px;
   /* Measured at 390px: 12px landed the box on 43px, one short of the 44 a
      thumb needs. These are bought on a phone almost exclusively, so the
      rounding matters here more than anywhere else on the site. */
@@ -167,7 +167,7 @@
   align-items: center;
   gap: 0.6rem;
   background-color: rgba(0, 0, 0, 0.25);
-  border-radius: 9px;
+  border-radius: 10px;
   padding: 0.7rem 0.85rem;
   color: rgba(255, 255, 255, 0.85);
 }
@@ -188,7 +188,7 @@
 .done_close {
   align-self: flex-start;
   background-color: rgba(255, 255, 255, 0.1);
-  border-radius: 9px;
+  border-radius: 10px;
   color: #fff;
   cursor: pointer;
   font-family: 'ClashGrotesk-Variable', sans-serif;

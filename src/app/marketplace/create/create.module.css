@@ -146,7 +146,7 @@
   width: 100%;
   background-color: #303136;
 
-  border-radius: 6px;
+  border-radius: 8px;
   color: var(--primary-bg);
   font-family: inherit;
   font-size: var(--fs-p-size-desktop);
@@ -204,7 +204,7 @@
 
 .mediaTile {
   aspect-ratio: 4 / 3;
-  border-radius: 6px;
+  border-radius: 8px;
   overflow: hidden;
   background-color: #303136;
   position: relative;
@@ -269,7 +269,7 @@
 
 .modeBtn {
   padding: 0.6rem 1rem;
-  border-radius: 6px;
+  border-radius: 8px;
   background-color: #303136;
 
   color: rgba(255, 255, 255, 0.7);
@@ -323,7 +323,7 @@
 .reviewImageThumb {
   width: 56px;
   height: 56px;
-  border-radius: 4px;
+  border-radius: 8px;
   object-fit: cover;
 }
 
@@ -336,7 +336,7 @@
 
 .backBtn {
   padding: 0.7rem 1.25rem;
-  border-radius: 6px;
+  border-radius: 8px;
   background-color: transparent;
 
   color: var(--primary-bg);
@@ -351,7 +351,7 @@
 
 .nextBtn {
   padding: 0.7rem 1.4rem;
-  border-radius: 6px;
+  border-radius: 8px;
   border: none;
   font-family: inherit;
   font-size: var(--fs-p-size-mobile);
@@ -398,7 +398,7 @@
 
   color: #ff8a8f;
   padding: 0.6rem 0.9rem;
-  border-radius: 6px;
+  border-radius: 8px;
   font-size: 0.8rem;
 }
 

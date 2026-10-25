@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import BackLink from '@/components/back-link/BackLink';
 import Header from '@/components/header/Header';
 import MobileHeader from '@/components/mobile-header/MobileHeader';
 import Sidebar from '@/components/sidebar/Sidebar';
@@ -30,7 +31,8 @@ const ComingSoon = ({
   title,
   blurb,
   phase,
-  alternatives = []
+  alternatives = [],
+  back
 }) => {
   const tx = useTx();
   const tt = useT();
@@ -44,6 +46,7 @@ const ComingSoon = ({
       <Sidebar />
 
       <div className={styles.rightPaneContainer}>
+        {back && <BackLink href={back.href}>{back.label}</BackLink>}
         <div className={`${styles.card} ${plan ? styles.cardPlan : ''}`}>
           {plan
             ? <p className={styles.phase}>{tt('roadmap.phase', 'Phase {n}').replace('{n}', plan.phase)}</p>

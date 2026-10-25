@@ -1,10 +1,10 @@
 "use client";
 
-import Image from 'next/image';
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import useIntersectionObserver from '@/hooks/useIntersectionObserver';
-import counterStrikeCard from '@/images/counter_strike_card.webp';
-import fifaCard from '@/images/fifa_card.webp';
+import { ventFetch, API, toTournamentArray, tournamentStatus } from '@/components/tournament-lib/tournamentApi';
+import TournamentCard from '@/components/tournament-card/TournamentCard';
 import observerStyle from '@/styles/intersection/intersection.module.css';
 import profileStyles from '@/styles/profile/profile-page.module.css';
 import landingStyles from '@/styles/landing/landing.module.css';
@@ -20,6 +20,28 @@ const AutomatedTournaments = ({
   const [refText, isTextVisible] = useIntersectionObserver({
     threshold: 0.2
   });
+  // Real tournaments, not pictures of one (apple-design review, inbox 547: the
+  // card here was an image of "Counter strike battle, Unilag, October 2024", an
+  // event that was never on the platform). Upcoming and live first, nearest
+  // first, three at most. null while asking, [] when there is nothing to show.
+  const [live, setLive] = useState(null);
+  // A failed load says so; it is not the same as no tournaments being open.
+  const [failed, setFailed] = useState(false);
+  useEffect(() => {
+    let off = false;
+    ventFetch(API.TOURNAMENT.LIST)
+      .then(data => {
+        if (off) return;
+        const order = { live: 0, ongoing: 0, in_progress: 0, registration_open: 1, upcoming: 1, published: 1, registration_closed: 2 };
+        const shown = toTournamentArray(data)
+          .filter(t => tournamentStatus(t) in order)
+          .sort((a, b) => order[tournamentStatus(a)] - order[tournamentStatus(b)]
+            || String(a?.start_date || '').localeCompare(String(b?.start_date || '')));
+        setLive(shown.slice(0, 3));
+      })
+      .catch(() => { if (!off) { setFailed(true); setLive([]); } });
+    return () => { off = true; };
+  }, []);
   return <div className={landingStyles.automatedTournamentsContainer}>
         <div className={`${landingStyles.innerAutomatedTournamentsContainer} ${styles.innerAutomatedTournamentsContainer}`}>
             <div className={styles.leftAutomatedTournaments}>
@@ -46,14 +68,17 @@ const AutomatedTournaments = ({
             </div>
 
             <div className={styles.rightAutomatedTournaments}>
-                <div className={styles.innerRightAutomatedTournaments}>
-                    <div ref={ref} className={`${styles.counterStrikeCardContainer} ${observerStyle.counterStrikeCardContainer} ${isVisible ? observerStyle.fadeInFromLeft : ''}`}>
-                        <Image src={counterStrikeCard} alt={tt("landing.alt.csCard", "A tournament card on V-ENT: Counter Strike battle at Unilag, individuals, 20 players, 1 to 21 October 2024, prize 500,000 naira, entry 40 VENT COINS")} />
-                    </div>
-
-                    <div ref={ref} className={`${styles.fifaCardContainer}  ${observerStyle.counterStrikeCardContainer} ${isVisible ? observerStyle.fadeInFromRight : ''}`}>
-                        <Image src={fifaCard} alt={tt("landing.alt.fifaCard", "A tournament card on V-ENT: FIFA 25 Showdown, teams or individuals, 10 to 15 players, 1 to 21 October 2024, prize 500,000 naira, entry 40 VENT COINS")} />
-                    </div>
+                <div ref={ref} className={styles.liveList} aria-busy={live === null}>
+                    {live === null && [0, 1, 2].map(i => <div key={i} className={styles.liveSkeleton} />)}
+                    {live && live.length === 0 && (
+                        <p className={styles.liveEmpty} role={failed ? 'alert' : undefined}>
+                            {failed
+                                ? tt('landing.liveLoadFailed', 'Open tournaments could not be loaded just now.')
+                                : tt('landing.noLiveTournaments', 'Open tournaments appear here as organisers publish them.')}{' '}
+                            <Link href="/tournaments">{tt('landing.browseAll', 'See every tournament')}</Link>
+                        </p>
+                    )}
+                    {live && live.map((t, i) => <TournamentCard key={t?.slug || i} t={t} />)}
                 </div>
             </div>
         </div>

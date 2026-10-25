@@ -118,7 +118,7 @@
   padding: 2px 8px;
   background-color: rgba(212, 175, 55, 0.15);
   color: var(--v-ent-gold);
-  border-radius: 4px;
+  border-radius: 8px;
   font-size: 0.65rem;
   text-transform: uppercase;
   letter-spacing: 0.04em;
@@ -136,7 +136,7 @@
   align-items: center;
   gap: 0.35rem;
   padding: 3px 8px;
-  border-radius: 4px;
+  border-radius: 8px;
   font-size: 0.7rem;
   font-weight: var(--fw-semi-bold);
   text-transform: uppercase;
@@ -181,7 +181,7 @@
   background-color: rgba(0, 0, 0, 0.4);
 
   padding: 1px 6px;
-  border-radius: 4px;
+  border-radius: 8px;
   font-family: 'Courier New', monospace;
   font-size: 0.85em;
   color: var(--v-ent-gold);
@@ -191,7 +191,7 @@
   padding: 0.5rem 0.95rem;
   background-color: rgba(255, 255, 255, 0.06);
   color: rgba(255, 255, 255, 0.72);
-  border-radius: 4px;
+  border-radius: 8px;
 }
 .postBody ul {
   margin: 0.5rem 0;
@@ -304,7 +304,7 @@
 .replyText code {
   background-color: rgba(0, 0, 0, 0.4);
   padding: 1px 5px;
-  border-radius: 4px;
+  border-radius: 8px;
   font-family: 'Courier New', monospace;
   font-size: 0.85em;
   color: var(--v-ent-gold);
@@ -314,7 +314,7 @@
   padding: 0.4rem 0.8rem;
   background-color: rgba(255, 255, 255, 0.06);
   color: rgba(255, 255, 255, 0.72);
-  border-radius: 4px;
+  border-radius: 8px;
 }
 .replyText ul { margin: 0.4rem 0; padding-left: 1.3rem; }
 .replyText a { color: var(--v-ent-gold); text-decoration: none; }
@@ -356,7 +356,7 @@
   font-size: 0.78rem;
   color: #ef9a9a;
   background-color: rgba(237, 28, 36, 0.12);
-  border-radius: 6px;
+  border-radius: 8px;
   padding: 0.45rem 0.7rem;
 }
 
@@ -384,7 +384,7 @@
   background-color: var(--overlay-gray);
 
   color: rgba(255, 255, 255, 0.7);
-  border-radius: 6px;
+  border-radius: 8px;
   padding: 0.45rem 0.85rem;
   font-family: inherit;
   font-size: 0.8rem;
@@ -408,7 +408,7 @@
   background-color: transparent;
 
   color: rgba(255, 255, 255, 0.6);
-  border-radius: 6px;
+  border-radius: 8px;
   width: 32px;
   height: 32px;
   font-family: inherit;
@@ -475,7 +475,7 @@
   height: 28px;
   background: transparent;
 
-  border-radius: 4px;
+  border-radius: 8px;
   color: rgba(255, 255, 255, 0.65);
   font-family: inherit;
   font-size: 0.8rem;
@@ -528,7 +528,7 @@
 
 .replyBtn {
   padding: 0.5rem 1.25rem;
-  border-radius: 6px;
+  border-radius: 8px;
   font-size: 0.85rem;
   font-weight: var(--fw-semi-bold);
   font-family: inherit;

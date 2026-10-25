@@ -72,7 +72,7 @@
  * loading. */
 .empty {
   background: var(--panel);
-  border-radius: 3px;
+  border-radius: 8px;
   bottom: 112px;
   left: 96px;
   padding: 18px 26px;

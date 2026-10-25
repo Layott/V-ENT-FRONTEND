@@ -90,7 +90,7 @@
   background-color: #303136;
   font-size: 0.8rem;
   width: 100%;
-  border-radius: 5px;
+  border-radius: 8px;
   transition: border ease-in-out 0.5s;
 }
 
@@ -106,7 +106,7 @@
 }
 
 .joinThousandsGamersInputContainer button {
-  border-radius: 5px;
+  border-radius: 8px;
 }
 
 @media only screen and (min-width: 500px) {
@@ -172,4 +172,22 @@
   .inputGroup input::placeholder {
     font-size: 0.95rem;
   }
+}
+/* The way in, in place of the waitlist form (inbox 547). */
+.joinActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.joinActions a {
+  display: inline-flex;
+  align-items: center;
+  padding: 0 18px;
+  min-height: 44px;
+}
+
+.quietBtn {
+  background-color: #303136;
+  color: var(--white);
 }

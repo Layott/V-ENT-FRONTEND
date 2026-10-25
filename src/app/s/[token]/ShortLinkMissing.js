@@ -13,6 +13,7 @@
 import Link from 'next/link';
 import { useT } from '@/i18n/LanguageProvider';
 import styles from './short-link.module.css';
+import BackLink from '@/components/back-link/BackLink';
 
 export default function ShortLinkMissing({ token }) {
   const tt = useT();
@@ -23,6 +24,7 @@ export default function ShortLinkMissing({ token }) {
 
   return (
     <main className={styles.wrap}>
+      <BackLink href="/">{tt('back.toHome', 'Back to home')}</BackLink>
       <div className={styles.panel}>
         <h1 className={styles.title}>
           {tt('share.expiredTitle', 'This link has expired')}

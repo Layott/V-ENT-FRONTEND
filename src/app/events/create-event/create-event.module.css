@@ -77,7 +77,7 @@
 
 .draftBtn {
   padding: 0.5rem 1rem;
-  border-radius: 6px;
+  border-radius: 8px;
   background-color: var(--overlay-gray);
 
   color: var(--primary-bg);
@@ -95,7 +95,7 @@
 
 .discardBtn {
   padding: 0.5rem 1rem;
-  border-radius: 6px;
+  border-radius: 8px;
   background: transparent;
 
   color: var(--v-ent-red);
@@ -235,7 +235,7 @@
 .input {
   background-color: var(--overlay-gray);
 
-  border-radius: 6px;
+  border-radius: 8px;
   color: var(--primary-bg);
   font-family: inherit;
   font-size: var(--fs-p-size-mobile);
@@ -355,7 +355,7 @@
   background: transparent;
 
   color: var(--v-ent-red);
-  border-radius: 6px;
+  border-radius: 8px;
   padding: 0.45rem 0.85rem;
   font-family: inherit;
   font-size: 0.74rem;
@@ -373,7 +373,7 @@
   background-color: rgba(212, 175, 55, 0.1);
 
   color: var(--v-ent-gold);
-  border-radius: 6px;
+  border-radius: 8px;
   padding: 0.6rem 1rem;
   font-family: inherit;
   font-size: 0.78rem;
@@ -425,7 +425,7 @@
   color: rgba(255, 255, 255, 0.4);
   cursor: pointer;
   padding: 0.4rem;
-  border-radius: 4px;
+  border-radius: 8px;
   font-size: 0.85rem;
 }
 
@@ -516,7 +516,7 @@
 
 .primaryBtn {
   padding: 0.65rem 1.5rem;
-  border-radius: 6px;
+  border-radius: 8px;
   border: none;
   font-family: inherit;
   font-size: var(--fs-p-size-mobile);
@@ -528,7 +528,7 @@
 
 .secondaryBtn {
   padding: 0.65rem 1.25rem;
-  border-radius: 6px;
+  border-radius: 8px;
   background-color: var(--overlay-gray);
   color: rgba(255, 255, 255, 0.7);
 
@@ -582,7 +582,7 @@
 
 .successBtn {
   padding: 0.65rem 1.5rem;
-  border-radius: 6px;
+  border-radius: 8px;
   font-size: var(--fs-p-size-mobile);
   font-weight: var(--fw-semi-bold);
   border: none;

@@ -50,7 +50,7 @@
 .primaryBtn {
   height: 38px;
   padding: 0 1.25rem;
-  border-radius: 6px;
+  border-radius: 8px;
   font-family: inherit;
   font-size: var(--fs-p-size-mobile);
   font-weight: var(--fw-semi-bold);
@@ -63,7 +63,7 @@
   padding: 0 1.25rem;
   background-color: var(--overlay-gray);
 
-  border-radius: 6px;
+  border-radius: 8px;
   color: var(--primary-bg);
   font-family: inherit;
   font-size: var(--fs-p-size-mobile);
@@ -121,7 +121,7 @@
   font-weight: var(--fw-extra-bold);
   letter-spacing: 0.1em;
   padding: 4px 9px;
-  border-radius: 4px;
+  border-radius: 8px;
   z-index: 2;
 }
 
@@ -211,7 +211,7 @@
   align-items: center;
   gap: 0.4rem;
   background-color: var(--overlay-gray);
-  border-radius: 6px;
+  border-radius: 8px;
   padding: 0.5rem 0.75rem;
 
   flex: 1 1 220px;
@@ -248,7 +248,7 @@
   appearance: none;
   background-color: var(--overlay-gray);
 
-  border-radius: 6px;
+  border-radius: 8px;
   color: var(--primary-bg);
   font-family: inherit;
   font-size: var(--fs-p-size-mobile);
@@ -277,7 +277,7 @@
 .prizeInput {
   background-color: var(--overlay-gray);
 
-  border-radius: 6px;
+  border-radius: 8px;
   color: var(--primary-bg);
   font-family: inherit;
   font-size: var(--fs-p-size-mobile);
@@ -299,7 +299,7 @@
 .clearBtn {
   background-color: transparent;
 
-  border-radius: 6px;
+  border-radius: 8px;
   color: rgba(255, 255, 255, 0.65);
   font-family: inherit;
   font-size: var(--fs-p-size-mobile);
@@ -358,7 +358,7 @@
   letter-spacing: 0.08em;
   text-transform: uppercase;
   padding: 4px 9px;
-  border-radius: 4px;
+  border-radius: 8px;
   display: flex;
   align-items: center;
   gap: 0.3rem;
@@ -383,7 +383,7 @@
   font-weight: var(--fw-extra-bold);
   letter-spacing: 0.08em;
   padding: 3px 8px;
-  border-radius: 4px;
+  border-radius: 8px;
 }
 
 .tCardBody {
@@ -404,7 +404,7 @@
   letter-spacing: 0.05em;
   text-transform: uppercase;
   padding: 3px 8px;
-  border-radius: 4px;
+  border-radius: 8px;
 }
 
 .tCardTitle {
@@ -555,7 +555,7 @@
 
 .skeletonLine {
   height: 12px;
-  border-radius: 4px;
+  border-radius: 8px;
   background-color: #303136;
   background-size: 400% 100%;
 
@@ -601,7 +601,7 @@
 .skeletonTabPill {
   height: 20px;
   width: 80px;
-  border-radius: 4px;
+  border-radius: 8px;
   background-color: #212225;
   background-size: 400% 100%;
 
@@ -617,7 +617,7 @@
 .skeletonFilterPill {
   height: 38px;
   width: 140px;
-  border-radius: 6px;
+  border-radius: 8px;
   background-color: #212225;
   background-size: 400% 100%;
 

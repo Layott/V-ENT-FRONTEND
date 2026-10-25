@@ -112,7 +112,7 @@
   background-color: #303136;
   color: var(--primary-bg);
 
-  border-radius: 6px;
+  border-radius: 8px;
   outline: none;
   font-size: var(--fs-p-size-sm-mobile);
   transition: background-color 0.25s ease-in-out;
@@ -334,7 +334,7 @@
   background: transparent;
   color: rgba(255, 255, 255, 0.7);
 
-  border-radius: 6px;
+  border-radius: 8px;
   font-size: var(--fs-p-size-sm-mobile);
   font-weight: var(--fw-medium);
   cursor: pointer;
@@ -355,7 +355,7 @@
   background-color: var(--v-ent-gold);
   color: var(--primary-bg);
 
-  border-radius: 6px;
+  border-radius: 8px;
   font-weight: var(--fw-semi-bold);
   transition: background-color 0.3s ease-in-out, transform 0s;
 }

@@ -24,7 +24,7 @@
 .input {
   width: 100%;
   background-color: rgba(255, 255, 255, 0.08);
-  border-radius: 9px;
+  border-radius: 10px;
   /* Measured at 390px: 12px landed the box on 43px, one short of the 44 a
      thumb needs. These are bought on a phone almost exclusively, so the
      rounding matters here more than anywhere else on the site. */

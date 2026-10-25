@@ -9,13 +9,13 @@
   flex: 1;
   height: 5px;
   background: #303136;
-  border-radius: 3px;
+  border-radius: 8px;
   overflow: hidden;
 }
 
 .meterFill {
   height: 100%;
-  border-radius: 3px;
+  border-radius: 8px;
   transition: width 0.3s ease, background-color 0.3s;
   width: 0;
 }
@@ -153,7 +153,7 @@
   background: #303136;
 
   padding: 0.4rem 0.7rem;
-  border-radius: 6px;
+  border-radius: 8px;
   color: var(--v-ent-gold);
   font-size: 0.85rem;
   letter-spacing: 0.08em;

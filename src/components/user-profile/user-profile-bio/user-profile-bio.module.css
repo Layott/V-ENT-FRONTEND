@@ -33,7 +33,7 @@
   background-color: red;
   color: white;
   padding: 10px 20px;
-  border-radius: 5px;
+  border-radius: 8px;
   font-size: 15px;
 
 }
@@ -118,7 +118,7 @@
   outline: none;
   border: none;
   cursor: pointer;
-  border-radius: 5px;
+  border-radius: 8px;
 }
 
 .editButtonLink {

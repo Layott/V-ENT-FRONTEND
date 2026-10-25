@@ -225,7 +225,7 @@
 
 .cardClose {
   background: var(--bv-tint, rgba(255, 255, 255, 0.08));
-  border-radius: 9px;
+  border-radius: 10px;
   color: var(--bv-text-soft, rgba(255, 255, 255, 0.75));
   cursor: pointer;
   flex-shrink: 0;

@@ -99,7 +99,7 @@
   animation-duration: 460ms;
   animation-timing-function: cubic-bezier(0.7, 0, 0.2, 1);
   background: var(--panel);
-  border-radius: 3px;
+  border-radius: 8px;
   height: 60px;
   margin-bottom: 8px;
   overflow: hidden;
@@ -140,7 +140,7 @@
      for white disappears on a dark row. See team_white() and org_tile()
      in CLAUDE/VIDEOS/RIVALRY/stream.py. */
   background: #fff;
-  border-radius: 3px;
+  border-radius: 8px;
   display: flex;
   height: 44px;
   justify-content: center;
@@ -251,7 +251,7 @@
 
 .plateBox {
   background: var(--panel);
-  border-radius: 4px;
+  border-radius: 8px;
   padding: 44px 76px;
   text-align: center;
 }

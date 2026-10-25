@@ -106,7 +106,7 @@
 .input {
   width: 100%;
   background-color: #26272C;
-  border-radius: 9px;
+  border-radius: 10px;
   padding: 10px 12px;
   color: #fff;
   font-family: 'ClashGrotesk-Variable', sans-serif;
@@ -162,7 +162,7 @@
 
 .primaryBtn {
   background-color: var(--v-ent-red);
-  border-radius: 9px;
+  border-radius: 10px;
   padding: 11px 22px;
   color: #fff;
   font-family: 'ClashGrotesk-Variable', sans-serif;
@@ -192,7 +192,7 @@
   display: inline-flex;
   align-items: center;
   background-color: #26272C;
-  border-radius: 9px;
+  border-radius: 10px;
   padding: 11px 18px;
   /* 44px: measured 39px on the phone with the door list beside the scanner. */
   min-height: 44px;
@@ -273,7 +273,7 @@
   max-width: 100%;
   width: auto;
   object-fit: cover;
-  border-radius: 6px;
+  border-radius: 8px;
 }
 
 .artNone {

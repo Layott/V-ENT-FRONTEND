@@ -12,6 +12,7 @@ import { signOut } from "next-auth/react";
 import { useT } from '@/i18n/LanguageProvider';
 import { useTx } from '@/i18n/LanguageProvider';
 import { readSignupRecord } from '@/lib/signupRecord';
+import BackLink from '@/components/back-link/BackLink';
 const EmailVerified = () => {
   const tx = useTx();
   const tt = useT();
@@ -120,6 +121,7 @@ const EmailVerified = () => {
       </header>
 
       <main className={styles.mainContainer}>
+        <BackLink href="/">{tt('back.toHome', 'Back to home')}</BackLink>
         {verificationStatus === "success" && <>
             <h1>{tt("ui.email.verified.successfully.26d2", "Email Verified Successfully")}</h1>
             <p>{tt("ui.email.has.been.successfully.23f3", "Your email has been successfully verified.")}</p>

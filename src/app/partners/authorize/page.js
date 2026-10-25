@@ -6,6 +6,7 @@ import { useSearchParams, useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 import styles from './authorize.module.css';
 import { useT } from '@/i18n/LanguageProvider';
+import BackLink from '@/components/back-link/BackLink';
 
 // The consent screen. Somebody arrives here from a partner's site and is asked,
 // in plain words, whether that site may see a named list of things. Nothing is
@@ -98,6 +99,7 @@ const AuthorizeContent = () => {
   };
   if (status === 'unauthenticated') {
     return <main className={styles.wrap}>
+      <BackLink href="/partners">{tt('back.toPartners', 'Back to partners')}</BackLink>
         <div className={styles.card}>
           <h1 className={styles.title}>{tt("ui.sign.continue.9a78", "Sign in to continue")}</h1>
           <p className={styles.body}>
@@ -110,6 +112,7 @@ const AuthorizeContent = () => {
       </main>;
   }
   return <main className={styles.wrap}>
+    <BackLink href="/partners">{tt('back.toPartners', 'Back to partners')}</BackLink>
       <div className={styles.card}>
         {error && <>
             <h1 className={styles.title}>{tt("ui.request.not.valid.cdfd", "This request is not valid")}</h1>

@@ -136,7 +136,7 @@
 .heroMetaPill {
   padding: 0.15rem 0.55rem;
   background-color: rgba(255, 255, 255, 0.12);
-  border-radius: 4px;
+  border-radius: 8px;
   text-transform: capitalize;
   font-size: 0.72rem;
 }
@@ -149,7 +149,7 @@
   justify-content: center;
   font-size: var(--fs-p-size-mobile);
   font-weight: var(--fw-semi-bold);
-  border-radius: 5px;
+  border-radius: 8px;
   text-decoration: none;
 }
 .heroSecondaryBtn {
@@ -160,7 +160,7 @@
   justify-content: center;
   background-color: rgba(255, 255, 255, 0.1);
   color: #fff;
-  border-radius: 5px;
+  border-radius: 8px;
   font-size: var(--fs-p-size-mobile);
   font-weight: var(--fw-semi-bold);
   text-decoration: none;
@@ -209,7 +209,7 @@
 .heroDotActive {
   background-color: #fff;
   width: 22px;
-  border-radius: 4px;
+  border-radius: 8px;
 }
 .heroSkeleton {
   width: 100%;
@@ -310,7 +310,7 @@
   top: 0.6rem;
   left: 0.6rem;
   padding: 0.2rem 0.55rem;
-  border-radius: 4px;
+  border-radius: 8px;
   background-color: rgba(0, 0, 0, 0.65);
   color: #fff;
   font-size: 0.7rem;
@@ -345,7 +345,7 @@
 .mangaTags { display: flex; gap: 0.3rem; flex-wrap: wrap; margin-top: 0.15rem; }
 .mangaTag {
   padding: 0.1rem 0.45rem;
-  border-radius: 3px;
+  border-radius: 8px;
   background-color: rgba(255, 255, 255, 0.06);
   color: rgba(255, 255, 255, 0.7);
   font-size: 0.7rem;
@@ -400,7 +400,7 @@
   color: #fff;
   font-size: 0.72rem;
   font-weight: var(--fw-medium);
-  border-radius: 3px;
+  border-radius: 8px;
 }
 .amvBody { padding: 0.75rem 1rem 1rem; display: flex; flex-direction: column; gap: 0.2rem; }
 .amvTitle {
@@ -452,7 +452,7 @@
   align-items: center;
   gap: 0.35rem;
   padding: 0.2rem 0.55rem;
-  border-radius: 4px;
+  border-radius: 8px;
   background-color: rgba(237, 28, 36, 0.92);
   color: #fff;
   font-size: 0.72rem;

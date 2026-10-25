@@ -20,7 +20,7 @@
   right: 1.1rem;
   width: 32px;
   height: 32px;
-  border-radius: 6px;
+  border-radius: 8px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -66,7 +66,7 @@
   scrollbar-color: rgba(255, 255, 255, 0.1) transparent;
 }
 .activityList::-webkit-scrollbar { width: 4px; }
-.activityList::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.1); border-radius: 4px; }
+.activityList::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.1); border-radius: 8px; }
 
 .activityItem {
   display: flex;

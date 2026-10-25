@@ -61,6 +61,7 @@ import { useT } from '@/i18n/LanguageProvider';
 import { appLocale } from '@/lib/appLocale';
 import { splitScan, verifySeal } from '@/lib/ticketSeal';
 import styles from './scan.module.css';
+import BackLink from '@/components/back-link/BackLink';
 
 const API = process.env.NEXT_PUBLIC_API_URL;
 // Answers the server will give again however many times a check-in is
@@ -766,6 +767,7 @@ function ScanContent() {
 
   return (
     <div className={styles.page}>
+      <BackLink href="/events">{tt('back.toEvents', 'Back to events')}</BackLink>
       <header className={styles.head}>
         <div>
           <h1 className={styles.title}>{tt('scan.title', 'Door')}</h1>

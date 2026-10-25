@@ -53,7 +53,7 @@
   letter-spacing: 0.08em;
   text-transform: uppercase;
   padding: 2px 7px;
-  border-radius: 4px;
+  border-radius: 8px;
 }
 .role_super    { background: rgba(237,28,36,0.15); color: var(--v-ent-red); }
 .role_finance  { background: rgba(212, 175, 55,0.12); color: var(--v-ent-gold); }
@@ -79,7 +79,7 @@
 .sectionList { list-style: none; padding: 0; display: flex; flex-direction: column; align-items: center; gap: 0.35rem; }
 .navItem {
   width: calc(100% - 1.5rem);
-  border-radius: 5px;
+  border-radius: 8px;
 
   transition: all 0.3s ease;
 }
@@ -91,7 +91,7 @@
   gap: 0.5rem;
   padding: 0.5rem 0.75rem;
   width: 100%;
-  border-radius: 5px;
+  border-radius: 8px;
   text-decoration: none;
   font-family: "ClashGrotesk-Variable", sans-serif;
   font-size: 0.9rem;
@@ -126,7 +126,7 @@
   align-items: center;
   gap: 0.65rem;
   padding: 0.5rem 0.75rem;
-  border-radius: 5px;
+  border-radius: 8px;
 
   transition: background-color 0.2s;
 }
@@ -161,7 +161,7 @@
   align-items: center;
   flex-shrink: 0;
   padding: 0.2rem;
-  border-radius: 4px;
+  border-radius: 8px;
   transition: color 0.2s;
 }
 .logoutBtn:hover { color: var(--v-ent-red); }
