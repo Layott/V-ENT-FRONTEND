@@ -62,6 +62,7 @@ import { appLocale } from '@/lib/appLocale';
 import { splitScan, verifySeal } from '@/lib/ticketSeal';
 import styles from './scan.module.css';
 import BackLink from '@/components/back-link/BackLink';
+import DoorStory from '@/components/door-story/DoorStory';
 
 const API = process.env.NEXT_PUBLIC_API_URL;
 // Answers the server will give again however many times a check-in is
@@ -396,7 +397,19 @@ function ScanContent() {
             body: JSON.stringify({ gate: item.gate, day: item.day, at: item.at }),
           });
           setServerDown(false);
-          if (res.ok) continue;
+          if (res.ok) {
+            // The server's answer says who this is (inbox 553): what they
+            // bought and how they got the ticket. The card admitted them from
+            // the list a moment ago; it gains the story now, if it is still
+            // showing the same person.
+            const body = await res.json().catch(() => ({}));
+            const story = body?.data?.story;
+            if (story) {
+              setLast((was) => (was && was.code === item.code && was.kind === 'in' && !was.story
+                ? { ...was, story } : was));
+            }
+            continue;
+          }
           if (SETTLED.has(res.status)) {
             // 409 is the server saying it already had this one, which is the
             // answer we wanted. The rest are refusals that will not change by
@@ -496,7 +509,7 @@ function ScanContent() {
         // is answered from here rather than by asking again.
         ticketsRef.current = { ...(ticketsRef.current || {}), [key]: ticket };
         setTickets(ticketsRef.current);
-        setLast({ kind: 'in', code: key, ticket });
+        setLast({ kind: 'in', code: key, ticket, story: body.data?.story || null });
         return;
       }
 
@@ -507,6 +520,7 @@ function ScanContent() {
           code: key,
           ticket: body.data.ticket || { attendee_name: first.attendee_name || '' },
           first: { at: first.at, gate: first.gate, by: first.by },
+          story: body.data?.story || null,
         });
         return;
       }
@@ -701,6 +715,9 @@ function ScanContent() {
     setPending(nextPending);
     remember(nextScanned, nextPending);
     setLast({ kind: 'in', code: key, ticket, offlineGenuine });
+    // With signal, send it now rather than at the next heartbeat, so the
+    // story (purchases, how they got the ticket) reaches the card in a second.
+    if (typeof navigator === 'undefined' || navigator.onLine) flushRef.current?.();
   }, [gate, day, remember, token, askServer, checkSeal]);
 
   const startCamera = useCallback(async () => {
@@ -910,6 +927,7 @@ function ScanContent() {
           {last.offlineGenuine && <span className={styles.resultSub}>
             {tt('scan.genuineOffline', 'Genuine ticket bought after the list was downloaded. Checked when the door is back online.')}
           </span>}
+          <DoorStory story={last.story} />
         </>}
 
         {last.kind === 'duplicate' && <>
@@ -930,6 +948,7 @@ function ScanContent() {
                 .replace('{time}', shortTime(last.first.at))}
             {last.first.by && ` · ${last.first.by}`}
           </span>
+          <DoorStory story={last.story} />
         </>}
 
         {/* A code that WAS real and has been given away. "Not on the list"
@@ -976,9 +995,12 @@ function ScanContent() {
             {tt('scan.ticketIsFor', 'This ticket is for {day}.')
               .replace('{day}', dayName(last.ticket.tier_day))}
           </span>}
-          <span className={styles.resultSub}>
+          {/* Only when it is true: an already used ticket was said to be
+              "not checked in" on the same card (walk, 25 October 2026). */}
+          {!last.already_checked_in && <span className={styles.resultSub}>
             {tt('scan.notAdmittedYet', 'Not checked in. Press Check to admit them.')}
-          </span>
+          </span>}
+          <DoorStory story={last.story} />
         </>}
 
         {last.kind === 'tampered' && <>

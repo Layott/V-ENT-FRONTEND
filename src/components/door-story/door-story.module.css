@@ -1,0 +1,81 @@
+/* The story under a door result. It sits on the result card's own colour, so it
+   takes the card's text colour and uses weight and opacity for rank, not
+   a second colour. Blocks are separated by space, not rules. */
+
+.story {
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+  margin-top: 0.85rem;
+  width: 100%;
+  text-align: left;
+}
+
+.block {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  min-width: 0;
+}
+
+.heading {
+  margin: 0;
+  font-size: 0.72rem;
+  font-weight: var(--fw-semi-bold);
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  opacity: 0.7;
+}
+
+.line {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: var(--fw-semi-bold);
+}
+
+.muted {
+  margin: 0;
+  font-size: 0.88rem;
+  opacity: 0.75;
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.link {
+  color: inherit;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+}
+
+.order {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  border-radius: 8px;
+  padding: 0.6rem 0.75rem;
+}
+
+.items {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.waiting {
+  margin: 0.2rem 0 0;
+  font-size: 0.9rem;
+  font-weight: var(--fw-bold);
+}

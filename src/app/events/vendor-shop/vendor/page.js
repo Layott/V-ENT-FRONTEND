@@ -9,6 +9,7 @@ import { useAutoRefresh } from '@/lib/useLiveData';
 import { mediaUrl } from '@/lib/mediaUrl';
 import InfoTip from '@/components/info-tip/InfoTip';
 import PayShortfall from '@/components/pay/PayShortfall';
+import { CollectCode, pickupSummary, refundSummary } from '@/components/vendor-orders/CollectCode';
 import { useState, useEffect, useCallback, useRef, Suspense, useMemo } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -61,6 +62,13 @@ export const VendorStallContent = ({ eventSlug = '', stallSlug = '' } = {}) => {
   const [placing, setPlacing] = useState(false);
   const [orderError, setOrderError] = useState('');
   const [placedOrder, setPlacedOrder] = useState(null);
+  const [categoryFilter, setCategoryFilter] = useState('');
+  // The code as typed, and the code the basket is priced with. Typing does not
+  // reprice anything; Apply does, and the quote is the one that answers.
+  const [promoInput, setPromoInput] = useState('');
+  const [promoCode, setPromoCode] = useState('');
+  const [promoError, setPromoError] = useState('');
+  const [quoteError, setQuoteError] = useState('');
   const authHeaders = useCallback(() => ({
     Authorization: `Bearer ${session?.user?.sessionToken || ''}`,
     'Content-Type': 'application/json'
@@ -164,30 +172,66 @@ export const VendorStallContent = ({ eventSlug = '', stallSlug = '' } = {}) => {
     setPickedVariant('');
   };
   const cartCount = cart.reduce((s, i) => s + i.qty, 0);
-  const cartTotalVc = cart.reduce((s, i) => s + Number(i.price || 0) * i.qty, 0);
+  // The event's own shop is collected at the event, never posted, so it never
+  // offers delivery whatever its products say.
+  const isOrganiser = vendor?.kind === 'organiser';
   // Delivery is offered only when every line can be delivered: an order is
   // fulfilled once, and the API refuses a delivery carrying a collect-only item.
-  const deliverable = cart.length > 0 && cart.every(i => i.can_deliver);
+  const deliverable = !isOrganiser && cart.length > 0 && cart.every(i => i.can_deliver);
+  // Every total on this page is the quote's. Until it answers there is no
+  // total, and the pay button waits for one.
+  const payTotalVc = quote ? quote.total_vc : null;
+  const delivering = deliverable && fulfilment === 'deliver';
   const viewerToken = viewer.token;
   useEffect(() => {
     if (!cartOpen || !cart.length || !viewerToken || !vendorId) { setQuote(null); return undefined; }
+    // The old total is not payable while the new one is being worked out:
+    // the button waits, so what it says is what is charged.
+    setQuote(null);
     const controller = new AbortController();
+    setQuoteError('');
     (async () => {
       try {
         const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/event/vendor/${encodeURIComponent(vendorId)}/quote/`, {
           method: 'POST', signal: controller.signal,
           headers: { Authorization: `Bearer ${viewerToken}`, 'Content-Type': 'application/json' },
-          body: JSON.stringify({ items: cart.map(i => ({ product_id: i.id, quantity: i.qty, variant: i.variant || '' })) })
+          body: JSON.stringify({
+            items: cart.map(i => ({ product_id: i.id, quantity: i.qty, variant: i.variant || '' })),
+            promo_code: promoCode || undefined,
+          })
         });
         const body = await res.json().catch(() => ({}));
-        setQuote(body?.status === 'success' ? body.data : null);
+        if (body?.status === 'success') {
+          setQuote(body.data);
+          return;
+        }
+        setQuote(null);
+        if (String(body?.code || '').startsWith('PROMO_')) {
+          // The code is refused, so the basket is priced without it and the
+          // reason stays on screen until the code is changed.
+          setPromoError(apiMessage(tt, body, 'promo.refused', 'That promo code cannot be used.'));
+          setPromoCode('');
+        } else {
+          setQuoteError(apiMessage(tt, body, 'stall.quoteFailed', 'Could not work out the total.'));
+        }
       } catch (err) {
-        if (err?.name !== 'AbortError') setQuote(null);
+        if (err?.name !== 'AbortError') {
+          setQuote(null);
+          setQuoteError(tt('api.NETWORK_UNREACHABLE', 'Could not reach the server. Check the connection and try again.'));
+        }
       }
     })();
     return () => controller.abort();
-  }, [cartOpen, cart, viewerToken, vendorId]);
-  const payTotalVc = quote ? quote.total_vc : cartTotalVc;
+  }, [cartOpen, cart, viewerToken, vendorId, promoCode, tt]);
+  const applyPromo = () => {
+    setPromoError('');
+    setPromoCode(promoInput.trim());
+  };
+  const removePromo = () => {
+    setPromoInput('');
+    setPromoCode('');
+    setPromoError('');
+  };
   const changeQty = (key, delta) => {
     setCart(prev => prev.map(i => lineKey(i) === key ? {
       ...i,
@@ -195,7 +239,7 @@ export const VendorStallContent = ({ eventSlug = '', stallSlug = '' } = {}) => {
     } : i).filter(i => i.qty > 0));
   };
   const placeOrder = async () => {
-    if (!cart.length) return;
+    if (!cart.length || !quote) return;
     if (payTotalVc > 0 && pin.length < 4) {
       setOrderError(tt('stall.pinNeeded', 'Enter your 4-digit wallet PIN to authorise this payment.'));
       return;
@@ -218,18 +262,29 @@ export const VendorStallContent = ({ eventSlug = '', stallSlug = '' } = {}) => {
             variant: i.variant || ''
           })),
           pin,
+          promo_code: promoCode || undefined,
           fulfilment: wantsDelivery ? 'deliver' : 'collect',
           delivery: wantsDelivery ? delivery : undefined
         })
       });
       const data = await res.json();
       if (data.status !== 'success') {
+        if (String(data?.code || '').startsWith('PROMO_')) {
+          // The code ran out or closed between the quote and the order: drop
+          // it, say why under the field, and the basket is quoted again without it.
+          setPromoError(apiMessage(tt, data, 'promo.refused', 'That promo code cannot be used.'));
+          setPromoCode('');
+          return;
+        }
         setOrderError(apiMessage(tt, data, "api.couldNotPlaceTheOrder", "Could not place the order."));
         return;
       }
       setPlacedOrder(data.data.order);
       setCart([]);
       setPin('');
+      setPromoCode('');
+      setPromoInput('');
+      setPromoError('');
       try {
         localStorage.removeItem(CART_STORAGE_KEY(eventId));
       } catch {}
@@ -277,6 +332,11 @@ export const VendorStallContent = ({ eventSlug = '', stallSlug = '' } = {}) => {
     });
     return map;
   }, [cart]);
+  // Category chips come from the stall; a product belongs to one by name.
+  const categories = vendor?.categories || [];
+  const shownProducts = (vendor?.products || []).filter(p => !categoryFilter || p.category === categoryFilter);
+  // On sale only when the sale price is below the full price.
+  const onSale = p => p.sale_price_vc != null && p.sale_price_vc < Number(p.price || 0);
   const renderShell = content => <div className={styles.pageContainer}>
       <Header />
       <MobileHeader />
@@ -366,8 +426,13 @@ export const VendorStallContent = ({ eventSlug = '', stallSlug = '' } = {}) => {
 
           <h2 className={styles.sectionTitle}>{tt("ui.products.fe0a", "Products")}</h2>
 
-          {!vendor.products || vendor.products.length === 0 ? <p className={styles.stateText}>{tt("ui.no.products.available.yet.33c5", "No products available yet.")}</p> : <div className={styles.productGrid}>
-              {vendor.products.map(p => <button key={p.id} className={styles.productCard} onClick={() => setActiveProduct(p)} type="button">
+          {categories.length > 0 && <div className={`${styles.optionRow} ${styles.categoryRow}`} role="group" aria-label={tt('stall.categories', 'Categories')}>
+              <button type="button" className={styles.optionChip} aria-pressed={categoryFilter === ''} onClick={() => setCategoryFilter('')}>{tt('stall.allCategories', 'All')}</button>
+              {categories.map(c => <button key={c} type="button" className={styles.optionChip} aria-pressed={categoryFilter === c} onClick={() => setCategoryFilter(c)}>{c}</button>)}
+            </div>}
+
+          {!vendor.products || vendor.products.length === 0 ? <p className={styles.stateText}>{tt("ui.no.products.available.yet.33c5", "No products available yet.")}</p> : shownProducts.length === 0 ? <p className={styles.stateText}>{tt('stall.noneInCategory', 'Nothing in this category yet.')}</p> : <div className={styles.productGrid}>
+              {shownProducts.map(p => <button key={p.id} className={styles.productCard} onClick={() => setActiveProduct(p)} type="button">
                   <div className={styles.productImgWrap}>
                     {p.image ? <Image src={mediaUrl(p.image)} alt={p.name} fill sizes="(min-width: 1024px) 25vw, 50vw" style={{
                 objectFit: 'cover'
@@ -380,7 +445,8 @@ export const VendorStallContent = ({ eventSlug = '', stallSlug = '' } = {}) => {
                   <div className={styles.productBody}>
                     <p className={styles.productName}>{p.name}</p>
                     <p className={styles.productPrice}>
-                      {formatNumber(Number(p.price || 0))} VC
+                      {onSale(p) && <s className={styles.priceWas}>{formatNumber(Number(p.price || 0))} VC</s>}{' '}
+                      {formatNumber(Number(onSale(p) ? p.sale_price_vc : p.price || 0))} VC
                     </p>
                     {(p.variants || []).length > 0 && <p className={styles.productOptions}>{p.variants.join(' · ')}</p>}
                     <span className={styles.addBtn}>
@@ -411,7 +477,8 @@ export const VendorStallContent = ({ eventSlug = '', stallSlug = '' } = {}) => {
               <p className={styles.productModalVendor}>{vendor.name}</p>
               <h2 className={styles.productModalName}>{activeProduct.name}</h2>
               <p className={styles.productModalPrice}>
-                {formatNumber(Number(activeProduct.price || 0))} VC
+                {onSale(activeProduct) && <s className={styles.priceWas}>{formatNumber(Number(activeProduct.price || 0))} VC</s>}{' '}
+                {formatNumber(Number(onSale(activeProduct) ? activeProduct.sale_price_vc : activeProduct.price || 0))} VC
               </p>
               {activeProduct.description && <p className={styles.productModalDesc}>{activeProduct.description}</p>}
               <p className={styles.stockHint}>
@@ -422,7 +489,7 @@ export const VendorStallContent = ({ eventSlug = '', stallSlug = '' } = {}) => {
                       formatNumber(Number(activeProduct.stock || 0)))
                       .replace('{booth}', vendor.booth_number || vendor.booth || '-')
                   : tx("Currently sold out - check back later.")}
-                {activeProduct.in_stock && activeProduct.can_deliver && ` · ${tt('stall.canDeliver', 'Can be delivered')}`}
+                {activeProduct.in_stock && activeProduct.can_deliver && !isOrganiser && ` · ${tt('stall.canDeliver', 'Can be delivered')}`}
               </p>
               {(activeProduct.variants || []).length > 0 && <div className={styles.optionBlock}>
                   <p className={styles.optionLabel}>{tt('stall.pickOption', 'Pick one')}</p>
@@ -479,7 +546,6 @@ export const VendorStallContent = ({ eventSlug = '', stallSlug = '' } = {}) => {
       {cart.length > 0 && !cartOpen && <div className={styles.checkoutBar}>
           <div className={styles.checkoutBarInfo}>
             <span className={styles.checkoutBarCount}>{plural(tt, cartCount, 'count.itemOne', '{n} item', 'count.item', '{n} items')}</span>
-            <span className={styles.checkoutBarTotal}>{formatNumber(cartTotalVc)} VC</span>
           </div>
           <button type="button" className={`${styles.checkoutBarBtn} goldBTN`} onClick={() => {
         setCartOpen(true);
@@ -505,7 +571,9 @@ export const VendorStallContent = ({ eventSlug = '', stallSlug = '' } = {}) => {
             </div>
 
             {placedOrder ? <div className={styles.cartBody}>
-                <p className={styles.orderCode}>{placedOrder.code}</p>
+                {placedOrder.fulfilment !== 'deliver'
+                  ? <CollectCode code={placedOrder.code} pickup={placedOrder.pickup || vendor?.pickup} tt={tt} />
+                  : <p className={styles.orderCode}>{placedOrder.code}</p>}
                 <p className={styles.orderHint}>
                   {placedOrder.fulfilment === 'deliver'
                     ? tt('stall.deliveryOnItsWay', 'It will be delivered to {name}. The stallholder marks it sent with a tracking number, and you see that in your orders.').replace('{name}', placedOrder.delivery_name || delivery.name)
@@ -538,21 +606,57 @@ export const VendorStallContent = ({ eventSlug = '', stallSlug = '' } = {}) => {
                         <span>{i.qty}</span>
                         <button type="button" onClick={() => changeQty(lineKey(i), 1)} aria-label={tt("ui.add.one.bb49", "Add one")}>+</button>
                       </span>
-                      <span>{formatNumber(Number(i.price || 0) * i.qty)} VC</span>
+                      <span>{(() => {
+                        // Today's price from the stall, not the one saved in the cart.
+                        const live = (vendor?.products || []).find(p => p.id === i.id) || i;
+                        return formatNumber(Number(onSale(live) ? live.sale_price_vc : live.price || 0));
+                      })()} VC {tt('stall.each', 'each')}</span>
                     </li>)}
                 </ul>
 
-                {quote && quote.buyer_fee_vc > 0 && (
-                  <div className={styles.cartTotalRow}>
-                    <span>{tt('stall.cartFee', 'Service fee ({pct}% + {flat} naira a unit)')
-                      .replace('{pct}', String(quote.fee_pct)).replace('{flat}', formatNumber(quote.fee_flat_ngn))}</span>
-                    <span>{formatNumber(quote.buyer_fee_vc)} VC</span>
+                {/* A promo code is priced by the quote, never by this page, and
+                    only a signed-in buyer gets a quote: a stranger sees the
+                    lines and the sign-in prompt below, never a box that does
+                    nothing or a total that never arrives. */}
+                {viewerToken && <>
+                <div className={styles.promoBlock}>
+                  <label className={styles.pinLabel} htmlFor="vendor-promo">{tt('stall.promoLabel', 'Promo code')}</label>
+                  <div className={styles.promoRow}>
+                    <input id="vendor-promo" className={styles.pinInputPlain} value={promoInput} onChange={e => setPromoInput(e.target.value)} placeholder={tt('stall.promoPlaceholder', 'Have a code?')} autoComplete="off" maxLength={40} />
+                    <button type="button" className={styles.promoApply} onClick={applyPromo} disabled={!promoInput.trim()}>{tt('stall.promoApply', 'Apply')}</button>
                   </div>
-                )}
-                <div className={styles.cartTotalRow}>
-                  <span>{tt("ui.total.b259", "Total")}</span>
-                  <span className={styles.cartTotalVal}>{formatNumber(payTotalVc)} VC</span>
+                  {promoCode && <div className={styles.promoApplied}>
+                      <span>{tt('stall.promoApplied', 'Code {code} applied').replace('{code}', promoCode)}</span>
+                      <button type="button" className={styles.promoRemove} onClick={removePromo}>{tt('stall.promoRemove', 'Remove')}</button>
+                    </div>}
+                  {promoError && <p className={styles.orderError} role="alert">{promoError}</p>}
                 </div>
+
+                {quoteError && <p className={styles.orderError} role="alert">{quoteError}</p>}
+                {!quote && !quoteError && <p className={styles.stateText}>{tt('stall.quoting', 'Working out your total…')}</p>}
+
+                {quote && <>
+                  <div className={styles.cartTotalRow}>
+                    <span>{tt('stall.itemsTotal', 'Items')}</span>
+                    <span>{formatNumber(quote.items_vc)} VC</span>
+                  </div>
+                  {quote.discount_ngn > 0 && <div className={styles.cartTotalRow}>
+                      <span>{tt('stall.promoSaves', 'Discount')}</span>
+                      <span>{tt('stall.nairaAmount', '{amount} naira').replace('{amount}', formatNumber(quote.discount_ngn))}</span>
+                    </div>}
+                  {quote.buyer_fee_vc > 0 && (
+                    <div className={styles.cartTotalRow}>
+                      <span>{tt('stall.cartFee', 'Service fee ({pct}% + {flat} naira a unit)')
+                        .replace('{pct}', String(quote.fee_pct)).replace('{flat}', formatNumber(quote.fee_flat_ngn))}</span>
+                      <span>{formatNumber(quote.buyer_fee_vc)} VC</span>
+                    </div>
+                  )}
+                  <div className={styles.cartTotalRow}>
+                    <span>{tt("ui.total.b259", "Total")}</span>
+                    <span className={styles.cartTotalVal}>{formatNumber(quote.total_vc)} VC</span>
+                  </div>
+                </>}
+                </>}
 
                 {/* Paying needs a wallet, so a stranger is told that here rather
                     than after typing a PIN. */}
@@ -570,9 +674,22 @@ export const VendorStallContent = ({ eventSlug = '', stallSlug = '' } = {}) => {
                       <textarea className={styles.pinInputPlain} rows={2} placeholder={tt('stall.deliveryAddress', 'Delivery address')} value={delivery.address} onChange={e => setDelivery({ ...delivery, address: e.target.value })} autoComplete="street-address" aria-label={tt('stall.deliveryAddress', 'Delivery address')} />
                       <input className={styles.pinInputPlain} placeholder={tt('stall.deliveryNote', 'Anything the rider should know (optional)')} value={delivery.note} onChange={e => setDelivery({ ...delivery, note: e.target.value })} maxLength={200} aria-label={tt('stall.deliveryNote', 'Anything the rider should know (optional)')} />
                     </div>}
-                  {!deliverable && cart.some(i => i.can_deliver) && <p className={styles.stateText}>{tt('stall.collectOnlyMixed', 'Something in this order can only be collected, so the whole order is collected at the booth.')}</p>}
+                  {!deliverable && !isOrganiser && cart.some(i => i.can_deliver) && <p className={styles.stateText}>{tt('stall.collectOnlyMixed', 'Something in this order can only be collected, so the whole order is collected at the booth.')}</p>}
 
-                  {cartTotalVc > 0 && <div className={styles.pinBlock}>
+                  {/* Before the PIN: where and when to collect, and what cancelling
+                      would get back, each in one plain line. */}
+                  {quote && <div className={styles.policyBlock}>
+                      {!delivering && <p className={styles.policyLine}>
+                        {pickupSummary(vendor.pickup, tt)
+                          ? tt('stall.collectWhen', 'Collect: {when}').replace('{when}', pickupSummary(vendor.pickup, tt))
+                          : tt('stall.collectNotSet', 'The stallholder has not said where or when to collect yet.')}
+                      </p>}
+                      <p className={styles.policyLine}>
+                        {refundSummary(vendor.refund_policy, tt) || tt('stall.refundUnknown', 'Ask the stallholder about refunds before you pay.')}
+                      </p>
+                    </div>}
+
+                  {payTotalVc > 0 && <div className={styles.pinBlock}>
                       <label className={styles.pinLabel} htmlFor="vendor-pin"><span className="fieldLabelRow">{tt("ui.wallet.pin.2cdf", "Wallet PIN")} <InfoTip id="walletPin" /></span></label>
                       <input id="vendor-pin" type="password" inputMode="numeric" maxLength={6} className={styles.pinInput} placeholder="••••" value={pin} onChange={e => setPin(e.target.value.replace(/\D/g, '').slice(0, 6))} autoComplete="off" />
                     </div>}
@@ -581,13 +698,13 @@ export const VendorStallContent = ({ eventSlug = '', stallSlug = '' } = {}) => {
 
                   {/* CEO, 13 September 2026: nobody has to go and buy VENT
                       COINS before they can buy from a stall. */}
-                  <PayShortfall needVc={payTotalVc} purpose="stall_order"
+                  <PayShortfall needVc={payTotalVc || 0} purpose="stall_order"
                     token={session?.user?.sessionToken}
                     resume={{ door: 'stall' }}
                     onPaid={() => setOrderError('')} />
 
-                  <button className={`${styles.checkoutBtn} goldBTN`} onClick={placeOrder} disabled={placing} type="button">
-                    {placing ? tx("Placing order…") : `${tt('stall.pay', 'Pay')} ${formatNumber(payTotalVc)} VC`}
+                  <button className={`${styles.checkoutBtn} goldBTN`} onClick={placeOrder} disabled={placing || !quote} type="button">
+                    {placing ? tx("Placing order…") : quote ? `${tt('stall.pay', 'Pay')} ${formatNumber(quote.total_vc)} VC` : tt('stall.pay', 'Pay')}
                   </button>
                 </NeedsAccount>
               </div>}

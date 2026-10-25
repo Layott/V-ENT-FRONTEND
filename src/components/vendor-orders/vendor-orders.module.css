@@ -158,3 +158,111 @@
   color: rgba(255, 255, 255, 0.5);
   font-size: 0.84rem;
 }
+
+/* The collect block: the QR on the left, the code and the pickup line beside
+   it. The QR sits on a white field because a camera reads black on white. */
+.collect {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.9rem;
+  margin-top: 0.9rem;
+}
+
+.qr {
+  flex: 0 0 auto;
+  width: 132px;
+  height: 132px;
+  border-radius: 10px;
+}
+
+.collectText {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.collectText .codeLabel {
+  margin-top: 0;
+}
+
+.collectText .code {
+  font-size: 1.25rem;
+  margin-top: 0.1rem;
+}
+
+.collectWhere {
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 0.84rem;
+  margin: 0.45rem 0 0;
+}
+
+/* Cancelling is a step, not a single press: the question is asked in the card. */
+.cancelRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.9rem;
+}
+
+.cancelBtn,
+.cancelConfirmBtn,
+.cancelKeepBtn {
+  min-height: 44px;
+  border-radius: 10px;
+  padding: 0 0.9rem;
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+
+.cancelBtn {
+  background-color: #33343a;
+  color: var(--primary-text, #ffffff);
+}
+
+.cancelBtn:hover {
+  background-color: #3a3b41;
+}
+
+.cancelConfirmBtn {
+  background-color: var(--v-ent-red, #ed1c24);
+  color: #ffffff;
+  font-weight: var(--fw-semi-bold, 600);
+}
+
+.cancelConfirmBtn:disabled,
+.cancelKeepBtn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.cancelKeepBtn {
+  background-color: transparent;
+  color: rgba(255, 255, 255, 0.75);
+}
+
+.cancelQuestion {
+  color: rgba(255, 255, 255, 0.75);
+  font-size: 0.88rem;
+  margin: 0;
+  flex: 1 1 100%;
+}
+
+.cancelNote {
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 0.84rem;
+  margin: 0.7rem 0 0;
+}
+
+.cancelProblem {
+  color: var(--v-ent-red, #ed1c24);
+  font-size: 0.88rem;
+  margin: 0.6rem 0 0;
+}
+
+.refundNote {
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 0.84rem;
+  margin: 0.5rem 0 0;
+}

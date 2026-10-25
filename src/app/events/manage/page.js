@@ -42,6 +42,7 @@ import RunOfShowPanel from '@/components/run-of-show/RunOfShowPanel';
 import EventGamesPanel from '@/components/party-games/EventGamesPanel';
 import EventSitePanel from '@/components/event-site/EventSitePanel';
 import VendorSlotsPanel from '@/components/vendor-slots/VendorSlotsPanel';
+import EventShopPanel from '@/components/event-shop/EventShopPanel';
 import StallsReviewPanel from '@/components/vendor-slots/StallsReviewPanel';
 import UserPicker from '@/components/user-picker/UserPicker';
 import PendingInvites from '@/components/invitations/PendingInvites';
@@ -72,7 +73,7 @@ const FUNNEL_LABELS = {
 };
 
 const TABS = ['tickets', 'money', 'numbers', 'messages', 'polls', 'games', 'holds',
-  'programme', 'run-of-show', 'queue', 'influencers', 'promos', 'vendors',
+  'programme', 'run-of-show', 'queue', 'influencers', 'promos', 'vendors', 'shop',
   'production', 'website', 'team'];
 // The tab used to be called overlays, before the studio existed for events.
 // Links carrying the old name still open the right place.
@@ -245,6 +246,7 @@ export const ManageEventContent = ({
     payee: ''
   });
   const [newPromo, setNewPromo] = useState({
+    scope: 'tickets',
     code: '',
     kind: 'percent',
     value: '',
@@ -701,10 +703,12 @@ export const ManageEventContent = ({
         ...newPromo,
         value: Number(newPromo.value) || 0,
         max_tickets: Number(newPromo.max_tickets) || 0,
-        referral_id: newPromo.referral_id || null
+        // A shop code is not credited to an influencer from this form.
+        referral_id: newPromo.scope === 'shop' ? null : (newPromo.referral_id || null)
       })
     }), 'manage.promoCreated', 'Promo created.');
     if (done) setNewPromo({
+      scope: 'tickets',
       code: '',
       kind: 'percent',
       value: '',
@@ -1070,6 +1074,7 @@ export const ManageEventContent = ({
     messages: tt('manage.tabMessages', 'Messages'),
     polls: tt('manage.tabPolls', 'Polls'),
     games: tt('console.tabGames', 'Games'),
+    shop: tt('console.tabShop', 'Shop'),
     production: tt('manage.tabProduction', 'Production')
   })[key];
   return <div className={styles.pageContainer}>
@@ -2655,6 +2660,9 @@ export const ManageEventContent = ({
                             <span className={styles.code}>
                               {row.kind === 'percent' ? `${Number(row.value)}%` : `-${Number(row.value)}`}
                             </span>
+                            {row.scope === 'shop' && <span className={styles.shopBadge}>
+                                {row.vendor_name ? `${tt('manage.promoShop', 'Shop')} · ${row.vendor_name}` : tt('manage.promoShop', 'Shop')}
+                              </span>}
                             {row.referral_name && <span className={styles.creditedTo}>
                                 {tt('manage.creditedTo', 'credited to {name}').replace('{name}', row.referral_name)}
                               </span>}
@@ -2679,6 +2687,17 @@ export const ManageEventContent = ({
                         </div>)}
                     </div>}
 
+                  {/* Where the code works. A shop code takes off what people
+                      buy from the event's own shop, not the tickets. */}
+                  <div className={styles.scopeRow} role="group" aria-label={tt('manage.promoScope', 'Where the code works')}>
+                    {[['tickets', 'manage.promoScopeTickets', 'Tickets'], ['shop', 'manage.promoScopeShop', 'Shop']].map(([value, key, fallback]) => (
+                      <button key={value} type="button" aria-pressed={newPromo.scope === value}
+                              className={newPromo.scope === value ? styles.scopeChipOn : styles.scopeChip}
+                              onClick={() => setNewPromo(p => ({ ...p, scope: value }))}>
+                        {tt(key, fallback)}
+                      </button>
+                    ))}
+                  </div>
                   <div className={styles.newRow}>
                     <input className={styles.input} placeholder={tt('manage.code', 'Code')} value={newPromo.code} onChange={e => setNewPromo(p => ({
                   ...p,
@@ -2695,17 +2714,17 @@ export const ManageEventContent = ({
                   ...p,
                   value: e.target.value
                 }))} />
-                    <input className={styles.input} type="number" min={0} placeholder={tt('manage.maxTickets', 'Ticket limit (0 = none)')} value={newPromo.max_tickets} onChange={e => setNewPromo(p => ({
+                    <input className={styles.input} type="number" min={0} placeholder={newPromo.scope === 'shop' ? tt('manage.maxItems', 'Item limit (0 = none)') : tt('manage.maxTickets', 'Ticket limit (0 = none)')} value={newPromo.max_tickets} onChange={e => setNewPromo(p => ({
                   ...p,
                   max_tickets: e.target.value
                 }))} />
-                    <select className={styles.input} value={newPromo.referral_id} onChange={e => setNewPromo(p => ({
+                    {newPromo.scope !== 'shop' && <select className={styles.input} value={newPromo.referral_id} onChange={e => setNewPromo(p => ({
                   ...p,
                   referral_id: e.target.value
                 }))}>
                       <option value="">{tt('manage.noCredit', 'Not credited to anybody')}</option>
                       {referrals.map(r => <option key={r.id} value={r.id}>{r.name}</option>)}
-                    </select>
+                    </select>}
                     <button type="button" className={styles.addBtn} disabled={busy || !newPromo.code.trim() || !newPromo.value} onClick={addPromo}>
                       <FaPlus /> {tt('manage.addPromo', 'Create')}
                     </button>
@@ -2747,6 +2766,8 @@ export const ManageEventContent = ({
                   <StallsReviewPanel eventRef={eventRef} token={token} onNotice={setNotice} />
                   <VendorSlotsPanel eventRef={eventRef} token={token} onNotice={setNotice} />
                 </section>}
+
+              {tab === 'shop' && <EventShopPanel eventRef={eventRef} token={token} />}
 
               {tab === 'production' && <section className={styles.card}>
                 {/* The studio: V-ENT's own graphics for an event, bound to the

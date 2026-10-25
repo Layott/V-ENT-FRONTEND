@@ -17,6 +17,7 @@ import { formatNumber } from '@/lib/datetime';
 import { useT } from '@/i18n/LanguageProvider';
 import styles from './vendor-orders.module.css';
 import { useAutoRefresh } from '@/lib/useLiveData';
+import { CollectCode, refundSummary } from './CollectCode';
 
 const API = process.env.NEXT_PUBLIC_API_URL;
 
@@ -25,6 +26,11 @@ export default function VendorOrders({ token }) {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [problem, setProblem] = useState('');
+  // Cancelling is two steps in the card itself: the question first, then the
+  // press. `confirming` is the order code being asked about, one at a time.
+  const [confirming, setConfirming] = useState('');
+  const [cancelBusy, setCancelBusy] = useState('');
+  const [cancelProblems, setCancelProblems] = useState({});
 
   const load = useCallback(async ({ quiet = false } = {}) => {
     if (!token) { setLoading(false); return; }
@@ -53,6 +59,35 @@ export default function VendorOrders({ token }) {
   // page (CEO, 28 September 2026, inbox 312: "all page should be like this").
   useAutoRefresh(() => load({ quiet: true }));
 
+  const cancelOrder = async code => {
+    setCancelBusy(code);
+    setCancelProblems(p => ({ ...p, [code]: '' }));
+    try {
+      const res = await fetch(`${API}/event/vendor/order/${encodeURIComponent(code)}/cancel/`, {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+      });
+      const body = await res.json().catch(() => ({}));
+      if (res.ok && body.status === 'success') {
+        setConfirming('');
+        await load();
+      } else {
+        setCancelProblems(p => ({
+          ...p,
+          [code]: apiMessage(tt, body, 'orders.cancelFailed', 'Could not cancel this order.'),
+        }));
+      }
+    } catch {
+      setCancelProblems(p => ({
+        ...p,
+        [code]: tt('api.NETWORK_UNREACHABLE',
+          'Could not reach the server. Check the connection and try again.'),
+      }));
+    } finally {
+      setCancelBusy('');
+    }
+  };
+
   const statusWord = status => ({
     pending: tt('orders.pending', 'Waiting at the stall'),
     paid: tt('orders.paid', 'Paid, not collected yet'),
@@ -77,52 +112,108 @@ export default function VendorOrders({ token }) {
       {problem && <p className={styles.problem} role="alert">{problem}</p>}
 
       <div className={styles.grid}>
-        {orders.map(order => (
-          <article key={order.id} className={styles.card}>
-            <div className={styles.cardHead}>
-              <div className={styles.who}>
-                <span className={styles.stall}>{order.vendor?.name}</span>
-                {order.vendor?.booth && (
-                  <span className={styles.booth}>
-                    {tt('orders.booth', 'Stall {n}').replace('{n}', order.vendor.booth)}
-                  </span>
-                )}
+        {orders.map(order => {
+          const collect = order.fulfilment !== 'deliver';
+          const open = order.status === 'pending' || order.status === 'paid';
+          const refund = open ? refundSummary(order.refund_policy, tt) : null;
+          return (
+            <article key={order.id} className={styles.card}>
+              <div className={styles.cardHead}>
+                <div className={styles.who}>
+                  <span className={styles.stall}>{order.vendor?.name}</span>
+                  {order.vendor?.booth && (
+                    <span className={styles.booth}>
+                      {tt('orders.booth', 'Stall {n}').replace('{n}', order.vendor.booth)}
+                    </span>
+                  )}
+                </div>
+                <span className={`${styles.status} ${styles[`status_${order.status}`] || ''}`}>
+                  {statusWord(order.status)}
+                </span>
               </div>
-              <span className={`${styles.status} ${styles[`status_${order.status}`] || ''}`}>
-                {statusWord(order.status)}
-              </span>
-            </div>
 
-            <p className={styles.codeLabel}>{tt('orders.code', 'Collection code')}</p>
-            <p className={styles.code}>{order.code}</p>
+              {/* The QR is something to show at the stall, so only an order
+                  still waiting to be handed over carries one; a cancelled or
+                  collected order keeps its code as plain text below. */}
+              {collect && (order.status === 'paid' || order.status === 'ready') ? (
+                <CollectCode code={order.code} pickup={order.pickup} tt={tt} />
+              ) : (
+                <>
+                  <p className={styles.codeLabel}>{tt('orders.code', 'Collection code')}</p>
+                  <p className={styles.code}>{order.code}</p>
+                </>
+              )}
 
-            <ul className={styles.items}>
-              {(order.items || []).map(item => (
-                <li key={item.product_id} className={styles.item}>
-                  <span className={styles.itemName}>
-                    <LuPackage aria-hidden="true" /> {item.name}{item.variant ? ` (${item.variant})` : ''}
-                  </span>
-                  <span className={styles.itemQty}>x{item.quantity}</span>
-                  <span className={styles.itemPrice}>
-                    {formatNumber(item.line_vc)} VC
-                  </span>
-                </li>
-              ))}
-            </ul>
+              <ul className={styles.items}>
+                {(order.items || []).map(item => (
+                  <li key={item.product_id} className={styles.item}>
+                    <span className={styles.itemName}>
+                      <LuPackage aria-hidden="true" /> {item.name}{item.variant ? ` (${item.variant})` : ''}
+                    </span>
+                    <span className={styles.itemQty}>x{item.quantity}</span>
+                    <span className={styles.itemPrice}>
+                      {formatNumber(item.line_vc)} VC
+                    </span>
+                  </li>
+                ))}
+              </ul>
 
-            <div className={styles.foot}>
-              <span className={styles.total}>
-                {tt('orders.total', 'Total')} {formatNumber(order.total_vc)} VC
-              </span>
-              <span className={styles.when}>
-                {order.collected_at
-                  ? tt('orders.collectedAt', 'Collected {when}')
-                    .replace('{when}', formatDateTime(order.collected_at))
-                  : formatDateTime(order.created_at)}
-              </span>
-            </div>
-          </article>
-        ))}
+              <div className={styles.foot}>
+                <span className={styles.total}>
+                  {tt('orders.total', 'Total')} {formatNumber(order.total_vc)} VC
+                </span>
+                <span className={styles.when}>
+                  {order.collected_at
+                    ? tt('orders.collectedAt', 'Collected {when}')
+                      .replace('{when}', formatDateTime(order.collected_at))
+                    : formatDateTime(order.created_at)}
+                </span>
+              </div>
+
+              {refund && <p className={styles.refundNote}>{refund}</p>}
+
+              {open && order.can_cancel && confirming !== order.code && (
+                <div className={styles.cancelRow}>
+                  <button type="button" className={styles.cancelBtn}
+                    onClick={() => { setConfirming(order.code); setCancelProblems(p => ({ ...p, [order.code]: '' })); }}>
+                    {tt('orders.cancelOrder', 'Cancel order')}
+                  </button>
+                </div>
+              )}
+
+              {open && confirming === order.code && (
+                <div className={styles.cancelRow} role="group" aria-label={tt('orders.cancelOrder', 'Cancel order')}>
+                  <p className={styles.cancelQuestion}>
+                    {tt('orders.cancelQuestion', 'Cancel this order? The stall\'s refund policy applies.')}
+                  </p>
+                  <button type="button" className={styles.cancelConfirmBtn}
+                    disabled={cancelBusy === order.code}
+                    onClick={() => cancelOrder(order.code)}>
+                    {cancelBusy === order.code
+                      ? tt('orders.cancelling', 'Cancelling…')
+                      : tt('orders.cancelYes', 'Yes, cancel it')}
+                  </button>
+                  <button type="button" className={styles.cancelKeepBtn}
+                    disabled={cancelBusy === order.code}
+                    onClick={() => setConfirming('')}>
+                    {tt('orders.cancelKeep', 'Keep it')}
+                  </button>
+                </div>
+              )}
+
+              {open && !order.can_cancel && order.cancel_refusal && (
+                <p className={styles.cancelNote}>
+                  {apiMessage(tt, { code: order.cancel_refusal }, 'orders.cancelRefused',
+                    'You cannot cancel this order now.')}
+                </p>
+              )}
+
+              {cancelProblems[order.code] && (
+                <p className={styles.cancelProblem} role="alert">{cancelProblems[order.code]}</p>
+              )}
+            </article>
+          );
+        })}
       </div>
     </section>
   );

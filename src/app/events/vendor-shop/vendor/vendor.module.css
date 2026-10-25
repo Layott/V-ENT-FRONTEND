@@ -821,7 +821,6 @@
 
 .checkoutBarInfo { display: flex; flex-direction: column; gap: 0.1rem; }
 .checkoutBarCount { font-size: 0.8rem; color: rgba(255, 255, 255, 0.6); }
-.checkoutBarTotal { font-weight: var(--fw-bold); font-size: 1.05rem; }
 
 .checkoutBarBtn {
   min-height: 44px;
@@ -837,4 +836,96 @@
 
 @media only screen and (max-width: 767px) {
   .checkoutBar { bottom: 64px; }  /* clear the mobile bottom nav */
+}
+
+/* Category chips sit above the grid, with the same gap as the section title. */
+.categoryRow {
+  margin: 0 0 1rem;
+}
+
+/* A struck-through full price beside the sale price. */
+.priceWas {
+  color: rgba(255, 255, 255, 0.45);
+  font-weight: var(--fw-regular);
+  margin-right: 0.35rem;
+}
+
+/* Promo code: the field and its button share a row, the applied state is a
+   filled line beneath, and a refusal reads in the same red as any order error. */
+.promoBlock {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+}
+
+.promoRow {
+  display: flex;
+  gap: 0.5rem;
+  align-items: stretch;
+}
+
+.promoRow .pinInputPlain {
+  flex: 1 1 auto;
+  min-width: 0;
+  width: auto;
+}
+
+.promoApply,
+.promoRemove {
+  min-height: 44px;
+  padding: 0 1rem;
+  border: none;
+  border-radius: 10px;
+  background-color: #2a2b30;
+  color: #fff;
+  font-family: inherit;
+  font-size: 0.9rem;
+  cursor: pointer;
+  flex: 0 0 auto;
+}
+
+.promoApply:hover,
+.promoRemove:hover {
+  background-color: #33343a;
+}
+
+.promoApply:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.promoApplied {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.6rem;
+  border-radius: 8px;
+  background-color: #2a2b30;
+  padding: 0.45rem 0.7rem;
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 0.88rem;
+}
+
+.promoRemove {
+  min-height: 36px;
+  padding: 0 0.7rem;
+  font-size: 0.82rem;
+  background-color: transparent;
+  color: rgba(255, 255, 255, 0.65);
+}
+
+/* Pickup and refund, each one plain line, before the PIN. */
+.policyBlock {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  border-radius: 10px;
+  background-color: #2a2b30;
+  padding: 0.7rem 0.85rem;
+}
+
+.policyLine {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.75);
+  font-size: 0.88rem;
 }

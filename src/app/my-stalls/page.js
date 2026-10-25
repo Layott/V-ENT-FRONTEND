@@ -120,6 +120,16 @@ const MyStallsPage = () => {
                           className={styles.name}>
                       {s.name}
                     </Link>
+                    {(s.role === 'staff' || s.kind === 'organiser') && (
+                      <span className={styles.chips}>
+                        {s.role === 'staff' && <span className={styles.roleChip}>
+                          {tt('stall.roleStaff', 'Staff')}
+                        </span>}
+                        {s.kind === 'organiser' && <span className={styles.roleChip}>
+                          {tt('stall.kindOrganiser', 'Event shop')}
+                        </span>}
+                      </span>
+                    )}
                     <p className={styles.meta}>
                       {s.event?.name}
                       {s.event?.start_date ? ` · ${formatDate(s.event.start_date)}` : ''}

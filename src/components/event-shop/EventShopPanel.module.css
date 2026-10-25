@@ -1,0 +1,103 @@
+/* The event's own shop, as the organiser sees it. Filled surfaces, no strokes,
+   no glow. Every control is 44px because the person pressing it may be on a
+   phone at the venue. */
+
+.card {
+  background-color: var(--overlay-gray);
+  border-radius: 14px;
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.title {
+  margin: 0;
+  font-size: var(--desktop-h5-size);
+  font-weight: var(--fw-bold);
+  color: #fff;
+}
+
+.muted {
+  margin: 0;
+  font-size: 0.88rem;
+  line-height: 1.55;
+  color: rgba(255, 255, 255, 0.55);
+  max-width: 70ch;
+}
+
+.error { margin: 0; font-size: 0.88rem; color: var(--v-ent-red); }
+
+.premiumBox {
+  background-color: #2a2b30;
+  border-radius: 12px;
+  padding: 0.9rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  align-items: flex-start;
+}
+
+/* The facts are a list of label and value pairs on a filled surface, not a
+   table: no rules between rows, the space does the separating. */
+.facts {
+  margin: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 0.6rem;
+}
+
+.fact {
+  background-color: #2a2b30;
+  border-radius: 12px;
+  padding: 0.8rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  min-width: 0;
+}
+
+.label {
+  font-size: 0.78rem;
+  font-weight: var(--fw-medium);
+  color: rgba(255, 255, 255, 0.55);
+}
+
+.value {
+  margin: 0;
+  font-size: 0.92rem;
+  color: #fff;
+  overflow-wrap: anywhere;
+}
+
+.actions {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.primary,
+.ghost {
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  padding: 0 1.1rem;
+  border-radius: 10px;
+  font-size: 0.88rem;
+  font-weight: var(--fw-semi-bold);
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.primary { background-color: var(--v-ent-success); color: #fff; }
+.ghost { background-color: #33343a; color: rgba(255, 255, 255, 0.78); }
+
+.primary:disabled {
+  background-color: #2a2b30;
+  color: rgba(255, 255, 255, 0.3);
+  cursor: not-allowed;
+}
+
+@media (max-width: 720px) {
+  .primary, .ghost { width: 100%; justify-content: center; }
+}
