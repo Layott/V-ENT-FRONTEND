@@ -23,6 +23,7 @@
 // remembered, so the next read of the same lobby needs fewer corrections.
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import Link from 'next/link';
 import { LuCamera, LuPencil, LuPlus, LuTrash2, LuKeyRound } from 'react-icons/lu';
 import { useT } from '@/i18n/LanguageProvider';
 import { apiMessage } from '@/lib/apiMessage';
@@ -237,6 +238,8 @@ function ReadSheet({ match, lobby, tt, tournamentRef, token, ocr, onCommitted, o
   const [rows, setRows] = useState(null);
   const [shots, setShots] = useState([]);
   const [problem, setProblem] = useState('');
+  // The upload was refused because nobody has connected a key yet.
+  const [needsKey, setNeedsKey] = useState(false);
   const [busy, setBusy] = useState(false);
   const timer = useRef(null);
   const alive = useRef(true);
@@ -339,6 +342,7 @@ function ReadSheet({ match, lobby, tt, tournamentRef, token, ocr, onCommitted, o
         poll(body.data.job.id);
         return;
       }
+      setNeedsKey(body?.code === 'OCR_KEY_REQUIRED');
       setProblem(apiMessage(tt, body, 'br.uploadFailed', 'The screenshots were not uploaded.'));
     } catch {
       setProblem(netFail(tt));
@@ -414,6 +418,11 @@ function ReadSheet({ match, lobby, tt, tournamentRef, token, ocr, onCommitted, o
 
       {reading && <p className={styles.state} role="status">{tt('br.reading', 'Reading the screenshots. This takes about half a minute.')}</p>}
       {problem && <p className={styles.problem} role="alert">{problem}</p>}
+      {problem && needsKey && (
+        <p className={styles.note}>
+          <Link href="/settings?panel=keys" className={styles.keyLink}>{tt('br.connectKeyLink', 'Connect it in Settings')}</Link>
+        </p>
+      )}
 
       {rows && <>
         {shots.length > 0 && (
@@ -868,7 +877,7 @@ export default function BattleRoyaleConsole({ tournamentRef, token, gameTitle = 
                           <button type="button" className={styles.matchBtn}
                                   disabled={busy || !current.ocr.available || stage.status === 'complete'}
                                   title={current.ocr.available ? undefined
-                                    : tt('api.OCR_NOT_CONFIGURED', 'Reading screenshots is not switched on. Type the results in.')}
+                                    : `${tt('api.OCR_KEY_REQUIRED', 'Reading screenshots uses your own Gemini key.')} ${tt('br.connectKeyLink', 'Connect it in Settings')}`}
                                   aria-expanded={Boolean(isOpen && open.kind === 'read')}
                                   onClick={() => setOpen(isOpen && open.kind === 'read' ? null : { kind: 'read', id: match.id })}>
                             <LuCamera aria-hidden="true" /> {tt('br.fromScreenshots', 'From screenshots')}
@@ -905,7 +914,10 @@ export default function BattleRoyaleConsole({ tournamentRef, token, gameTitle = 
                       )}
                     </div>
                     {!current.ocr.available && canRecord && index === 0 && (
-                      <p className={styles.note}>{tt('api.OCR_NOT_CONFIGURED', 'Reading screenshots is not switched on. Type the results in.')}</p>
+                      <p className={styles.note}>
+                        {tt('api.OCR_KEY_REQUIRED', 'Reading screenshots uses your own Gemini key.')}{' '}
+                        <Link href="/settings?panel=keys" className={styles.keyLink}>{tt('br.connectKeyLink', 'Connect it in Settings')}</Link>
+                      </p>
                     )}
                     {(match.room_code || match.room_password) && (
                       <div className={styles.room}>
