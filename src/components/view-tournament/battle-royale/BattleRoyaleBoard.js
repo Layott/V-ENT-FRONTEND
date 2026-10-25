@@ -23,6 +23,12 @@ const API = process.env.NEXT_PUBLIC_API_URL;
 
 const scoringLine = (tt, s) => {
   if (!s) return '';
+  // Scored by time, the placement table counts for nothing: saying "Placement
+  // points: Free Fire" on that stage told players the wrong rules (walk, 25 Oct).
+  if (s.score_by === 'time') {
+    return tt('br.scoringLineTime', 'Lobbies of up to {size} squads, {maps} matches each. Ranked by total time, fastest first; a squad that does not finish ranks below every squad that does.')
+      .replace('{size}', s.lobby_size).replace('{maps}', s.maps);
+  }
   const table = s.placement_preset === 'pubg_mobile'
     ? tt('br.presetPubg', 'PUBG Mobile (10 down to 1 for eighth)')
     : s.placement_preset === 'custom'

@@ -11325,6 +11325,7 @@ export const dictionaries = {
     'br.scoreByTimeNote': 'Lowest total time wins. Leave the placement empty and it follows from the times.',
     'br.scoringHead': 'Points',
     'br.scoringLine': 'Lobbies of up to {size} squads, {maps} matches each. Placement points: {table}. {kill} a kill.',
+    'br.scoringLineTime': 'Lobbies of up to {size} squads, {maps} matches each. Ranked by total time, fastest first; a squad that does not finish ranks below every squad that does.',
     'br.scoringNote': 'A squad that did not play a match gets no placement points for it. Bonus and penalty points are added per match when results are entered, each with a reason.',
     'br.settingsSaved': 'Saved. Every result already entered has been rescored.',
     'br.setup': 'Set up the lobbies',

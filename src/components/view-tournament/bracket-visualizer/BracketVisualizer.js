@@ -754,7 +754,10 @@ export default function BracketVisualizer({ tournamentId, token = null, tourname
         </button>
       )}
 
-      {battleRoyale ? null : rounds.length === 0 ? (
+      {/* A ladder starts with no matches at all: every match is made by a
+          challenge, so "no fixtures yet" here hid the only buttons that make
+          one (walk, 25 October 2026). */}
+      {battleRoyale ? null : rounds.length === 0 && !ladderFormat ? (
         <p className={styles.state}>
           {stages.length && !stages.find(s => s.id === data.stage_id)?.drawn
             ? tt('bracket.stageNotDrawn', 'This stage is drawn when the one before it finishes.')
