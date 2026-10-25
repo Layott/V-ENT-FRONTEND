@@ -83,7 +83,7 @@ export default function AdminChart({
         {/* Y-axis grid lines + labels */}
         {yTicks.map((t, i) => <g key={i}>
             <line x1={PAD_L} y1={t.y} x2={W - PAD_R} y2={t.y} stroke="rgba(255,255,255,0.05)" strokeWidth={1} />
-            <text x={PAD_L - 6} y={t.y + 4} fontSize="10" textAnchor="end" fill="rgba(255,255,255,0.35)" fontFamily="Inter, sans-serif">
+            <text x={PAD_L - 6} y={t.y + 4} fontSize="10" textAnchor="end" fill="rgba(255,255,255,0.35)" fontFamily="ClashGrotesk-Variable, sans-serif">
               {format(t.value)}
             </text>
           </g>)}
@@ -108,7 +108,7 @@ export default function AdminChart({
           </>}
 
         {/* X-axis labels */}
-        {data.map((d, i) => (i % xStep === 0 || i === data.length - 1) && <text key={`xl-${i}`} x={xFor(i)} y={H - 8} fontSize="10" textAnchor="middle" fill="rgba(255,255,255,0.35)" fontFamily="Inter, sans-serif">
+        {data.map((d, i) => (i % xStep === 0 || i === data.length - 1) && <text key={`xl-${i}`} x={xFor(i)} y={H - 8} fontSize="10" textAnchor="middle" fill="rgba(255,255,255,0.35)" fontFamily="ClashGrotesk-Variable, sans-serif">
               {tx(d.label)}
             </text>)}
 
@@ -116,7 +116,7 @@ export default function AdminChart({
         {hover !== null && data[hover] && <g>
             <line x1={xFor(hover)} y1={PAD_T} x2={xFor(hover)} y2={PAD_T + innerH} stroke="rgba(255,255,255,0.18)" strokeWidth={1} strokeDasharray="2,2" />
             <rect x={Math.max(PAD_L, Math.min(W - 100, xFor(hover) - 50))} y={PAD_T + 2} width={100} height={36} fill="#303136" stroke="rgba(255,255,255,0.18)" rx={4} />
-            <text x={Math.max(PAD_L + 50, Math.min(W - 50, xFor(hover)))} y={PAD_T + 16} fontSize="10" textAnchor="middle" fill="rgba(255,255,255,0.55)" fontFamily="Inter, sans-serif">
+            <text x={Math.max(PAD_L + 50, Math.min(W - 50, xFor(hover)))} y={PAD_T + 16} fontSize="10" textAnchor="middle" fill="rgba(255,255,255,0.55)" fontFamily="ClashGrotesk-Variable, sans-serif">
               {tx(data[hover].label)}
             </text>
             <text x={Math.max(PAD_L + 50, Math.min(W - 50, xFor(hover)))} y={PAD_T + 30} fontSize="11" textAnchor="middle" fill="#fff" fontFamily="Fraunces, sans-serif" fontWeight="600">

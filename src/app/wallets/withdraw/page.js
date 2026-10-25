@@ -513,7 +513,7 @@ const WithdrawPage = () => {
               fontSize: '0.82rem',
               color: 'rgba(255,255,255,0.5)',
               marginBottom: '1rem',
-              fontFamily: 'Inter, sans-serif'
+              fontFamily: 'ClashGrotesk-Variable, sans-serif'
             }}>
                   {tt("ui.confirm.destination.bank.amount.1698", "Confirm the destination bank and amount before submitting for review.")}
                 </p>

@@ -1610,6 +1610,7 @@ const table = {
  "scrim.chooseGameFirst": "Choose a game and a mode, and the formats it can be played to appear here.",
  "scrim.liveFor": "Your {format} {game} challenge is now live for {who}.",
  "landing.browse": "Browse tournaments",
+ "landing.openApp": "Go to my V-ENT",
  "landing.seeTournaments": "See what is running now",
  "landing.seeEvents": "Browse events",
  "landing.noAccountNeeded": "No account needed to look around.",
