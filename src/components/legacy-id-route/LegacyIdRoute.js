@@ -26,9 +26,11 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
+import { useViewer } from '@/lib/gating';
 
 /**
- * @param resolve  async (id) => slug | null. How this kind of record is looked
+ * @param resolve  async (id, token) => slug | null. The token is the viewer's,
+ *                 so an organiser's old link to their own draft still resolves. How this kind of record is looked
  *                 up. Given the id from the query string.
  * @param to       (slug) => the named address to land on.
  * @param fallback where to go when the record cannot be found or has no slug,
@@ -39,6 +41,7 @@ const LegacyIdRoute = ({ resolve, to, fallback }) => {
   const router = useRouter();
   const params = useSearchParams();
   const [failed, setFailed] = useState(false);
+  const viewer = useViewer();
 
   useEffect(() => {
     const id = params.get('id');
@@ -46,10 +49,13 @@ const LegacyIdRoute = ({ resolve, to, fallback }) => {
       router.replace(fallback);
       return undefined;
     }
+    // A draft answers only its organiser, so nothing is asked until the
+    // session has resolved and the token can go with the request.
+    if (viewer.loading) return undefined;
     let cancelled = false;
     (async () => {
       try {
-        const slug = await resolve(id);
+        const slug = await resolve(id, viewer.token);
         if (cancelled) return;
         if (slug) router.replace(to(slug));
         else setFailed(true);
@@ -61,7 +67,7 @@ const LegacyIdRoute = ({ resolve, to, fallback }) => {
     // `resolve` and `to` are defined inline by each route and would restart
     // this on every render if they were listed. The id is what decides.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [params, router]);
+  }, [params, router, viewer.loading, viewer.token]);
 
   useEffect(() => {
     if (failed) router.replace(fallback);

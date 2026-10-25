@@ -34,6 +34,7 @@ function StageStandings({ tournamentId, slug }) {
   const [stageId, setStageId] = useState(null);
   const { data, loading, error, refresh } = useLiveData(async ({ signal }) => {
     const query = stageId ? `?stage=${encodeURIComponent(stageId)}` : '';
+    // draft-read: public, an embed is offered for published tournaments only and runs with no session
     const res = await fetch(`${API}/tournament/get-tournament-brackets/${tournamentId}/${query}`, { signal });
     const body = await res.json().catch(() => ({}));
     if (!res.ok || body.status !== 'success') throw body;

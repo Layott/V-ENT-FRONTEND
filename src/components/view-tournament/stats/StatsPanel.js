@@ -21,6 +21,8 @@ import { metricLabel } from '@/lib/metricLabel';
 import { apiMessage } from '@/lib/apiMessage';
 import { plural } from '@/lib/plural';
 import { useAutoRefresh } from '@/lib/useLiveData';
+import { useViewer } from '@/lib/gating';
+import { authHeader } from '@/lib/authHeader';
 import UserChip from '@/components/user-chip/UserChip';
 import styles from './stats.module.css';
 
@@ -124,7 +126,7 @@ function Board({ board, unit, tt }) {
   );
 }
 
-function HeadToHead({ tournamentId, field, suggested, tt }) {
+function HeadToHead({ tournamentId, field, suggested, token, tt }) {
   // The whole field, not only those with a head-to-head result: in a battle
   // royale nobody has one, and the comparison is who finished ahead.
   const options = useMemo(() => (field || []).filter(Boolean), [field]);
@@ -143,7 +145,7 @@ function HeadToHead({ tournamentId, field, suggested, tt }) {
     setBusy(true);
     setProblem('');
     try {
-      const res = await fetch(`${API}/tournament/${tournamentId}/stats/head-to-head/?a=${a}&b=${b}`);
+      const res = await fetch(`${API}/tournament/${tournamentId}/stats/head-to-head/?a=${a}&b=${b}`, { headers: authHeader(token) });
       const body = await res.json().catch(() => ({}));
       if (res.ok && body.status === 'success') setData(body.data);
       else { setData(null); setProblem(apiMessage(tt, body, 'stats.h2hFailed', 'Could not compare those two.')); }
@@ -152,7 +154,7 @@ function HeadToHead({ tournamentId, field, suggested, tt }) {
     } finally {
       setBusy(false);
     }
-  }, [a, b, tournamentId, tt]);
+  }, [a, b, tournamentId, token, tt]);
 
   useEffect(() => { if (a && b && a !== b) compare(); }, [a, b]); // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -242,11 +244,15 @@ export default function StatsPanel({ tournamentId }) {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  // A draft's stats answer only the people running it: wait for the session
+  // and send its token (inbox 539).
+  const viewer = useViewer();
 
   const load = useCallback(async ({ quiet = false } = {}) => {
     if (!tournamentId) { setLoading(false); return; }
+    if (viewer.loading) return;
     try {
-      const res = await fetch(`${API}/tournament/${tournamentId}/stats/`);
+      const res = await fetch(`${API}/tournament/${tournamentId}/stats/`, { headers: authHeader(viewer.token) });
       const body = await res.json().catch(() => ({}));
       if (res.ok && body.status === 'success') { setData(body.data); setError(''); }
       else if (!quiet) setError(apiMessage(tt, body, 'stats.failed', 'Could not load the stats.'));
@@ -255,7 +261,7 @@ export default function StatsPanel({ tournamentId }) {
     } finally {
       setLoading(false);
     }
-  }, [tournamentId, tt]);
+  }, [tournamentId, viewer.loading, viewer.token, tt]);
 
   useEffect(() => { load(); }, [load]);
   // Current without a reload, as every result screen on this page is.
@@ -314,7 +320,7 @@ export default function StatsPanel({ tournamentId }) {
         </p>}
       </section>}
 
-      <HeadToHead tournamentId={tournamentId} field={data.field} suggested={data.suggested_pair} tt={tt} />
+      <HeadToHead tournamentId={tournamentId} field={data.field} suggested={data.suggested_pair} token={viewer.token} tt={tt} />
 
       {entrants.length > 0 && <section>
         <h2 className={styles.sectionTitle}>{tt('stats.everyEntrant', 'Every entrant')}</h2>

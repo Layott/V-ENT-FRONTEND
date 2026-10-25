@@ -57,6 +57,7 @@ import { entryStatusLabel } from '@/lib/labels';
 import UserPicker from '@/components/user-picker/UserPicker';
 import { prizeText } from '@/lib/prize';
 import BackLink from '@/components/back-link/BackLink';
+import { authHeader } from '@/lib/authHeader';
 const API = process.env.NEXT_PUBLIC_API_URL;
 const TABS = [{
   // The thin `/tournaments/<slug>/manage` page, which every organiser link used
@@ -1346,8 +1347,8 @@ const Manage = () => <Suspense fallback={<div style={{
 const ManageLegacy = () => (
   <Suspense fallback={<div style={{ minHeight: '100vh', backgroundColor: '#131316' }} />}>
     <LegacyIdRoute
-      resolve={async id => {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/tournament/view-tournament/${id}/`);
+      resolve={async (id, token) => {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/tournament/view-tournament/${id}/`, { headers: authHeader(token) });
       const body = await res.json().catch(() => null);
       // Two shapes, because the two endpoints answer differently: an event
       // nests under `data.event`, a tournament sits directly on `data`.

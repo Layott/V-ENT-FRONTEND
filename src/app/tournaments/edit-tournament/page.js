@@ -35,6 +35,7 @@ import styles from './edit-tournament.module.css';
 import { useT } from '@/i18n/LanguageProvider';
 import LegacyIdRoute from '@/components/legacy-id-route/LegacyIdRoute';
 import BackLink from '@/components/back-link/BackLink';
+import { authHeader } from '@/lib/authHeader';
 
 const API = process.env.NEXT_PUBLIC_API_URL;
 
@@ -645,8 +646,8 @@ const EditTournamentPage = () => (
 const EditTournamentPageLegacy = () => (
   <Suspense fallback={<div style={{ minHeight: '100vh', backgroundColor: '#131316' }} />}>
     <LegacyIdRoute
-      resolve={async id => {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/tournament/view-tournament/${id}/`);
+      resolve={async (id, token) => {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/tournament/view-tournament/${id}/`, { headers: authHeader(token) });
       const body = await res.json().catch(() => null);
       // Two shapes, because the two endpoints answer differently: an event
       // nests under `data.event`, a tournament sits directly on `data`.
