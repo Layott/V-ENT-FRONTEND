@@ -41,6 +41,7 @@ import StageGraph from '@/components/stage-graph/StageGraph';
 import FeedsPanel from './FeedsPanel';
 import { useT } from '@/i18n/LanguageProvider';
 import DateField from '@/components/date-field/DateField';
+import WatchFormat from '@/components/format-explainer/WatchFormat';
 import { formatWithZone, isoToLocalInput, localInputToISO } from '@/lib/datetime';
 import { presetButton, roomText } from '@/components/view-tournament/match-room/matchWords';
 import BRSettingsFields, { defaultBR } from './br/BRSettingsFields';
@@ -1767,6 +1768,7 @@ export default function StagesPanel({ tournamentRef, token, can = {}, showToast,
                                        ['sub_wins', tt('stages.tieRuleSubWins', 'Games won')],
                                        ['crew', tt('stages.tieRuleCrew', 'Crew battle')]]}
                              onChange={v => setSetting(index, 'tie_rule', v)} />
+                      <WatchFormat formats="team_ties" />
                     </div>
                     {(s.tie_rule || 'goals') !== 'crew' && (
                       <div className={styles.field}>
@@ -1855,6 +1857,7 @@ export default function StagesPanel({ tournamentRef, token, can = {}, showToast,
                           ? tt('stages.mcmahonNote', 'The field is split by seed. The top band starts on 0, the next on -1, and so on. Every round pairs equal scores, so games are even from round one.')
                           : tt('stages.mcmahonOffNote', 'An ordinary Swiss: everybody starts level.')}
                       </span>
+                      <WatchFormat formats="mcmahon" />
                     </div>
                     <div className={styles.field}>
                       <span className={styles.fieldLabel}>{tt('stages.decisive', 'A match that can send a side through or out')}</span>
@@ -2357,6 +2360,7 @@ export default function StagesPanel({ tournamentRef, token, can = {}, showToast,
                 </button>
               )}
               <p className={styles.subhead}>{tt('stages.splitTitle', 'A split league')}</p>
+              <WatchFormat formats="split_league" />
               <p className={styles.note}>
                 {tt('stages.splitHint', 'Everybody plays one league. Its top places play on in a top league and the rest in a bottom league, each keeping the points it won. This replaces the stages above.')}
               </p>
@@ -2394,6 +2398,7 @@ export default function StagesPanel({ tournamentRef, token, can = {}, showToast,
                 </button>
               )}
               <p className={styles.subhead}>{tt('stages.swissTitle', 'A Swiss with a top cut')}</p>
+              <WatchFormat formats="swiss_top_cut" />
               <p className={styles.note}>
                 {tt('stages.swissHint', 'Everybody plays a fixed number of Swiss rounds, then the top places play a single elimination bracket. Card games run it this way. This replaces the stages above.')}
               </p>

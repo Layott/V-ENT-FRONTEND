@@ -96,6 +96,14 @@ export const ART = {
   waits: 'Waits for the final',
   challengeWon: '{winner} wins and they swap',
   challengeHeld: '{winner} wins, nobody moves',
+  topLeague: 'Top league',
+  bottomLeague: 'Bottom league',
+  score: 'Score',
+  mapsDone: 'Maps',
+  totalTime: 'Total time',
+  winsGames: '{team} win on games won',
+  crewGame: 'Game {n}',
+  crewWins: '{team} knock out every opponent',
 };
 
 /** A drawn word with its numbers filled in, through a translator. */

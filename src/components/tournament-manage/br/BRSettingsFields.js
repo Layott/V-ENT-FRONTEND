@@ -15,6 +15,7 @@
 
 import { LuArrowDown, LuArrowUp, LuPlus, LuX } from 'react-icons/lu';
 import { useT } from '@/i18n/LanguageProvider';
+import WatchFormat from '@/components/format-explainer/WatchFormat';
 import styles from './br.module.css';
 
 export const BR_PRESETS = {
@@ -221,6 +222,7 @@ export default function BRSettingsFields({ value, onChange, disabled = false, is
                options={[['points', tt('br.scoreByPoints', 'Points')],
                          ['time', tt('br.scoreByTime', 'Time')]]}
                onChange={v => set('score_by', v)} />
+        <WatchFormat formats={s.score_by === 'time' ? 'battle_royale_time' : 'battle_royale'} />
       </div>
       {s.score_by === 'time' && (
         <p className={styles.note}>

@@ -116,6 +116,10 @@ export function table(story, {
     reveal() {
       return Object.fromEntries([...fixed, ...Object.values(ids)].map((id) => [id, { o: 1 }]));
     },
+    /** Takes the whole table off the stage, headings and stripes included. */
+    hide() {
+      return Object.fromEntries([...fixed, ...Object.values(ids)].map((id) => [id, { o: 0 }]));
+    },
     /**
      * Rows in their new order with new numbers. `sorted` is a list of objects
      * with a `name`; `cells(row)` gives the numbers for the columns, in order;
