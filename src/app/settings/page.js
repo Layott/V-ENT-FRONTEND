@@ -16,6 +16,7 @@ import PaymentsPanel from '@/components/settings-panels/PaymentsPanel';
 import LanguagePanel from '@/components/settings-panels/LanguagePanel';
 import DevicesPanel from '@/components/settings-panels/DevicesPanel';
 import LinkedAccountsPanel from '@/components/settings-panels/LinkedAccountsPanel';
+import ConnectedKeysPanel from '@/components/settings-panels/ConnectedKeysPanel';
 import DangerZonePanel from '@/components/settings-panels/DangerZonePanel';
 import shared from '@/components/settings-panels/settingsShared.module.css';
 import styles from './settings.module.css';
@@ -50,6 +51,9 @@ const PANEL_IDS = [{
 }, {
   id: 'linked',
   key: 'settings.linkedAccounts'
+}, {
+  id: 'keys',
+  key: 'settings.connectedKeys'
 }, {
   id: 'danger',
   key: 'settings.dangerZone',
@@ -381,6 +385,7 @@ const SettingsContent = () => {
               {activePanel === 'language' && <LanguagePanel language={settings?.language} timezone={settings?.timezone} dateFormat={settings?.date_format} onSave={handleSaveLanguage} />}
               {activePanel === 'devices' && <DevicesPanel devices={devices} onRevoke={handleRevokeDevice} onRevokeAllOthers={handleRevokeAllOthers} showToast={showToast} />}
               {activePanel === 'linked' && <LinkedAccountsPanel showToast={showToast} />}
+              {activePanel === 'keys' && <ConnectedKeysPanel showToast={showToast} />}
               {activePanel === 'danger' && <DangerZonePanel showToast={showToast} />}
             </section>
           </div>

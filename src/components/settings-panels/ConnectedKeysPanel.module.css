@@ -1,0 +1,143 @@
+/* Connected keys. Surfaces and space only: no outlines, no rules between rows. */
+
+.stack {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.card {
+  background-color: var(--overlay-gray);
+  border-radius: 14px;
+  padding: 1.5rem;
+}
+
+.sub {
+  font-family: "ClashGrotesk-Variable", sans-serif;
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.55);
+  line-height: 1.5;
+  margin: 0 0 0.9rem;
+}
+
+.link {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  font-family: "ClashGrotesk-Variable", sans-serif;
+  font-size: 0.88rem;
+  color: var(--v-ent-gold);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  margin-top: 1.1rem;
+}
+
+.label {
+  font-family: "ClashGrotesk-Variable", sans-serif;
+  font-size: 0.85rem;
+  color: #fff;
+  margin-top: 0.5rem;
+}
+
+.input,
+.select {
+  width: 100%;
+  min-height: 44px;
+  background-color: #303136;
+  color: #fff;
+  padding: 0 14px;
+  border-radius: 10px;
+  font-family: "ClashGrotesk-Variable", sans-serif;
+  font-size: 0.9rem;
+  outline: none;
+}
+
+.input:focus-visible,
+.select:focus-visible {
+  outline: 2px solid var(--v-ent-gold);
+  outline-offset: 2px;
+}
+
+.input:disabled,
+.select:disabled {
+  opacity: 0.55;
+}
+
+.connect {
+  min-height: 44px;
+  margin-top: 0.75rem;
+  padding: 0 1.4rem;
+  border: none;
+  border-radius: 10px;
+  background-color: var(--v-ent-gold);
+  color: #fff;
+  font-family: "Fraunces", sans-serif;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  align-self: flex-start;
+}
+
+.connect:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.error {
+  font-family: "ClashGrotesk-Variable", sans-serif;
+  font-size: 0.8rem;
+  color: var(--v-ent-red);
+  margin: 0.6rem 0 0;
+}
+
+.list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.85rem 1rem;
+  background-color: #303136;
+  border-radius: 10px;
+}
+
+.itemText {
+  font-family: "ClashGrotesk-Variable", sans-serif;
+  font-size: 0.9rem;
+  color: #fff;
+  overflow-wrap: anywhere;
+}
+
+.remove {
+  min-height: 44px;
+  min-width: 44px;
+  padding: 0 0.9rem;
+  border: none;
+  border-radius: 10px;
+  background: transparent;
+  color: var(--v-ent-red);
+  font-family: "Fraunces", sans-serif;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.remove:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
