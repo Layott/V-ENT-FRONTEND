@@ -21,6 +21,20 @@ export const PREFIXED = LOCALES.filter((l) => l !== DEFAULT_LOCALE);
 export const LOCALE_HEADER = 'x-vent-locale';
 export const LOCALE_COOKIE = 'vent_locale';
 
+/**
+ * The address an English prefix names, or null when there is none.
+ *
+ * "/en/tournaments/x" gives "/tournaments/x" and "/en" gives "/". English has
+ * no prefix (above), so "/en/..." is not an address of its own; somebody who
+ * typed it means English. Read before `splitLocale`, which leaves "/en" alone.
+ */
+export function englishPath(pathname) {
+  const parts = (pathname || '/').split('/');
+  if (parts[1] !== DEFAULT_LOCALE) return null;
+  const rest = `/${parts.slice(2).join('/')}`;
+  return rest === '/' ? '/' : rest.replace(/\/$/, '') || '/';
+}
+
 /** Split "/fr/tournaments/x" into { locale: 'fr', path: '/tournaments/x' }. */
 export function splitLocale(pathname) {
   const parts = (pathname || '/').split('/');

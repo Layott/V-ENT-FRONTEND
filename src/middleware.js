@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getToken } from "next-auth/jwt";
 import {
   DEFAULT_LOCALE, LOCALES as LOCALE_CODES, LOCALE_COOKIE, LOCALE_HEADER, PREFIXED,
-  localeForCountry, localePath, preferredLocale, splitLocale,
+  englishPath, localeForCountry, localePath, preferredLocale, splitLocale,
 } from "@/lib/locale";
 import { PROTECTED_PATTERNS, PROTECTED_ROUTES } from "@/lib/gatedRoutes";
 import { apiOriginOf, contentSecurityPolicy, frameAncestorsValue } from "@/lib/securityHeaders.mjs";
@@ -87,6 +87,22 @@ export default async function middleware(req) {
   // ── An organiser's own address ──────────────────────────────────
   const host = hostOf(req.headers.get('x-forwarded-host') || req.headers.get('host'));
   if (!isOwnHost(host)) return customHost(req, host);
+
+  // ── An English prefix ───────────────────────────────────────────
+  //
+  // English is served unprefixed, so `/en/tournaments` is not an address. It
+  // is what somebody types to get English back, or out of habit from other
+  // sites, so it means English: they go to the address it names and the
+  // choice is kept. Left alone, a French cookie prefixed it again, to
+  // /fr/en/tournaments, which is a 404.
+  const english = englishPath(req.nextUrl.pathname);
+  if (english !== null) {
+    const res = redirectTo(english + (req.nextUrl.search || ''), req);
+    res.cookies.set(LOCALE_COOKIE, DEFAULT_LOCALE, {
+      path: '/', maxAge: 60 * 60 * 24 * 365, sameSite: 'lax',
+    });
+    return res;
+  }
 
   // ── Language prefix ─────────────────────────────────────────────
   //
