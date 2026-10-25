@@ -50,6 +50,7 @@ import { prizeText, prizeRowText, prizeOf, coinText, formatPrizeMoney } from '@/
 import BackLink from '@/components/back-link/BackLink';
 import ResumeCard from '@/components/registration-draft/ResumeCard';
 import { readDraft } from '@/lib/registrationDraft';
+import { authHeader } from '@/lib/authHeader';
 
 // Note: `escapeText` is intentionally NOT imported/used here. Every field that
 // touches the DOM in this file (description, rules, chat) renders as a plain
@@ -1244,8 +1245,8 @@ const ViewTournament = () => <Suspense fallback={<div style={{
 const ViewTournamentLegacy = () => (
   <Suspense fallback={<div style={{ minHeight: '100vh', backgroundColor: '#131316' }} />}>
     <LegacyIdRoute
-      resolve={async id => {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/tournament/view-tournament/${id}/`);
+      resolve={async (id, token) => {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/tournament/view-tournament/${id}/`, { headers: authHeader(token) });
       const body = await res.json().catch(() => null);
       // Two shapes, because the two endpoints answer differently: an event
       // nests under `data.event`, a tournament sits directly on `data`.

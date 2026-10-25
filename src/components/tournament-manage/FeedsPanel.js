@@ -208,7 +208,7 @@ export default function FeedsPanel({ tournamentRef, stages, token, showToast, on
     setProblem('');
     setPicking({ feed, rows: null, chosen: '' });
     try {
-      const res = await fetch(`${API}/tournament/get-tournament-brackets/${feed.source.tournament.slug}/?stage=${feed.source.stage_id}`);
+      const res = await fetch(`${API}/tournament/get-tournament-brackets/${feed.source.tournament.slug}/?stage=${feed.source.stage_id}`, { headers: auth });
       const body = await res.json().catch(() => ({}));
       const rows = res.ok && body.status === 'success' ? (body.data.standings || []) : [];
       setPicking({ feed, rows: rows.filter(r => Number(r.rank) > Number(feed.place_to)), chosen: '' });
