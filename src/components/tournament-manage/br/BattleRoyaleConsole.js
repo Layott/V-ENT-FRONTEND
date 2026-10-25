@@ -877,7 +877,7 @@ export default function BattleRoyaleConsole({ tournamentRef, token, gameTitle = 
                           <button type="button" className={styles.matchBtn}
                                   disabled={busy || !current.ocr.available || stage.status === 'complete'}
                                   title={current.ocr.available ? undefined
-                                    : `${tt('api.OCR_KEY_REQUIRED', 'Reading screenshots uses your own Gemini key.')} ${tt('br.connectKeyLink', 'Connect it in Settings')}`}
+                                    : `${tt('api.OCR_KEY_REQUIRED', 'Reading screenshots uses your own AI key.')} ${tt('br.connectKeyLink', 'Connect it in Settings')}`}
                                   aria-expanded={Boolean(isOpen && open.kind === 'read')}
                                   onClick={() => setOpen(isOpen && open.kind === 'read' ? null : { kind: 'read', id: match.id })}>
                             <LuCamera aria-hidden="true" /> {tt('br.fromScreenshots', 'From screenshots')}
@@ -915,7 +915,7 @@ export default function BattleRoyaleConsole({ tournamentRef, token, gameTitle = 
                     </div>
                     {!current.ocr.available && canRecord && index === 0 && (
                       <p className={styles.note}>
-                        {tt('api.OCR_KEY_REQUIRED', 'Reading screenshots uses your own Gemini key.')}{' '}
+                        {tt('api.OCR_KEY_REQUIRED', 'Reading screenshots uses your own AI key.')}{' '}
                         <Link href="/settings?panel=keys" className={styles.keyLink}>{tt('br.connectKeyLink', 'Connect it in Settings')}</Link>
                       </p>
                     )}
