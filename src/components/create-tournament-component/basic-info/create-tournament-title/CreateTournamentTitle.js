@@ -115,10 +115,10 @@ const CreateTournamentTitle = ({
 
           <div className={createTournamentStyles.inputGroup}>
             <label htmlFor="gameMode" className={createTournamentStyles.labelWithAsterisk}>
-              <span className="fieldLabelRow">{tt("ui.game.mode.9424", "Game Mode")}
-              <span className={createTournamentStyles.asteriskSpan}>
-                <FaAsterisk className={createTournamentStyles.asteriskIcon} />
-              </span> <InfoTip id="gameMode" /></span>
+              {/* Optional, like the edition: nothing ever required it, and a
+                  tournament inside an event often has no set mode (CEO, 27
+                  October 2026, inbox 563). The asterisk said otherwise. */}
+              <span className="fieldLabelRow">{tt("ui.game.mode.9424", "Game Mode")} <InfoTip id="gameMode" /></span>
             </label>
             <select id="gameMode" value={selectedGameMode} onChange={e => {
         handleGameModeChange(e);
