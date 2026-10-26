@@ -15,8 +15,9 @@ import { formatNumber, ngnFromVc, NIGERIAN_BANKS } from '@/components/wallet/wal
 import PinPrompt from '@/components/wallet/PinPrompt';
 import UsdtDestination from '@/components/wallet/UsdtDestination';
 import styles from '../wallets.module.css';
+import segment from './withdraw.module.css';
 import { useT } from '@/i18n/LanguageProvider';
-import { useTx } from '@/i18n/LanguageProvider';
+import { useTx } from '@/i18n/LanguageProvider';
 import BackLink from '@/components/back-link/BackLink';
 const STEPS = [{
   n: 1,
@@ -422,12 +423,12 @@ const WithdrawPage = () => {
                 {/* Where it goes. Filled chips, the same shape as the bank
                     tabs below, because they are the same kind of choice. */}
                 <div className={styles.modalTabs}>
-                  <button type="button" className={`${styles.modalTab} ${rail === 'bank' ? styles.modalTabActive : ''}`}
+                  <button type="button" className={`${segment.segment} ${rail === 'bank' ? segment.segmentOn : ''}`}
                           aria-pressed={rail === 'bank'}
                           onClick={() => { setRail('bank'); setError(''); }}>
                     {tt('wallet.railBank', 'Bank, in naira')}
                   </button>
-                  <button type="button" className={`${styles.modalTab} ${rail === 'usdt' ? styles.modalTabActive : ''}`}
+                  <button type="button" className={`${segment.segment} ${rail === 'usdt' ? segment.segmentOn : ''}`}
                           aria-pressed={rail === 'usdt'}
                           onClick={() => { setRail('usdt'); setError(''); }}>
                     {tt('wallet.railUsdt', 'USDT, to a crypto wallet')}
@@ -442,10 +443,10 @@ const WithdrawPage = () => {
                   onEnabledChange={setUsdtOpen} />}
 
                 {rail === 'bank' && <div className={styles.modalTabs}>
-                  <button type="button" className={`${styles.modalTab} ${tab === 'saved' ? styles.modalTabActive : ''}`} onClick={() => setTab('saved')}>
+                  <button type="button" className={`${segment.segment} ${tab === 'saved' ? segment.segmentOn : ''}`} onClick={() => setTab('saved')}>
                     {tt("ui.saved.bank.486d", "Saved Bank")}
                   </button>
-                  <button type="button" className={`${styles.modalTab} ${tab === 'new' ? styles.modalTabActive : ''}`} onClick={() => setTab('new')}>
+                  <button type="button" className={`${segment.segment} ${tab === 'new' ? segment.segmentOn : ''}`} onClick={() => setTab('new')}>
                     {tt("ui.new.bank.2327", "New Bank")}
                   </button>
                 </div>}
@@ -644,4 +645,4 @@ const WithdrawPage = () => {
       />
     </div>;
 };
-export default WithdrawPage;
+export default WithdrawPage;

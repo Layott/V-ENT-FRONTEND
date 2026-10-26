@@ -210,6 +210,17 @@
   background-color: rgba(255, 255, 255, 0.18);
 }
 
+/* The way back to the events list. On a phone it is a 44px target. */
+.backLink {
+  display: inline-flex;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+@media (max-width: 720px) {
+  .backLink { min-height: 44px; }
+}
+
 /* ── Tabs ── */
 .tabRow {
   /* The header is fixed, so scrolling the strip to the viewport top would put
@@ -233,27 +244,31 @@
 
 .tabRow::-webkit-scrollbar { display: none; }
 
+/* Filled chips, never an underline and never a ring. The chosen chip has the
+   stronger fill and the white label. */
 .tabBtn {
-  background-color: transparent;
+  background-color: var(--overlay-gray);
   border: none;
-  color: rgba(255, 255, 255, 0.55);
+  border-radius: 8px;
+  color: rgba(255, 255, 255, 0.6);
   font-family: inherit;
   font-size: var(--fs-p-size-mobile);
   font-weight: var(--fw-medium);
   min-height: 44px;
-  padding: 0.7rem 1.05rem;
+  padding: 0.6rem 1.05rem;
   cursor: pointer;
-  position: relative;
   white-space: nowrap;
-  transition: color 0.2s;
+  transition: background-color 0.12s, color 0.12s;
 }
 
-.tabBtn:hover { color: var(--primary-bg); }
+.tabBtn:hover {
+  background-color: #2a2b30;
+  color: var(--primary-bg);
+}
 
-/* The chosen tab is the white one, as on the tournament page. It carried a
-   red underline until 12 September, the one tab strip on the site that did,
-   and the design rule says never an underline. */
-.tabBtnActive {
+.tabBtnActive,
+.tabBtnActive:hover {
+  background-color: #33343a;
   color: var(--primary-bg);
   font-weight: var(--fw-semi-bold);
 }
@@ -420,21 +435,12 @@ a.sponsorLink:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
   object-fit: contain;
 }
 
-.sponsorChip {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.3rem;
-  font-size: 0.7rem;
-  background-color: var(--overlay-gray);
-
-  color: rgba(255, 255, 255, 0.75);
-  padding: 0.3rem 0.6rem;
-  border-radius: 8px;
-}
-
-.sponsorStar {
-  color: #fbc64b;
-  font-size: 0.6rem;
+/* A sponsor without a logo: the name, plainly, on the tile. */
+.sponsorName {
+  color: var(--primary-bg);
+  font-size: 0.85rem;
+  font-weight: var(--fw-semi-bold);
+  text-align: center;
 }
 
 .miniStats {

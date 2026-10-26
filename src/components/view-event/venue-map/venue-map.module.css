@@ -5,12 +5,16 @@
   margin-top: 0.9rem;
 }
 
+/* isolation keeps Leaflet's own control layer (z-index 1000) inside the map,
+   so the fixed bottom menu (z-index 950) paints above the zoom buttons when
+   the map scrolls under it. Without this the zoom sat over the Home icon. */
 .mapHolder {
   width: 100%;
   height: 300px;
   border-radius: 14px;
   overflow: hidden;
   background-color: #212225;
+  isolation: isolate;
 }
 
 @media (min-width: 900px) {

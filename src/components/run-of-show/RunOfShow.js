@@ -567,12 +567,19 @@ export function RunOfShowLoader({ token, kind, ownerRef, authToken, compact }) {
   }
 
   if (state === 'error') {
+    // A way out as well as a retry: the owner's page is where the run of show
+    // is set up, so a failed load should not strand the reader here.
+    const ownerHref = ownerRef ? `/${kind === 'tournament' ? 'tournaments' : 'events'}/${encodeURIComponent(ownerRef)}` : '';
     return (
       <div className={styles.empty}>
+        <h2 className={styles.emptyTitle}>{tt('ros.errorTitle', 'The run of show did not load')}</h2>
         <p className={styles.emptyLine}>{error}</p>
         <button type="button" className={styles.emptyAction} onClick={() => load()}>
           {tt('ros.tryAgain', 'Try again')}
         </button>
+        {ownerHref && <Link href={ownerHref} className={styles.emptyLink}>
+          {kind === 'tournament' ? tt('ros.backToTournament', 'Back to the tournament') : tt('ros.backToEvent', 'Back to the event')}
+        </Link>}
       </div>
     );
   }

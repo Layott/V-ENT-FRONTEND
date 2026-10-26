@@ -19,7 +19,8 @@
   width: 100%;
   margin-top: 60px;
   min-height: calc(100vh - 60px);
-  padding: 1.25rem 1rem 6rem;
+  /* The bottom menu is 70px and fixed; the last gated button must clear it. */
+  padding: 1.25rem 1rem calc(7.5rem + env(safe-area-inset-bottom));
 }
 
 @media only screen and (min-width: 1024px) {

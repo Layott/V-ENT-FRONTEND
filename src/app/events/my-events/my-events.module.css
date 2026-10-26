@@ -168,6 +168,21 @@
   background-color: #f0c65f;
 }
 
+/* Delete and Cancel event: a quiet red text button, set apart from View and
+   Edit. Doubled class so it wins over the trigger style of the shared control. */
+.dangerText.dangerText {
+  background-color: transparent;
+  color: var(--v-ent-red);
+  font-weight: 600;
+  min-height: 40px;
+  padding: 8px 10px;
+}
+
+.dangerText.dangerText:hover {
+  background-color: rgba(237, 28, 36, 0.12);
+  color: var(--v-ent-light-red);
+}
+
 /* The links this person sells through, under the events they run. */
 .linksSection { margin-top: 2.5rem; }
 .sectionTitle {
@@ -228,4 +243,11 @@
   font-size: 0.85rem;
   color: #ff8b90;
   margin-bottom: 1rem;
+}
+
+/* The quiet red danger button is still a thumb target (audit 557, round 2 re-measure). */
+@media (max-width: 720px) {
+  .dangerText.dangerText {
+    min-height: 44px;
+  }
 }

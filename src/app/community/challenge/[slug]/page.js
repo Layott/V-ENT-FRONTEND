@@ -212,10 +212,13 @@ const ChallengePage = () => {
   }
   if (error || !challenge) {
     return <Shell>
-      <p className={styles.stateText}>{error}</p>
-      <Link href="/community?tab=challenges" className={styles.backLink}>
-        <FiArrowLeft /> {tt('ui.back.challenges.3f01', 'Back to challenges')}
-      </Link>
+      <div className={styles.lockedCard}>
+        <h1 className={styles.lockedTitle}>{tt('community.challengeMissingTitle', 'Challenge not found')}</h1>
+        <p className={styles.lockedSub}>{error || tt('msg.couldNotReachServer', 'Could not reach the server. Try again.')}</p>
+        <Link href="/community" className={styles.lockedBtn}>
+          <FiArrowLeft /> {tt('community.backToCommunity', 'Back to community')}
+        </Link>
+      </div>
     </Shell>;
   }
 
@@ -290,7 +293,7 @@ const ChallengePage = () => {
           <Link href="/login" className={styles.inlineLink}>{tt('ui.login.7b3c', 'Log in')}</Link>
         </p>}
 
-        {canAccept && !pickingTeam && <button className={`${styles.primaryBtn} goldBTN`} onClick={onAccept} disabled={!!busy}>
+        {canAccept && !pickingTeam && <button className={`${styles.primaryBtn} redBTN`} onClick={onAccept} disabled={!!busy}>
           {tt('ui.accept.challenge.6d20', 'Accept this challenge')}
         </button>}
 
@@ -322,7 +325,7 @@ const ChallengePage = () => {
             {tt('msg.resultNeedsBoth', 'Whatever you put here counts once the other side agrees with it.')}
           </p>
           <ScoreInputs a={sideAName} b={sideBName} scores={scores} setScores={setScores} tt={tt} />
-          <button type="submit" className={`${styles.primaryBtn} goldBTN`} disabled={!!busy || scores.a === '' || scores.b === ''}>
+          <button type="submit" className={`${styles.primaryBtn} redBTN`} disabled={!!busy || scores.a === '' || scores.b === ''}>
             {tt('ui.send.result.1a49', 'Send the result')}
           </button>
         </form>}
@@ -338,7 +341,7 @@ const ChallengePage = () => {
               .replace('{a}', String(result.score_a)).replace('{b}', String(result.score_b))}
           </p>
           <div className={styles.confirmRow}>
-            <button className={`${styles.primaryBtn} goldBTN`} onClick={confirmResult} disabled={!!busy}>
+            <button className={`${styles.primaryBtn} redBTN`} onClick={confirmResult} disabled={!!busy}>
               {tt('ui.that.is.right.9e05', 'That is right')}
             </button>
             <button className={styles.secondaryBtn} onClick={() => setDisputing(true)} disabled={!!busy}>
@@ -354,7 +357,7 @@ const ChallengePage = () => {
           </p>
           <ScoreInputs a={sideAName} b={sideBName} scores={scores} setScores={setScores} tt={tt} />
           <div className={styles.confirmRow}>
-            <button type="submit" className={`${styles.primaryBtn} goldBTN`} disabled={!!busy || scores.a === '' || scores.b === ''}>
+            <button type="submit" className={`${styles.primaryBtn} redBTN`} disabled={!!busy || scores.a === '' || scores.b === ''}>
               {tt('ui.send.my.score.7b41', 'Send my score')}
             </button>
             <button type="button" className={styles.secondaryBtn} onClick={() => setDisputing(false)}>

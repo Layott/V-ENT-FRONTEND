@@ -45,6 +45,51 @@
   padding: 4rem 1rem;
 }
 
+/* The not-found card. Same pattern as the organisations locked screen: a
+   filled surface, a heading, one sentence and one way out. */
+.lockedCard {
+  background-color: var(--overlay-gray);
+  border-radius: 12px;
+  padding: 3rem 2rem;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+  max-width: 480px;
+  margin: 2rem auto;
+}
+
+.lockedTitle {
+  font-size: var(--desktop-h6-size);
+  font-weight: var(--fw-bold);
+  margin: 0;
+  color: var(--primary-bg);
+}
+
+.lockedSub {
+  font-size: var(--fs-p-size-mobile);
+  color: rgba(255, 255, 255, 0.55);
+  margin: 0 0 0.5rem;
+}
+
+.lockedBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  background-color: var(--v-ent-red);
+  color: var(--primary-bg);
+  padding: 0.55rem 1rem;
+  font-size: var(--fs-p-size-mobile);
+  font-weight: var(--fw-semi-bold);
+  border: none;
+  border-radius: 8px;
+  font-family: inherit;
+  cursor: pointer;
+}
+
+.lockedBtn:hover { background-color: var(--v-ent-light-red); }
+
 .backLink {
   display: inline-flex;
   align-items: center;

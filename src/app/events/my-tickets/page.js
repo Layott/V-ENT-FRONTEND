@@ -318,14 +318,14 @@ const MyTickets = () => {
                 {tt("ui.purchased.event.passes.show.be01", "Your purchased event passes - show the QR at the door.")}
               </p>
             </div>
-            <Link href="/events" className={`${styles.browseBtn} goldBTN`}>
+            <Link href="/events" className={styles.browseBtn}>
               {tt("ui.browse.events.2251", "Browse events")}
             </Link>
           </div>
 
           <div className={styles.controlsRow}>
             <div className={styles.filterRow}>
-              {STATUS_FILTERS.map(f => <button key={f.id} className={`${styles.filterBtn} ${statusFilter === f.id ? styles.filterBtnActive : ''}`} onClick={() => setStatusFilter(f.id)} type="button">
+              {STATUS_FILTERS.map(f => <button key={f.id} className={`${styles.filterBtn} ${statusFilter === f.id ? styles.filterBtnActive : ''}`} aria-pressed={statusFilter === f.id} onClick={() => setStatusFilter(f.id)} type="button">
                   {filterLabel(f.id)}
                   {/* A count is a fact about the tickets; a failed load has none to state. */}
                   {!(loadError && tickets.length === 0) && <span className={styles.filterCount}>{counts[f.id] || 0}</span>}
@@ -342,7 +342,7 @@ const MyTickets = () => {
               <p className={styles.emptySub}>
                 {tickets.length === 0 ? tx("Buy a ticket to see it here.") : tx("Try a different filter.")}
               </p>
-              <Link href="/events" className={`${styles.emptyBtn} goldBTN`}>
+              <Link href="/events" className={`${styles.emptyBtn} redBTN`}>
                 {tt("ui.browse.events.2251", "Browse events")}
               </Link>
             </div> : <div className={styles.ticketGrid}>
@@ -519,7 +519,10 @@ const MyTickets = () => {
                       </button>}
               </div>}
 
-              <Link href={`/events/${activeTicket.slug || activeTicket.event_id}`} className={`${styles.viewEventBtn} redBTN`}>
+              {/* One filled button: when Check myself in is offered it is the
+                  thing to press, and View event steps back (audit 557, M8). */}
+              <Link href={`/events/${activeTicket.slug || activeTicket.event_id}`}
+                    className={`${styles.viewEventBtn} ${activeTicket.self_check_in && activeTicket.status === 'active' ? styles.viewEventQuiet : 'redBTN'}`}>
                 {tt("ui.view.event.7c27", "View event")}
               </Link>
             </div>

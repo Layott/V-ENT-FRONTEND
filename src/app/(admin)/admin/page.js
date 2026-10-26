@@ -12,6 +12,7 @@ import shared from '@/components/admin/admin.module.css';
 import styles from './overview.module.css';
 import { useT } from '@/i18n/LanguageProvider';
 import { useTx } from '@/i18n/LanguageProvider';
+import { adminTargetLabel, adminActivityText } from '@/lib/adminTarget';
 import { adminToken } from '@/lib/adminToken'
 const KPI_DEFS = [
 // Icons come from the set the admin nav already uses, not emoji: emoji render
@@ -207,11 +208,11 @@ function OverviewInner() {
                 background: dotColor(a.action)
               }} />
                     <div className={styles.activityBody}>
-                      <p className={styles.activityText}>{tx(a.description)}</p>
+                      <p className={styles.activityText}>{adminActivityText(tt, tx(a.description))}</p>
                       <p className={styles.activityMeta}>
                         <span>{relativeTime(a.created_at)}</span>
-                        {a.admin_username && <span> · by {a.admin_username}</span>}
-                        {a.target_type && <span> · {a.target_type}</span>}
+                        {a.admin_username && <span> · {tt('admin.byWho', 'by {name}').replace('{name}', a.admin_username)}</span>}
+                        {a.target_type && <span> · {adminTargetLabel(tt, a.target_type, a.target_id)}</span>}
                       </p>
                     </div>
                   </li>)}

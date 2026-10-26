@@ -14,6 +14,7 @@ import { useRouter } from 'next/navigation';
 import { useT } from '@/i18n/LanguageProvider';
 import { apiMessage } from '@/lib/apiMessage';
 import { useViewer } from '@/lib/gating';
+import { plural } from '@/lib/plural';
 import useGames from '@/hooks/useGames';
 import { useAutoRefresh } from '@/lib/useLiveData';
 import NeedsAccount from '@/components/needs-account/NeedsAccount';
@@ -48,7 +49,7 @@ function LeagueItem({ l, tt }) {
         <span className={styles.itemSub}>{facts.join(', ')}</span>
       </span>
       <span className={`${styles.itemMeta} ${styles.num}`}>
-        {tt('league.divisionsN', '{n} divisions').replace('{n}', l.divisions ?? 0)}
+        {plural(tt, l.divisions ?? 0, 'league.divisionOne', '{n} division', 'league.divisionsN', '{n} divisions')}
       </span>
       {!l.is_published && <span className={`${styles.tag} ${styles.tagGold}`}>{tt('circuit.draft', 'Draft')}</span>}
     </Link>

@@ -453,7 +453,7 @@ const AttendeesContent = ({
             <input className={styles.scanInput} placeholder={tt("ui.ticket.code.e.g.613b", "Ticket code, e.g. VT-9L57BUDE")} value={code} onChange={e => setCode(e.target.value.toUpperCase())} onKeyDown={e => {
             if (e.key === 'Enter') checkIn(code);
           }} />
-            <button className={`${styles.scanBtn} grnBTN`} onClick={() => checkIn(code)} disabled={checking || !code.trim()} type="button">
+            <button className={`${styles.scanBtn} ${styles.quietBtn}`} onClick={() => checkIn(code)} disabled={checking || !code.trim()} type="button">
               {checking ? tx("Checking…") : tx("Check in")}
             </button>
           </div>
@@ -582,7 +582,7 @@ const AttendeesContent = ({
                     </td>
                     <td>
                       {r.status === 'valid'
-                        ? <button type="button" className={`${styles.rowBtn} grnBTN`}
+                        ? <button type="button" className={`${styles.rowBtn} ${styles.quietBtn}`}
                                   disabled={checking}
                                   onClick={() => checkIn(r.code)}>
                             {tt("door.checkIn", "Check in")}

@@ -221,8 +221,9 @@ const Sidebar = ({
 
                 {/* Somebody with no account gets the way in where a member has
                     their way out, rather than a Logout for a session that does
-                    not exist. */}
-                {signedOut && <li className={`${styles.sidebarItem} ${styles.signInItem}`}>
+                    not exist. A quiet link like its neighbours: the header
+                    carries the one red Log in button. */}
+                {signedOut && <li className={`${styles.sidebarItem}`}>
                     <Link href={'/login'} className={styles.iconTextLink}>
                         <MdLogout className={styles.sidebarIcon} /> {tt("ui.log.f7c4", "Log in")}
                     </Link>

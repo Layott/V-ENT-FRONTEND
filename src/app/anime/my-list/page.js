@@ -59,7 +59,7 @@ const MyList = () => {
 
   if (open === null) return null;
   if (open === false) {
-    return <ComingSoon phase="Phase 5"
+    return <ComingSoon
       title={tt('anime.comingTitle', 'Anime hub')}
       blurb={tt('anime.comingBlurb',
         'Manga reading, co-reading rooms and character battles are built and '

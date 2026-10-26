@@ -188,7 +188,7 @@ const MyEventsPage = () => {
                             while the event is live. */}
                         {row.role === 'owner' && row.is_active && (
                           <CancelControl reference={ref} name={row.name} token={token}
-                                         className={styles.ghostBtn}
+                                         className={styles.dangerText}
                                          onCancelled={(data) => {
                                            setCancelled(all => ({ ...all, [row.id]: data?.refunds || {} }));
                                            setRows(all => all.map(x => x.id === row.id ? { ...x, is_active: false } : x));
@@ -197,7 +197,7 @@ const MyEventsPage = () => {
                         {row.role === 'owner' && (
                           <DeleteControl kind="event" reference={ref}
                                          name={row.name} token={token}
-                                         className={styles.ghostBtn}
+                                         className={styles.dangerText}
                                          onDeleted={() => {
                                            setRows(all => all.filter(x => x.id !== row.id));
                                          }} />

@@ -280,7 +280,6 @@ const CreateOrganizationContent = () => {
                   {step > s.id ? <FiCheck /> : s.id}
                 </div>
                 <span className={styles.progressLabel}>{tx(s.label)}</span>
-                {idx < STEPS.length - 1 && <div className={styles.progressLine} />}
               </div>)}
           </div>
 

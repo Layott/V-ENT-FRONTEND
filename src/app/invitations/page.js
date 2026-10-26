@@ -71,7 +71,9 @@ export default function InvitationsPage() {
           {rows === null && !problem && <div className={styles.skeletonCard} aria-busy="true" />}
           {rows && rows.length === 0 && (
             <div className={styles.emptyState}>
-              <p className={styles.emptyTitle}>{tt('invitation.none', 'Nothing waiting for you.')}</p>
+              <h2 className={styles.emptyTitle}>{tt('invitation.none', 'Nothing waiting for you.')}</h2>
+              <p className={styles.emptySub}>{tt('invitation.noneSub', 'When somebody asks you to help run an event or a tournament, or to join their organisation, it lands here.')}</p>
+              <Link href="/tournaments/my-tournaments" className={styles.emptyLink}>{tt('invitation.noneLink', 'Go to your tournaments')}</Link>
             </div>
           )}
           {rows && rows.length > 0 && (

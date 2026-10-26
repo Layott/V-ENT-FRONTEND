@@ -755,8 +755,8 @@ const CommunityInner = () => {
           </div>
 
           {/* Tabs */}
-          <div className={styles.tabs} role="tablist">
-            {TABS.map(t => <button key={t.id} className={`${styles.tabBtn} ${activeTab === t.id ? styles.tabActive : ''}`} onClick={() => handleTabChange(t.id)} role="tab" aria-selected={activeTab === t.id}>
+          <div className={styles.tabs}>
+            {TABS.map(t => <button key={t.id} className={`${styles.tabBtn} ${activeTab === t.id ? styles.tabActive : ''}`} onClick={() => handleTabChange(t.id)} aria-pressed={activeTab === t.id}>
                 <span className={styles.tabIcon}>{t.icon}</span>
                 {tx(t.label)}
               </button>)}
@@ -792,7 +792,7 @@ const CommunityInner = () => {
                   display: 'none'
                 }} onChange={handleFileChange} />
                     <span className={styles.composeCounter}>{composeText.length}/500</span>
-                    <button type="button" className={`${styles.composePostBtn} goldBTN`} onClick={handleCreatePost} disabled={composing || !composeText.trim() && !composeFile}>
+                    <button type="button" className={`${styles.composePostBtn} redBTN`} onClick={handleCreatePost} disabled={composing || !composeText.trim() && !composeFile}>
                       {composing ? tt("community.posting", "Posting...") : tt("ui.post.7858", "Post")}
                     </button>
                   </div>
@@ -879,11 +879,11 @@ const CommunityInner = () => {
 
           {/* ─── FORUMS ─── */}
           {activeTab === 'forums' && <div className={styles.forumsLayout}>
-              <div className={styles.categoryList} role="tablist" aria-label={tt("ui.forum.categories.d09f", "Forum categories")}>
-                {FORUM_CATEGORIES.map(cat => <button key={cat} className={`${styles.categoryBtn} ${forumCategory === cat ? styles.categoryActive : ''}`} onClick={() => setForumCategory(cat)}>
+              <div className={styles.categoryList} role="group" aria-label={tt("ui.forum.categories.d09f", "Forum categories")}>
+                {FORUM_CATEGORIES.map(cat => <button key={cat} className={`${styles.categoryBtn} ${forumCategory === cat ? styles.categoryActive : ''}`} onClick={() => setForumCategory(cat)} aria-pressed={forumCategory === cat}>
                     <span>{cat}</span>
                   </button>)}
-                {signedIn && <button className={`${styles.newThreadCta} goldBTN`} onClick={() => setShowNewThread(s => !s)}>
+                {signedIn && <button className={`${styles.newThreadCta} ${styles.quietBtn}`} onClick={() => setShowNewThread(s => !s)}>
                   <FaPlus /> {tt("ui.new.thread.0205", "New thread")}
                 </button>}
               </div>
@@ -900,7 +900,7 @@ const CommunityInner = () => {
                       <button className={styles.newThreadCancel} onClick={() => setShowNewThread(false)}>
                         {tt("ui.cancel.77df", "Cancel")}
                       </button>
-                      <button className={`${styles.newThreadSubmit} goldBTN`} onClick={handleCreateThread} disabled={!newThreadTitle.trim() || !newThreadBody.trim()}>
+                      <button className={`${styles.newThreadSubmit} redBTN`} onClick={handleCreateThread} disabled={!newThreadTitle.trim() || !newThreadBody.trim()}>
                         {tt("ui.post.thread.d1cf", "Post thread")}
                       </button>
                     </div>
@@ -940,7 +940,7 @@ const CommunityInner = () => {
                   <input className={styles.feedSearchInput} placeholder={tt("ui.search.clubs.name.game.fd0d", "Search clubs by name or game...")} value={clubQuery} onChange={e => setClubQuery(e.target.value)} />
                 </div>
                 <NeedsAccount action={tt('community.createClubAction', 'create a club')}>
-                  <button type="button" className={`${styles.clubCreateBtn} goldBTN`}
+                  <button type="button" className={`${styles.clubCreateBtn} ${styles.quietBtn}`}
                           onClick={() => { setClubFormOpen(o => !o); setClubProblem(''); }}>
                     <FaPlus /> {tt('community.createClub', 'Create a club')}
                   </button>
@@ -983,7 +983,7 @@ const CommunityInner = () => {
                 </label>
                 {clubProblem && <p className={styles.clubFormProblem}>{clubProblem}</p>}
                 <div className={styles.clubFormActions}>
-                  <button type="submit" className={`${styles.clubCreateBtn} goldBTN`} disabled={clubSaving}>
+                  <button type="submit" className={`${styles.clubCreateBtn} redBTN`} disabled={clubSaving}>
                     {clubSaving ? tt('community.creating', 'Creating...') : tt('community.createClub', 'Create a club')}
                   </button>
                   <button type="button" className={styles.clubFormCancel}
@@ -1019,7 +1019,7 @@ const CommunityInner = () => {
                             <FaCheck /> {tt("ui.owner.89ff", "Owner")}
                           </button> : club.is_joined ? <button className={styles.clubJoinedBtn} disabled>
                             <FaCheck /> {tt("ui.joined.43a1", "Joined")}
-                          </button> : <button className={`${styles.clubJoinBtn} goldBTN`} onClick={() => handleJoinClub(club.id)} disabled={!signedIn} title={signedIn ? undefined : tt("community.signInToJoin", "Sign in to join this club")}>
+                          </button> : <button className={`${styles.clubJoinBtn} ${styles.quietBtn}`} onClick={() => handleJoinClub(club.id)} disabled={!signedIn} title={signedIn ? undefined : tt("community.signInToJoin", "Sign in to join this club")}>
                             {tt("ui.join.e0d7", "Join")}
                           </button>}
                       </div>
@@ -1035,7 +1035,7 @@ const CommunityInner = () => {
                   <input className={styles.feedSearchInput} placeholder={tt("ui.search.contacts.6435", "Search contacts...")} value={dmContactQuery} onChange={e => setDmContactQuery(e.target.value)} />
                 </div>
 
-                <button className={`${styles.dmNewBtn} goldBTN`} onClick={() => setNewDmOpen(v => !v)}>
+                <button className={`${styles.dmNewBtn} ${styles.quietBtn}`} onClick={() => setNewDmOpen(v => !v)}>
                   <FaPlus /> {tt("ui.new.message.1ed2", "New message")}
                 </button>
 
@@ -1043,7 +1043,7 @@ const CommunityInner = () => {
                     <UserPicker purpose="message" value={newDmUsername} onChange={setNewDmUsername} token={token} autoFocus />
                     <textarea className={styles.dmNewTextarea} placeholder={tt("ui.first.message.c090", "First message...")} value={newDmBody} onChange={e => setNewDmBody(e.target.value)} maxLength={1000} />
                     {newDmError && <p className={styles.dmError}>{newDmError}</p>}
-                    <button className={`${styles.dmNewSendBtn} goldBTN`} onClick={handleStartDm} disabled={!newDmUsername.trim() || !newDmBody.trim() || newDmSending}>
+                    <button className={`${styles.dmNewSendBtn} redBTN`} onClick={handleStartDm} disabled={!newDmUsername.trim() || !newDmBody.trim() || newDmSending}>
                       {newDmSending ? tx("Sending...") : 'Send'}
                     </button>
                   </div>}
@@ -1150,7 +1150,7 @@ const CommunityInner = () => {
                     <option value="cancelled">{tt("ui.cancelled.2e77", "Called off")}</option>
                   </select>
                 </div>
-                {signedIn && <Link href="/community/scrim/create" className={`${styles.scrimChallengeCta} goldBTN`}>
+                {signedIn && <Link href="/community/scrim/create" className={`${styles.scrimChallengeCta} redBTN`}>
                   <FaPlus /> {tt("ui.challenge.bb9d", "Challenge")}
                 </Link>}
               </div>
@@ -1217,7 +1217,7 @@ const CommunityInner = () => {
                 }} data-label={tt("scrim.action", "Action")}>
                           {scrim.status !== 'open' || scrim.is_mine ? <Link href={`/community/challenge/${scrim.slug}`} className={styles.scrimOpenBtn}>
                               {scrim.is_mine && scrim.status === 'open' ? tt("ui.yours.7558", "Yours") : tt("ui.view.d3f1", "View")}
-                            </Link> : <button className={`${styles.scrimAcceptBtn} ${isOpen ? 'goldBTN' : ''}`} onClick={() => handleAcceptScrim(scrim)} disabled={!isOpen || !token}>
+                            </Link> : <button className={styles.scrimAcceptBtn} onClick={() => handleAcceptScrim(scrim)} disabled={!isOpen || !token}>
                               {tt("ui.accept.9a2f", "Accept")}
                             </button>}
                           {acceptFor === scrim.id && <div className={styles.scrimTeamPicker}>

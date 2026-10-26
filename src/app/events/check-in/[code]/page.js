@@ -18,6 +18,7 @@ import { useSession } from 'next-auth/react';
 import { LuTicket } from 'react-icons/lu';
 import { apiMessage } from '@/lib/apiMessage';
 import { formatDateTime } from '@/lib/datetime';
+import BackLink from '@/components/back-link/BackLink';
 import { useT } from '@/i18n/LanguageProvider';
 import Header from '@/components/header/Header';
 import MobileHeader from '@/components/mobile-header/MobileHeader';
@@ -132,6 +133,13 @@ export default function SelfCheckIn(props) {
       <Sidebar />
 
       <main className={styles.main}>
+        {/* A way back on a phone, where the top bar has none. Goes to the event
+            once its slug is known, and to the events list before that. */}
+        <BackLink href={state?.event?.slug ? `/events/${state.event.slug}` : '/events'} className={styles.back}>
+          {state?.event?.slug
+            ? tt('checkIn.backToEventPage', 'Back to the event')
+            : tt('checkIn.backToEvents', 'Back to events')}
+        </BackLink>
         <h1 className={styles.title}>{tt('checkIn.title', 'Check in')}</h1>
 
         {loading && <p className={styles.sub}>{tt('ui.loading', 'Loading...')}</p>}

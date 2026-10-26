@@ -204,7 +204,7 @@ const PinPage = () => {
         {success && <div className={`${styles.notice} ${pinStyles.noticeSuccess}`}>{success}</div>}
         {error && <div className={`${styles.notice} ${styles.noticeError}`}>{error}</div>}
 
-        <div className={styles.btnRow}>
+        <div className={`${styles.btnRow} ${pinStyles.pinActions}`}>
           <Link href="/wallets" className={`${styles.btn} ${styles.btnGhost}`}>
             {tt("ui.cancel.77df", "Cancel")}
           </Link>

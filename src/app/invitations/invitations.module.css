@@ -188,3 +188,17 @@
 }
 
 .emptyTitle { margin: 0; color: #fff; font-size: 1rem; font-weight: 600; }
+.emptySub { margin: 0; color: rgba(255, 255, 255, 0.6); font-size: 0.9rem; line-height: 1.5; max-width: 46ch; }
+.emptyLink {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0 1rem;
+  border-radius: 10px;
+  background-color: #2a2b30;
+  color: var(--primary-bg);
+  font-size: 0.9rem;
+  font-weight: var(--fw-semi-bold);
+  text-decoration: none;
+}
+.emptyLink:hover { background-color: #33343a; }

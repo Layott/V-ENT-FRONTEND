@@ -14,6 +14,13 @@
 }
 
 
+/* The label runs under the icon's corner: "Active tournaments" and "VC in
+   circulation" were drawn beneath it at 390px (audit 557). The label keeps the
+   icon's width clear and wraps instead. */
+.kpiCard > p:first-of-type {
+  padding-right: 2.6rem;
+}
+
 .kpiIcon {
   position: absolute;
   top: 1.1rem;

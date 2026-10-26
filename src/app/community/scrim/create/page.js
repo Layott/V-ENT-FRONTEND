@@ -300,7 +300,7 @@ const ScrimCreateInner = () => {
                   : tt("scrim.othersCanAccept", "Other teams can accept it.")}
               </p>
               <div className={styles.successActions}>
-                <button className={`${styles.successBtn} goldBTN`} onClick={() => router.push(success.slug ? `/community/challenge/${success.slug}` : '/community?tab=challenges')}>
+                <button className={`${styles.successBtn} redBTN`} onClick={() => router.push(success.slug ? `/community/challenge/${success.slug}` : '/community?tab=challenges')}>
                   {tt("ui.view.challenge.817d", "View the challenge")}
                 </button>
                 <button className={styles.successCancel} onClick={() => {
@@ -493,7 +493,7 @@ const ScrimCreateInner = () => {
               <button type="button" className={styles.cancelBtn} onClick={() => router.push(editing ? `/community/challenge/${editing}` : '/community?tab=challenges')}>
                 {tt("ui.cancel.77df", "Cancel")}
               </button>
-              <button type="submit" className={`${styles.submitBtn} goldBTN`} disabled={submitting || loadingExisting}>
+              <button type="submit" className={`${styles.submitBtn} redBTN`} disabled={submitting || loadingExisting}>
                 {submitting ? (editing ? tt("ui.saving.8c02", "Saving...") : tt("ui.posting.challenge.1f7a", "Posting challenge...")) : editing ? tt("ui.save.changes.5d19", "Save changes") : tt("ui.post.challenge.btn.2a83", "Post challenge")}
               </button>
             </div>

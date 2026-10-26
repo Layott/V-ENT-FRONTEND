@@ -215,7 +215,7 @@ function OrgDetailInner() {
                                 tt('adminOrg.premiumOff', 'Premium is off for this organisation.'))}>
                         {tt('adminUser.takePremium', 'Take premium back')}
                       </button>
-                    : <button type="button" className={`${shared.actBtn} ${shared.actApprove}`}
+                    : <button type="button" className={`${shared.actBtn} ${shared.actView}`}
                               onClick={() => { setPremiumOpen(true); setPremiumNote(''); }}>
                         {tt('adminUser.givePremium', 'Give premium')}
                       </button>)}

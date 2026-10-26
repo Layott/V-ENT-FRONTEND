@@ -30,13 +30,20 @@
   margin: 0;
 }
 
+/* A quiet button: gold is for money, and this is a way back. */
 .action {
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
   margin-top: 20px;
-  background: #d4af37;
-  color: #131316;
+  background: #2a2b30;
+  color: #fff;
   font-weight: 600;
   padding: 10px 18px;
-  border-radius: 8px;
+  border-radius: 10px;
   text-decoration: none;
+}
+
+.action:hover {
+  background: #33343a;
 }

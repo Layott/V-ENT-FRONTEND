@@ -294,7 +294,7 @@ const PostInner = ({
                     <textarea className={styles.composeTextarea} placeholder={tt("ui.add.comment.2339", "Add a comment...")} value={commentText} onChange={e => setCommentText(e.target.value)} maxLength={500} />
                     <div className={styles.composeActions}>
                       <span className={styles.counter}>{commentText.length}/500</span>
-                      <button className={`${styles.commentBtn} goldBTN`} onClick={handleComment} disabled={!commentText.trim() || posting}>
+                      <button className={`${styles.commentBtn} redBTN`} onClick={handleComment} disabled={!commentText.trim() || posting}>
                         {posting ? tx("Posting...") : 'Comment'}
                       </button>
                     </div>

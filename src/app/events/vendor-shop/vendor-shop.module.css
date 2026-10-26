@@ -543,6 +543,24 @@
   margin: 0;
 }
 
+/* The one way out of the empty state: a quiet surface, 44px tall. */
+.emptyLink {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  margin-top: 0.6rem;
+  padding: 0 1.25rem;
+  border-radius: 10px;
+  background-color: #2a2b30;
+  color: var(--primary-bg);
+  font-size: var(--fs-p-size-mobile);
+  font-weight: var(--fw-semi-bold);
+  text-decoration: none;
+}
+
+.emptyLink:hover { background-color: #33343a; }
+
 /* ── Modals ── */
 .modalOverlay {
   position: fixed;

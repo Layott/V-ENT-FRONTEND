@@ -201,10 +201,11 @@ const DmInner = ({
         <Sidebar />
 
         <div className={styles.rightPaneContainer}>
-          {loading ? <p className={styles.stateText}>{tt("ui.loading.conversation.1238", "Loading conversation...")}</p> : !thread ? <div className={styles.emptyState}>
-              <p className={styles.stateText}>{error || tx("Conversation not found.")}</p>
-              <button className={styles.backLink} onClick={() => router.push('/community?tab=dms')}>
-                <FiArrowLeft /> {tt("ui.back.dms.b067", "Back to DMs")}
+          {loading ? <p className={styles.stateText}>{tt("ui.loading.conversation.1238", "Loading conversation...")}</p> : !thread ? <div className={styles.lockedCard}>
+              <h1 className={styles.lockedTitle}>{tt("community.dmMissingTitle", "Conversation not found")}</h1>
+              <p className={styles.lockedSub}>{error || tt('community.dmMissingSub', 'It may have been deleted, or you may not be part of it.')}</p>
+              <button className={styles.lockedBtn} onClick={() => router.push('/community')}>
+                <FiArrowLeft /> {tt("community.backToCommunity", "Back to community")}
               </button>
             </div> : <div className={styles.dmShell}>
               <header className={styles.dmHeader}>

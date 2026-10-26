@@ -17,6 +17,7 @@ import { useT } from '@/i18n/LanguageProvider';
 import { apiMessage } from '@/lib/apiMessage';
 import { formatDate, formatDateTime, formatNumber } from '@/lib/datetime';
 import { recordsCall } from '@/lib/adminRecords';
+import { adminTargetLabel } from '@/lib/adminTarget';
 import styles from '../records.module.css';
 
 function BinInner() {
@@ -109,13 +110,15 @@ function BinInner() {
                   <li key={row.id} className={styles.version}>
                     <div className={styles.versionHead}>
                       <strong>{row.label}</strong>
-                      <span className={styles.pk}>{row.model} #{row.pk}</span>
+                      <span className={styles.pk}>{adminTargetLabel(tt, row.model, row.pk)}</span>
                       <span>{tt('adminRecords.deletedBy', 'Deleted {when} by {who}').replace('{when}', formatDateTime(row.deleted_at)).replace('{who}', row.deleted_by || tt('adminRecords.someone', 'An admin'))}</span>
                     </div>
                     <p className={styles.change}>
                       {row.soft
                         ? tt('adminRecords.binSoft', 'Hidden from the site; nothing else went with it.')
-                        : tt('adminRecords.binCount', '{n} records went with it').replace('{n}', formatNumber(summary(row.counts)))}
+                        : (summary(row.counts) === 1
+                          ? tt('adminRecords.binCountOne', '{n} record went with it')
+                          : tt('adminRecords.binCount', '{n} records went with it')).replace('{n}', formatNumber(summary(row.counts)))}
                     </p>
                     {row.reason && <p className={styles.note}>{row.reason}</p>}
                     <p className={styles.count}>{tt('adminRecords.purgeOn', 'Thrown away on {date}').replace('{date}', formatDate(row.purge_after))}</p>

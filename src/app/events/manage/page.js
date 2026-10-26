@@ -1166,7 +1166,7 @@ export const ManageEventContent = ({
                                placeholder="https://maps.app.goo.gl/..."
                                onChange={e => setVenueDraft(v => ({ ...v, map_link: e.target.value }))} />
                       </label>
-                      <button type="button" className={`${styles.primaryBtn} goldBTN`}
+                      <button type="button" className={styles.primaryBtn}
                               disabled={savingVenue} onClick={saveVenue}>
                         {savingVenue ? tt('ui.saving', 'Saving...') : tt('ui.save', 'Save')}
                       </button>
@@ -1195,7 +1195,7 @@ export const ManageEventContent = ({
                     </p>
                     <div className={styles.capacityRow}>
                       <button type="button"
-                              className={`${styles.primaryBtn} ${selfCheckIn.enabled ? 'redBTN' : 'grnBTN'}`}
+                              className={selfCheckIn.enabled ? styles.textDangerBtn : `${styles.primaryBtn} ${styles.quietBtn}`}
                               disabled={savingSelfCheckIn}
                               onClick={() => saveSelfCheckIn({ enabled: !selfCheckIn.enabled })}>
                         {savingSelfCheckIn ? tt('ui.saving', 'Saving...')
@@ -1253,7 +1253,7 @@ export const ManageEventContent = ({
                           <option value="total">{tt('manage.capacityTotal', 'How many the whole event holds')}</option>
                         </select>
                       </label>
-                      <button type="button" className={`${styles.primaryBtn} goldBTN`}
+                      <button type="button" className={styles.primaryBtn}
                               disabled={savingCapacity}
                               onClick={saveCapacity}>
                         {savingCapacity ? tt('ui.saving', 'Saving...') : tt('ui.save', 'Save')}

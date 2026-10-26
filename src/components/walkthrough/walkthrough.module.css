@@ -50,13 +50,11 @@
   animation: panelIn 220ms cubic-bezier(0.4, 0, 0.2, 1) both;
 }
 
-.panel:focus {
-  outline: none;
-}
-
+/* The sheet takes focus when it opens but is drawn as a filled surface, never
+   a ring around the whole card. The buttons inside keep their focus rings. */
+.panel:focus,
 .panel:focus-visible {
-  outline: 2px solid var(--v-ent-light-red);
-  outline-offset: 3px;
+  outline: none;
 }
 
 .panelCentred {

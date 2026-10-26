@@ -100,8 +100,10 @@
   padding: 1.5rem;
 }
 
+/* A 1rem card label reads as a label in the body face; the serif is for page
+   and section headings (audit 557, M21). */
 .cardTitle {
-  font-family: "Fraunces", sans-serif;
+  font-family: "ClashGrotesk-Variable", sans-serif;
   font-size: 1rem;
   font-weight: 600;
   color: #fff;

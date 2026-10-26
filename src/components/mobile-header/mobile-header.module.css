@@ -36,6 +36,15 @@
   font-size: 0.9rem;
 }
 
+/* A page with its own Back link does not need the bar's arrow as well: on
+   /wallets/history the phone showed the arrow and title, then "Back to
+   wallets", then the heading (audit 557). The page's link is a real link and
+   knows where back is; the bar keeps its title. :has() also sees a Back link
+   that renders after the page's data arrives. */
+:global(body:has(main [data-backlink]:not(dialog [data-backlink], [hidden] [data-backlink], [aria-hidden="true"] [data-backlink]))) .backArrow {
+  display: none;
+}
+
 .backArrow {
   display: flex;
   height: 100%;

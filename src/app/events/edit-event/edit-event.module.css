@@ -50,6 +50,15 @@
   color: #fff;
 }
 
+/* A finger needs a 44px target on a phone, not a line of small text. */
+@media (max-width: 720px) {
+  .back {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+  }
+}
+
 .pageTitle {
   font-size: 1.8rem;
   color: #fff;

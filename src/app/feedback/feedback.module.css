@@ -32,8 +32,11 @@
 }
 .mainContainer { display: flex; }
 
+/* 60px is the sticky header's height; the pane starts below it, as on every
+   other page, so the heading is not drawn under the header. */
 .rightPaneContainer {
   width: 100%;
+  margin-top: 60px;
   padding: 1.25rem 1rem 6rem;
 }
 

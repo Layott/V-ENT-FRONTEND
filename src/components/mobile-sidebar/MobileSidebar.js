@@ -115,7 +115,7 @@ const MobileSidebar = ({
 
                 {/* First thing in the menu for somebody with no account: the
                     way in, rather than a profile that is not theirs. */}
-                {signedOut && <li className={`${styles.sidebarItem} ${styles.signInItem}`}>
+                {signedOut && <li className={styles.sidebarItem}>
                     <Link href={'/login'} className={styles.iconTextLink}>
                         {tt("ui.log.f7c4", "Log in")} <MdLogout className={styles.sidebarIcon} />
                     </Link>

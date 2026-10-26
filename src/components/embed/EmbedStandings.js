@@ -79,11 +79,16 @@ function StageStandings({ tournamentId, slug }) {
     <>
       {chips}
       {rows.length === 0 ? (
+        // A heading over the one line, so an empty table reads as a state
+        // rather than a stray sentence in somebody's page (audit 557).
+        <section className={styles.group}>
+        <h2 className={styles.groupTitle}>{tt('embed.standingsNoneTitle', 'No standings yet')}</h2>
         <p className={styles.note}>
           {placed
             ? tt('embed.standingsLater', 'The final places appear here as the matches are decided.')
             : tt('embed.standingsEmpty', 'The table fills in as results come in.')}
         </p>
+        </section>
       ) : groups.length ? groups.map((group) => (
         <section key={group} className={styles.group}>
           <h2 className={styles.groupTitle}>
