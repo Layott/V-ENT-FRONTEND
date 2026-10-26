@@ -6,7 +6,7 @@ import { useState, useEffect, useCallback } from "react";
 import { useSession } from "next-auth/react";
 import { FiCamera, FiEdit3 } from "react-icons/fi";
 import { IoLocationOutline } from "react-icons/io5";
-import Image from "next/image";
+import Image from '@/components/media-image/MediaImage';
 import profileImageBig from "@/images/signed_in_user_big.webp";
 import styles from "./user-profile-bio.module.css";
 import { useT } from '@/i18n/LanguageProvider';

@@ -1,10 +1,10 @@
 // ./src/components/view-tournament/tournament-register/ReviewModal.js
-import { mediaUrl } from '@/lib/mediaUrl';
+import { mediaUrl, hideBroken } from '@/lib/mediaUrl';
 import { useEffect, useState } from 'react';
 import { formatDateRange, formatNumber } from '@/lib/datetime';
 import { entryFeeVc } from '@/components/tournament-lib/tournamentApi';
 import { formatLabel } from '@/lib/formatLabel';
-import Image from 'next/image';
+import Image from '@/components/media-image/MediaImage';
 import styles from './review.module.css';
 import image from '@/images/signed_in_user_big.webp';
 import { useT } from '@/i18n/LanguageProvider';
@@ -220,7 +220,7 @@ const ReviewModal = ({
                     {/* Plain img so remote backend/CDN team logos render without
                         next/image domain config; falls back to the bundled avatar. */}
                     {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src={mediaUrl(selectedTeam?.logo || selectedTeam?.image || image.src)} alt={selectedTeam?.name || "Team"} width={40} height={40} style={{
+                    <img onError={hideBroken} src={mediaUrl(selectedTeam?.logo || selectedTeam?.image || image.src)} alt={selectedTeam?.name || "Team"} width={40} height={40} style={{
                     objectFit: 'cover',
                     borderRadius: '8px'
                   }} />

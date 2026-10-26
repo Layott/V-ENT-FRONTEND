@@ -72,7 +72,7 @@
   background-color: transparent;
 
   padding: 5px 10px;
-  transition: all ease-in-out 0.5s;
+  transition: all ease-in-out 0.15s;
 }
 
 .viewDetailsBTN:hover {
@@ -83,7 +83,7 @@
   background-color: #46484F;
 
   padding: 5px 1.75rem;
-  transition: all ease-in-out 0.5s;
+  transition: all ease-in-out 0.15s;
 }
 
 .registerBTN:hover {

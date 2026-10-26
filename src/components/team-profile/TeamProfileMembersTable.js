@@ -4,7 +4,7 @@ import { appLocale } from '@/lib/appLocale';
 import { apiMessage } from '@/lib/apiMessage';
 import { mediaUrl } from '@/lib/mediaUrl';
 import { useState } from 'react';
-import Image from 'next/image';
+import Image from '@/components/media-image/MediaImage';
 import { useSession } from 'next-auth/react';
 import { CiSearch } from 'react-icons/ci';
 import { BsThreeDots, BsChevronDown, BsChevronUp } from 'react-icons/bs';

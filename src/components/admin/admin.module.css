@@ -106,6 +106,10 @@
   cursor: pointer;
 }
 .sectionLink:hover { color: var(--v-ent-light-gold); }
+/* A tap target on a phone (audit 557). */
+@media (max-width: 720px) {
+  .sectionLink { display: inline-flex; align-items: center; min-height: 44px; }
+}
 
 /* Filters row */
 .filtersRow {

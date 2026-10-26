@@ -55,7 +55,7 @@
 
 .borderTabBTN {
   cursor: pointer;
-  transition: all ease-in-out 0.5s;
+  transition: all ease-in-out 0.15s;
 
   background-color: #303136;
   outline: none;

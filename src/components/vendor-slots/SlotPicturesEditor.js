@@ -4,7 +4,7 @@ import { useRef, useState } from 'react';
 import { FiChevronLeft, FiChevronRight, FiPlus, FiX } from 'react-icons/fi';
 import { useT } from '@/i18n/LanguageProvider';
 import { apiMessage } from '@/lib/apiMessage';
-import { mediaUrl } from '@/lib/mediaUrl';
+import { mediaUrl, hideBroken } from '@/lib/mediaUrl';
 import { pictureAlt } from './SlotPictures';
 import styles from './slot-pictures.module.css';
 
@@ -80,7 +80,7 @@ const SlotPicturesEditor = ({ eventRef, slot, token, onChanged, onNotice }) => {
           <div key={p.id} className={styles.tile}>
             {p.url && (
               // eslint-disable-next-line @next/next/no-img-element
-              <img src={mediaUrl(p.url)} alt={pictureAlt(tt, slot.name, i + 1, pictures.length)} />
+              <img onError={hideBroken} src={mediaUrl(p.url)} alt={pictureAlt(tt, slot.name, i + 1, pictures.length)} />
             )}
             {i === 0 && <span className={styles.coverBadge}>{tt('slots.cover', 'Cover')}</span>}
             {removing === p.id ? (
@@ -167,7 +167,7 @@ export const VenueLayoutEditor = ({ eventRef, url, token, onChanged, onNotice })
       </p>
       {url && (
         // eslint-disable-next-line @next/next/no-img-element
-        <img className={styles.layoutPreview} src={mediaUrl(url)}
+        <img onError={hideBroken} className={styles.layoutPreview} src={mediaUrl(url)}
              alt={tt('slots.layoutAlt', 'Where the pitches and stalls are at {event}').replace('{event}', '')} />
       )}
       <div className={styles.layoutActions}>

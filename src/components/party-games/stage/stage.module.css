@@ -19,7 +19,7 @@
 }
 
 .actor {
-  transition: transform 0.85s cubic-bezier(0.4, 0.1, 0.2, 1), opacity 0.5s ease;
+  transition: transform 0.15s cubic-bezier(0.4, 0.1, 0.2, 1), opacity 0.15s ease;
 }
 
 .still .actor {

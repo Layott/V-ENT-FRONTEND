@@ -16,6 +16,7 @@ import { apiMessage } from '@/lib/apiMessage';
 import { useT } from '@/i18n/LanguageProvider';
 import Header from '@/components/header/Header';
 import MobileHeader from '@/components/mobile-header/MobileHeader';
+import Sidebar from '@/components/sidebar/Sidebar';
 import BottomMenu from '@/components/bottom-menu/BottomMenu';
 import styles from './find-ticket.module.css';
 import BackLink from '@/components/back-link/BackLink';
@@ -59,6 +60,10 @@ export default function FindTicket() {
     <div className={styles.page}>
       <Header />
       <MobileHeader />
+      {/* The header leaves the sidebar's column on a desktop whether or not
+          a sidebar is drawn; without one it read as a broken page (audit 557).
+          The signed-out sidebar serves a guest holding a ticket just as well. */}
+      <Sidebar />
 
       <main className={styles.main}>
         <BackLink href="/events">{tt('back.toEvents', 'Back to events')}</BackLink>

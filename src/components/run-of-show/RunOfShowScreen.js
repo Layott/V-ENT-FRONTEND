@@ -40,6 +40,9 @@ export default function RunOfShowScreen({ sheet, kind, ownerRef, token, sharePat
         <Sidebar />
 
         <div className={styles.pane}>
+          {/* The page's one title for a screen reader and a search engine; the
+              sheet draws its own visible heading (audit 557). */}
+          <h1 className="visually-hidden">{tt('runOfShow.title', 'Run of show')}</h1>
           <BackLink href={backHref}>{backWords}</BackLink>
           {sheet ? (
             <>

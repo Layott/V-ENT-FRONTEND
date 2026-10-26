@@ -1,5 +1,5 @@
 import { mediaUrl } from '@/lib/mediaUrl';
-import Image from 'next/image';
+import Image from '@/components/media-image/MediaImage';
 import { FiCamera } from 'react-icons/fi';
 import teamProfileBanner from '@/images/team_profile_banner.webp'
 import styles from './team-profile-banner.module.css'

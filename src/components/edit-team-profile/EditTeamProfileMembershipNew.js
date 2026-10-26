@@ -76,7 +76,8 @@ const EditTeamProfileMembershipNew = ({
           <span className={styles.fieldLabel}>{openToJoin ? <LuLockOpen /> : <LuLock />} {tt("ui.open.join.f8e3", "Open to join")}</span>
           <p className={styles.toggleHint}>{tt("ui.anyone.can.request.join.5886", "Anyone can request to join. Captains approve.")}</p>
         </div>
-        <button type="button" className={`${styles.toggle} ${openToJoin ? styles.toggleOn : ''}`} onClick={() => setOpenToJoin(v => !v)}>
+        <button type="button" className={`${styles.toggle} ${openToJoin ? styles.toggleOn : ''}`} onClick={() => setOpenToJoin(v => !v)}
+                role="switch" aria-checked={openToJoin} aria-label={tt('team.openToJoinSwitch', 'Open to join requests')}>
           <span className={styles.toggleKnob} />
         </button>
       </div>
@@ -86,7 +87,8 @@ const EditTeamProfileMembershipNew = ({
           <span className={styles.fieldLabel}><LuKey /> {tt("ui.password.protected.09d9", "Password protected")}</span>
           <p className={styles.toggleHint}>{tt("ui.require.password.users.request.1fab", "Require a password for users to request joining.")}</p>
         </div>
-        <button type="button" className={`${styles.toggle} ${passwordProtected ? styles.toggleOn : ''}`} onClick={() => setPasswordProtected(v => !v)}>
+        <button type="button" className={`${styles.toggle} ${passwordProtected ? styles.toggleOn : ''}`} onClick={() => setPasswordProtected(v => !v)}
+                role="switch" aria-checked={passwordProtected} aria-label={tt('team.passwordSwitch', 'Joining needs a password')}>
           <span className={styles.toggleKnob} />
         </button>
       </div>

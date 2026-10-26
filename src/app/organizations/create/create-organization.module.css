@@ -532,7 +532,7 @@
   font-weight: var(--fw-semi-bold);
   border-radius: 8px;
   cursor: pointer;
-  transition: all ease-in-out 0.4s;
+  transition: all ease-in-out 0.15s;
 }
 
 .primaryBtn:hover:not(:disabled) {
@@ -558,7 +558,7 @@
   font-weight: var(--fw-medium);
   border-radius: 8px;
   cursor: pointer;
-  transition: all ease-in-out 0.4s;
+  transition: all ease-in-out 0.15s;
 }
 
 .secondaryBtn:hover:not(:disabled) {

@@ -1,7 +1,7 @@
 'use client';
 
 import { mediaUrl } from '@/lib/mediaUrl';
-import Image from 'next/image';
+import Image from '@/components/media-image/MediaImage';
 import { useLanguage } from '@/i18n/LanguageProvider';
 import createTournamentStyles from '@/styles/create-tournament/create-tournament.module.css';
 import bioInfoStyles from '../review-basic-info/review-basic-info.module.css';

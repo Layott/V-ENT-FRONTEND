@@ -23,7 +23,7 @@ import ShareCard from '@/components/share/ShareCard';
 import { useCheckoutFields, CheckoutFieldList, missingRequired, quantityCeiling }
   from '@/components/checkout-fields/CheckoutFields';
 import Link from 'next/link';
-import Image from 'next/image';
+import Image from '@/components/media-image/MediaImage';
 import { IoCalendarOutline, IoLocationOutline, IoTicketOutline } from 'react-icons/io5';
 import { FaUsers, FaCheckCircle, FaCrown, FaStar, FaStore, FaTrophy } from 'react-icons/fa';
 import { MdOutlineClose } from 'react-icons/md';
@@ -67,7 +67,8 @@ import GoingTogether from '@/components/going-together/GoingTogether';
 import EventGames from '@/components/party-games/EventGames';
 import { eventTypeLabel } from '@/lib/labels';
 import { plural } from '@/lib/plural';
-import { prizeText } from '@/lib/prize';
+import { prizeText } from '@/lib/prize';
+import BackLink from '@/components/back-link/BackLink';
 const TABS = [{
   id: 'overview',
   label: 'Overview'
@@ -1153,6 +1154,7 @@ export const ViewEventContent = ({
         <Sidebar />
 
         <div className={styles.rightPaneContainer}>
+          <BackLink href="/events">{tt('back.toEvents', 'Back to events')}</BackLink>
           {/* Nothing for an ordinary reader. For an admin, the same edit the
               console offers, through the same endpoint. */}
           {event?.id && <AdminBar permission="manage_events" consoleHref="/admin/events" title={tt('admin.editEventTitle', 'Edit event')} fields={[{

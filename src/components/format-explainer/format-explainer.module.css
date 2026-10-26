@@ -342,22 +342,22 @@
 
 /* Movement, only between two frames of a playing explainer. */
 .moving .actor {
-  transition: transform 0.9s cubic-bezier(0.4, 0.1, 0.2, 1), opacity 0.5s ease;
+  transition: transform 0.15s cubic-bezier(0.4, 0.1, 0.2, 1), opacity 0.15s ease;
 }
 
 .moving .chipFill,
 .moving .rowFill,
 .moving .tagFill,
 .moving .panelFill {
-  transition: fill 0.45s ease;
+  transition: fill 0.15s ease;
 }
 
 .moving .line {
-  transition: stroke 0.45s ease, opacity 0.5s ease;
+  transition: stroke 0.15s ease, opacity 0.15s ease;
 }
 
 .moving .barFill {
-  transition: transform 0.9s cubic-bezier(0.4, 0.1, 0.2, 1);
+  transition: transform 0.15s cubic-bezier(0.4, 0.1, 0.2, 1);
 }
 
 @media (prefers-reduced-motion: reduce) {

@@ -4,7 +4,7 @@ import { uploadHint } from '@/lib/uploadSpecs';
 import { mediaUrl } from '@/lib/mediaUrl';
 import InfoTip from '@/components/info-tip/InfoTip';
 import { useState, useRef } from 'react';
-import Image from 'next/image';
+import Image from '@/components/media-image/MediaImage';
 import { FaAsterisk } from "react-icons/fa6";
 import { BiUpload } from "react-icons/bi";
 import { FaTrash } from "react-icons/fa";

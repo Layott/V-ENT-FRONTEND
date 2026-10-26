@@ -7,7 +7,7 @@ import { useState, useEffect, useCallback, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 import Link from 'next/link';
-import Image from 'next/image';
+import Image from '@/components/media-image/MediaImage';
 import { FaCheckCircle, FaShieldAlt, FaInfoCircle } from 'react-icons/fa';
 import { LuUserPlus, LuArrowLeft } from 'react-icons/lu';
 import { FiCheck, FiX, FiPlus, FiSearch } from 'react-icons/fi';
@@ -756,7 +756,8 @@ const ManageOrgContent = ({
                               <td>{formatDate(m.joined_at)}</td>
                               <td className={styles.alignRight}>
                                 {isMemberOwner ? <span className={styles.cellMuted}>-</span> : <div className={styles.menuWrap}>
-                                    <button type="button" className={styles.menuBtn} onClick={() => setOpenMenu(openMenu === m.id ? null : m.id)}>
+                                    <button type="button" className={styles.menuBtn} onClick={() => setOpenMenu(openMenu === m.id ? null : m.id)}
+                                      aria-label={tt('org.memberOptions', 'Member options')} aria-expanded={openMenu === m.id}>
                                       <BsThreeDots />
                                     </button>
                                     {openMenu === m.id && <div className={styles.menuDropdown}>

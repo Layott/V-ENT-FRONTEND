@@ -49,7 +49,7 @@
   fill: var(--v-ent-red);
   color: var(--v-ent-red);
   cursor: pointer;
-  transition: fill ease-in-out 0.5s;
+  transition: fill ease-in-out 0.15s;
 }
 
 .deleteBTN {
@@ -75,7 +75,7 @@
   border: none;
   font-size: 0.95rem;
   cursor: pointer;
-  transition: color ease-in-out 0.5s;
+  transition: color ease-in-out 0.15s;
 }
 
 .addAnotherBTN:hover {

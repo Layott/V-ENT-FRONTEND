@@ -83,5 +83,5 @@
 .counterStrikeCardContainer,
 .belowHeroContainer {
   opacity: 0;
-  transition: opacity 2s ease, transform 2s ease;
+  transition: opacity 0.15s ease, transform 0.15s ease;
 }

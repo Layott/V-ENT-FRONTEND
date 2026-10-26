@@ -506,7 +506,7 @@
   flex-direction: column;
   gap: 0.7rem;
   background-color: rgba(255, 255, 255, 0.04);
-  border-radius: 13px;
+  border-radius: 14px;
   padding: 1rem;
   /* Clear of the access panel above it; the two sat at 0px and read as one
      (CEO, 28 September 2026). */
@@ -531,7 +531,7 @@
   align-items: flex-start;
   gap: 0.6rem;
   background-color: rgba(255, 255, 255, 0.05);
-  border-radius: 11px;
+  border-radius: 10px;
   cursor: pointer;
   padding: 0.7rem 0.8rem;
   transition: background-color 0.12s;

@@ -135,7 +135,7 @@
   font: inherit;
   cursor: pointer;
   font-size: 0.85rem;
-  transition: border 0.5s ease-in-out;
+  transition: border 0.15s ease-in-out;
 
   border-radius: 8px;
   width: 110px;
@@ -234,6 +234,13 @@
   font-family: "ClashGrotesk-Medium", sans-serif;
   font-size: 0.7rem;
   color: #797B86;
+}
+
+/* `.sidebarItem a` above outranks the single class, so the 0.62rem that lets
+   "Tournaments" fit its column never applied and the label was cut at 390px
+   (audit 557). Same element, more specific selector. */
+.sidebarItem a.iconTextLink {
+  font-size: 0.62rem;
 }
 
 .activeLink a {

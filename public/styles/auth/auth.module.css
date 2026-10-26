@@ -155,7 +155,7 @@
 
   outline: none;
   color: var(--primary-bg);
-  transition: ease-in-out 0.5s all;
+  transition: ease-in-out 0.15s all;
 }
 
 .inputGroup input:focus,

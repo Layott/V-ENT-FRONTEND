@@ -1,7 +1,7 @@
 import { apiMessage } from '@/lib/apiMessage';
 import { imagePlaceholder, mediaIn } from '@/lib/mediaUrl';
 import { useState, useEffect } from 'react';
-import Image from 'next/image';
+import Image from '@/components/media-image/MediaImage';
 import Link from 'next/link';
 import { AiOutlineTeam } from "react-icons/ai";
 import { LuGamepad2 } from "react-icons/lu";

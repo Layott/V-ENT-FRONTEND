@@ -50,7 +50,7 @@
   border-radius: 0.6rem;
   background-color: #28292D;
   cursor: pointer;
-  transition: background-color 0.5s ease-in-out;
+  transition: background-color 0.15s ease-in-out;
 }
 
 .halfBoxContainer.activeBox {
@@ -137,7 +137,7 @@
   border-radius: 0.6rem;
   background-color: #28292D;
   cursor: pointer;
-  transition: background-color 0.5s ease-in-out;
+  transition: background-color 0.15s ease-in-out;
 }
 
 .oneThirdBoxContainer.activeBox {
@@ -152,7 +152,7 @@
   padding: 0.5rem;
   padding-left: 0.6rem;
   font-size: 1rem;
-  transition: border ease-in-out 0.75s;
+  transition: border ease-in-out 0.15s;
 }
 
 .inputNumber::placeholder,
@@ -205,8 +205,8 @@
   color: #B2B3BD;
   padding: 0.45rem 1rem;
   font-size: 1rem;
-  border-radius: 0.25rem;
-  transition: all ease-in-out 0.5s;
+  border-radius: 8px;
+  transition: all ease-in-out 0.15s;
   cursor: pointer;
 }
 
@@ -375,7 +375,7 @@
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  transition: all ease-in-out 0.5s;
+  transition: all ease-in-out 0.15s;
 }
 
 .editBTN:hover {

@@ -74,7 +74,7 @@
   justify-content: center;
   padding: 5px;
   border-radius: 8px;
-  transition: all ease-in-out 0.5s;
+  transition: all ease-in-out 0.15s;
   background-color: #303136;
 
   left: 50%;
@@ -102,7 +102,7 @@
 .searchInput {
   border: none;
   outline: none;
-  transition: width 0.5s ease-in-out, border 0.5s ease-in-out;
+  transition: width 0.15s ease-in-out, border 0.15s ease-in-out;
   margin-right: 5px;
   margin-left: 2.5px;
   background-color: transparent;
@@ -216,7 +216,7 @@
   outline: none;
   border-radius: 8px;
   cursor: pointer;
-  transition: all ease-in-out 0.5s;
+  transition: all ease-in-out 0.15s;
   background-color: rgba(255, 255, 255, 0.04);
 }
 
@@ -297,7 +297,7 @@
   border: none;
   outline: none;
   padding: 5px;
-  transition: all ease-in-out 0.5s;
+  transition: all ease-in-out 0.15s;
 }
 
 .closeBTN:hover {
@@ -313,7 +313,7 @@
 .closeIcon path {
   color: rgba(255, 255, 255, 0.7);
   fill: rgba(255, 255, 255, 0.7);
-  transition: all ease-in-out 0.5s;
+  transition: all ease-in-out 0.15s;
 }
 
 .closeIcon:hover path {
@@ -354,7 +354,7 @@
   font-size: 0.8rem;
   cursor: pointer;
   border-radius: 8px;
-  transition: all ease-in-out 0.5s;
+  transition: all ease-in-out 0.15s;
   font-family: "ClashGrotesk-Variable", sans-serif;
   display: flex;
   justify-content: center;

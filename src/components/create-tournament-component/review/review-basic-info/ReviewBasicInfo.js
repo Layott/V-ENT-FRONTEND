@@ -1,7 +1,7 @@
 'use client';
 
 import { mediaUrl } from '@/lib/mediaUrl';
-import Image from 'next/image';
+import Image from '@/components/media-image/MediaImage';
 import { useLanguage } from '@/i18n/LanguageProvider';
 import { basicInfoRows, show } from '../reviewFields';
 import styles from './review-basic-info.module.css';

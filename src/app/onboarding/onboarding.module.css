@@ -201,7 +201,7 @@
   /* Selected, not succeeded. Stronger fill plus the brand hue, per the
      filled-chip rule - never a ring, never green. */
   background-color: rgba(212, 175, 55, 0.16);
-  color: var(--primary-text);
+  color: var(--primary-bg);
 }
 
 .gameCheck {

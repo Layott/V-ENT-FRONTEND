@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react';
-import Image from 'next/image';
+import Image from '@/components/media-image/MediaImage';
 import styles from './avatar.module.css';
 import { mediaUrl } from '@/lib/mediaUrl';
 

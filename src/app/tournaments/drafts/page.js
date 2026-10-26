@@ -212,7 +212,8 @@ const Drafts = () => {
                       <button className={`${styles.actionBtn} ${styles.publishBtn}`} onClick={() => handlePublish(draft)} disabled={anyBusy || progress < 80} title={progress < 80 ? tx("Complete setup to publish") : ''}>
                         <LuRocket /> {busy ? tx("Publishing…") : 'Publish'}
                       </button>
-                      <button className={`${styles.actionBtn} ${styles.deleteBtn}`} onClick={() => handleDelete(draft)} disabled={anyBusy}>
+                      <button className={`${styles.actionBtn} ${styles.deleteBtn}`} onClick={() => handleDelete(draft)} disabled={anyBusy}
+                              aria-label={confirmId === draft.id ? undefined : tt('draft.deleteDraft', 'Delete draft')}>
                         {confirmId === draft.id
                           ? tt('draft.confirmDelete', 'Delete for good')
                           : <><LuTrash2 /></>}

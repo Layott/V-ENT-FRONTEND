@@ -143,11 +143,14 @@ const CreateTeam = () => {
                 {bannerPreview ? <Image src={bannerPreview} alt={tt("team.alt.bannerPreview", "The banner you chose for this team")} fill style={{
                 objectFit: 'cover'
               }} sizes="100vw" /> : <div className={styles.uploadHint}>
-                    <FiCamera /> <span>{tt("ui.upload.banner.image.0fa5", "Upload banner image")}</span>
+                    {/* The size hint lives in the empty banner it describes. Under
+                        it, the logo's -32px overlap sat on top of the words at
+                        390px (audit 557). */}
+                    <span className={styles.uploadHintMain}><FiCamera /> <span>{tt("ui.upload.banner.image.0fa5", "Upload banner image")}</span></span>
+                    <span className={styles.uploadHintLine}>{uploadHint(tt, 'banner')}</span>
                   </div>}
                 <input ref={bannerRef} type="file" accept="image/*" className={styles.hiddenInput} onChange={e => handleFile(e.target.files?.[0], setBannerPreview)} />
               </div>
-                <p className={styles.uploadHintLine}>{uploadHint(tt, 'banner')}</p>
 
               <div className={styles.logoUploadWrap}>
                 <div className={styles.logoUpload} onClick={() => logoRef.current?.click()}>
@@ -156,8 +159,10 @@ const CreateTeam = () => {
                 }} /> : <div className={styles.logoFallback}><FiCamera /></div>}
                   <input ref={logoRef} type="file" accept="image/*" className={styles.hiddenInput} onChange={e => handleFile(e.target.files?.[0], setLogoPreview)} />
                 </div>
-                <p className={styles.uploadCaption}><FiUpload /> {tt("ui.upload.logo.a564", "Upload logo")}</p>
-                <p className={styles.uploadHintLine}>{uploadHint(tt, 'logo')}</p>
+                <div className={styles.logoText}>
+                  <p className={styles.uploadCaption}><FiUpload /> {tt("ui.upload.logo.a564", "Upload logo")}</p>
+                  <p className={styles.uploadHintLine}>{uploadHint(tt, 'logo')}</p>
+                </div>
               </div>
             </section>
 
@@ -209,7 +214,8 @@ const CreateTeam = () => {
                   <span className={`${styles.fieldLabel} fieldLabelRow`}>{tt("ui.open.join.f8e3", "Open to join")} <InfoTip id="allowMembershipRequests" /></span>
                   <span className={styles.fieldHint}>{tt("ui.anyone.can.request.join.5886", "Anyone can request to join. Captains approve.")}</span>
                 </div>
-                <button type="button" className={`${styles.toggle} ${openToJoin ? styles.toggleOn : ''}`} onClick={() => setOpenToJoin(v => !v)}>
+                <button type="button" className={`${styles.toggle} ${openToJoin ? styles.toggleOn : ''}`} onClick={() => setOpenToJoin(v => !v)}
+                        role="switch" aria-checked={openToJoin} aria-label={tt('team.openToJoinSwitch', 'Open to join requests')}>
                   <span className={styles.toggleKnob} />
                 </button>
               </label>

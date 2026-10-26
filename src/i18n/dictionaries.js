@@ -1661,7 +1661,14 @@ export const dictionaries = {
     'landing.createAccount': 'Create a free account',
     'landing.noLiveTournaments': 'Open tournaments appear here as organisers publish them.',
     'landing.liveLoadFailed': 'Open tournaments could not be loaded just now.',
-    'landing.browseAll': 'See every tournament',
+    'landing.browseAll': 'See every tournament',
+    "confirmed.noChargeNoRef": "No ticket has been issued. If you did pay, your ticket can be found with your email address.",
+    "profile.followAction": "follow or message",
+    "runOfShow.title": "Run of show",
+    "draft.deleteDraft": "Delete draft",
+    "team.openToJoinSwitch": "Open to join requests",
+    "team.passwordSwitch": "Joining needs a password",
+    "org.memberOptions": "Member options",
     "api.ALREADY_OWNER": "That person already runs this stall.",
     "api.OWNER_ONLY": "Only the stall owner can do that.",
     "api.PICKUP_CLOSED": "Collection has closed for this stall.",
@@ -5549,7 +5556,7 @@ export const dictionaries = {
     'msg.loginSuccessful': 'Login successful!',
     'msg.membershipSettingsSaved': 'Membership settings saved',
     'msg.minimumTopUpIsVc': 'Minimum top-up is 1 VC (₦1,000).',
-    'msg.missingTeamId': 'Missing team id',
+    'msg.missingTeamId': 'This link does not say which team to open.',
     'msg.nameIsRequired': 'Name is required',
     'msg.networkError': 'Network error',
     'msg.networkErrorDuringVerification': 'Network error during verification.',
@@ -5622,7 +5629,7 @@ export const dictionaries = {
     'msg.unfollowed': 'Unfollowed.',
     'msg.unfollowedShort': 'Unfollowed',
     'msg.userMuted': 'User muted',
-    'msg.vendorIdMissing': 'Vendor ID missing',
+    'msg.vendorIdMissing': 'This link does not say which stall to open.',
     'msg.verificationRequestSubmitted': 'Verification request submitted.',
     'msg.yourNewPinMustBe': 'Your new PIN must be different from your current PIN.',
 

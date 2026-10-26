@@ -30,7 +30,7 @@ import Sidebar from '@/components/sidebar/Sidebar';
 import BottomMenu from '@/components/bottom-menu/BottomMenu';
 import DateField from '@/components/date-field/DateField';
 import useGames from '@/hooks/useGames';
-import { mediaUrl } from '@/lib/mediaUrl';
+import { mediaUrl, hideBroken } from '@/lib/mediaUrl';
 import styles from './edit-tournament.module.css';
 import { useT } from '@/i18n/LanguageProvider';
 import LegacyIdRoute from '@/components/legacy-id-route/LegacyIdRoute';
@@ -429,7 +429,7 @@ export const EditTournamentContent = ({ slug: slugFromPath }) => {
                   <span className={styles.label}>{tt('tEdit.logo', 'Logo')}</span>
                   {(logoPreview || current.logo) && (
                     // eslint-disable-next-line @next/next/no-img-element
-                    <img className={styles.artLogo}
+                    <img onError={hideBroken} className={styles.artLogo}
                          src={logoPreview || mediaUrl(current.logo)}
                          alt={tt('tEdit.logoAlt', 'The tournament logo')} />
                   )}
@@ -440,7 +440,7 @@ export const EditTournamentContent = ({ slug: slugFromPath }) => {
                   <span className={styles.label}>{tt('tEdit.banner', 'Banner')}</span>
                   {(bannerPreview || current.banner) && (
                     // eslint-disable-next-line @next/next/no-img-element
-                    <img className={styles.artBanner}
+                    <img onError={hideBroken} className={styles.artBanner}
                          src={bannerPreview || mediaUrl(current.banner)}
                          alt={tt('tEdit.bannerAlt', 'The tournament banner')} />
                   )}

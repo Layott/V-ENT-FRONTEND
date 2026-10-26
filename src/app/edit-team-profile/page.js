@@ -60,7 +60,7 @@ const EditTeamProfileContent = ({
     if (sessionStatus === 'loading') return;
     if (!teamId) {
       setLoading(false);
-      setError(tt("msg.missingTeamId", "Missing team id"));
+      setError(tt("msg.missingTeamId", "This link does not say which team to open."));
       return;
     }
     try {
@@ -142,7 +142,7 @@ const EditTeamProfileContent = ({
           <Sidebar />
           <div className={styles.rightPaneContainer}>
             <div className={styles.gateCard}>
-              <h2 className={styles.gateTitle}>{tt("ui.team.not.found.f9de", "Team not found")}</h2>
+              <h1 className={styles.gateTitle}>{tt("ui.team.not.found.f9de", "Team not found")}</h1>
               <p className={styles.gateSub}>{error || tx("We could not load that team.")}</p>
               <button type="button" className={styles.gateBtn} onClick={() => router.push('/teams')}>{tt("ui.back.teams.ed08", "Back to teams")}</button>
             </div>
@@ -160,7 +160,7 @@ const EditTeamProfileContent = ({
           <div className={styles.rightPaneContainer}>
             <div className={styles.gateCard}>
               <div className={styles.gateIcon}><LuShieldX /></div>
-              <h2 className={styles.gateTitle}>{tt("ui.access.denied.6434", "Access denied")}</h2>
+              <h1 className={styles.gateTitle}>{tt("ui.access.denied.6434", "Access denied")}</h1>
               <p className={styles.gateSub}>{tt("ui.only.owner.7e7c", "Only the owner of")} <strong>{team.name}</strong> {tt("ui.can.edit.this.team.a6a9", "can edit this team.")}</p>
               <button type="button" className={styles.gateBtn} onClick={() => router.push(`/teams/${team.slug || team.id}`)}>
                 {tt("ui.back.team.profile.4365", "Back to team profile")}

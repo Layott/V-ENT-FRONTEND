@@ -315,7 +315,7 @@
 
 .hubCard {
   background: rgba(255, 255, 255, 0.05);
-  border-radius: 11px;
+  border-radius: 10px;
   display: flex;
   flex-direction: column;
   gap: 0.2rem;

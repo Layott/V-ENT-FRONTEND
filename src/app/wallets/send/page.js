@@ -6,7 +6,7 @@ import InfoTip from '@/components/info-tip/InfoTip';
 import { useState, useEffect, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import Image from 'next/image';
+import Image from '@/components/media-image/MediaImage';
 import { useSession } from 'next-auth/react';
 import Header from '@/components/header/Header';
 import MobileHeader from '@/components/mobile-header/MobileHeader';

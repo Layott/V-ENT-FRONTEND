@@ -33,6 +33,9 @@ export const PROTECTED_ROUTES = [
   // checks people in. Signed out it rendered a scanner that could do neither
   // and said only "Could not load this event."
   '/events/scan',
+  // The event console at its old address (?event=); it moves itself to
+  // /events/<slug>/manage, which the pattern below gates.
+  '/events/manage',
   '/events/register-event',
   '/tournaments/create-tournament',
   '/tournaments/drafts',
@@ -40,6 +43,8 @@ export const PROTECTED_ROUTES = [
   '/tournaments/my-tournaments',
   '/tournaments/manage',
   '/organizations/create',
+  // Closed module today; when it opens, a create form is an action.
+  '/marketplace/create',
   '/organizations/manage',
   '/organizations/invites',
   '/community/dm',
@@ -62,15 +67,27 @@ export const PROTECTED_ROUTES = [
 // page under it is public and stays public.
 export const PROTECTED_PATTERNS = [
   /^\/events\/[^/]+\/(edit|manage|attendees)$/,
-  /^\/tournaments\/[^/]+\/manage$/,
+  // The editor is the action. Signed out it rendered every field of somebody
+  // else's tournament, live, to be refused on save (audit 557, 25 October).
+  /^\/tournaments\/[^/]+\/(edit|manage)$/,
+  /^\/organizations\/[^/]+\/manage$/,
+  // A circuit and a league are run from /manage under their slug.
+  /^\/circuits\/(leagues\/)?[^/]+\/manage$/,
   // Registering IS the action. Signed out, this handed somebody the whole
   // wizard and refused them at the end, after they had chosen an entry type.
   /^\/tournaments\/[^/]+\/register$/,
 ];
 
-/** `path` with no locale prefix, e.g. "/events/my-tickets". */
+/**
+ * `path` with no locale prefix, e.g. "/events/my-tickets".
+ *
+ * A route covers itself and what sits under it, never a longer word: a bare
+ * startsWith gated an event slugged `scan-party` as if it were `/events/scan`,
+ * and a public page that bounces a stranger to sign in is the fault this list
+ * exists to prevent (audit 557, 25 October 2026).
+ */
 export function isGatedPath(path) {
   const p = String(path || '/');
-  return PROTECTED_ROUTES.some((route) => p.startsWith(route))
+  return PROTECTED_ROUTES.some((route) => p === route || p.startsWith(route + '/'))
     || PROTECTED_PATTERNS.some((pattern) => pattern.test(p));
 }

@@ -25,7 +25,7 @@ import { call, fill, tokenFrom, useAnimeOpen } from '@/lib/anime';
 import { formatDateTime } from '@/lib/datetime';
 import { useViewer, signInHref } from '@/lib/gating';
 import UserPicker from '@/components/user-picker/UserPicker';
-import { mediaUrl } from '@/lib/mediaUrl';
+import { mediaUrl, hideBroken } from '@/lib/mediaUrl';
 import useLiveData from '@/lib/useLiveData';
 import styles from './room.module.css';
 
@@ -380,7 +380,7 @@ const RoomClient = ({ roomToken }) => {
                     <LuChevronLeft />
                   </button>
                   {image ? (
-                    <img className={styles.pageImage} src={mediaUrl(image)}
+                    <img onError={hideBroken} className={styles.pageImage} src={mediaUrl(image)}
                          alt={fill(tt('anime.pageN', 'Page {p}'), { p: page })} />
                   ) : (
                     <p className={styles.sideState}>
