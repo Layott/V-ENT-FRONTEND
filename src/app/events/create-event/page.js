@@ -4,7 +4,9 @@ import { appLocale } from '@/lib/appLocale';
 import { withLocalDatesAsISO } from '@/lib/datetime';
 import { useCurrency } from '@/lib/money';
 import { apiMessage } from '@/lib/apiMessage';
-import { NGN_PER_COIN } from '@/lib/currency';
+import { NGN_PER_COIN, formatNgn } from '@/lib/currency';
+import { formatMoney } from '@/lib/money';
+import { formatNumber } from '@/lib/datetime';
 import InfoTip from '@/components/info-tip/InfoTip';
 import OrganizationPicker from '@/components/organization-picker/OrganizationPicker';
 import ImageUpload from '@/components/image-upload/ImageUpload';
@@ -76,7 +78,9 @@ const emptyForm = {
     // door refuses since 12 September, so the wizard's own default was a
     // refusal waiting at Publish, two steps away from the field.
     price: 2 * NGN_PER_COIN,
-    quantity: 200,
+    // Starts equal to the capacity and follows it until somebody types a
+    // number of their own (inbox 562: capacity 10,000 beside a tier of 2,000).
+    quantity: 500,
     perks: 'All-day entry • Standing area'
   }],
   // Step 4 - Sponsors & vendors
@@ -166,6 +170,10 @@ const CreateEventPage = () => {
           ...(parsed.formData || {})
         });
         setStep(parsed.step || 1);
+        // The switch was not in the draft, so coming back to the wizard
+        // unticked it and the tiers it had hidden were sold after all (inbox
+        // 562: "I had ticked free tier").
+        if (parsed.freeEntry) setFreeEntry(true);
         if (parsed.hadPictures) setPicturesLost(true);
       }
     } catch (err) {
@@ -182,6 +190,7 @@ const CreateEventPage = () => {
         localStorage.setItem(DRAFT_KEY, JSON.stringify({
           formData,
           step,
+          freeEntry,
           hadPictures: Boolean(bannerFile) || Object.values(supporterLogos).some(Boolean)
         }));
         setAutosaved(true);
@@ -191,7 +200,7 @@ const CreateEventPage = () => {
       }
     }, 600);
     return () => clearTimeout(id);
-  }, [formData, step, submitted, bannerFile, supporterLogos]);
+  }, [formData, step, freeEntry, submitted, bannerFile, supporterLogos]);
   const update = (key, value) => {
     setFormData(p => ({
       ...p,
@@ -201,6 +210,19 @@ const CreateEventPage = () => {
       ...p,
       [key]: undefined
     }));
+  };
+  // A lone tier whose quantity still equals the capacity is following it, so
+  // it moves with the capacity. One typed by hand is left alone.
+  const updateCapacity = value => {
+    setFormData(p => {
+      const lone = p.ticket_types.length === 1 && Number(p.ticket_types[0].quantity) === Number(p.capacity);
+      return {
+        ...p,
+        capacity: value,
+        ticket_types: lone ? [{ ...p.ticket_types[0], quantity: value }] : p.ticket_types
+      };
+    });
+    setErrors(p => ({ ...p, capacity: undefined }));
   };
   const updateNested = (key, subKey, value) => {
     setFormData(p => ({
@@ -315,6 +337,26 @@ const CreateEventPage = () => {
     }
     return days;
   })();
+  // What the tiers add up to, said against the capacity. Capacity 10,000 with
+  // one tier of 2,000 sells 2,000, and nothing on the screen said so (inbox 562).
+  const ticketTotal = formData.ticket_types.reduce((n, t) => n + (Number(t.quantity) || 0), 0);
+  const capacityShown = formatNumber(Number(formData.capacity) || 0);
+  const ticketsShown = formatNumber(ticketTotal);
+  const ticketsAgainstCapacity = formData.capacity_mode === 'per_day' && eventDays.length > 1
+    ? tt('createEvent.ticketsPerDay', '{sold} tickets across every tier. Capacity is {capacity} each day.')
+    : ticketTotal === Number(formData.capacity)
+      ? tt('createEvent.ticketsMatch', '{sold} tickets, one for every place.')
+      : ticketTotal < Number(formData.capacity)
+        ? tt('createEvent.ticketsUnder', 'Only {sold} tickets for {capacity} places. Raise a quantity if every place should have a ticket.')
+        : tt('createEvent.ticketsOver', '{sold} tickets for {capacity} places, more tickets than places.');
+  const ticketsLine = ticketsAgainstCapacity.replace('{sold}', ticketsShown).replaceAll('{capacity}', capacityShown);
+  // A price of nothing is free; anything else in the currency it was typed in.
+  const tierPriceText = price => {
+    const n = Number(price) || 0;
+    if (n <= 0) return tt('ui.free.75f5', 'Free');
+    const code = formData.currency || 'NGN';
+    return code === 'NGN' ? formatNgn(n) : formatMoney(n, code, undefined, appLocale());
+  };
 
   const validateStep = s => {
     const e = {};
@@ -685,7 +727,7 @@ const CreateEventPage = () => {
 
                 <label className={styles.label}>
                   <span className="fieldLabelRow">{tt("ui.capacity.max.attendees.dd53", "Capacity (max attendees)")} <InfoTip id="eventCapacity" /></span>
-                  <input type="number" className={styles.input} value={formData.capacity} onChange={e => update('capacity', Number(e.target.value))} min={1} />
+                  <input type="number" className={styles.input} value={formData.capacity} onChange={e => updateCapacity(Number(e.target.value))} min={1} />
                   {errors.capacity && <span className={styles.errorMsg}><FaExclamationCircle /> {errors.capacity}</span>}
                 </label>
                 <label className={styles.label}>
@@ -791,9 +833,12 @@ const CreateEventPage = () => {
                     </div>)}
                 </div>
 
-                <button className={styles.addRowBtn} onClick={addTicket} type="button">
-                  <FaPlus /> {tt("ui.add.tier.9990", "Add tier")}
-                </button>
+                {!freeEntry && <>
+                  <p className={styles.freeEntryHint} aria-live="polite">{ticketsLine}</p>
+                  <button className={styles.addRowBtn} onClick={addTicket} type="button">
+                    <FaPlus /> {tt("ui.add.tier.9990", "Add tier")}
+                  </button>
+                </>}
               </div>}
 
             {/* STEP 4 */}
@@ -945,17 +990,29 @@ const CreateEventPage = () => {
                   <div className={styles.reviewCard}>
                     <p className={styles.reviewLabel}>{tt("ui.capacity.45bd", "Capacity")}</p>
                     <p className={styles.reviewValue}>{Number(formData.capacity).toLocaleString()}</p>
-                    <p className={styles.reviewSub}>{plural(tt, formData.ticket_types.length, 'count.ticketTierOne', '{n} ticket tier', 'count.ticketTier', '{n} ticket tiers')}</p>
+                    <p className={styles.reviewSub}>
+                      {freeEntry
+                        ? tt('createEvent.freeEntry', 'Free entry, no tickets')
+                        : plural(tt, formData.ticket_types.length, 'count.ticketTierOne', '{n} ticket tier', 'count.ticketTier', '{n} ticket tiers')}
+                    </p>
                   </div>
 
                   <div className={`${styles.reviewCard} ${styles.reviewCardWide}`}>
                     <p className={styles.reviewLabel}>{tt("ui.tickets.5c62", "Tickets")}</p>
-                    <ul className={styles.reviewList}>
-                      {formData.ticket_types.map(t => <li key={t.id}>
-                          <span><strong>{t.name || 'Untitled'}</strong></span>
-                          <span>₦{Number(t.price).toLocaleString()} • {t.quantity} {tt("ui.available.7b23", "available")}</span>
-                        </li>)}
-                    </ul>
+                    {/* The review listed the tiers even with free entry ticked,
+                        while Publish sends none, and a price of nothing read
+                        "₦0" (inbox 562). It now says what will be created. */}
+                    {freeEntry ? <p className={styles.reviewValue}>
+                        {tt('createEvent.reviewFreeEntry', 'Free entry, no tickets. Anybody can turn up, up to the capacity of {n}.').replace('{n}', formatNumber(Number(formData.capacity) || 0))}
+                      </p> : <>
+                      <ul className={styles.reviewList}>
+                        {formData.ticket_types.map(t => <li key={t.id}>
+                            <span><strong>{t.name || tt('createEvent.untitledTier', 'Untitled tier')}</strong></span>
+                            <span>{tierPriceText(t.price)} • {formatNumber(Number(t.quantity) || 0)} {tt("ui.available.7b23", "available")}</span>
+                          </li>)}
+                      </ul>
+                      <p className={styles.reviewSub}>{ticketsLine}</p>
+                    </>}
                   </div>
 
                   {formData.sponsors.length > 0 && <div className={`${styles.reviewCard} ${styles.reviewCardWide}`}>
