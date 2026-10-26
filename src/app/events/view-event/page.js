@@ -25,7 +25,7 @@ import { useCheckoutFields, CheckoutFieldList, missingRequired, quantityCeiling 
 import Link from 'next/link';
 import Image from '@/components/media-image/MediaImage';
 import { IoCalendarOutline, IoLocationOutline, IoTicketOutline } from 'react-icons/io5';
-import { FaUsers, FaCheckCircle, FaCrown, FaStar, FaStore, FaTrophy } from 'react-icons/fa';
+import { FaUsers, FaCheckCircle, FaCrown, FaStore, FaTrophy } from 'react-icons/fa';
 import { MdOutlineClose } from 'react-icons/md';
 import { FiExternalLink } from 'react-icons/fi';
 import { BsTwitter, BsInstagram, BsYoutube, BsFacebook, BsTwitch } from 'react-icons/bs';
@@ -67,7 +67,7 @@ import GoingTogether from '@/components/going-together/GoingTogether';
 import EventGames from '@/components/party-games/EventGames';
 import { eventTypeLabel } from '@/lib/labels';
 import { plural } from '@/lib/plural';
-import { prizeText } from '@/lib/prize';
+import { prizeText } from '@/lib/prize';
 import BackLink from '@/components/back-link/BackLink';
 const TABS = [{
   id: 'overview',
@@ -1154,7 +1154,7 @@ export const ViewEventContent = ({
         <Sidebar />
 
         <div className={styles.rightPaneContainer}>
-          <BackLink href="/events">{tt('back.toEvents', 'Back to events')}</BackLink>
+          <BackLink href="/events" className={styles.backLink}>{tt('back.toEvents', 'Back to events')}</BackLink>
           {/* Nothing for an ordinary reader. For an admin, the same edit the
               console offers, through the same endpoint. */}
           {event?.id && <AdminBar permission="manage_events" consoleHref="/admin/events" title={tt('admin.editEventTitle', 'Edit event')} fields={[{
@@ -1277,7 +1277,7 @@ export const ViewEventContent = ({
 
           {/* Tabs */}
           <div className={styles.tabRow} ref={tabsRef}>
-            {TABS.filter(t => !t.needsProgramme || hasProgramme).map(t => <button key={t.id} className={`${styles.tabBtn} ${activeTab === t.id ? styles.tabBtnActive : ''}`} onClick={() => openTab(t.id)} type="button">
+            {TABS.filter(t => !t.needsProgramme || hasProgramme).map(t => <button key={t.id} className={`${styles.tabBtn} ${activeTab === t.id ? styles.tabBtnActive : ''}`} aria-pressed={activeTab === t.id} onClick={() => openTab(t.id)} type="button">
                 {t.key ? tt(t.key, t.label) : tx(t.label)}
               </button>)}
           </div>
@@ -1472,8 +1472,10 @@ export const ViewEventContent = ({
                     // Website first, then whatever social they gave. A logo
                     // that goes nowhere is a picture of a name.
                     const href = sponsor.website || sponsor.links?.[0]?.url || null;
-                    const inner = sponsor.logo ? <img src={sponsor.logo} alt={sponsor.name} className={styles.sponsorLogo} /> : <span className={styles.sponsorChip}>
-                              <FaStar className={styles.sponsorStar} /> {sponsor.name}
+                    // No logo: the name alone on a plain tile. A star beside the
+                    // name read as a placeholder logo.
+                    const inner = sponsor.logo ? <img src={sponsor.logo} alt={sponsor.name} className={styles.sponsorLogo} /> : <span className={styles.sponsorName}>
+                              {sponsor.name}
                             </span>;
                     return href ? <a key={sponsor.id || sponsor.name} href={href} target="_blank" rel="noopener noreferrer nofollow" className={styles.sponsorLink} title={sponsor.name}>
                               {inner}
@@ -2196,4 +2198,4 @@ const ViewEventLegacy = () => (
   </Suspense>
 );
 
-export default ViewEventLegacy;
+export default ViewEventLegacy;

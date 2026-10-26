@@ -154,7 +154,6 @@ export default function ListingClient({ slug }) {
   if (open === null) return null;
   if (!open) {
     return <ComingSoon
-      phase="Phase 4"
       title={tt('mk.title', 'Vermillion City')}
       blurb={tt('mk.comingSoon', 'Player to player listings, offers and escrow are built and not open yet.')}
       alternatives={[{ href: '/tournaments', label: tt('ui.tournaments.fee2', 'Tournaments') }]} />;

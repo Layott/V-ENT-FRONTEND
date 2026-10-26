@@ -11,6 +11,7 @@ import shared from '@/components/admin/admin.module.css';
 import styles from './audit-log.module.css';
 import { useT } from '@/i18n/LanguageProvider';
 import { useTx } from '@/i18n/LanguageProvider';
+import { adminTargetLabel, adminActivityText } from '@/lib/adminTarget';
 import DateField from '@/components/date-field/DateField';
 import { formatDateTime, formatNumber } from '@/lib/datetime';
 import { adminToken } from '@/lib/adminToken'
@@ -232,9 +233,9 @@ function AuditLogInner() {
                         <td>{l.admin_username || '-'}</td>
                         <td>{actionBadge(l.action)}</td>
                         <td className={shared.hideMobile}>
-                          {l.target_type && l.target_id ? `${l.target_type} #${l.target_id}` : '-'}
+                          {l.target_type ? adminTargetLabel(tt, l.target_type, l.target_id) : '-'}
                         </td>
-                        <td className={styles.descCell}>{l.description || '-'}</td>
+                        <td className={styles.descCell}>{l.description ? adminActivityText(tt, l.description) : '-'}</td>
                         <td className={shared.hideMobile}>
                           <code className={styles.code}>{l.ip || '-'}</code>
                         </td>

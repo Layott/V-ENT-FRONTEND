@@ -145,7 +145,7 @@ const ResetEmail = () => {
           <div className={generalStyles.formContainer}>
             <section className={generalStyles.formHeader}>
             <h1 className={generalStyles.formHeading}>{tt("ui.check.email.fab9", "Check your email")}</h1>
-            <p>{tt("ui.just.sent.link.email.3b4b", "We just sent you a link to your email address.")}</p>
+            <p>{tt("reset.codeSent", "We just sent a 6-digit code to your email address.")}</p>
             <p>{tt("ui.enter.digit.code.reset.f571", "Enter the 6-digit code to reset your password")}</p>
             </section>
             {/* method="post" is not there to be used - onSubmit handles the

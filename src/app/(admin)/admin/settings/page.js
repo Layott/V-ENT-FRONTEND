@@ -304,6 +304,13 @@ function SettingsInner() {
                   <textarea className={styles.input} rows={3} value={settings.maintenance.message} onChange={e => patch('maintenance', 'message', e.target.value)} />
                 </div>
               </div>
+              {/* The same Save at the foot of the form: on a phone the one at the top
+                  was a long scroll away from the last field (audit 557). */}
+              <div className={shared.pageActions}>
+                <button className={`${shared.actBtn} ${shared.actApprove}`} onClick={save} disabled={saving || !settings}>
+                  {saving ? tx("Saving…") : tx("Save Changes")}
+                </button>
+              </div>
             </div>}
         </main>
       </div>

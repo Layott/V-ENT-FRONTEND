@@ -16,6 +16,7 @@ import { apiMessage } from '@/lib/apiMessage';
 import { useViewer } from '@/lib/gating';
 import { useAutoRefresh } from '@/lib/useLiveData';
 import { formatNumber } from '@/lib/datetime';
+import { plural } from '@/lib/plural';
 import Avatar from '@/components/avatar/Avatar';
 import { cameWords, zoneClass, zoneWords } from './CircuitRanking';
 import { API, entrantWord, regionWord, request } from './circuitWords';
@@ -151,7 +152,7 @@ export default function LeagueView({ slug }) {
             <span className={styles.tag}>{entrantWord(tt, league.entrant)}</span>
             <span className={styles.tag}>{regionWord(tt, league.region)}</span>
             <span className={`${styles.tag} ${styles.tagGreen}`}>
-              {tt('league.divisionsN', '{n} divisions').replace('{n}', divisions.length)}
+              {plural(tt, divisions.length, 'league.divisionOne', '{n} division', 'league.divisionsN', '{n} divisions')}
             </span>
             {!league.is_published && <span className={`${styles.tag} ${styles.tagGold}`}>{tt('circuit.draft', 'Draft')}</span>}
           </div>

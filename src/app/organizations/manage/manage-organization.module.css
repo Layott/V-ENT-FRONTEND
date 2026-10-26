@@ -98,6 +98,19 @@
 
 .tabsRow::-webkit-scrollbar { display: none; }
 
+/* On a phone the chips wrap onto a second line rather than being cut
+   mid-word at the right edge. */
+@media (max-width: 720px) {
+  .tabsRow {
+    flex-wrap: wrap;
+    width: 100%;
+    overflow-x: visible;
+  }
+  .tabBTN {
+    min-height: 44px;
+  }
+}
+
 .tabBTN {
   position: relative;
   background: transparent;
@@ -447,15 +460,15 @@
   background-color: rgba(255, 255, 255, 0.04);
 }
 
+/* Fixed, placed from the button by inline style (see the members
+   table). Inside a sideways-scrolling table an absolute menu is clipped. */
 .menuDropdown {
-  position: absolute;
-  right: 0;
-  top: calc(100% + 4px);
+  position: fixed;
   background-color: #1e1f23;
 
   border-radius: 8px;
   min-width: 200px;
-  z-index: 50;
+  z-index: 960;
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
   display: flex;
   flex-direction: column;

@@ -22,6 +22,7 @@ import { AdminToastProvider, useAdminToast } from '@/components/admin/AdminToast
 import shared from '@/components/admin/admin.module.css';
 import styles from './games.module.css';
 import ImageUpload from '@/components/image-upload/ImageUpload';
+import { mediaUrl, hideBroken } from '@/lib/mediaUrl';
 import { useT } from '@/i18n/LanguageProvider';
 import { adminToken } from '@/lib/adminToken'
 function GamesInner() {
@@ -227,7 +228,7 @@ function GamesInner() {
                   {games.map(game => <div key={game.id} className={`${styles.gameCard} ${game.is_active ? '' : styles.retired}`}>
                       <div className={styles.gameHead}>
                         {game.logo
-                          ? <img className={styles.gameLogo} src={game.logo} alt={tt('admin.gameLogoAlt', 'The {game} logo').replace('{game}', game.name)} />
+                          ? <img className={styles.gameLogo} src={mediaUrl(game.logo)} onError={hideBroken} alt={tt('admin.gameLogoAlt', 'The {game} logo').replace('{game}', game.name)} />
                           : <span className={styles.gameLogoBlank} aria-hidden="true">{game.name.slice(0, 1)}</span>}
                         <strong className={styles.gameName}>{game.name}</strong>
                         {!game.is_active && <span className={styles.retiredBadge}>{tt('admin.retired', 'Retired')}</span>}
@@ -304,7 +305,7 @@ function GamesInner() {
                               <option value="">{tt('admin.modeEveryEdition', 'Every edition')}</option>
                               {game.series.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
                             </select>}
-                          <button type="button" className={styles.addBtn} disabled={busy || !(newMode[game.id]?.name || '').trim()} onClick={() => addMode(game)}>
+                          <button type="button" className={styles.addQuiet} disabled={busy || !(newMode[game.id]?.name || '').trim()} onClick={() => addMode(game)}>
                             {tt('admin.addMode', 'Add mode')}
                           </button>
                         </div>}
@@ -331,7 +332,7 @@ function GamesInner() {
                       year: e.target.value
                     }
                   }))} />
-                          <button type="button" className={styles.addBtn} disabled={busy || !(newSeries[game.id]?.name || '').trim()} onClick={() => addSeries(game)}>
+                          <button type="button" className={styles.addQuiet} disabled={busy || !(newSeries[game.id]?.name || '').trim()} onClick={() => addSeries(game)}>
                             {tt('admin.addEdition', 'Add edition')}
                           </button>
                         </div>}

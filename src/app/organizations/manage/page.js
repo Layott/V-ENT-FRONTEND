@@ -110,6 +110,10 @@ const ManageOrgContent = ({
   // invitation was one press (18 September 2026); it asks first now.
   const [cancelling, setCancelling] = useState(null);
   const [openMenu, setOpenMenu] = useState(null);
+  // Where the open member menu sits on screen. The members table scrolls
+  // sideways, so an absolutely placed menu was clipped at the table's
+  // bottom edge and Kick sat out of view until somebody scrolled.
+  const [menuPos, setMenuPos] = useState({ top: 0, bottom: null, right: 0 });
   const [memberSearch, setMemberSearch] = useState('');
   const [teamSearch, setTeamSearch] = useState('');
   const [verificationSubmitted, setVerificationSubmitted] = useState(false);
@@ -222,6 +226,19 @@ const ManageOrgContent = ({
   useEffect(() => {
     loadAll();
   }, [loadAll]);
+
+  // A fixed menu stays put while the page moves under it, so any scroll
+  // or resize closes it rather than leaving it floating.
+  useEffect(() => {
+    if (openMenu === null) return undefined;
+    const close = () => setOpenMenu(null);
+    window.addEventListener('scroll', close, true);
+    window.addEventListener('resize', close);
+    return () => {
+      window.removeEventListener('scroll', close, true);
+      window.removeEventListener('resize', close);
+    };
+  }, [openMenu]);
 
   // Sync tab to URL
   useEffect(() => {
@@ -656,7 +673,7 @@ const ManageOrgContent = ({
 
           {/* ── Tabs ── */}
           <div className={styles.tabsRow}>
-            {TABS.map(t => <button key={t.id} type="button" className={`${styles.tabBTN} ${activeTab === t.id ? styles.activeTab : ''}`} onClick={() => setActiveTab(t.id)}>
+            {TABS.map(t => <button key={t.id} type="button" aria-pressed={activeTab === t.id} className={`${styles.tabBTN} ${activeTab === t.id ? styles.activeTab : ''}`} onClick={() => setActiveTab(t.id)}>
                 {tx(t.label)}
                 {t.id === 'members' && requests.length > 0 && <span className={styles.tabBadge}>{requests.length}</span>}
               </button>)}
@@ -761,11 +778,18 @@ const ManageOrgContent = ({
                               <td>{formatDate(m.joined_at)}</td>
                               <td className={styles.alignRight}>
                                 {isMemberOwner ? <span className={styles.cellMuted}>-</span> : <div className={styles.menuWrap}>
-                                    <button type="button" className={styles.menuBtn} onClick={() => setOpenMenu(openMenu === m.id ? null : m.id)}
+                                    <button type="button" className={styles.menuBtn} onClick={e => {
+                                        if (openMenu === m.id) { setOpenMenu(null); return; }
+                                        const r = e.currentTarget.getBoundingClientRect();
+                                        // Open upward when the menu would run off the bottom of the screen.
+                                        const up = r.bottom + 200 > window.innerHeight;
+                                        setMenuPos({ top: up ? null : r.bottom + 4, bottom: up ? window.innerHeight - r.top + 4 : null, right: window.innerWidth - r.right });
+                                        setOpenMenu(m.id);
+                                      }}
                                       aria-label={tt('org.memberOptions', 'Member options')} aria-expanded={openMenu === m.id}>
                                       <BsThreeDots />
                                     </button>
-                                    {openMenu === m.id && <div className={styles.menuDropdown}>
+                                    {openMenu === m.id && <div className={styles.menuDropdown} style={{ top: menuPos.top ?? 'auto', bottom: menuPos.bottom ?? 'auto', right: menuPos.right }}>
                                         {role !== 'admin' && <button type="button" onClick={() => promoteMember(m, 'admin')}>
                                             {tt("ui.promote.admin.7e73", "Promote to Admin")}
                                           </button>}

@@ -69,55 +69,35 @@
 }
 
 /* ── Tabs ── */
+/* Filled chips, the same pattern as the rankings tabs. A row that runs out
+   of width wraps onto a second line rather than scrolling off the edge. */
 .tabs {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
-  gap: 0.25rem;
+  gap: 0.4rem;
 
   margin-bottom: 1.5rem;
-  overflow-x: auto;
-  scrollbar-width: none;
 }
-
-/* Children of a scrolling row keep their width. Without this they
-   shrink to fit, the row never exceeds its container, and there is
-   nothing left to scroll. */
-.tabs > * {
-  flex-shrink: 0;
-}
-
-.tabs::-webkit-scrollbar { display: none; }
 
 .tabBtn {
-  background: transparent;
+  background-color: #2a2b30;
   border: none;
-  padding: 0.75rem 1rem;
-  color: rgba(255, 255, 255, 0.55);
+  border-radius: 8px;
+  padding: 0.5rem 0.9rem;
+  color: rgba(255, 255, 255, 0.7);
   font-family: inherit;
   font-size: 0.9rem;
   font-weight: var(--fw-medium);
   cursor: pointer;
-  position: relative;
   white-space: nowrap;
-  transition: color 0.2s;
   display: flex;
   align-items: center;
   gap: 0.45rem;
 }
 
-.tabBtn:hover { color: #fff; }
-.tabBtn.tabActive { color: #fff; }
-
-.tabBtn.tabActive::after {
-  content: '';
-  position: absolute;
-  left: 0.5rem;
-  right: 0.5rem;
-  bottom: -1px;
-  height: 2px;
-  background: var(--v-ent-red);
-  border-radius: 2px;
-}
+.tabBtn:hover { background-color: #33343a; color: #fff; }
+.tabBtn.tabActive { background-color: #46484F; color: #fff; }
 
 .tabIcon { font-size: 0.95rem; display: inline-flex; }
 
@@ -130,12 +110,13 @@
 }
 
 /* ══════════ FEED TAB ══════════ */
+/* Left edge shared with the title and tabs above it. */
 .feedLayout {
   display: flex;
   flex-direction: column;
   gap: 1rem;
   max-width: 720px;
-  margin: 0 auto;
+  margin: 0;
 }
 
 @media only screen and (min-width: 1920px) {
@@ -487,24 +468,14 @@
   padding: 0.85rem;
   display: flex;
   flex-direction: row;
+  flex-wrap: wrap;
   gap: 0.35rem;
-  overflow-x: auto;
 }
-
-/* Children of a scrolling row keep their width. Without this they
-   shrink to fit, the row never exceeds its container, and there is
-   nothing left to scroll. */
-.categoryList > * {
-  flex-shrink: 0;
-}
-
-.categoryList::-webkit-scrollbar { display: none; }
-.categoryList { scrollbar-width: none; }
 
 @media only screen and (min-width: 1024px) {
   .categoryList {
     flex-direction: column;
-    overflow-x: visible;
+    flex-wrap: nowrap;
     position: sticky;
     top: 76px;
     align-self: flex-start;
@@ -515,8 +486,9 @@
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  background: transparent;
+  background-color: #2a2b30;
 
+  border: none;
   border-radius: 8px;
   padding: 0.55rem 0.75rem;
   color: rgba(255, 255, 255, 0.7);
@@ -525,19 +497,30 @@
   cursor: pointer;
   text-align: left;
   white-space: nowrap;
-  transition: background 0.2s, color 0.2s;
 }
 
 .categoryBtn:hover {
-  background-color: rgba(255, 255, 255, 0.04);
+  background-color: #33343a;
   color: #fff;
 }
 
 .categoryBtn.categoryActive {
-  background-color: rgba(237, 28, 36, 0.18);
+  background-color: #46484F;
   color: #fff;
-
 }
+
+/* An ordinary action on this page. The red primary is reserved for the one
+   main action in each view; gold is for money and the founder badge. */
+.quietBtn {
+  background-color: #2a2b30;
+  color: #fff;
+  border: none;
+  font-family: inherit;
+  cursor: pointer;
+}
+
+.quietBtn:hover { background-color: #33343a; }
+.quietBtn:disabled { opacity: 0.5; cursor: not-allowed; }
 
 .newThreadCta {
   margin-left: auto;
@@ -1372,6 +1355,15 @@
   cursor: pointer;
 }
 
+/* An Accept that works is a step brighter than one that does not: with only
+   the faint fill it read as switched off (audit 557 review). */
+.scrimAcceptBtn:not(:disabled) {
+  background-color: #2a2b30;
+  color: #fff;
+}
+
+.scrimAcceptBtn:not(:disabled):hover { background-color: #33343a; }
+
 .scrimAcceptBtn:disabled {
   opacity: 0.5;
   cursor: not-allowed;
@@ -1634,4 +1626,17 @@
 .postAuthorNameText {
   font-weight: var(--fw-semi-bold);
   color: #fff;
+}
+
+/* Phone tap targets: every control a thumb lands on is at least 44px. */
+@media only screen and (max-width: 720px) {
+  .tabBtn,
+  .categoryBtn,
+  .reactBtn,
+  .clubJoinBtn,
+  .clubCreateBtn,
+  .dmNewBtn,
+  .scrimChallengeCta {
+    min-height: 44px;
+  }
 }

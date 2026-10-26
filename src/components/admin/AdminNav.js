@@ -1,5 +1,7 @@
 'use client';
 
+import { useEffect, useRef } from 'react';
+
 import Link from 'next/link';
 import Image from '@/components/media-image/MediaImage';
 import { useRoutePath } from '@/lib/routePath';
@@ -266,6 +268,15 @@ export default function AdminNav({
   const role = admin?.role || 'support';
   const permissions = admin?.permissions || null;
   const isActive = href => href === '/admin' ? pathname === '/admin' : pathname.startsWith(href);
+  // The list scrolls inside the sidebar, and on a laptop screen the last
+  // entries sit below its edge: on /admin/partners the open entry was hidden
+  // under the account card and showed only as a sliver of red (audit 557).
+  // Bring the open entry into view whenever the address changes.
+  const navRef = useRef(null);
+  useEffect(() => {
+    const active = navRef.current?.querySelector(`.${styles.activeItem}`);
+    if (active) active.scrollIntoView({ block: 'nearest' });
+  }, [pathname]);
   return <aside className={`${styles.sidebar} quietScroll ${sidebarOpen ? styles.open : ''}`} id="admin-sidebar">
       {/* Logo */}
       <div className={styles.logoContainer}>
@@ -286,7 +297,7 @@ export default function AdminNav({
       </div>
 
       {/* Nav */}
-      <nav className={`${styles.nav} quietScroll`}>
+      <nav ref={navRef} className={`${styles.nav} quietScroll`}>
         <ul className={styles.navList}>
           {NAV.map(({
           section,

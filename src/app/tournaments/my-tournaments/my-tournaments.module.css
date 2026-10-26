@@ -65,11 +65,19 @@
 /* ── Tab bar ── */
 .tabBar {
   display: flex;
-  gap: 0.25rem;
+  gap: 0.4rem;
 
   margin-bottom: 1.25rem;
   overflow-x: auto;
   scrollbar-width: none;
+}
+
+/* On a phone the chips wrap rather than being cut mid-word. */
+@media (max-width: 720px) {
+  .tabBar {
+    flex-wrap: wrap;
+    overflow-x: visible;
+  }
 }
 
 /* Children of a scrolling row keep their width. Without this they
@@ -81,29 +89,35 @@
 
 .tabBar::-webkit-scrollbar { display: none; }
 
+/* Filled chips, not an underline: selected = stronger fill and text. */
 .tabBtn {
-  background: transparent;
+  background-color: #1a1a1d;
   border: none;
-  color: rgba(255, 255, 255, 0.5);
+  border-radius: 8px;
+  color: rgba(255, 255, 255, 0.6);
   font-family: inherit;
   font-size: var(--fs-p-size-mobile);
   font-weight: var(--fw-medium);
   padding: 0.6rem 1rem;
   cursor: pointer;
 
-  margin-bottom: -1px;
-  transition: color 0.2s, background-color 0.2s;
+  transition: color 0.15s, background-color 0.15s;
   white-space: nowrap;
   display: flex;
   align-items: center;
   gap: 0.4rem;
 }
 
-.tabBtn:hover { color: rgba(255,255,255,0.85); }
+.tabBtn:hover { background-color: #2a2b30; color: rgba(255,255,255,0.85); }
 
-.tabBtnActive {
+.tabBtnActive,
+.tabBtnActive:hover {
+  background-color: #46484F;
   color: var(--primary-bg);
+}
 
+@media (max-width: 720px) {
+  .tabBtn { min-height: 44px; }
 }
 
 .tabCount {
@@ -367,6 +381,22 @@
 
 .dangerBtn:hover:enabled { background-color: #5c2023; color: #fff; }
 .dangerBtn:disabled { color: rgba(255, 255, 255, 0.4); cursor: default; }
+
+/* Delete and Turn it off: quiet red text, set apart at the end of the row
+   so it is never mistaken for View or Edit. A row's own destructive action
+   is pushed to the far end; the rest stay filled. */
+.rowActions .dangerText,
+.rowActions .dangerText:hover {
+  background-color: transparent;
+  color: #ff6b6b;
+  font-weight: 500;
+}
+
+.rowActions .dangerText:hover { text-decoration: underline; }
+
+.rowActions .dangerText:focus-visible { outline: 2px solid #ff6b6b; outline-offset: 2px; }
+
+.rowActions > .dangerText { margin-left: auto; }
 
 /* What just happened. A draft vanishing off the list with no word for it
    reads as a glitch. */

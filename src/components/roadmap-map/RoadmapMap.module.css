@@ -1,9 +1,10 @@
 /* The roadmap as a stepladder bracket (inbox 426). Base: a phone's spine, top
    to bottom, which also stands for any browser without container queries.
    From 720px of room: the staircase, left to right, on rows of 56px: a card
-   is 100px and spans two, and each step drops one. Filled surfaces only; the
-   connectors are the diagram, as in the tournament bracket. Surfaces from the
-   house scale: panel --overlay-gray, then #2a2b30, then #33343a. */
+   is 100px and spans two, and each step drops one. Filled surfaces only, and
+   no connector lines: the staircase and the gap between two steps carry the
+   order. Surfaces from the house scale: panel --overlay-gray, then #2a2b30,
+   then #33343a. */
 
 .frame {
   container-type: inline-size;
@@ -96,35 +97,9 @@
   color: #fff;
 }
 
-/* ---- what a step builds on: joins the spine from the side ---- */
+/* ---- what a step builds on: the gap between two steps holds it ---- */
 .feeder {
-  position: relative;
   padding: 14px 0 14px 46px;
-}
-
-.feeder::before,
-.feeder::after {
-  content: "";
-  position: absolute;
-  left: 21px;
-  background: rgba(255, 255, 255, 0.24);
-}
-
-.feeder::before {
-  top: 0;
-  bottom: 0;
-  width: 2px;
-}
-
-.feeder::after {
-  top: 50%;
-  width: 25px;
-  height: 2px;
-}
-
-.lit::before,
-.lit::after {
-  background: var(--v-ent-red);
 }
 
 .chip {
@@ -149,21 +124,6 @@
   font-size: 0.92rem;
   line-height: 1.3;
   color: rgba(255, 255, 255, 0.85);
-}
-
-/* The elbow between two steps; only drawn on the staircase. */
-.wire {
-  display: none;
-}
-
-.wire path {
-  fill: none;
-  stroke: rgba(255, 255, 255, 0.24);
-  stroke-width: 2;
-}
-
-.wire path.wireLit {
-  stroke: var(--v-ent-red);
 }
 
 /* ---- a step's details ---- */
@@ -314,22 +274,8 @@
     padding: 0;
   }
 
-  .feeder::before,
-  .feeder::after {
-    display: none;
-  }
-
   .chip {
     width: 100%;
-  }
-
-  .wire {
-    display: block;
-    grid-column: var(--c);
-    grid-row: var(--r) / span 4;
-    width: 100%;
-    height: 224px;
-    overflow: visible;
   }
 
   .detail {

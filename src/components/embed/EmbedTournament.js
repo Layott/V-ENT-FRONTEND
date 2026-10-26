@@ -17,7 +17,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useLanguage } from '@/i18n/LanguageProvider';
-import { formatDateTime, formatNumber } from '@/lib/datetime';
+import { formatWithZone, formatNumber } from '@/lib/datetime';
 import { slotsText } from '@/lib/slots';
 import { useAutoRefresh } from '@/lib/useLiveData';
 import EmbedFrame from './EmbedFrame';
@@ -80,7 +80,9 @@ export default function EmbedTournament({ slug, initial, failed, look }) {
     [tt('embed.game', 'Game'), t.game],
     // In the reader's language, as the tournament page names it.
     [tt('embed.format', 'Format'), formatLabel(tt, t.bracket_type || t.format_label, '')],
-    [tt('embed.starts', 'Starts'), t.start_date_and_time ? formatDateTime(t.start_date_and_time) : ''],
+    // With its zone: an embed is read on other people's sites, in any country,
+    // and a bare 02:16 PM said nothing about whose afternoon (audit 557).
+    [tt('embed.starts', 'Starts'), t.start_date_and_time ? formatWithZone(t.start_date_and_time) : ''],
     // The one sentence for how full a tournament is, which says "no limit"
     // in words rather than printing a cap of 0.
     [tt('embed.places', 'Places'), slotsText(tt, t.current_participants, t.max_participants,

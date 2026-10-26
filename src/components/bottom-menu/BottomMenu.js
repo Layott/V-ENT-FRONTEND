@@ -4,7 +4,7 @@ import { useSession } from 'next-auth/react'; // Add this import
 import Image from 'next/image';
 import Link from 'next/link';
 import { BiHomeCircle } from "react-icons/bi";
-import { MdOutlineEvent } from "react-icons/md";
+import { MdOutlineEvent, MdOutlineChatBubbleOutline } from "react-icons/md";
 import { FaUsers } from 'react-icons/fa';
 import { IoWalletOutline, IoGameControllerOutline } from "react-icons/io5";
 import { FiLogIn } from 'react-icons/fi';
@@ -151,7 +151,7 @@ const BottomMenu = ({
                 </li>}
                 {signedOut && <li className={`${styles.sidebarItem} ${isActive('/community') ? styles.activeLink : ''}`}>
                     <Link href={'/community'} className={styles.iconTextLink}>
-                        <FaUsers className={`${styles.sidebarIcon} ${isActive('/community') ? styles.activeSidebarIcon : ''}`} /> {t('nav.community')}
+                        <MdOutlineChatBubbleOutline className={`${styles.sidebarIcon} ${isActive('/community') ? styles.activeSidebarIcon : ''}`} /> {t('nav.community')}
                     </Link>
                 </li>}
             </ul>

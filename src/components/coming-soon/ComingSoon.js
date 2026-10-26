@@ -37,6 +37,9 @@ const ComingSoon = ({
   const tx = useTx();
   const tt = useT();
   const plan = module ? roadmapFor(module) : null;
+  // Every closed page has a way back. A caller may name its own; otherwise it
+  // is the front door, which is safe signed in or out.
+  const way = back || { href: '/', label: tt('common.back', 'Back') };
 
   return <div className={styles.pageContainer}>
     <Header />
@@ -46,11 +49,9 @@ const ComingSoon = ({
       <Sidebar />
 
       <div className={styles.rightPaneContainer}>
-        {back && <BackLink href={back.href}>{back.label}</BackLink>}
+        <BackLink href={way.href}>{way.label}</BackLink>
         <div className={`${styles.card} ${plan ? styles.cardPlan : ''}`}>
-          {plan
-            ? <p className={styles.phase}>{tt('roadmap.phase', 'Phase {n}').replace('{n}', plan.phase)}</p>
-            : phase && <p className={styles.phase}>{tx(phase)}</p>}
+          {!plan && phase && <p className={styles.phase}>{tx(phase)}</p>}
           <h1 className={styles.title}>{plan ? tt(plan.title[0], plan.title[1]) : tx(title)}</h1>
           <p className={styles.blurb}>{plan ? tt(plan.blurb[0], plan.blurb[1]) : tx(blurb)}</p>
 
@@ -65,7 +66,6 @@ const ComingSoon = ({
           </>}
 
           {alternatives.length > 0 && <div className={styles.links}>
-              <p className={styles.linksLabel}>{tt("ui.available.now.bb37", "Available now")}</p>
               <div className={styles.linkRow}>
                 {alternatives.map(a => <Link key={a.href} href={a.href} className={styles.linkPill}>
                     {tx(a.label)}

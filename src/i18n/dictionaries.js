@@ -1661,7 +1661,29 @@ export const dictionaries = {
     'landing.createAccount': 'Create a free account',
     'landing.noLiveTournaments': 'Open tournaments appear here as organisers publish them.',
     'landing.liveLoadFailed': 'Open tournaments could not be loaded just now.',
-    'landing.browseAll': 'See every tournament',
+    'landing.browseAll': 'See every tournament',
+    "community.dmMissingSub": "It may have been deleted, or you may not be part of it.",
+    "embed.standingsNoneTitle": "No standings yet",
+    "community.dmMissingTitle": "Conversation not found",
+    "community.challengeMissingTitle": "Challenge not found",
+    "community.backToCommunity": "Back to community",
+    "league.divisionOne": "{n} division",
+    "invitation.noneSub": "When somebody asks you to help run an event or a tournament, or to join their organisation, it lands here.",
+    "invitation.noneLink": "Go to your tournaments",
+    "ros.errorTitle": "The run of show did not load",
+    "ros.backToTournament": "Back to the tournament",
+    "ros.backToEvent": "Back to the event",
+    "checkIn.backToEventPage": "Back to the event",
+    "checkIn.backToEvents": "Back to events",
+    "vendorShop.countOne": "1 vendor",
+    "vendorShop.countMany": "{n} vendors",
+    "vendorShop.noneOpenTitle": "No vendors are open yet",
+    "vendorShop.noneOpenSub": "Each stall appears here once the organiser approves it, with its products and prices. Check back closer to the event, or browse other events in the meantime.",
+    "vendorShop.browseEvents": "Browse events",
+    "reset.codeSent": "We just sent a 6-digit code to your email address.",
+    "admin.byWho": "by {name}",
+    "adminRecords.kindCountOne": "{n} record",
+    "adminRecords.binCountOne": "{n} record went with it",
     "topup.callback.noRefTitle": "Nothing to confirm",
     "topup.callback.noRefBody": "This page opens after a top-up payment. This address carries no payment, so nothing was charged here.",
     "topup.callback.signInWallet": "Sign in to see your wallet",

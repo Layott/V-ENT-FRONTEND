@@ -166,6 +166,28 @@
 .table tbody tr:last-child td { border-bottom: none; }
 .table tbody tr:hover td { background-color: rgba(255, 255, 255, 0.02); }
 
+/* On a phone the action column stays in view while the rest of the row
+   scrolls under it. Approve, Resolve and Ban sat off the edge of a panel that
+   scrolled sideways with nothing to say so (audit 557). Only a last column
+   holding a control is pinned, so a table with no actions is left alone. */
+@media (max-width: 720px) {
+  .table td:last-child:has(button, a) {
+    position: sticky;
+    right: 0;
+    background-color: #212225;
+    box-shadow: -10px 0 10px -10px rgba(0, 0, 0, 0.6);
+  }
+  .table tbody tr:hover td:last-child:has(button, a) {
+    background-color: #212225;
+  }
+  .table:has(td:last-child button, td:last-child a) th:last-child {
+    position: sticky;
+    right: 0;
+    background-color: #303136;
+    box-shadow: -10px 0 10px -10px rgba(0, 0, 0, 0.6);
+  }
+}
+
 /* Badges */
 .badge {
   display: inline-block;

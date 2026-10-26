@@ -16,17 +16,17 @@ import styles from './RoadmapMap.module.css';
  * V-ENT today climbs one step per phase; each step is joined by the live
  * feature it builds on, the way a stepladder's next challenger joins. A wide
  * container draws it left to right as a staircase on a grid of 56px rows: every
- * card (100px) spans two rows and each step drops one, so the next card sits centred
- * between the two that lead to it, and an elbow in a 40px column joins them,
- * the same connector the tournament bracket draws. A narrow one (a phone)
- * draws one spine top to bottom with the feature each step builds on joining
- * from the side. The connectors ARE the diagram; every box is a filled surface.
+ * card (100px) spans two rows and each step drops one, and the feature each step
+ * builds on sits in the gap between them. A narrow one (a phone) stacks the
+ * steps top to bottom with that feature between each pair. Order comes from
+ * position and space, never from a line: every box is a filled surface.
  *
  * Every step's words are in the served HTML (the closed ones `hidden`), so a
  * crawler and a model read all of it; pressing a step shows its own.
  *
- * `focus` draws one module's branch: the climb up to it, the path in red, its
- * details open. Without it, the whole map with the next step open.
+ * `focus` draws one module's branch: the climb up to it, its details open, and
+ * no phase labels (the module's own page is the heading). Without it, the whole
+ * map with the next step open.
  */
 const RoadmapMap = ({ focus = null }) => {
   const tt = useT();
@@ -34,8 +34,6 @@ const RoadmapMap = ({ focus = null }) => {
   const steps = [LIVE, ...modules];
   const [open, setOpen] = useState(focus || (ROADMAP[0] && ROADMAP[0].id));
   const [shot, setShot] = useState(null);
-  const lit = (i) => Boolean(focus) && i <= steps.findIndex((s) => s.id === focus);
-
   const n = steps.length;
   const grid = {
     '--cols': steps.map((_, i) => (i ? '40px minmax(0, 220px)' : 'minmax(0, 220px)')).join(' '),
@@ -56,25 +54,19 @@ const RoadmapMap = ({ focus = null }) => {
             <li key={s.id} className={`${styles.step} ${isOpen ? styles.open : ''}`}>
               {i > 0 && (
                 <>
-                  <div className={`${styles.feeder} ${lit(i) ? styles.lit : ''}`}
-                       style={{ '--c': 2 * i - 1, '--r': i + 2 }}>
+                  <div className={styles.feeder} style={{ '--c': 2 * i - 1, '--r': i + 2 }}>
                     <span className={styles.chip}>
                       <span className={styles.chipLabel}>{tt('roadmap.buildsOn', 'Builds on')}</span>
                       <span className={styles.chipName}>{tt(s.builds[0], s.builds[1])}</span>
                     </span>
                   </div>
-                  <svg className={styles.wire} style={{ '--c': 2 * i, '--r': i }} viewBox="0 0 40 224"
-                       preserveAspectRatio="none" aria-hidden="true" focusable="false">
-                    <path className={lit(i) ? styles.wireLit : ''} d="M0 50 H20 V106 H40" />
-                    <path className={lit(i) ? styles.wireLit : ''} d="M0 162 H20 V106" />
-                  </svg>
                 </>
               )}
               <button type="button" className={styles.node} style={{ '--c': 2 * i + 1, '--r': i + 1 }}
                       aria-expanded={isOpen} aria-controls={`roadmap-step-${s.id}`}
                       onClick={() => setOpen(isOpen && !focus ? null : s.id)}>
                 <span className={styles.nodeTop}>
-                  <span className={styles.phase}>{phase}</span>
+                  {!focus && <span className={styles.phase}>{phase}</span>}
                   <span className={`${styles.badge} ${s.status === 'live' ? styles.badgeLive : ''}`}>{status}</span>
                 </span>
                 <span className={styles.name}>{tt(s.title[0], s.title[1])}</span>
@@ -85,7 +77,7 @@ const RoadmapMap = ({ focus = null }) => {
                        aria-label={tt(s.title[0], s.title[1])}>
                 {s.id !== focus && <>
                   <div className={styles.detailTop}>
-                    <span className={styles.phase}>{phase}</span>
+                    {!focus && <span className={styles.phase}>{phase}</span>}
                     <span className={`${styles.badge} ${s.status === 'live' ? styles.badgeLive : ''}`}>{status}</span>
                   </div>
                   <h2 className={styles.detailTitle}>{tt(s.title[0], s.title[1])}</h2>

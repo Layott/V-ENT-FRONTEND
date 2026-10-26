@@ -704,6 +704,34 @@
 
 .primaryBtn:hover { background-color: #f0c65f; }
 
+/* Quiet: a section's own save or switch. The page has one filled main action,
+   so these sit on a surface one step up, with the same padding and height. */
+.quietBtn,
+.quietBtn:hover {
+  background-color: #2a2b30;
+  color: var(--primary-bg);
+}
+
+/* Turning something off is destructive, so it is a quiet red text button
+   rather than a filled one. */
+.textDangerBtn {
+  align-items: center;
+  background: none;
+  border: none;
+  border-radius: 8px;
+  color: var(--v-ent-red);
+  cursor: pointer;
+  display: inline-flex;
+  font-family: 'ClashGrotesk-Variable', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 600;
+  justify-content: center;
+  min-height: 40px;
+  padding: 9px 16px;
+}
+
+.textDangerBtn:hover { background-color: rgba(237, 28, 36, 0.12); }
+
 .primaryBtn:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
 
 /* Disabled has to still read as a button, or somebody hunts the page for the
@@ -942,4 +970,11 @@
   font-size: 0.68rem;
   padding: 3px 8px;
   border-radius: 8px;
+}
+
+/* The quiet red danger button is still a thumb target (audit 557, round 2 re-measure). */
+@media (max-width: 720px) {
+  .textDangerBtn {
+    min-height: 44px;
+  }
 }

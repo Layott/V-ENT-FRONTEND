@@ -34,3 +34,9 @@
 
   color: var(--v-ent-success-light);
 }
+
+/* Buttons are the body face. The shared .btn in wallets.module.css sets
+   Fraunces, which is for titles; this page's actions override it. */
+.pinActions .btn {
+  font-family: "ClashGrotesk-Variable", sans-serif;
+}

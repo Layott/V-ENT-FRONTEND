@@ -1,0 +1,34 @@
+/* The segmented choices on /wallets/withdraw (bank or USDT, saved or new bank).
+   The selected segment is a filled surface, a step lighter than the track it
+   sits in, with no edge. These classes are the withdraw page's own so the
+   shared wallets stylesheet, which other wallet screens use, stays as it is. */
+
+.segment {
+  flex: 1;
+  padding: 0.45rem;
+  border-radius: 8px;
+  border: none;
+  background: transparent;
+  color: rgba(255, 255, 255, 0.5);
+  font-family: "ClashGrotesk-Variable", sans-serif;
+  font-size: 0.82rem;
+  cursor: pointer;
+  text-align: center;
+  transition: background-color 0.15s, color 0.15s;
+}
+
+.segment:hover {
+  color: #fff;
+}
+
+.segmentOn,
+.segmentOn:hover {
+  background-color: #3f4046;
+  color: #fff;
+}
+
+@media (max-width: 720px) {
+  .segment {
+    min-height: 44px;
+  }
+}

@@ -181,9 +181,8 @@
 }
 
 .formatBtnActive {
-  background-color: rgba(212, 175, 55, 0.18);
-  color: var(--v-ent-gold);
-
+  background-color: #46484F;
+  color: #fff;
 }
 
 /* Actions */
@@ -334,12 +333,12 @@
 .countryChip:hover { background-color: rgba(255, 255, 255, 0.1); }
 
 .countryChipOn {
-  background-color: #c9a227;
-  color: #191919;
+  background-color: #46484F;
+  color: #fff;
   font-weight: var(--fw-semi-bold);
 }
 
-.countryChipOn:hover { background-color: #d9b02b; }
+.countryChipOn:hover { background-color: #4f5158; }
 
 /* A field that was rejected. Undefined, so the only feedback was the message
    and nothing pointed at which box was wrong. A filled wash, not a red ring. */
@@ -350,3 +349,16 @@
 }
 
 .inputError::placeholder { color: rgba(255, 138, 138, 0.55); }
+
+/* Phone tap targets: section chips, country chips and the buttons on the form. */
+@media only screen and (max-width: 720px) {
+  .formatBtn,
+  .countryChip,
+  .backLink,
+  .cancelBtn,
+  .submitBtn,
+  .successBtn,
+  .successCancel {
+    min-height: 44px;
+  }
+}

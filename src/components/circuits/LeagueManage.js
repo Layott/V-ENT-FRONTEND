@@ -377,7 +377,13 @@ export default function LeagueManage({ slug }) {
     );
   }
   if (missing) {
-    return <div className={styles.container}><p className={styles.empty}>{tt('league.notFoundBody', 'This league does not exist, or it is not published yet.')}</p></div>;
+    return (
+      <div className={styles.container}>
+        <BackLink href="/circuits">{tt('back.toCircuits', 'Back to circuits')}</BackLink>
+        <h1 className={styles.pageTitle}>{tt('league.notFound', 'No such league')}</h1>
+        <p className={styles.empty}>{tt('league.notFoundBody', 'This league does not exist, or it is not published yet.')}</p>
+      </div>
+    );
   }
   if (problem) return <div className={styles.container}><p className={styles.problem} role="alert">{problem}</p></div>;
   if (!data) {

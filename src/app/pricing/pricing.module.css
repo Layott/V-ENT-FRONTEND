@@ -61,11 +61,14 @@
 
 /* The sentence, at the size of the sentence. Tight leading so a two-line
    statement reads as one object rather than as two lines of a paragraph. */
+/* The display face and weight every other page title uses (wallets, edit
+   profile), not the grotesk at bold. */
 .headline {
+  font-family: var(--font-fraunces), "Fraunces", serif;
   color: var(--white);
   font-size: 2.15rem;
   line-height: 1.08;
-  font-weight: var(--fw-bold);
+  font-weight: var(--fw-extra-bold);
   letter-spacing: -0.015em;
   margin: 0 0 1.1rem;
 }

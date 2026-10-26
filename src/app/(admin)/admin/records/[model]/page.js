@@ -64,7 +64,9 @@ function KindInner() {
             <div>
               <h1 className={shared.pageTitle}>{data ? data.name : model}</h1>
               <p className={shared.pageSubtitle}>
-                {data && tt('adminRecords.kindCount', '{n} records').replace('{n}', formatNumber(data.count))}
+                {data && (data.count === 1
+                  ? tt('adminRecords.kindCountOne', '{n} record')
+                  : tt('adminRecords.kindCount', '{n} records')).replace('{n}', formatNumber(data.count))}
                 {data && data.money && <> <span className={styles.tag}>{tt('adminRecords.moneyViewOnly', 'Money: view only')}</span></>}
               </p>
             </div>

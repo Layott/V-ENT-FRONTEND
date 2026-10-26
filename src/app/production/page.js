@@ -170,7 +170,7 @@ export default function ProductionHub() {
                             </p>
                           </div>
                           <Link href={`/tournaments/${ref}/manage?tab=production`}
-                                className={styles.primaryBtn}>
+                                className={styles.ghostBtn}>
                             {tt('production.openProduction', 'Open production')}
                           </Link>
                         </div>
@@ -197,7 +197,7 @@ export default function ProductionHub() {
                             </p>
                           </div>
                           <Link href={`/events/${ref}/manage?tab=production`}
-                                className={styles.primaryBtn}>
+                                className={styles.ghostBtn}>
                             {tt('production.openProduction', 'Open production')}
                           </Link>
                         </div>

@@ -479,6 +479,16 @@
   color: var(--primary-bg);
 }
 
+/* Repeated on every card, so quiet: one filled main button per view. */
+.actionQuiet {
+  background-color: #2a2b30;
+  color: var(--primary-bg);
+}
+
+.actionQuiet:hover:not(:disabled) {
+  background-color: #33343a;
+}
+
 .actionPrimary:hover:not(:disabled) {
   background-color: var(--v-ent-light-red);
 

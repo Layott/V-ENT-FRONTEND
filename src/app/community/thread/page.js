@@ -406,7 +406,7 @@ const ThreadInner = ({
                       {replyError && <p className={styles.replyError}>{replyError}</p>}
                       <div className={styles.composeActions}>
                         <span className={styles.composeCounter}>{replyText.length}/2000</span>
-                        <button className={`${styles.replyBtn} goldBTN`} onClick={handleReply} disabled={!replyText.trim() || posting}>
+                        <button className={`${styles.replyBtn} redBTN`} onClick={handleReply} disabled={!replyText.trim() || posting}>
                           {posting ? tx("Posting...") : 'Reply'}
                         </button>
                       </div>

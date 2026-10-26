@@ -23,6 +23,16 @@
   color: #fff;
 }
 
+/* The way back sits at the top of the column, with a 44px target. */
+.back {
+  align-self: flex-start;
+  min-height: 44px;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.9rem;
+}
+
+.back:hover { color: #fff; }
+
 .sub {
   color: rgba(255, 255, 255, 0.55);
   font-size: 0.9rem;

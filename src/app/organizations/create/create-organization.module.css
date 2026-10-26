@@ -144,12 +144,9 @@
   color: var(--primary-bg);
 }
 
-.progressLine {
-  width: 30px;
-  height: 2px;
-  background-color: rgba(255, 255, 255, 0.08);
-  margin: 0 0.5rem;
-  flex-shrink: 0;
+/* Steps are separated by space, not a line: the filled dot marks each one. */
+.progressStep:not(:last-child) {
+  margin-right: 1.25rem;
 }
 
 /* ── Form card ── */
@@ -603,9 +600,6 @@
     font-size: var(--desktop-h5-size);
   }
 
-  .progressLine {
-    width: 50px;
-  }
 }
 
 @media only screen and (min-width: 1024px) {
@@ -615,9 +609,6 @@
     padding: 2rem;
   }
 
-  .progressLine {
-    width: 70px;
-  }
 }
 
 @media only screen and (max-width: 480px) {

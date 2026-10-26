@@ -15,7 +15,7 @@ import styles from './back-link.module.css';
 
 export default function BackLink({ href, children, className = '', ...rest }) {
   return (
-    <Link href={href} className={`${styles.back} ${className}`.trim()} {...rest}>
+    <Link href={href} className={`${styles.back} ${className}`.trim()} data-backlink="" {...rest}>
       <LuArrowLeft className={styles.icon} aria-hidden="true" />
       <span>{children}</span>
     </Link>

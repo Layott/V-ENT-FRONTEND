@@ -425,15 +425,15 @@ const OrganizationsContent = () => {
                         <Link href={`/organizations/${orgId}`} className={`${styles.actionBtn} ${styles.actionSecondary}`}>
                           {tt("ui.view.69bd", "View")}
                         </Link>
-                        {owned ? <Link href={`/organizations/${orgId}/manage`} className={`${styles.actionBtn} ${styles.actionPrimary}`}>
+                        {owned ? <Link href={`/organizations/${orgId}/manage`} className={`${styles.actionBtn} ${styles.actionQuiet}`}>
                             {tt("ui.manage.bf58", "Manage")}
                           </Link> : member ? <span className={`${styles.actionBtn} ${styles.actionDisabled}`}>
                             {tt("ui.member.6853", "Member")}
                           </span> : reqState === 'pending' ? <button type="button" className={`${styles.actionBtn} ${styles.actionDisabled}`} disabled>
                             {tt("ui.pending.96f6", "Pending")}
-                          </button> : viewer.signedIn ? <button type="button" className={`${styles.actionBtn} ${styles.actionPrimary}`} disabled={reqState === 'loading'} onClick={() => handleApply(orgId)}>
+                          </button> : viewer.signedIn ? <button type="button" className={`${styles.actionBtn} ${styles.actionQuiet}`} disabled={reqState === 'loading'} onClick={() => handleApply(orgId)}>
                             {reqState === 'loading' ? tx("Sending...") : tt('org.join', 'Join')}
-                          </button> : <Link href={signInHref(`/organizations/${orgId}`)} className={`${styles.actionBtn} ${styles.actionPrimary}`}>
+                          </button> : <Link href={signInHref(`/organizations/${orgId}`)} className={`${styles.actionBtn} ${styles.actionQuiet}`}>
                             {tt('org.signInToJoin', 'Sign in to join')}
                           </Link>}
                       </div>

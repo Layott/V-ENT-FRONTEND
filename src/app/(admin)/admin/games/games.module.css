@@ -134,6 +134,24 @@
   background-color: #f0c65f;
 }
 
+/* Add mode and Add edition sit on every game card. Gold on each made two
+   filled buttons per card and a dozen on the page (audit 557); the page's one
+   filled button is Add game. */
+.addQuiet {
+  background-color: #33343a;
+  color: #fff;
+  font-family: 'ClashGrotesk-Variable', sans-serif;
+  font-weight: 600;
+  font-size: 0.82rem;
+  padding: 8px 15px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.addQuiet:hover {
+  background-color: #3d3e45;
+}
+
 .ghostBtn {
   background-color: rgba(255, 255, 255, 0.08);
   color: #fff;
@@ -150,6 +168,7 @@
 }
 
 .addBtn:disabled,
+.addQuiet:disabled,
 .ghostBtn:disabled {
   opacity: 0.5;
   cursor: default;
@@ -208,4 +227,13 @@
   flex-direction: column;
   align-items: flex-start;
   gap: 0.7rem;
+}
+
+/* A thumb needs 44px (audit 557). */
+@media (max-width: 720px) {
+  .addBtn,
+  .addQuiet,
+  .ghostBtn {
+    min-height: 44px;
+  }
 }

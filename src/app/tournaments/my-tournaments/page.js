@@ -240,13 +240,15 @@ const MyTournaments = () => {
 
           {/* Tab nav */}
           <div className={styles.tabBar}>
-            {TABS.map(t => <button key={t.id} className={`${styles.tabBtn} ${tab === t.id ? styles.tabBtnActive : ''}`} onClick={() => setTab(t.id)}>
+            {TABS.map(t => <button key={t.id} type="button" aria-pressed={tab === t.id} className={`${styles.tabBtn} ${tab === t.id ? styles.tabBtnActive : ''}`} onClick={() => setTab(t.id)}>
                 {t.key ? tt(t.key, t.label) : tx(t.label)}
-                <span className={styles.tabCount}>
+                {/* Blueprints has no count, and its empty pill drew as a stray line
+                    beside the word (audit 557, M6). */}
+                {t.id !== 'blueprints' && <span className={styles.tabCount}>
                   {t.id === 'active' && activeCount}
                   {t.id === 'drafts' && drafts.length}
                   {t.id === 'completed' && completedCount}
-                </span>
+                </span>}
               </button>)}
           </div>
 
@@ -308,7 +310,7 @@ const MyTournaments = () => {
                                 onClick={() => setConfirmId(null)}>
                           <LuX aria-hidden="true" /> {tt('ui.cancel.77df', 'Cancel')}
                         </button>
-                      </> : <button type="button" className={styles.actionBtn}
+                      </> : <button type="button" className={`${styles.actionBtn} ${styles.dangerText}`}
                                     onClick={() => setConfirmId(d.id)}>
                         <LuTrash2 /> {tt('draft.delete', 'Delete')}
                       </button>}
@@ -383,7 +385,7 @@ const MyTournaments = () => {
                       <DeleteControl kind="tournament"
                                      reference={t?.slug || t?.id}
                                      name={name} token={token}
-                                     className={styles.actionBtn}
+                                     className={`${styles.actionBtn} ${styles.dangerText}`}
                                      onDeleted={() => {
                                        setTournaments(all => all.filter(
                                          x => (x?.id ?? x?.slug) !== (t?.id ?? t?.slug)));

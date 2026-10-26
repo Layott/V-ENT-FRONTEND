@@ -56,6 +56,25 @@
 
 .buy:hover { filter: brightness(1.08); }
 
+/* Every tier after the first: the same size, quiet, so one filled Buy is the
+   main action of the list. */
+.buyQuiet {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  min-width: 88px;
+  padding: 0 1.1rem;
+  border-radius: 10px;
+  background-color: #2a2b30;
+  color: var(--ink, #f2f2f3);
+  font-weight: var(--fw-semi-bold);
+  text-decoration: none;
+}
+
+.buyQuiet:hover { background-color: #33343a; }
+
 .buy:focus-visible,
 .retry:focus-visible { outline: 2px solid var(--ink, #f2f2f3); outline-offset: 2px; }
 

@@ -74,7 +74,7 @@ export default function EventTickets({ slug, ended = false, newTab = false, orig
 
   return (
     <ul className={styles.list}>
-      {state.tiers.map((tier) => {
+      {state.tiers.map((tier, index) => {
         const vc = Number(tier.price_now_vc ?? tier.price_vc ?? tier.price ?? 0);
         const ngn = Number(tier.price_ngn ?? 0);
         const soldOut = !!tier.sold_out || Number(tier.remaining ?? 0) <= 0;
@@ -100,7 +100,7 @@ export default function EventTickets({ slug, ended = false, newTab = false, orig
                 {ended ? tt('embed.over', 'Event over') : tt('embed.soldOut', 'Sold out')}
               </span>
             ) : (
-              <a className={styles.buy} href={href}
+              <a className={index === 0 ? styles.buy : styles.buyQuiet} href={href}
                  {...(newTab ? { target: '_blank', rel: 'noopener' } : {})}>
                 {vc > 0 ? tt('embed.buy', 'Buy') : tt('embed.get', 'Get ticket')}
               </a>

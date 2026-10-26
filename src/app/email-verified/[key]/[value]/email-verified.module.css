@@ -54,6 +54,12 @@
   width: 100%;
 }
 
+/* The message drops from the top edge of the screen. Its own offset sits it
+   over the wordmark, so it is moved down to start under the 100px header. */
+.pageContainer :global(.MuiSnackbar-root) {
+  top: 120px;
+}
+
 @media only screen and (min-width: 600px) {
   .mainContainer {
     width: 450px;

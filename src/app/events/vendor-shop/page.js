@@ -306,15 +306,20 @@ const VendorShopContent = ({
             <div className={styles.gridHeader}>
               <h2 className={styles.sectionTitle}>{tt("ui.vendors.event.e1c0", "Vendors at this event")}</h2>
               <span className={styles.resultCount}>
-                {loading ? tx("Loading…") : `${filteredVendors.length} vendors`}
+                {loading ? tx("Loading…") : filteredVendors.length === 1 ? tt('vendorShop.countOne', '1 vendor') : tt('vendorShop.countMany', '{n} vendors').replace('{n}', filteredVendors.length)}
               </span>
             </div>
 
-            {loading ? <p className={styles.stateText}>{tt("ui.loading.vendors.f958", "Loading vendors…")}</p> : loadError && vendors.length === 0 ? <ErrorState message={loadError} onRetry={() => fetchVendors()} /> : filteredVendors.length === 0 ? <div className={styles.emptyState}>
+            {loading ? <p className={styles.stateText}>{tt("ui.loading.vendors.f958", "Loading vendors…")}</p> : loadError && vendors.length === 0 ? <ErrorState message={loadError} onRetry={() => fetchVendors()} /> : filteredVendors.length === 0 ? (vendors.length === 0 ? <div className={styles.emptyState}>
+                <FaStore className={styles.emptyIcon} />
+                <p className={styles.emptyTitle}>{tt('vendorShop.noneOpenTitle', 'No vendors are open yet')}</p>
+                <p className={styles.emptySub}>{tt('vendorShop.noneOpenSub', 'Each stall appears here once the organiser approves it, with its products and prices. Check back closer to the event, or browse other events in the meantime.')}</p>
+                <Link href="/events" className={styles.emptyLink}>{tt('vendorShop.browseEvents', 'Browse events')}</Link>
+              </div> : <div className={styles.emptyState}>
                 <FaStore className={styles.emptyIcon} />
                 <p className={styles.emptyTitle}>{tt("ui.no.vendors.match.d26c", "No vendors match.")}</p>
                 <p className={styles.emptySub}>{tt("ui.try.different.category.clear.1b19", "Try a different category or clear the search.")}</p>
-              </div> : <div className={styles.vendorGrid}>
+              </div>) : <div className={styles.vendorGrid}>
                 {filteredVendors.map(v => <Link key={v.id} href={`/events/${eventId}/stall/${v.slug || v.id}`} className={styles.vendorCard}>
                     <div className={styles.vendorBannerWrap}>
                       {v.banner ? <Image src={mediaUrl(v.banner)} alt={v.name} fill sizes="(min-width: 1024px) 33vw, 100vw" style={{

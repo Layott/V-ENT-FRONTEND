@@ -57,7 +57,7 @@ const TournamentCard = ({
         {fee === 0 && <span className={styles.freeBadge}>{tt("ui.free.entry.2e48", "FREE ENTRY")}</span>}
       </div>
       <div className={styles.tCardBody}>
-        <Tag on="card">{t?.game || tx("Unknown Game")}</Tag>
+        {t?.game && <Tag on="card">{t.game}</Tag>}
         <h2 className={styles.tCardTitle}>{t?.name || tx("Untitled Tournament")}</h2>
         <div className={styles.tCardMeta}>
           <div className={styles.metaRow}>

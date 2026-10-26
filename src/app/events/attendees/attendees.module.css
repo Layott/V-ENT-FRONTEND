@@ -87,6 +87,18 @@
 }
 .scanInput:focus-visible { outline: 2px solid var(--v-ent-red); outline-offset: 2px; }
 
+/* Quiet: the door scanner link is the one filled main action on this page, and
+   every Check in button (the form and each attendee row) is a quiet surface. */
+.quietBtn {
+  border: none;
+  background-color: #2a2b30;
+  color: var(--primary-bg);
+  font-family: inherit;
+  font-weight: var(--fw-semi-bold);
+}
+
+.quietBtn:hover { background-color: #33343a; }
+
 .scanBtn { min-height: 44px; padding: 0 1.25rem; border-radius: 8px; cursor: pointer; }
 .scanBtn:disabled { opacity: 0.5; cursor: not-allowed; }
 

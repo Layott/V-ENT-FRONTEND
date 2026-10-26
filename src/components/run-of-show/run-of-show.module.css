@@ -427,6 +427,25 @@
   background-color: rgba(255, 255, 255, 0.16);
 }
 
+.emptyTitle {
+  margin: 0;
+  color: var(--primary-bg);
+  font-size: 1.05rem;
+  font-weight: var(--fw-semi-bold);
+}
+
+.emptyLink {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.86rem;
+}
+
+.emptyLink:hover {
+  color: var(--primary-bg);
+}
+
 .loading {
   display: flex;
   flex-direction: column;

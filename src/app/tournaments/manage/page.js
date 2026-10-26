@@ -522,7 +522,7 @@ const ManageContent = ({ slug }) => {
               they cannot use is a control the API would refuse. */}
           <div className={styles.tabBar}>
             {TABS.filter(t => visibleTabs.includes(t.id))
-              .map(t => <button key={t.id} className={`${styles.tabBtn} ${shown === t.id ? styles.tabBtnActive : ''}`} onClick={() => openTab(t.id)}>{tx(t.label)}</button>)}
+              .map(t => <button key={t.id} type="button" aria-pressed={shown === t.id} className={`${styles.tabBtn} ${shown === t.id ? styles.tabBtnActive : ''}`} onClick={() => openTab(t.id)}>{tx(t.label)}</button>)}
           </div>
 
           <div>

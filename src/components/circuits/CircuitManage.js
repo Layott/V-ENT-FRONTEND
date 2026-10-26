@@ -546,6 +546,8 @@ export default function CircuitManage({ slug }) {
   if (missing) {
     return (
       <div className={styles.container}>
+        <BackLink href="/circuits">{tt('back.toCircuits', 'Back to circuits')}</BackLink>
+        <h1 className={styles.pageTitle}>{tt('circuit.notFound', 'No such circuit')}</h1>
         <p className={styles.empty}>{tt('circuit.notFoundBody', 'This circuit does not exist, or it is not published yet.')}</p>
       </div>
     );

@@ -34,6 +34,7 @@ import { appLocale } from '@/lib/appLocale';
 import { useT } from '@/i18n/LanguageProvider';
 import { adminToken } from '@/lib/adminToken'
 import PagerArrow from '@/components/pager-arrow/PagerArrow';
+import { formatNgn } from '@/lib/currency';
 
 const TABS = ['overview', 'tickets', 'sent'];
 const PAGE_SIZE = 25;
@@ -454,7 +455,8 @@ const Overview = ({ tt, numbers, detail }) => (
             <tbody>
               {detail.tiers.map(t => <tr key={t.id}>
                 <td>{t.name}</td>
-                <td>{t.price_ngn}</td>
+                {/* Naira, said so: a bare 2000.00 sat beside a revenue tile in VC (audit 557). */}
+                <td>{formatNgn(t.price_ngn)}</td>
                 <td>{t.sold}</td>
                 <td>{t.remaining === null ? tt('admin.unlimited', 'No limit') : t.remaining}</td>
               </tr>)}
