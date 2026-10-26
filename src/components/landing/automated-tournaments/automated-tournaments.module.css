@@ -1,226 +1,117 @@
-.innerAutomatedTournamentsContainer {
-  justify-content: space-between;
+/* "Tournaments that run themselves": the words on top, the live cards under
+   them at full width. Side by side, three tall cards sat in a 520px column
+   pinned to the right with an empty field beside a three-line paragraph (CEO,
+   26 October 2026, inbox 561: "the landing page is broken"). */
+.inner {
+  display: flex;
+  flex-direction: column;
   gap: 2rem;
-  flex-direction: column;
+  width: 90%;
 }
 
-.leftAutomatedTournaments,
-.rightAutomatedTournaments {
-  width: 50%;
-  height: inherit;
-  min-height: inherit;
-  transition: ease;
-}
-
-.leftAutomatedTournaments {
+.intro {
   display: flex;
-  justify-content: center;
+  flex-direction: column;
+  gap: 1.25rem;
   width: 100%;
 }
 
-.rightAutomatedTournaments {
-  display: flex;
-  flex-direction: row;
-  justify-content: flex-end;
-  min-height: 180px;
-  width: 100%;
-  transition: all ease-in-out 0.15s;
-  margin-top: 4rem;
-}
-
-.innerLeftAutomatedTournaments {
+.introText {
   display: flex;
   flex-direction: column;
+  align-items: center;
   gap: 1rem;
-  width: 100%;
-  max-width: 100%;
-}
-
-.innerRightAutomatedTournaments {
-  width: 100%;
-  position: relative;
-}
-
-.fifaCardContainer,
-.counterStrikeCardContainer {
-  width: 60%;
-  height: auto;
-  border-radius: 10px;
-  position: absolute;
-}
-
-.marketPlaceImageLeftContainer {
-  width: 70%;
-}
-
-.fifaCardContainer {
-  top: 0;
-  right: 0;
-  z-index: 2;
-}
-
-.counterStrikeCardContainer {
-  left: 0;
-  bottom: 0;
-  z-index: 3;
-}
-
-.fifaCardContainer img,
-.counterStrikeCardContainer img {
-  height: 100%;
-  width: 100%;
-  object-fit: contain;
-  border-radius: 10px;
-}
-
-.descriptionContainer {
-  width: 100%;
-}
-
-.descriptionContainer p {
+  max-width: 40rem;
+  margin: 0 auto;
   text-align: center;
 }
 
-.headingContainer {
-  width: 100%;
+.description {
+  line-height: 1.5;
 }
 
-@media only screen and (min-width: 300px) {
-  .rightAutomatedTournaments {
-    min-height: 200px;
-  }
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
 }
-@media only screen and (min-width: 350px) {
-  .rightAutomatedTournaments {
-    min-height: 230px;
-  }
+
+.actions a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  padding: 0 18px;
+  white-space: nowrap;
 }
-@media only screen and (min-width: 400px) {
-  .rightAutomatedTournaments {
-    min-height: 250px;
-  }
+
+.quietBtn {
+  background-color: #303136;
+  color: var(--white);
 }
-@media only screen and (min-width: 450px) {
-  .rightAutomatedTournaments {
-    min-height: 280px;
-  }
+
+.quietBtn:hover {
+  background-color: #33343a;
 }
-@media only screen and (min-width: 500px) {
-  .rightAutomatedTournaments {
-    min-height: 310px;
-  }
-}
-@media only screen and (min-width: 550px) {
-  .rightAutomatedTournaments {
-    min-height: 350px;
-  }
-}
-@media only screen and (min-width: 600px) {
-  .rightAutomatedTournaments {
-    min-height: 380px;
-  }
-}
-@media only screen and (min-width: 650px) {
-  .rightAutomatedTournaments {
-    width: 600px;
-  }
-}
-@media only screen and (min-width: 850px) {
-  .leftAutomatedTournaments {
-    justify-content: flex-start;
-    align-items: flex-start;
-  }
-  .innerAutomatedTournamentsContainer {
-    flex-direction: row;
-  }
-  .rightAutomatedTournaments {
-    width: 100%;
-    min-height: 250px;
-    margin-top: 0;
-  }
-  .innerRightAutomatedTournaments {
-    width: 100%;
-  }
-  .innerLeftAutomatedTournaments {
-    justify-content: flex-start;
-    align-items: flex-start;
-  }
-  .headingContainer {
-    width: 80%;
-  }
-  .descriptionContainer p {
-    text-align: left;
-  }
-}
-@media only screen and (min-width: 950px) {
-  .rightAutomatedTournaments {
-    min-height: 280px;
-  }
-}
-@media only screen and (min-width: 1024px) {
-  .innerLeftAutomatedTournaments {
-    width: 100%;
-    max-width: 450px;
-  }
-  .rightAutomatedTournaments {
-    min-height: 310px;
-  }
-}
-@media only screen and (min-width: 1200px) {
-  .rightAutomatedTournaments {
-    min-height: 350px;
-  }
-}
-@media only screen and (min-width: 1350px) {
-  .rightAutomatedTournaments {
-    min-height: 380px;
-  }
-}
-@media only screen and (min-width: 1450px) {
-  .rightAutomatedTournaments {
-    min-height: 420px;
-  }
-}
-@media only screen and (min-width: 1600px) {
-  .rightAutomatedTournaments {
-    min-height: 490px;
-  }
-}
-@media only screen and (min-width: 1800px) {
-  .rightAutomatedTournaments {
-    min-height: 530px;
-  }
-}
-@media only screen and (min-width: 2050px) {
-  .rightAutomatedTournaments {
-    min-height: 580px;
-  }
-}
-/* Live tournaments in place of the two pictures (inbox 547). */
+
+/* One card per row on a phone, two from 640px, three from 1024px. Two
+   columns cannot hold three cards evenly, so the third waits for the wide
+   screen instead of sitting alone under the pair. */
 .liveList {
   display: grid;
-  gap: 12px;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 16px;
   width: 100%;
-  max-width: 520px;
 }
 
 .liveSkeleton {
-  height: 132px;
-  border-radius: 14px;
+  height: 300px;
+  border-radius: 12px;
   background-color: var(--overlay-gray);
 }
 
 .liveEmpty {
+  grid-column: 1 / -1;
   color: rgba(255, 255, 255, 0.7);
   line-height: 1.5;
+  text-align: center;
 }
 
-/* Side by side, the words stay level with the first card instead of sinking
-   to the bottom of a column the three live cards make tall. */
+@media only screen and (min-width: 640px) {
+  .liveList {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .liveList > :nth-child(3) {
+    display: none;
+  }
+}
+
 @media only screen and (min-width: 850px) {
-  .leftAutomatedTournaments {
-    align-self: flex-start;
-    position: sticky;
-    top: 6rem;
+  .introText {
+    align-items: flex-start;
+    margin: 0;
+    text-align: left;
+  }
+  .actions {
+    justify-content: flex-start;
+  }
+}
+
+@media only screen and (min-width: 1024px) {
+  .intro {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 2rem;
+  }
+  .actions {
+    flex-shrink: 0;
+  }
+  .liveList {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+  .liveList > :nth-child(3) {
+    display: flex;
   }
 }

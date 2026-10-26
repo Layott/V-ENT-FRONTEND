@@ -13,44 +13,27 @@
   position: relative;
 }
 
+/* A filled panel one step up from the section, no stroke (hairline ban). */
 .curveVectorContainer {
   width: 100%;
   max-width: 600px;
   display: flex;
   justify-content: center;
   align-items: center;
-  min-height: 200px;
-  position: relative;
-}
-
-.curveVectorContainer img {
-  height: 100%;
-  width: 100%;
-}
-
-.curveVector {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
+  padding: 2rem 1.5rem;
+  border-radius: 14px;
+  background-color: var(--overlay-gray);
 }
 
 .curveVectorText {
-  position: absolute;
-  width: 90%;
+  width: 100%;
   max-width: 500px;
-  height: 80%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
 }
 
 .curveVectorText p {
   line-height: 1.5;
   text-align: center;
-  color: #FFF;
+  color: var(--white);
   font-size: 1rem;
 }
 
@@ -64,35 +47,22 @@
     padding-top: 3rem;
     padding-bottom: 2rem;
   }
-  .curveVector {
-    object-fit: contain;
-  }
-  .curveVectorText {
-    width: 450px;
-    max-width: 100%;
+  .curveVectorContainer {
+    padding: 2.5rem 2rem;
   }
 }
 @media only screen and (min-width: 800px) {
-  .curveVectorText {
-    width: 470px;
-  }
-  .curveVectorText p {
-    font-size: 1.25rem;
-  }
-}
-@media only screen and (min-width: 1024px) {
   .curveVectorText p {
     font-size: 1.25rem;
   }
 }
 @media only screen and (min-width: 1224px) {
   .curveVectorContainer {
-    min-height: 250px;
     max-width: 700px;
+    padding: 3rem 2.5rem;
   }
   .curveVectorText {
-    width: 570px;
-    max-width: 100%;
+    max-width: 570px;
   }
   .curveVectorText p {
     font-size: 1.5rem;
