@@ -49,7 +49,13 @@ function RecordsInner() {
 
   const search = async (event) => {
     event.preventDefault();
-    if (q.trim().length < 2) return;
+    // The button stays live and says what is missing, rather than sitting dim
+    // until two letters happen to be typed (audit L11).
+    if (q.trim().length < 2) {
+      setFound(null);
+      setSearchError(tt('adminRecords.searchShort', 'Type at least two letters to search.'));
+      return;
+    }
     setSearching(true);
     setSearchError('');
     const { ok, body } = await recordsCall(`/search/?q=${encodeURIComponent(q.trim())}`);
@@ -91,7 +97,7 @@ function RecordsInner() {
               <input className={styles.input} type="search" value={q} onChange={(e) => setQ(e.target.value)}
                      aria-label={tt('adminRecords.searchLabel', 'Search every record by name')}
                      placeholder={tt('adminRecords.searchPlaceholder', 'Search every record by name, typos are fine')} />
-              <button type="submit" className={styles.button} disabled={searching || q.trim().length < 2}>
+              <button type="submit" className={styles.button} disabled={searching}>
                 {searching ? tt('adminRecords.searching', 'Searching...') : tt('adminRecords.search', 'Search')}
               </button>
             </form>

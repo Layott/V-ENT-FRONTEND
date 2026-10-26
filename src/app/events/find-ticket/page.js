@@ -112,11 +112,12 @@ export default function FindTicket() {
 
         <p className={styles.sub}>
           {tt('find.makeAccount', 'Make an account with the same email address and every ticket you have bought appears in it automatically.')}
-          {' '}
+        </p>
+        <div className={styles.linkRow}>
           <Link href="/signup" className={styles.link}>
             {tt('find.signup', 'Create an account')}
           </Link>
-        </p>
+        </div>
       </main>
 
       <BottomMenu />

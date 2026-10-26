@@ -1017,6 +1017,12 @@
     min-height: 44px;
   }
 
+  /* Every text field and select on the console is a 44px target (audit small targets). */
+  .rightPaneContainer input:not([type="checkbox"]):not([type="radio"]):not([type="file"]),
+  .rightPaneContainer select {
+    min-height: 44px;
+  }
+
   /* Square by design: widened as well, or a round icon button
      becomes a pill. */
   .scoreBtn {

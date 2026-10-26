@@ -6,7 +6,9 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
-import { LuTrophy, LuPencil, LuTrash2, LuRocket, LuPlus, LuTriangleAlert } from 'react-icons/lu';
+import Image from 'next/image';
+import logoMark from '@/images/logo_mark_red.svg';
+import { LuPencil, LuTrash2, LuRocket, LuPlus, LuTriangleAlert } from 'react-icons/lu';
 import Header from '@/components/header/Header';
 import MobileHeader from '@/components/mobile-header/MobileHeader';
 import Sidebar from '@/components/sidebar/Sidebar';
@@ -174,7 +176,8 @@ const Drafts = () => {
               <p className={styles.inlineErrorSub}>{tx("We could not load your drafts just now.")}</p>
               <button className={`${styles.btn} goldBTN`} onClick={handleRetry}>{tt("ui.retry.9f5c", "Retry")}</button>
             </div> : drafts.length === 0 ? <div className={styles.emptyState}>
-              <LuTrophy className={styles.emptyIcon} />
+              {/* The product's own mark, muted, in place of a stock trophy (audit L44). */}
+              <Image src={logoMark} alt="" width={40} height={40} className={styles.emptyMark} />
               <p className={styles.emptyTitle}>{tt("ui.no.drafts.yet.3f32", "No drafts yet")}</p>
               <p className={styles.emptySub}>{tt("ui.start.tournament.save.before.db05", "Start a tournament and save before you finish.")}</p>
               <Link href="/tournaments/create-tournament">

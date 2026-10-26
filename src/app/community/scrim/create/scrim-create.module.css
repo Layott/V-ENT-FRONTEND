@@ -358,7 +358,8 @@
   .cancelBtn,
   .submitBtn,
   .successBtn,
-  .successCancel {
+  .successCancel,
+  .input {
     min-height: 44px;
   }
 }

@@ -685,7 +685,10 @@
     margin-left: var(--shell-offset);
     padding: 2rem 1.5rem 4rem;
   }
+  /* auto-fit: a row of two featured cards fills the row instead of leaving an empty third cell (audit L46). */
+  /* Two across; an odd card out spans the row instead of leaving a gap (audit 557, L46). */
   .featuredRow { grid-template-columns: repeat(2, 1fr); }
+  .featuredRow > :last-child:nth-child(odd) { grid-column: span 2; }
   .featuredBanner { height: 200px; }
   .cardGrid { grid-template-columns: repeat(2, 1fr); }
   .pageTitle { font-size: var(--desktop-h3-size); }
@@ -697,7 +700,14 @@
     margin-left: 250px;
     padding: 2rem;
   }
-  .featuredRow { grid-template-columns: repeat(3, 1fr); }
+  /* Three across on six tracks, so a short last row stretches: two cards take half each,
+     one card the whole row. Five featured cards left an empty third cell (audit 557, L46). */
+  .featuredRow { grid-template-columns: repeat(6, 1fr); }
+  .featuredRow > * { grid-column: span 2; }
+  .featuredRow > :last-child:nth-child(odd) { grid-column: span 2; }
+  .featuredRow > :last-child:nth-child(3n+1) { grid-column: span 6; }
+  .featuredRow > :nth-last-child(2):nth-child(3n+1),
+  .featuredRow > :last-child:nth-child(3n+2) { grid-column: span 3; }
   .cardGrid { grid-template-columns: repeat(3, 1fr); }
 }
 

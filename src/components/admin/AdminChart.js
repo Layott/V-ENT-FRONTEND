@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import styles from './AdminChart.module.css';
 import { useT } from '@/i18n/LanguageProvider';
 import { useTx } from '@/i18n/LanguageProvider';
@@ -30,15 +30,27 @@ export default function AdminChart({
   const tx = useTx();
   const tt = useT();
   const [hover, setHover] = useState(null);
+  // The plot is drawn at the width it is shown at, so its text is real pixels.
+  // A fixed 600-unit viewBox scaled down to a 390px phone and 10-unit labels
+  // came out at about 6px (audit L1).
+  const boxRef = useRef(null);
+  const [boxW, setBoxW] = useState(600);
+  useEffect(() => {
+    const el = boxRef.current;
+    if (!el || typeof ResizeObserver === 'undefined') return undefined;
+    const ro = new ResizeObserver(([entry]) => setBoxW(Math.max(240, Math.round(entry.contentRect.width))));
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, [data.length]);
   if (!data.length) {
     return <div className={styles.card}>
         <p className={styles.title}>{title}</p>
         <p className={styles.empty}>{tt("ui.no.data.944a", "No data.")}</p>
       </div>;
   }
-  const W = 600;
+  const W = boxW;
   const H = height;
-  const PAD_L = 40,
+  const PAD_L = 44,
     PAD_R = 12,
     PAD_T = 14,
     PAD_B = 28;
@@ -50,14 +62,14 @@ export default function AdminChart({
   const xFor = i => PAD_L + (data.length === 1 ? innerW / 2 : i / (data.length - 1) * innerW);
   const yFor = v => PAD_T + innerH - (v - min) / range * innerH;
 
-  // Y-axis ticks (4 segments)
-  const yTicks = [0, 0.25, 0.5, 0.75, 1].map(p => ({
+  // Y-axis ticks (4 segments, 2 on a narrow phone)
+  const yTicks = (boxW < 480 ? [0, 0.5, 1] : [0, 0.25, 0.5, 0.75, 1]).map(p => ({
     y: PAD_T + innerH - p * innerH,
     value: Math.round(min + p * range)
   }));
 
-  // X-axis labels (every Nth)
-  const xStep = Math.max(1, Math.ceil(data.length / 6));
+  // X-axis labels (every Nth, enough room for each one to be read)
+  const xStep = Math.max(1, Math.ceil(data.length / Math.max(1, Math.floor(innerW / 60))));
 
   // Line path
   const linePath = data.map((d, i) => `${i === 0 ? 'M' : 'L'} ${xFor(i).toFixed(1)} ${yFor(d.value).toFixed(1)}`).join(' ');
@@ -73,6 +85,7 @@ export default function AdminChart({
           {subtitle && <p className={styles.subtitle}>{subtitle}</p>}
         </div>
       </div>
+      <div ref={boxRef}>
       <svg viewBox={`0 0 ${W} ${H}`} className={styles.svg} preserveAspectRatio="none" onMouseLeave={() => setHover(null)}>
         <defs>
           <linearGradient id={`grad-${title.replace(/\s+/g, '-')}`} x1="0" y1="0" x2="0" y2="1">
@@ -124,5 +137,6 @@ export default function AdminChart({
             </text>
           </g>}
       </svg>
+      </div>
     </div>;
 }

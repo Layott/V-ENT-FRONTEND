@@ -10,6 +10,7 @@ import { VENT } from '@/app/api/auth/[...nextauth]/route';
 import { useT } from '@/i18n/LanguageProvider';
 import { useTx } from '@/i18n/LanguageProvider';
 import { readSignupRecord } from '@/lib/signupRecord';
+import AuthHeader from '@/components/auth-header/AuthHeader';
 const VerifyEmail = () => {
   const tx = useTx();
   const tt = useT();
@@ -58,7 +59,7 @@ const VerifyEmail = () => {
   };
   return <div className={styles.pageContainer}>
       <header className={styles.pageHeader}>
-        <span className={styles.wordmark}>v-ent</span>
+        <AuthHeader />
       </header>
 
       <main className={styles.mainContainer}>

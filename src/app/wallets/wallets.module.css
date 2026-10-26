@@ -282,16 +282,8 @@
   background-color: rgba(255, 255, 255, 0.06);
 }
 
-.actionBtn.actionPrimary {
-  background-color: rgba(212, 175, 55, 0.18);
-
-}
-
-.actionBtn.actionPrimary:hover {
-
-  background-color: rgba(212, 175, 55, 0.28);
-}
-
+/* One neutral surface for every tile. Only the main action's icon carries
+   the brand colour, so the eye lands on Top Up without four unrelated tints. */
 .actionIcon {
   width: 36px;
   height: 36px;
@@ -299,26 +291,12 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  background-color: rgba(255, 255, 255, 0.06);
+  color: rgba(255, 255, 255, 0.7);
 }
 
 .actionIconTopup {
-  background-color: rgba(212, 175, 55, 0.16);
-  color: #E8C760;
-}
-
-.actionIconSend {
-  background-color: rgba(237, 28, 36, 0.14);
-  color: #ef9a9a;
-}
-
-.actionIconWithdraw {
-  background-color: rgba(255, 255, 255, 0.06);
-  color: rgba(255, 255, 255, 0.6);
-}
-
-.actionIconConvert {
-  background-color: rgba(251, 198, 75, 0.14);
-  color: rgba(251, 198, 75, 0.95);
+  color: var(--v-ent-red);
 }
 
 .actionLabel {
@@ -434,7 +412,7 @@
   padding: 0.4rem 0.85rem;
   background-color: var(--overlay-gray);
 
-  border-radius: 20px;
+  border-radius: 8px;
   color: rgba(255, 255, 255, 0.7);
   font-family: "ClashGrotesk-Variable", sans-serif;
   font-size: 0.78rem;
@@ -1068,19 +1046,27 @@
 }
 
 /* Quick amount chips */
+/* Two columns on a phone and four on wider screens, so the four amounts
+   always fill whole rows instead of leaving one chip alone on a second row. */
 .quickAmountRow {
-  display: flex;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
   gap: 0.45rem;
-  flex-wrap: wrap;
   margin-top: 0.6rem;
   margin-bottom: 1rem;
+}
+
+@media (min-width: 721px) {
+  .quickAmountRow {
+    grid-template-columns: repeat(4, 1fr);
+  }
 }
 
 .quickChip {
   padding: 0.35rem 0.75rem;
   background-color: rgba(255, 255, 255, 0.04);
 
-  border-radius: 20px;
+  border-radius: 8px;
   color: rgba(255, 255, 255, 0.7);
   font-family: "ClashGrotesk-Variable", sans-serif;
   font-size: 0.78rem;
@@ -1617,6 +1603,25 @@
     min-height: 44px;
     min-width: 44px;
   }
+
+  .chip,
+  .quickChip,
+  .formInput,
+  .inputPrefixWrap input {
+    min-height: 44px;
+  }
+}
+
+/* Heading on the wallet home, with the standard gap before the cards. */
+.homeTitle {
+  margin: 0 0 1.25rem;
+}
+
+/* Send page: the title shares the form card's column (540px, centred). */
+.sendHeader {
+  width: 100%;
+  max-width: 540px;
+  margin: 0 auto 1.25rem;
 }
 
 /* The line that tells the payer what to do next on the method step (CEO,

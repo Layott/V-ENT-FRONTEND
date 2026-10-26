@@ -8,6 +8,7 @@ import { VENT } from '@/app/api/auth/[...nextauth]/route';
 import AuthHeader from '@/components/auth-header/AuthHeader';
 import MessageSnackbar from '../../components/Snackbar/MessageSnackbar';
 import generalStyles from "@/styles/auth/auth.module.css";
+import styles from './reset-email.module.css';
 import { useT } from '@/i18n/LanguageProvider';
 const ResetEmail = () => {
   const tt = useT();
@@ -156,7 +157,7 @@ const ResetEmail = () => {
 
           <form method="post" className={generalStyles.resetForm} onSubmit={handleSubmit}>
           <div className={generalStyles.pinForm}>
-            {values.map((val, i) => <input className={generalStyles.pinInputStyle} key={i} type="text" inputMode="numeric" maxLength="1" value={val} onChange={e => handleChange(e, i)} onKeyDown={e => handleKeyDown(e, i)} ref={el => inputsRef.current[i] = el} />)}
+            {values.map((val, i) => <input className={styles.codeBox} key={i} type="text" inputMode="numeric" maxLength="1" value={val} onChange={e => handleChange(e, i)} onKeyDown={e => handleKeyDown(e, i)} ref={el => inputsRef.current[i] = el} />)}
           </div>
           <br />
           <button type="submit" className={`btn redBTN ${generalStyles.formBTN}`}>

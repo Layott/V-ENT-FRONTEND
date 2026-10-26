@@ -66,6 +66,7 @@ export const TeamProfileContent = ({
   const [team, setTeam] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [notFound, setNotFound] = useState(false);
   const [activeTab, setActiveTab] = useState('overview');
   const [requestState, setRequestState] = useState(null); // 'pending' | 'success' | null
   const [toast, setToast] = useState('');
@@ -78,6 +79,7 @@ export const TeamProfileContent = ({
     if (sessionStatus === 'loading') return;
     if (!teamId) {
       setLoading(false);
+      setNotFound(true);
       setError(tt("msg.missingTeamId", "This link does not say which team to open."));
       return;
     }
@@ -90,6 +92,7 @@ export const TeamProfileContent = ({
       const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/team/view-team/${teamId}/`, {
         headers
       });
+      setNotFound(res.status === 404);
       if (!res.ok) throw new Error(`Failed to load team (${res.status})`);
       const data = await res.json();
       // Renamed since this link was shared: send the browser to the address it
@@ -193,7 +196,17 @@ export const TeamProfileContent = ({
         <div className={styles.rightPaneContainer}>
           <BackLink href="/teams">{tt('back.toTeams', 'Back to teams')}</BackLink>
           {loading && <p className={styles.stateText}>{tt("ui.loading.team.b4a7", "Loading team…")}</p>}
-          {!loading && error && <p className={styles.errorText}>{error}</p>}
+          {!loading && error && <div className={styles.notFound}>
+              <h1 className={styles.notFoundTitle}>{notFound
+                ? tt('team.notFound', 'Team not found')
+                : tt('team.loadFailed', 'Could not load this team')}</h1>
+              <p className={styles.notFoundSub}>{notFound
+                ? error
+                : tt('team.loadFailedSub', 'Something went wrong on our side or with the connection. Try again in a moment.')}</p>
+              {!notFound && <button type="button" className={styles.retryBtn} onClick={() => fetchTeam()}>
+                  {tt('common.tryAgain', 'Try again')}
+                </button>}
+            </div>}
 
           {!loading && !error && team && <>
               <TeamProfileHero team={team} isOwner={isOwner} requestState={requestState} onRequestJoin={handleRequestJoin} onLeave={handleLeaveTeam} onShare={handleShare} />

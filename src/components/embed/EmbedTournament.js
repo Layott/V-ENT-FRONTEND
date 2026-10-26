@@ -18,6 +18,7 @@ import { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useLanguage } from '@/i18n/LanguageProvider';
 import { formatWithZone, formatNumber } from '@/lib/datetime';
+import { coinsAsNgn } from '@/lib/currency';
 import { slotsText } from '@/lib/slots';
 import { useAutoRefresh } from '@/lib/useLiveData';
 import EmbedFrame from './EmbedFrame';
@@ -75,7 +76,8 @@ export default function EmbedTournament({ slug, initial, failed, look }) {
   // Through mediaUrl, as every other screen: an address the API gives
   // relative to itself would otherwise load from the frame's host and miss.
   const banner = mediaUrl(t.tournament_banner || t.banner);
-  const coins = (n) => tt('embed.vc', '{n} VENT COINS').replace('{n}', formatNumber(n));
+  // The naira figure beside the coins, as the event cards show it (audit L18).
+  const coins = (n) => `${tt('embed.vc', '{n} VENT COINS').replace('{n}', formatNumber(n))} (${coinsAsNgn(n)})`;
   const facts = [
     [tt('embed.game', 'Game'), t.game],
     // In the reader's language, as the tournament page names it.

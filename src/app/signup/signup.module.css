@@ -3,6 +3,20 @@
   font-weight: 200;
 }
 
+/* The subtitle under the heading: the same colour as the login panel's, which
+   inherits the page's primary text colour. */
+p.subtitle {
+  color: var(--primary-bg);
+}
+
+.signedInNote {
+  margin: 0;
+  font-weight: 500;
+  font-size: 0.95rem;
+  text-align: center;
+  color: var(--primary-bg);
+}
+
 /* Password Validation Styling */
 .icon {
   transition: color 0.3s ease;

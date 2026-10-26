@@ -547,6 +547,7 @@ export function RunOfShowLoader({ token, kind, ownerRef, authToken, compact }) {
   if (state === 'loading') {
     return (
       <div className={styles.loading} role="status" aria-busy="true">
+        <h1 className={styles.srOnly}>{tt('runOfShow.title', 'Run of show')}</h1>
         <span className={styles.skelHead} />
         <span className={styles.skelRow} />
         <span className={styles.skelRow} />
@@ -559,6 +560,7 @@ export function RunOfShowLoader({ token, kind, ownerRef, authToken, compact }) {
   if (state === 'missing') {
     return (
       <div className={styles.empty}>
+        <h1 className={styles.emptyTitle}>{tt('runOfShow.title', 'Run of show')}</h1>
         <p className={styles.emptyLine}>
           {tt('ros.notShared', 'There is no run of show here, or it has not been shared.')}
         </p>
@@ -572,7 +574,8 @@ export function RunOfShowLoader({ token, kind, ownerRef, authToken, compact }) {
     const ownerHref = ownerRef ? `/${kind === 'tournament' ? 'tournaments' : 'events'}/${encodeURIComponent(ownerRef)}` : '';
     return (
       <div className={styles.empty}>
-        <h2 className={styles.emptyTitle}>{tt('ros.errorTitle', 'The run of show did not load')}</h2>
+        {/* The page's one h1 in this state: there is no sheet to draw its own. */}
+        <h1 className={styles.emptyTitle}>{tt('ros.errorTitle', 'The run of show did not load')}</h1>
         <p className={styles.emptyLine}>{error}</p>
         <button type="button" className={styles.emptyAction} onClick={() => load()}>
           {tt('ros.tryAgain', 'Try again')}

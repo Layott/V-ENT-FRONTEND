@@ -33,6 +33,47 @@
   font-size: 0.9rem;
 }
 
+/* Filled and knob to the right when on; a muted track with the knob left when off. */
+.switch {
+  -webkit-appearance: none;
+  appearance: none;
+  position: relative;
+  flex: none;
+  width: 44px;
+  height: 24px;
+  margin: 0;
+  border-radius: 12px;
+  background-color: rgba(255, 255, 255, 0.14);
+  cursor: pointer;
+  transition: background-color 0.15s ease-out;
+}
+
+.switch::after {
+  content: "";
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background-color: rgba(255, 255, 255, 0.6);
+  transition: transform 0.15s ease-out, background-color 0.15s ease-out;
+}
+
+.switch:checked {
+  background-color: var(--v-ent-success);
+}
+
+.switch:checked::after {
+  transform: translateX(20px);
+  background-color: #f4f4f5;
+}
+
+.switch:focus-visible {
+  outline: 2px solid var(--v-ent-success);
+  outline-offset: 2px;
+}
+
 .outerQuestionContainer {
   display: flex;
   flex-direction: column;
@@ -79,6 +120,13 @@
 .optionInput:checked {
   background-color: #FFF;
   border: 5px solid var(--v-ent-red);
+}
+
+/* The dot is 17px; the whole label is the target on a phone (audit small targets). */
+@media (max-width: 720px) {
+  .optionLabel {
+    min-height: 44px;
+  }
 }
 
 .eventDropdown {
@@ -176,4 +224,33 @@
    field rather than off the page. */
 .eventSearchContainer {
   position: relative;
+}
+
+/* The words beside the switch toggle it too, and make a 44px row on a phone. */
+.switchLabel {
+  cursor: pointer;
+}
+
+@media (max-width: 720px) {
+  .switchLabel {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+  }
+}
+
+/* The switch itself is a 44px target on a phone: the box grows by padding and the
+   fill stays clipped to the 24px track, so it looks the same (audit 557 round 3). */
+@media (max-width: 720px) {
+  .switch {
+    box-sizing: border-box;
+    height: 44px;
+    padding: 10px 0;
+    background-clip: content-box;
+    /* Outer 22px less the 10px padding leaves the track its 12px rounded ends. */
+    border-radius: 22px;
+  }
+  .switch::after {
+    top: 13px;
+  }
 }

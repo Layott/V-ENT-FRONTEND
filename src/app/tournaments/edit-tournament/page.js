@@ -314,7 +314,8 @@ export const EditTournamentContent = ({ slug: slugFromPath }) => {
         <div className={styles.rightPane}>
           <div className={styles.headRow}>
             <div>
-              <BackLink href="/tournaments/my-tournaments" className={styles.back}>
+              {/* The shared link: arrow and words one aligned target (audit L39). */}
+              <BackLink href="/tournaments/my-tournaments">
                 {tt('tEdit.back', 'My tournaments')}
               </BackLink>
               <h1 className={styles.pageTitle}>{tt('tEdit.title', 'Edit tournament')}</h1>

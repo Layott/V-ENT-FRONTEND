@@ -7,7 +7,7 @@ import { useState, useEffect, useRef, Suspense } from 'react';
 import Link from 'next/link';
 import { useSession } from 'next-auth/react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { LuArrowRight } from 'react-icons/lu';
+import { LuArrowRight, LuArrowUpFromLine } from 'react-icons/lu';
 import Header from '@/components/header/Header';
 import MobileHeader from '@/components/mobile-header/MobileHeader';
 import BottomMenu from '@/components/bottom-menu/BottomMenu';
@@ -253,7 +253,7 @@ const WalletsContent = () => {
               </div>
             </div>}
 
-          <h1 className={styles.pageTitle}>{tt("wallet.title", "Your wallet")}</h1>
+          <h1 className={`${styles.pageTitle} ${styles.homeTitle}`}>{tt("wallet.title", "Your wallet")}</h1>
 
           {/* Hero balance + Quick actions */}
           <div className={styles.topRow}>
@@ -308,7 +308,7 @@ const WalletsContent = () => {
             <div className={styles.actionsPanel}>
               <p className={styles.actionsLabel}>{tt("ui.quick.actions.c408", "Quick Actions")}</p>
               <div className={styles.actionsRow}>
-                <Link href="/wallets/topup" className={`${styles.actionBtn} ${styles.actionPrimary}`}>
+                <Link href="/wallets/topup" className={styles.actionBtn}>
                   <span className={`${styles.actionIcon} ${styles.actionIconTopup}`}>
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                       <path d="M12 2v20M17 7l-5-5-5 5" />
@@ -317,7 +317,7 @@ const WalletsContent = () => {
                   <span className={styles.actionLabel}>{tt("ui.top.up.f321", "Top Up")}</span>
                 </Link>
                 <Link href="/wallets/send" className={styles.actionBtn}>
-                  <span className={`${styles.actionIcon} ${styles.actionIconSend}`}>
+                  <span className={styles.actionIcon}>
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                       <path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z" />
                     </svg>
@@ -325,16 +325,13 @@ const WalletsContent = () => {
                   <span className={styles.actionLabel}>{tt("ui.send.9bc2", "Send")}</span>
                 </Link>
                 <Link href="/wallets/withdraw" className={styles.actionBtn}>
-                  <span className={`${styles.actionIcon} ${styles.actionIconWithdraw}`}>
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                      <rect x="3" y="11" width="18" height="11" rx="2" />
-                      <path d="M7 11V7a5 5 0 0 1 10 0v4" />
-                    </svg>
+                  <span className={styles.actionIcon}>
+                    <LuArrowUpFromLine size={16} aria-hidden="true" />
                   </span>
                   <span className={styles.actionLabel}>{tt("ui.withdraw.47e5", "Withdraw")}</span>
                 </Link>
                 <button type="button" className={styles.actionBtn} onClick={() => setConvertOpen(true)} aria-label={tt("ui.convert.3f15", "Convert")}>
-                  <span className={`${styles.actionIcon} ${styles.actionIconConvert}`}>
+                  <span className={styles.actionIcon}>
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                       <polyline points="17 1 21 5 17 9" />
                       <path d="M3 11V9a4 4 0 0 1 4-4h14" />

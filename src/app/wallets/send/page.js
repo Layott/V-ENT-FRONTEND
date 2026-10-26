@@ -394,7 +394,7 @@ const SendPage = () => {
 
         <div className={styles.rightPaneContainer}>
           <BackLink href="/wallets">{tt('back.toWallets', 'Back to wallets')}</BackLink>
-          <div className={styles.pageHeader}>
+          <div className={`${styles.pageHeader} ${styles.sendHeader}`}>
             <div className={styles.pageHeaderLeft}>
               <h1 className={styles.pageTitle}>{tt("ui.send.vent.coins.6a21", "Send VENT COINS")}</h1>
               <p className={styles.pageSubtitle}>{tt('wallet.sendSubtitle', 'Send coins to a person, a team, or an organisation.')}</p>
@@ -483,6 +483,7 @@ const SendPage = () => {
                     {tt("ui.continue.2e02", "Continue")}
                   </button>
                 </div>
+                {!recipients.length && <p className={styles.fieldHint}>{tt('wallet.addSomeoneToContinue', 'Add someone above to continue.')}</p>}
               </>}
 
             {step === 2 && recipients.length > 0 && <>

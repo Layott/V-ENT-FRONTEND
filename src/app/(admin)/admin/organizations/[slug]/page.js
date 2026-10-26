@@ -281,7 +281,7 @@ function OrgDetailInner() {
                 </div>
               </div>
 
-              <h2 className={shared.sectionTitle}>{tt('adminOrg.people', 'People')}</h2>
+              <h2 className={`${shared.sectionTitle} ${styles.heading}`}>{tt('adminOrg.people', 'People')}</h2>
               <div className={shared.card}>
                 {(org.members_list || []).length === 0
                   ? <p className={shared.stateText}>
@@ -336,7 +336,7 @@ function OrgDetailInner() {
                     </div>}
               </div>
 
-              <h2 className={`${shared.sectionTitle} ${styles.spaced}`}>
+              <h2 className={`${shared.sectionTitle} ${styles.spaced} ${styles.heading}`}>
                 {tt('adminOrg.statement', 'What has moved')}
               </h2>
               <div className={shared.card}>

@@ -99,6 +99,18 @@ const homeLinkStyle = {
   textDecoration: 'none',
 };
 
+// A hyphen is a place a line may break, so "(V-ENT)" split between "V-" and
+// "ENT)" on a phone. The name is held together in its own span.
+const keepBrandTogether = (text) => {
+  const at = text.indexOf('(V-ENT)');
+  if (at < 0) return text;
+  return <>
+    {text.slice(0, at)}
+    <span style={{ whiteSpace: 'nowrap' }}>(V-ENT)</span>
+    {text.slice(at + '(V-ENT)'.length)}
+  </>;
+};
+
 export default async function PrivacyPolicy() {
   const t = await getT();
   const locale = await serverLocale();
@@ -110,7 +122,7 @@ export default async function PrivacyPolicy() {
         {/* Home in the reader's own language, through the router. */}
         <BackLink href={locale === 'en' ? '/' : `/${locale}`} style={homeLinkStyle}>{k('back')}</BackLink>
         <h1 style={headingStyle}>{k('title')}</h1>
-        <p style={subStyle}>{k('updated')}</p>
+        <p style={subStyle}>{keepBrandTogether(k('updated'))}</p>
 
         {SECTIONS.map((section) => (
           <section key={section.id} id={section.id} style={sectionStyle}>

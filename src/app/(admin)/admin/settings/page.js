@@ -129,7 +129,7 @@ function SettingsInner() {
               <p className={shared.pageSubtitle}>{tt("ui.platform.level.configuration.changes.3f67", "Platform-level configuration. Changes are logged.")}</p>
             </div>
             <div className={shared.pageActions}>
-              <button className={`${shared.actBtn} ${shared.actApprove}`} onClick={save} disabled={saving || !settings}>
+              <button className={styles.saveBtn} onClick={save} disabled={saving || !settings}>
                 {saving ? tx("Saving…") : tx("Save Changes")}
               </button>
             </div>
@@ -307,7 +307,7 @@ function SettingsInner() {
               {/* The same Save at the foot of the form: on a phone the one at the top
                   was a long scroll away from the last field (audit 557). */}
               <div className={shared.pageActions}>
-                <button className={`${shared.actBtn} ${shared.actApprove}`} onClick={save} disabled={saving || !settings}>
+                <button className={styles.saveBtn} onClick={save} disabled={saving || !settings}>
                   {saving ? tx("Saving…") : tx("Save Changes")}
                 </button>
               </div>

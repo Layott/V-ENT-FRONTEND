@@ -13,6 +13,9 @@
 
 .spaced { margin-top: 2rem; }
 
+/* A section heading keeps the same 12px from its panel on every admin page. */
+.heading { margin-bottom: 0.75rem; }
+
 .messages {
   display: flex;
   flex-direction: column;

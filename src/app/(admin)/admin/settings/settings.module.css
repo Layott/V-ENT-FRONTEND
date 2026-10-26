@@ -126,3 +126,28 @@
   }
   .slider { top: 11px; bottom: 11px; }
 }
+
+/* Save Changes is the main action of this page, so it is the console's filled
+   primary, the same red as the other main buttons, and it is repeated at the
+   foot of the form. 44px on a phone (audit L13). */
+.saveBtn {
+  min-height: 40px;
+  padding: 0 1.1rem;
+  border: none;
+  border-radius: 10px;
+  background-color: var(--v-ent-red);
+  color: #fff;
+  font-family: "ClashGrotesk-Variable", sans-serif;
+  font-size: 0.9rem;
+  font-weight: var(--fw-semi-bold);
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.saveBtn:hover:not(:disabled) { background-color: var(--v-ent-light-red); }
+
+.saveBtn:disabled { opacity: 0.45; cursor: not-allowed; }
+
+@media (max-width: 720px) {
+  .saveBtn { min-height: 44px; }
+}

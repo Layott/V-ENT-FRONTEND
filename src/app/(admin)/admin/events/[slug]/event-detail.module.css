@@ -40,6 +40,27 @@
   flex-wrap: wrap;
 }
 
+/* Cancel event is the one destructive control on this page: a quiet red
+   fill with its own size, set apart from the title rather than a small chip
+   beside it (audit L7). Quiet, so it does not compete with the stats. */
+.dangerBtn {
+  min-height: 40px;
+  padding: 0 1rem;
+  border: none;
+  border-radius: 10px;
+  background-color: rgba(237, 28, 36, 0.14);
+  color: var(--v-ent-red);
+  font-family: "ClashGrotesk-Variable", sans-serif;
+  font-size: 0.85rem;
+  font-weight: var(--fw-semi-bold);
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.dangerBtn:hover { background-color: rgba(237, 28, 36, 0.24); }
+
+.dangerBtn:disabled { opacity: 0.4; cursor: not-allowed; }
+
 .cancelledNote {
   background-color: rgba(237, 28, 36, 0.1);
   color: #ef9a9a;
@@ -88,6 +109,16 @@
   grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
   gap: 0.6rem;
   margin-bottom: 1rem;
+}
+
+/* Nine tiles in two columns on a phone left the ninth alone in its row, so an
+   odd last tile spans the full width (audit L6). */
+@media (max-width: 720px) {
+  .stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .stat:last-child:nth-child(odd) { grid-column: 1 / -1; }
+  /* On a phone the action drops to its own row under the title, 44px. */
+  .headerActions { width: 100%; }
+  .dangerBtn { min-height: 44px; }
 }
 
 .stat {
