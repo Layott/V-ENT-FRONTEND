@@ -147,15 +147,25 @@ function Outcome() {
 
       {state === 'unsure' && <>
         <span className={`${styles.badge} ${styles.badgeWait}`} aria-hidden="true"><LuRotateCw /></span>
-        <h1 className={styles.title}>{tt('topup.callback.unsureTitle', 'Not confirmed yet')}</h1>
-        <p className={styles.body}>{message}</p>
+        {/* With no payment in the address there is nothing waiting to be
+            confirmed, and a signed-out visitor was offered "Back to Wallet"
+            with no word on the payment (audit 557). Say what happened, and
+            offer the door they can actually use. */}
+        <h1 className={styles.title}>{reference
+          ? tt('topup.callback.unsureTitle', 'Not confirmed yet')
+          : tt('topup.callback.noRefTitle', 'Nothing to confirm')}</h1>
+        <p className={styles.body}>{reference
+          ? message
+          : tt('topup.callback.noRefBody', 'This page opens after a top-up payment. This address carries no payment, so nothing was charged here.')}</p>
         <div className={styles.actions}>
           {reference && token && <button type="button" className={`${styles.btn} ${styles.btnPrimary}`} onClick={verify}>
             {tt('topup.callback.checkAgain', 'Check again')}
           </button>}
-          <Link href={back} className={`${styles.btn} ${styles.btnQuiet}`}>
+          {token ? <Link href={back} className={`${styles.btn} ${styles.btnQuiet}`}>
             {tt('ui.back.wallet.4f88', 'Back to Wallet')}
-          </Link>
+          </Link> : <Link href={`/login?next=${encodeURIComponent('/wallets')}`} className={`${styles.btn} ${styles.btnQuiet}`}>
+            {tt('topup.callback.signInWallet', 'Sign in to see your wallet')}
+          </Link>}
         </div>
       </>}
 

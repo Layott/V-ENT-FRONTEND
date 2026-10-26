@@ -15,17 +15,9 @@ import { mediaUrl } from '@/lib/mediaUrl';
 import { prizeText } from '@/lib/prize';
 import { formatLabel } from '@/lib/formatLabel';
 import { formatDate, formatNumber } from '@/lib/datetime';
+import { tournamentStatusLabel } from '@/lib/tournamentStatus';
 
 const LIVE_STATUSES = ['ongoing', 'live', 'in_progress', 'registration_closed'];
-const STATUS_LABELS = {
-  upcoming: 'Upcoming',
-  registration_open: 'Registration Open',
-  published: 'Upcoming',
-  ongoing: 'Live',
-  live: 'Live',
-  in_progress: 'Live',
-  completed: 'Completed'
-};
 const STATUS_BADGE_CLASS = {
   upcoming: 'status_upcoming',
   registration_open: 'status_upcoming',
@@ -43,7 +35,13 @@ const TournamentCard = ({
   const tx = useTx();
   const tt = useT();
   const status = tournamentStatus(t);
-  const statusLabel = STATUS_LABELS[status] || (status && status !== 'unknown' ? status : 'Upcoming');
+  // The card kept its own seven English labels and printed the raw code for
+  // anything else, so a closed registration read REGISTRATION_CLOSED (audit
+  // 557). Every status is now named the way every other screen names it; only
+  // a published tournament reads "Upcoming", which is what a visitor needs.
+  const statusLabel = !status || status === 'unknown' || status === 'published'
+    ? tt('tstatus.upcoming', 'Upcoming')
+    : tournamentStatusLabel(tt, status);
   const badgeClass = styles[STATUS_BADGE_CLASS[status]] || styles.status_upcoming;
   const isLive = LIVE_STATUSES.includes(status);
   const banner = mediaUrl(t?.banner_image || t?.banner) || '';

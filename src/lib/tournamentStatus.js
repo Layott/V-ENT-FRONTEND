@@ -12,6 +12,7 @@ const FALLBACK = {
   upcoming: 'Upcoming',
   live: 'Live',
   in_progress: 'Live',
+  ongoing: 'Live',
   completed: 'Completed',
   cancelled: 'Cancelled',
 };
@@ -19,5 +20,5 @@ const FALLBACK = {
 export function tournamentStatusLabel(tt, status) {
   const key = String(status || '').toLowerCase();
   if (!FALLBACK[key]) return key ? key.replace(/_/g, ' ') : tt('tstatus.unknown', 'Status unknown');
-  return tt(`tstatus.${key === 'in_progress' ? 'live' : key}`, FALLBACK[key]);
+  return tt(`tstatus.${key === 'in_progress' || key === 'ongoing' ? 'live' : key}`, FALLBACK[key]);
 }
