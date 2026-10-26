@@ -9,7 +9,7 @@ import marketPlaceRight from '@/images/market_place_right.png'
 import observerStyle from '@/styles/intersection/intersection.module.css'
 import profileStyles from '@/styles/profile/profile-page.module.css'
 import landingStyles from '@/styles/landing/landing.module.css'
-import styles from './../automated-tournaments/automated-tournaments.module.css'
+import styles from './landing-marketplace.module.css'
 
 
 const LandingMarketplace = ({ scrollToForm }) => {

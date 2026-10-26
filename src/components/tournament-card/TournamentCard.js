@@ -5,6 +5,7 @@
 // page showed pictures of a made-up 2024 tournament instead of real ones).
 
 import Link from 'next/link';
+import Image from '@/components/media-image/MediaImage';
 import { LuTrophy, LuCalendar, LuUsers, LuRadio } from 'react-icons/lu';
 import { entryFeeVc, tournamentStatus } from '@/components/tournament-lib/tournamentApi';
 import styles from '@/app/tournaments/tournament.module.css';
@@ -12,7 +13,8 @@ import { useT, useTx } from '@/i18n/LanguageProvider';
 import Tag from '@/components/tag/Tag';
 import { slotsText } from '@/lib/slots';
 import { mediaUrl } from '@/lib/mediaUrl';
-import { prizeText } from '@/lib/prize';
+import { prizeOf, prizeText } from '@/lib/prize';
+import logoMark from '@/images/logo_mark_red.svg';
 import { formatLabel } from '@/lib/formatLabel';
 import { formatDate, formatNumber } from '@/lib/datetime';
 import { tournamentStatusLabel } from '@/lib/tournamentStatus';
@@ -47,10 +49,16 @@ const TournamentCard = ({
   const banner = mediaUrl(t?.banner_image || t?.banner) || '';
   const fee = entryFeeVc(t);
   const current = t?.current_participants ?? 0;
+  // "0 VC" in gold read as a prize worth nothing; a tournament without one
+  // says so in the muted colour (inbox 561).
+  const noPrize = prizeOf(t).vc <= 0 && prizeOf(t).amount == null;
   return <Link href={`/tournaments/${t?.slug || t?.id || ''}`} className={styles.tCard}>
       <div className={styles.tCardBanner} style={banner ? {
       backgroundImage: `url(${banner})`
     } : undefined}>
+        {/* No banner drew an empty grey slab 140px tall (inbox 561). The
+            muted mark says whose card it is, the way the drafts page does. */}
+        {!banner && <Image src={logoMark} alt="" width={40} height={40} className={styles.tCardNoBanner} />}
         <span className={`${styles.statusBadge} ${badgeClass}`}>
           {isLive && <LuRadio className={styles.liveDot} />} {statusLabel}
         </span>
@@ -62,7 +70,9 @@ const TournamentCard = ({
         <div className={styles.tCardMeta}>
           <div className={styles.metaRow}>
             <LuTrophy className={styles.metaIcon} />
-            <span className={styles.metaPrize}>{prizeText(t)}</span>
+            {noPrize
+              ? <span className={styles.metaNoPrize}>{tt('tEdit.prizeNone', 'No prize')}</span>
+              : <span className={styles.metaPrize}>{prizeText(t)}</span>}
           </div>
           <div className={styles.metaRow}>
             <LuCalendar className={styles.metaIcon} />

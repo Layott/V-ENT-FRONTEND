@@ -78,9 +78,14 @@
   width: 120px;
 }
 
+/* Sized to the words, with a floor: a fixed 80px held "Login" and "Signup"
+   and let "Go to my V-ENT" spill out of both sides of the red pill (CEO,
+   26 October 2026, inbox 561). */
 .signupBTN, .loginBTN {
   border-radius: 8px;
-  width: 80px;
+  width: auto;
+  min-width: 80px;
+  padding: 8px 16px;
   margin: 0;
   background-color: var(--v-ent-red);
 }
@@ -303,8 +308,6 @@
   .loginBTN {
     font-size: 1rem;
     min-width: 90px;
-    width: 90px;
-    max-width: 90px;
   }
   .gamingAnimeTribeContainer .headlineWord {
     font-size: 4.5rem;
