@@ -42,15 +42,6 @@
 .wide:hover { background-color: #c9161d; }
 .wide:disabled { opacity: 0.6; cursor: not-allowed; }
 
-/* Coming back in, rather than going out. Green carries that meaning
-   everywhere else on the platform. */
-.back {
-  background-color: var(--v-ent-success, #4caf50);
-  color: #10231a;
-}
-
-.back:hover { background-color: var(--v-ent-success-light, #66bb6a); }
-
 .quiet {
   min-height: 44px;
   padding: 0 1.1rem;

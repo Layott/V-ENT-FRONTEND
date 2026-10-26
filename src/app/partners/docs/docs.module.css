@@ -86,10 +86,11 @@
   margin-bottom: 0.9rem;
 }
 
-/* A note is quieter than body text and sits on its own surface, because it is
-   usually the sentence that saves somebody an afternoon. */
+/* A note sits on its own surface, because it is usually the sentence that saves
+   somebody an afternoon. Its text is body size, so it never reads smaller than
+   the copy around it. */
 .note {
-  font-size: 0.88rem;
+  font-size: 0.95rem;
   line-height: 1.65;
   max-width: 66ch;
   padding: 0.85rem 1rem;

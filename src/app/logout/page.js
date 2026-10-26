@@ -66,7 +66,7 @@ export default function LogoutPage() {
             </div>
           ) : (
             <div className={styles.actions}>
-              <Link href="/login" className={`${styles.wide} ${styles.back}`}>
+              <Link href="/login" className={styles.wide}>
                 {tt('logout.signIn', 'Sign in again')}
               </Link>
               <Link href="/" className={styles.quiet}>

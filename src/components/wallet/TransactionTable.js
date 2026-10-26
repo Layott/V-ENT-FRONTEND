@@ -190,7 +190,7 @@ const TransactionTable = ({
             <div className={styles.sectionControls}>
               <div className={styles.ctrlSearch}>
                 <CiSearch className={styles.ctrlSearchIcon} />
-                <input type="text" className={styles.ctrlSearchInput} placeholder={tt("ui.search.description.reference.5a31", "Search description or reference…")} value={search} onChange={e => handleSearch(e.target.value)} />
+                <input type="text" className={styles.ctrlSearchInput} placeholder={tt("wallet.searchTransactions", "Search transactions")} value={search} onChange={e => handleSearch(e.target.value)} />
               </div>
               {showAdvancedFilters && <>
                   <DateField value={dateFrom} onChange={e => handleFrom(e.target.value)} ariaLabel={tt("ui.from.date.3b5d", "From date")} className={styles.ctrlDateInput} />

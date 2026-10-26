@@ -551,8 +551,14 @@
   /* Square by design: widened as well, or a round icon button
      becomes a pill. */
   .pageNumberBtn,
-  .mdBtn {
+  .mdBtn,
+  .avatarLink {
     min-height: 44px;
     min-width: 44px;
+  }
+
+  .avatarLink {
+    align-items: center;
+    justify-content: center;
   }
 }

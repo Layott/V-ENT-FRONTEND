@@ -134,6 +134,16 @@
   color: rgba(255, 255, 255, 0.75);
 }
 
+/* The attribution link is a phone's only way to the licence, so on a phone it
+   gets a 44px tap height. Padding only, the line itself does not change. */
+@media (max-width: 720px) {
+  .mapHolder :global(.leaflet-control-attribution a) {
+    display: inline-block;
+    padding: 12px 6px;
+    line-height: 20px;
+  }
+}
+
 /* Leaflet outlines the zoom control with a 2px ring and splits the two buttons
    with a 1px rule: the hairline structure the design rules ban. A filled
    control with a gap between the buttons says the same thing. */

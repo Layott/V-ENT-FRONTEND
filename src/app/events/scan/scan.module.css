@@ -272,10 +272,10 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  background-color: rgba(255, 255, 255, 0.08);
+  background-color: rgba(255, 255, 255, 0.12);
   border-radius: 10px;
   padding: 12px 18px;
-  color: rgba(255, 255, 255, 0.85);
+  color: #fff;
   font-family: 'ClashGrotesk-Variable', sans-serif;
   font-size: 0.85rem;
   text-decoration: none;
@@ -290,6 +290,11 @@
 
 .ghost:disabled {
   opacity: 0.55;
+  cursor: default;
+}
+
+.primary:disabled {
+  opacity: 0.5;
   cursor: default;
 }
 

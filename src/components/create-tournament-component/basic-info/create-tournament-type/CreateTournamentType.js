@@ -179,8 +179,10 @@ const CreateTournamentType = ({
           </div>
 
           <div className={styles.hideLocationContainer}>
-            <input type="checkbox" className="ventCheck" checked={hideLocation} onChange={handleHideLocationChange} />
-            <label><span className="fieldLabelRow">{tt("ui.hide.location.36ab", "Hide location")} <InfoTip id="hideLocation" /></span></label>
+            {/* A switch, not a dot: on is filled and the knob moves, off is a muted track (audit L43). */}
+            <input id="hideLocation" type="checkbox" role="switch" aria-checked={hideLocation} className={styles.switch} checked={hideLocation} onChange={handleHideLocationChange} />
+            {/* Tied to the switch, so the words are part of the 44px target (audit 557 round 3). */}
+            <label htmlFor="hideLocation" className={styles.switchLabel}><span className="fieldLabelRow">{tt("ui.hide.location.36ab", "Hide location")} <InfoTip id="hideLocation" /></span></label>
           </div>
 
           <div className={styles.outerQuestionContainer}>

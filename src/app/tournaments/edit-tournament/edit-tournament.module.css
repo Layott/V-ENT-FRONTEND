@@ -25,7 +25,6 @@
     margin-left: 250px;
     width: calc(100% - 250px);
     padding: 2rem 2rem 3rem;
-    max-width: 900px;
   }
 }
 
@@ -36,18 +35,6 @@
   justify-content: space-between;
   gap: 1rem;
   margin-bottom: 1.5rem;
-}
-
-.back {
-  display: inline-block;
-  color: rgba(255, 255, 255, 0.5);
-  font-size: 0.85rem;
-  text-decoration: none;
-  margin-bottom: 0.5rem;
-}
-
-.back:hover {
-  color: #fff;
 }
 
 .pageTitle {
@@ -230,6 +217,14 @@
   padding: 1.5rem;
   color: rgba(255, 255, 255, 0.75);
   font-size: 0.9rem;
+}
+
+/* A finger needs 44px on every text field and select on the page (audit small targets). */
+@media (max-width: 720px) {
+  .rightPane input:not([type="checkbox"]):not([type="radio"]):not([type="file"]),
+  .rightPane select {
+    min-height: 44px;
+  }
 }
 
 @media (max-width: 560px) {

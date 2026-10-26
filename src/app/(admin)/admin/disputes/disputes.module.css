@@ -62,3 +62,12 @@
   gap: 0.4rem;
   justify-content: flex-end;
 }
+
+/* Resolve is the one primary action on a row: a filled red button, the
+   console's main-action colour. Dismiss sits beside it as a quiet chip. */
+.resolveMain,
+.resolveMain:hover {
+  color: #fff;
+}
+.resolveMain { background: var(--v-ent-red); }
+.resolveMain:hover { background: var(--v-ent-light-red); }

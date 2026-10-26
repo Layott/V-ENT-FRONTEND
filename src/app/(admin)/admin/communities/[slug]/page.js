@@ -162,7 +162,7 @@ function CommunityDetailInner() {
                 </div>
               </div>
 
-              <h2 className={shared.sectionTitle}>{tt('adminClub.discussions', 'Discussions')}</h2>
+              <h2 className={`${shared.sectionTitle} ${styles.heading}`}>{tt('adminClub.discussions', 'Discussions')}</h2>
               <div className={shared.card}>
                 {(data.threads || []).length === 0
                   ? <p className={shared.stateText}>

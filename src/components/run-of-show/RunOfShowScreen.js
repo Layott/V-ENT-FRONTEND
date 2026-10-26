@@ -40,9 +40,6 @@ export default function RunOfShowScreen({ sheet, kind, ownerRef, token, sharePat
         <Sidebar />
 
         <div className={styles.pane}>
-          {/* The page's one title for a screen reader and a search engine; the
-              sheet draws its own visible heading (audit 557). */}
-          <h1 className="visually-hidden">{tt('runOfShow.title', 'Run of show')}</h1>
           <BackLink href={backHref}>{backWords}</BackLink>
           {sheet ? (
             <>
@@ -67,6 +64,7 @@ export default function RunOfShowScreen({ sheet, kind, ownerRef, token, sharePat
                   asked to decide while the session is still resolving. */}
               {viewer.loading ? (
                 <div className={styles.waiting} role="status" aria-busy="true">
+                  <h1 className="visually-hidden">{tt('runOfShow.title', 'Run of show')}</h1>
                   <span className={styles.skel} />
                   <span className={styles.skel} />
                 </div>

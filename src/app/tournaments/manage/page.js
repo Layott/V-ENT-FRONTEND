@@ -461,7 +461,7 @@ const ManageContent = ({ slug }) => {
                 : <BackLink href="/tournaments/my-tournaments" className={styles.backLink}>{tt("ui.my.tournaments.053d", "My Tournaments")}</BackLink>}
               <h1 className={styles.pageTitle}>{tournament.name || tournament.tournament_title}</h1>
               <div className={styles.headerMeta}>
-                <Tag on="card">{tournament.game || tx("Unknown game")}</Tag>
+                {tournament.game && <Tag on="card">{tournament.game}</Tag>}
                 <span className={styles.statusBadge}><LuRadio /> {statusLabel}</span>
                 <span className={styles.metaText}>
                   {/* No cap set is "16 participants", not "16/0": a zero there

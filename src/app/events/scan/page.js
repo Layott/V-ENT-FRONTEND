@@ -1037,7 +1037,7 @@ function ScanContent() {
                onChange={e => setTyped(e.target.value)}
                placeholder={tt('scan.typeCode', 'Or type the code')}
                aria-label={tt('scan.typeCode', 'Or type the code')} />
-        <button type="submit" className={styles.ghost} disabled={!typed.trim()}>
+        <button type="submit" className={styles.primary} disabled={!typed.trim()}>
           {tt('scan.check', 'Check')}
         </button>
         <button type="button" className={styles.ghost} disabled={!typed.trim() || !online}

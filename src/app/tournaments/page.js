@@ -25,6 +25,7 @@ import { slotsText } from '@/lib/slots';
 import { mediaUrl } from '@/lib/mediaUrl';
 import { fuzzyMatches } from '@/lib/fuzzy';
 import { prizeText } from '@/lib/prize';
+import { useViewer } from '@/lib/gating';
 import TournamentCard from '@/components/tournament-card/TournamentCard';
 const STATUS_TABS = [{
   id: 'featured',
@@ -89,6 +90,9 @@ const TournamentsContent = () => {
     data: session
   } = useSession();
   const token = tokenFrom(session);
+  // Branch on status, never on data: a stranger is offered sign-in, not a
+  // create button that leads to a gate (audit L-CT).
+  const viewer = useViewer();
 
   // ── State driven by URL ──
   const [tab, setTab] = useState(searchParams.get('tab') || 'featured');
@@ -222,11 +226,11 @@ const TournamentsContent = () => {
     if (tab !== 'by_game') return null;
     const map = {};
     filtered.forEach(t => {
-      const g = t?.game || 'Unknown Game';
+      const g = t?.game || tt('tournaments.otherGames', 'Other games');
       (map[g] = map[g] || []).push(t);
     });
     return map;
-  }, [filtered, tab]);
+  }, [filtered, tab, tt]);
 
   // Featured: prefer the backend's curated `data.featured` list, else the
   // first few tournaments from whatever we fetched.
@@ -261,14 +265,20 @@ const TournamentsContent = () => {
               <h1 className={styles.pageTitle}>{tt("ui.tournaments.fee2", "Tournaments")}</h1>
               <p className={styles.pageSubtitle}>{tt("ui.compete.climb.cash.out.a183", "Compete. Climb. Cash out in VENT COINS.")}</p>
             </div>
-            <div className={styles.pageActions}>
-              <Link href="/tournaments/my-tournaments">
-                <button className={styles.secondaryBtn}>{tt("ui.my.tournaments.3780", "My Tournaments")}</button>
-              </Link>
-              <Link href="/tournaments/create-tournament">
-                <button className={`${styles.primaryBtn} goldBTN`}>{tt("ui.create.tournament.23d0", "+ Create Tournament")}</button>
-              </Link>
-            </div>
+            {/* Nothing is offered while the session resolves. A stranger gets one
+                door, and it says what it does (audit L-CT). */}
+            {!viewer.loading && <div className={styles.pageActions}>
+              {viewer.signedIn ? <>
+                <Link href="/tournaments/my-tournaments">
+                  <button className={styles.secondaryBtn}>{tt("ui.my.tournaments.3780", "My Tournaments")}</button>
+                </Link>
+                <Link href="/tournaments/create-tournament">
+                  <button className={`${styles.primaryBtn} redBTN`}>{tt("ui.create.tournament.23d0", "+ Create Tournament")}</button>
+                </Link>
+              </> : <Link href="/login?next=/tournaments/create-tournament">
+                <button className={`${styles.primaryBtn} redBTN`}>{tt("ui.signin.create.tournament", "Sign in to create a tournament")}</button>
+              </Link>}
+            </div>}
           </div>
 
           {/* Featured carousel */}
@@ -279,7 +289,7 @@ const TournamentsContent = () => {
             } : undefined}>
                     <span className={styles.featuredPill}>{tt("ui.featured.c005", "FEATURED")}</span>
                     <div className={styles.featuredOverlay}>
-                      <Tag on="card">{t?.game || tx("Unknown Game")}</Tag>
+                      {t?.game && <Tag on="card">{t.game}</Tag>}
                       <h2 className={styles.featuredTitle}>{t?.name || tx("Untitled Tournament")}</h2>
                       <div className={styles.featuredMeta}>
                         <span><LuTrophy /> {prizeText(t)}</span>

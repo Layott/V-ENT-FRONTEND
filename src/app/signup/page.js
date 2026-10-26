@@ -20,6 +20,7 @@ import { useT } from '@/i18n/LanguageProvider';
 import { useTx } from '@/i18n/LanguageProvider';
 import { rememberSignup } from '@/lib/signupRecord';
 import { rememberNext } from '@/lib/safeNext';
+import { useViewer } from '@/lib/gating';
 const Signup = () => {
   const tx = useTx();
   const tt = useT();
@@ -59,6 +60,7 @@ const Signup = () => {
   const usernameTimer = useRef(null);
   useEffect(() => () => clearTimeout(usernameTimer.current), []);
   const router = useRouter();
+  const viewer = useViewer();
   const togglePasswordVisibility = () => {
     setShowPassword(prevState => !prevState);
   };
@@ -287,6 +289,26 @@ const Signup = () => {
   const isPasswordValid = password => {
     return password.length >= 8 && /[a-z]/.test(password) && /[A-Z]/.test(password) && /[0-9]/.test(password);
   };
+  // The form is a public page and is served whole; only a session that has
+  // answered "signed in" swaps it for the note (a blank pane while loading hid
+  // the page from crawlers and from every visitor for a moment).
+  if (viewer.signedIn) {
+    return <div className={generalStyles.pageContainer}>
+            <header className={generalStyles.pageHeader}>
+                <AuthHeader />
+            </header>
+
+            <main className={generalStyles.mainContainer}>
+                <div className={generalStyles.formContainer}>
+                    <section className={generalStyles.formHeader}>
+                        <h1 className={styles.signedInNote}>{tt("signup.alreadySignedIn", "You are already signed in.")}</h1>
+                        <Link href={'/home'} className={`btn redBTN ${generalStyles.formBTN}`}>{tt("signup.goHome", "Go to your home page")}</Link>
+                    </section>
+                </div>
+            </main>
+        </div>;
+  }
+
   return <div className={generalStyles.pageContainer}>
             <header className={generalStyles.pageHeader}>
                 <AuthHeader />
@@ -296,7 +318,7 @@ const Signup = () => {
                 <div className={generalStyles.formContainer}>
                     <section className={generalStyles.formHeader}>
                         <h1 className={generalStyles.formHeading}>{tt("ui.create.account.3f4f", "Create an account")}</h1>
-                        <p>{tt("ui.please.complete.account.details.979b", "Please complete your account details")}</p>
+                        <p className={styles.subtitle}>{tt("ui.please.complete.account.details.979b", "Please complete your account details")}</p>
                     </section>
             {/* method="post" is not there to be used - onSubmit handles the
                 request. It is there because a form defaults to GET, and a

@@ -426,4 +426,10 @@
   .toggle {
     min-height: 44px;
   }
+
+  /* The slider is the tap area: the thumb is drawn on a 4px track centred in it. */
+  .slider {
+    height: 44px;
+    margin-top: 0;
+  }
 }

@@ -229,14 +229,14 @@ function DisputesInner() {
                             {actionable && <div className={shared.actGroup} style={{
                         position: 'relative'
                       }}>
-                                <button className={`${shared.actBtn} ${shared.actApprove}`} onClick={() => setResolvePopover(resolvePopover?.id === d.id && resolvePopover?.resolution === 'resolved' ? null : {
+                                <button className={`${shared.actBtn} ${styles.resolveMain}`} onClick={() => setResolvePopover(resolvePopover?.id === d.id && resolvePopover?.resolution === 'resolved' ? null : {
                           id: d.id,
                           resolution: 'resolved',
                           note: ''
                         })} disabled={!!actionLoading[d.id]}>
                                   {actionLoading[d.id] === 'resolved' ? '…' : tt('admin.resolve', 'Resolve')}
                                 </button>
-                                <button className={`${shared.actBtn} ${shared.actReject}`} onClick={() => setResolvePopover(resolvePopover?.id === d.id && resolvePopover?.resolution === 'dismissed' ? null : {
+                                <button className={`${shared.actBtn} ${shared.actView}`} onClick={() => setResolvePopover(resolvePopover?.id === d.id && resolvePopover?.resolution === 'dismissed' ? null : {
                           id: d.id,
                           resolution: 'dismissed',
                           note: ''

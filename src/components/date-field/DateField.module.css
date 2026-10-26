@@ -343,3 +343,10 @@
     min-height: 44px;
   }
 }
+
+/* A thumb needs 44px (audit 557 round 3). */
+@media (max-width: 720px) {
+  .fieldDefault {
+    min-height: 44px;
+  }
+}

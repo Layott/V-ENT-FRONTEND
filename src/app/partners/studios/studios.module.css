@@ -44,6 +44,12 @@
   margin: 0;
 }
 
+/* Running text stops near 65 characters a line, so the intro does not run
+   the width of the page. */
+.pageSub {
+  max-width: 65ch;
+}
+
 .panel {
   background: #1a1b1f;
   border-radius: 14px;

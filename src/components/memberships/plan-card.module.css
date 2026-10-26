@@ -57,6 +57,16 @@
   color: #fff;
 }
 
+/* A thumb needs 44px: the seller link was the one small target on a plan page
+   at 390px (audit 557 round 3). */
+@media (max-width: 720px) {
+  .sellerLink {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+  }
+}
+
 .priceRow {
   display: flex;
   align-items: baseline;

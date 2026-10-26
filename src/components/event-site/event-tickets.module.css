@@ -2,6 +2,8 @@
    no strokes. The buy control takes the page's accent, set as --accent and
    --accent-ink by whoever draws the list. */
 
+/* Capped, so a row reads as one unit: the price and Buy sit beside the name
+   rather than at the far edge of a full-width frame. */
 .list {
   list-style: none;
   margin: 0;
@@ -9,6 +11,7 @@
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
+  max-width: 720px;
 }
 
 .row {

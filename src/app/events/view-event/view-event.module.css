@@ -1786,6 +1786,15 @@ a.sponsorLink:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
   min-height: 44px;
 }
 
+/* Filled green only once a code can be applied. Before that it is a neutral
+   surface with muted text, so it does not read as a green button that is
+   simply dimmed. */
+button.codeBtn:disabled {
+  background-color: rgba(255, 255, 255, 0.08);
+  color: rgba(255, 255, 255, 0.45);
+  opacity: 1;
+}
+
 .codeResult {
   font-size: 0.78rem;
   color: rgba(255, 255, 255, 0.72);

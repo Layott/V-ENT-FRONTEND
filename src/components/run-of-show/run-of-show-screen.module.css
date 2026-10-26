@@ -46,21 +46,24 @@
   background-color: rgba(255, 255, 255, 0.06);
 }
 
+/* Flush with the back link above it, which is the pane's own left edge at
+   every width. Centring it at 900px put it about 150px in on a desktop. */
 .signedOut {
-  max-width: 900px;
-  margin: 0 auto;
-  padding: 0 1rem 2rem;
+  margin: 0;
+  padding: 0 0 2rem;
   color: rgba(255, 255, 255, 0.5);
   font-size: 0.86rem;
 }
 
+/* The standard inline link: the text colour, underlined. Gold is for money. */
 .signInLink {
-  color: var(--v-ent-gold);
-  text-decoration: none;
+  color: rgba(255, 255, 255, 0.85);
+  text-decoration: underline;
+  text-underline-offset: 3px;
 }
 
 .signInLink:hover {
-  color: var(--v-ent-light-gold);
+  color: #fff;
 }
 
 @media only screen and (min-width: 768px) {

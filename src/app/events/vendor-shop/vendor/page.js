@@ -348,7 +348,7 @@ export const VendorStallContent = ({ eventSlug = '', stallSlug = '' } = {}) => {
     </div>;
   if (loading) return renderShell(<p className={styles.stateText}>{tt("ui.loading.vendor.stall.0650", "Loading vendor stall…")}</p>);
   if (error || !vendor) return renderShell(<div className={styles.errorState}>
-        <h2 className={styles.errorTitle}>{tt("ui.couldn't.load.vendor.0e61", "Couldn't load vendor")}</h2>
+        <h1 className={styles.errorTitle}>{tt("ui.couldn't.load.vendor.0e61", "Couldn't load vendor")}</h1>
         <p className={styles.errorSub}>{error || tx("Vendor not found.")}</p>
         <Link href={eventId ? `/events/${eventId}/vendor-shop` : '/events'} className={`${styles.errorBtn} goldBTN`}>
           {tt("ui.back.vendor.shop.9b5d", "Back to vendor shop")}

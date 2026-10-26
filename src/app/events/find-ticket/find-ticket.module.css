@@ -69,6 +69,7 @@
 .go {
   background-color: var(--v-ent-red);
   border-radius: 10px;
+  min-height: 44px;
   padding: 13px 22px;
   color: #fff;
   font-family: 'ClashGrotesk-Variable', sans-serif;
@@ -79,7 +80,14 @@
 }
 
 .go:hover:not(:disabled) { background-color: var(--v-ent-light-red); }
-.go:disabled { opacity: 0.5; cursor: default; }
+
+/* Cannot be pressed yet: a neutral surface with muted text, so the red one
+   reads as the button that works. */
+.go:disabled {
+  background-color: rgba(255, 255, 255, 0.08);
+  color: rgba(255, 255, 255, 0.45);
+  cursor: default;
+}
 .go:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
 
 .found {
@@ -115,6 +123,12 @@
 .error {
   color: var(--v-ent-red);
   font-size: 0.86rem;
+}
+
+/* Its own row, so the 44px tap height does not stretch the line box of the
+   sentence above it. */
+.linkRow {
+  display: block;
 }
 
 .link {

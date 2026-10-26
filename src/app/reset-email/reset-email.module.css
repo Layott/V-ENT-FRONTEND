@@ -1,0 +1,23 @@
+/* The six boxes a reset code is typed into. Each box is a filled surface one
+   step above the panel (#212225), so the slots read as places to type. The
+   box being typed into takes the stronger fill. No outline except focus. */
+.codeBox {
+  width: 3rem;
+  height: 3rem;
+  font-size: 2rem;
+  font-weight: var(--fw-semi-bold);
+  text-align: center;
+  background-color: #33343a;
+  border-radius: 8px;
+  color: var(--primary-bg);
+  caret-color: var(--v-ent-red);
+}
+
+.codeBox:focus {
+  background-color: #3f4047;
+}
+
+.codeBox:focus-visible {
+  outline: 2px solid var(--v-ent-red);
+  outline-offset: 2px;
+}

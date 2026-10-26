@@ -1,11 +1,12 @@
 /* The door scanner button, wherever an organiser is standing.
-   Matches .primaryBtn on the console: filled, no stroke, no glow. */
+   Matches .primaryBtn on the console: filled, no stroke, no glow. Red, the
+   main action, since gold is kept for money (audit 557 round 3). */
 
 .link {
   align-items: center;
-  background-color: #E5B94E;
+  background-color: var(--v-ent-red);
   border-radius: 8px;
-  color: #1a1a1a;
+  color: #fff;
   cursor: pointer;
   display: inline-flex;
   font-family: 'ClashGrotesk-Variable', sans-serif;
@@ -20,7 +21,7 @@
 }
 
 .link:hover {
-  background-color: #f0c65f;
+  background-color: var(--v-ent-light-red);
 }
 
 .link:focus-visible {

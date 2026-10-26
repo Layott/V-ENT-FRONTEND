@@ -30,6 +30,12 @@
   font-size: 1.2rem;
 }
 
+/* A page with its own Back link does not repeat the arrow in the bar (audit 557,
+   L38: the old team profile address showed both). Same rule as the phone bar. */
+:global(body:has(main [data-backlink]:not(dialog [data-backlink], [hidden] [data-backlink], [aria-hidden="true"] [data-backlink]))) .backArrow {
+  display: none;
+}
+
 .backArrow {
   display: flex;
   height: 100%;

@@ -280,7 +280,7 @@ function AdminEventDetailInner() {
               </div>
               <div className={styles.headerActions}>
                 {mayAct && (event.is_active
-                  ? <button className={`${shared.actBtn} ${shared.actBan}`} onClick={() => ask('cancelEvent', null, tt('admin.whyCancelEvent', 'Why is this event being cancelled?'))} disabled={busy === 'state'}>
+                  ? <button className={styles.dangerBtn} onClick={() => ask('cancelEvent', null, tt('admin.whyCancelEvent', 'Why is this event being cancelled?'))} disabled={busy === 'state'}>
                       {tt('admin.cancelEvent', 'Cancel event')}
                     </button>
                   : <button className={`${shared.actBtn} ${shared.actView}`} onClick={() => setEventState('restore')} disabled={busy === 'state'}>

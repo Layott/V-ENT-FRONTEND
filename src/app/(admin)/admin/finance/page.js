@@ -347,9 +347,9 @@ function FinanceInner() {
             {holds === null ? (
               <p className={shared.stateText}>{tt('common.loading', 'Loading...')}</p>
             ) : holds.closed ? (
-              <p className={shared.stateText}>
-                {tt('adminFinance.holdsClosed',
-                  'Vermillion City is closed, so nothing is being held.')}
+              <p className={styles.streamNote}>
+                {tt('adminFinance.holdsOff',
+                  'The marketplace is closed, so no money is being held in it.')}
               </p>
             ) : holds.failed ? (
               <p className={shared.stateText}>{holds.failed}</p>

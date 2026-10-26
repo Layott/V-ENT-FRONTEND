@@ -664,8 +664,9 @@
    pressed, which is exactly what happened - ticket dates typed in and then
    reported as "there was no save button on that page".
 
-   Matches .addBtn, which is what the rest of the page already uses for a
-   primary action. Filled, no stroke, no glow. */
+   Red, not gold: gold is for money and the founder badge. The main action on
+   every view is red (redBTN), so the console's Save buttons match it.
+   Filled, no stroke, no glow. */
 
 /* A destructive second press: the platform's red, filled, so it reads as
    the one that does the thing rather than the one that backs out. */
@@ -687,9 +688,9 @@
 
 .primaryBtn {
   align-items: center;
-  background-color: #E5B94E;
+  background-color: var(--v-ent-red);
   border-radius: 8px;
-  color: #1a1a1a;
+  color: #fff;
   cursor: pointer;
   display: inline-flex;
   font-family: 'ClashGrotesk-Variable', sans-serif;
@@ -702,7 +703,7 @@
   transition: background-color 0.12s;
 }
 
-.primaryBtn:hover { background-color: #f0c65f; }
+.primaryBtn:hover { background-color: var(--v-ent-light-red); }
 
 /* Quiet: a section's own save or switch. The page has one filled main action,
    so these sit on a surface one step up, with the same padding and height. */
@@ -737,8 +738,8 @@
 /* Disabled has to still read as a button, or somebody hunts the page for the
    one they cannot see. Dimmer, not absent. */
 .primaryBtn:disabled {
-  background-color: rgba(229, 185, 78, 0.35);
-  color: rgba(26, 26, 26, 0.55);
+  background-color: rgba(237, 28, 36, 0.35);
+  color: rgba(255, 255, 255, 0.6);
   cursor: default;
 }
 

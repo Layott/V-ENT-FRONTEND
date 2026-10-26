@@ -20,6 +20,9 @@
 
 .spaced { margin-top: 2rem; }
 
+/* A section heading keeps the same 12px from its panel on every admin page. */
+.heading { margin-bottom: 0.75rem; }
+
 .credit { color: var(--v-ent-success); font-weight: var(--fw-bold); }
 .debit { color: var(--v-ent-red); font-weight: var(--fw-bold); }
 

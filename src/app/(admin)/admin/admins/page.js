@@ -147,7 +147,7 @@ function AdminsInner() {
       <div className={shared.mainContainer}>
         <AdminHeader admin={admin} onLogout={logout} onMenuOpen={() => setSidebarOpen(true)}
                      searchValue={search} onSearch={setSearch} />
-        <main className={shared.contentArea}>
+        <main className={`${shared.contentArea} ${styles.main}`}>
           <div className={shared.pageHeader}>
             <div>
               <h1 className={shared.pageTitle}>{tt('adminAdmins.title', 'Administrators')}</h1>

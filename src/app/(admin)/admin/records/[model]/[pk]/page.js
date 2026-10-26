@@ -214,12 +214,19 @@ function RecordInner() {
             {rec ? tt('adminRecords.backToKind', 'All {kind} records').replace('{kind}', rec.name) : tt('adminRecords.backToKinds', 'All kinds of record')}
           </Link>
           {error ? (
-            <div className={shared.card}>
-              <p className={shared.errorText}>{error}</p>
-              <button type="button" className={styles.quiet} onClick={load}>{tt('admin.retry', 'Try again')}</button>
-            </div>
+            <>
+              {/* One h1 on every state of the page, so a reader always knows where they are. */}
+              <h1 className={shared.pageTitle}>{tt('adminRecords.recordHeading', 'Record')}</h1>
+              <div className={shared.card}>
+                <p className={shared.errorText}>{error}</p>
+                <button type="button" className={styles.quiet} onClick={load}>{tt('admin.retry', 'Try again')}</button>
+              </div>
+            </>
           ) : !rec ? (
-            <p className={shared.stateText}>{tt('ui.loading.33ce', 'Loading…')}</p>
+            <>
+              <h1 className={shared.pageTitle}>{tt('adminRecords.recordHeading', 'Record')}</h1>
+              <p className={shared.stateText}>{tt('ui.loading.33ce', 'Loading…')}</p>
+            </>
           ) : (
             <>
               <div className={shared.pageHeader}>

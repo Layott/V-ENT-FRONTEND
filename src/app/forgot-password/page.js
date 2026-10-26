@@ -11,6 +11,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import generalStyles from "@/styles/auth/auth.module.css";
 import { useT } from '@/i18n/LanguageProvider';
 import { useTx } from '@/i18n/LanguageProvider';
+import AuthHeader from '@/components/auth-header/AuthHeader';
 const ForgotPassword = () => {
   const tx = useTx();
   const tt = useT();
@@ -93,7 +94,7 @@ const ForgotPassword = () => {
   };
   return <div className={generalStyles.pageContainer}>
             <header className={generalStyles.pageHeader}>
-                <span className={generalStyles.wordmark}>v-ent</span>
+                <AuthHeader />
             </header>
 
             <main className={generalStyles.mainContainer}>

@@ -4,6 +4,14 @@
  * ground, and the permission list inside it is a step up again.
  */
 
+/* The help button floats bottom right over the page (PageHelp, 44px at 24px
+   from the edge on a desktop, 88px up on a phone). The last role card sat
+   under it, so the page keeps clear of it at the foot. Doubled class so it
+   wins over the shared shell's padding whatever the stylesheet order. */
+.main.main {
+  padding-bottom: 6rem;
+}
+
 .email {
   color: rgba(255, 255, 255, 0.38);
   font-size: 0.75rem;

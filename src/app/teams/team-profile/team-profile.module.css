@@ -93,6 +93,31 @@
 
 .errorText { color: var(--v-ent-red); }
 
+/* Not found: a heading, one sentence, and the way back above it (audit H1). */
+.notFound {
+  padding: 1.5rem 0 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.notFoundTitle {
+  margin: 0;
+  font-size: var(--mobile-h3-size);
+  font-weight: var(--fw-bold);
+  color: var(--primary-bg);
+}
+
+.notFoundSub {
+  margin: 0;
+  font-size: var(--fs-p-size-desktop);
+  color: rgba(255, 255, 255, 0.55);
+}
+
+@media only screen and (min-width: 768px) {
+  .notFoundTitle { font-size: var(--desktop-h4-size); }
+}
+
 .toast {
   position: fixed;
   bottom: 90px;
@@ -123,3 +148,18 @@
     padding: 2rem;
   }
 }
+
+.retryBtn {
+  align-self: flex-start;
+  min-height: 44px;
+  padding: 0 18px;
+  border: none;
+  border-radius: 10px;
+  background-color: var(--v-ent-red);
+  color: #fff;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.retryBtn:hover { background-color: var(--v-ent-light-red); }
