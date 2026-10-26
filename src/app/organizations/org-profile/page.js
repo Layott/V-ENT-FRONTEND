@@ -10,7 +10,7 @@ import Link from 'next/link';
 import Image from '@/components/media-image/MediaImage';
 import { FaCheckCircle, FaUsers, FaTrophy, FaCoins, FaTwitter, FaInstagram, FaDiscord, FaTwitch, FaYoutube, FaFacebook, FaGlobe, FaEnvelope } from 'react-icons/fa';
 import { AiOutlineTeam } from 'react-icons/ai';
-import { LuMapPin, LuUserPlus } from 'react-icons/lu';
+import { LuMapPin, LuUserPlus, LuArrowLeft } from 'react-icons/lu';
 import { MdBusiness, MdOutlineEvent } from 'react-icons/md';
 import { FiEdit3, FiCalendar } from 'react-icons/fi';
 import { BsThreeDots } from 'react-icons/bs';
@@ -19,6 +19,7 @@ import Header from '@/components/header/Header';
 import MobileHeader from '@/components/mobile-header/MobileHeader';
 import BottomMenu from '@/components/bottom-menu/BottomMenu';
 import styles from './org-profile.module.css';
+import cardStyles from '../manage/manage-organization.module.css';
 import { useT } from '@/i18n/LanguageProvider';
 import { useTx } from '@/i18n/LanguageProvider';
 import { appLocale } from '@/lib/appLocale';
@@ -399,10 +400,14 @@ const OrgProfileContent = ({
         <main className={styles.mainContainer}>
           <Sidebar />
           <div className={styles.rightPaneContainer}>
-            <p className={styles.statusText}>
-              {error || tx("Organization not found.")}{' '}
-              <Link href="/organizations" className={styles.backLink}>{tt("ui.back.list.747f", "Back to list")}</Link>
-            </p>
+            {/* The same card the console shows (audit 557). */}
+            <div className={cardStyles.lockedCard}>
+              <h1 className={cardStyles.lockedTitle}>{tt('org.notFoundTitle', 'Organization not found')}</h1>
+              <p className={cardStyles.lockedSub}>{error || tt('org.notFoundSub', 'This link does not lead to an organization. It may have been renamed or removed.')}</p>
+              <Link href="/organizations" className={cardStyles.lockedBtn}>
+                <LuArrowLeft /> {tt('back.toOrganizations', 'Back to organizations')}
+              </Link>
+            </div>
           </div>
         </main>
         <BottomMenu />

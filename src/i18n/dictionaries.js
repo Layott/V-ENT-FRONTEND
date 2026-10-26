@@ -1661,7 +1661,12 @@ export const dictionaries = {
     'landing.createAccount': 'Create a free account',
     'landing.noLiveTournaments': 'Open tournaments appear here as organisers publish them.',
     'landing.liveLoadFailed': 'Open tournaments could not be loaded just now.',
-    'landing.browseAll': 'See every tournament',
+    'landing.browseAll': 'See every tournament',
+    "topup.callback.noRefTitle": "Nothing to confirm",
+    "topup.callback.noRefBody": "This page opens after a top-up payment. This address carries no payment, so nothing was charged here.",
+    "topup.callback.signInWallet": "Sign in to see your wallet",
+    "org.notFoundTitle": "Organization not found",
+    "org.notFoundSub": "This link does not lead to an organization. It may have been renamed or removed.",
     "confirmed.noChargeNoRef": "No ticket has been issued. If you did pay, your ticket can be found with your email address.",
     "profile.followAction": "follow or message",
     "runOfShow.title": "Run of show",

@@ -584,10 +584,15 @@ const ManageOrgContent = ({
         <main className={styles.mainContainer}>
           <Sidebar />
           <div className={styles.rightPaneContainer}>
-            {error ? <ErrorState message={error} onRetry={loadAll} /> : <p className={styles.statusText}>
-              {tx("Organization not found.")}{' '}
-              <Link href="/organizations" className={styles.backLink}>{tt("ui.back.list.747f", "Back to list")}</Link>
-            </p>}
+            {/* A heading, one sentence and a way back, like the owner-only card
+                below; it was one small line on an empty page (audit 557). */}
+            {error ? <ErrorState message={error} onRetry={loadAll} /> : <div className={styles.lockedCard}>
+              <h1 className={styles.lockedTitle}>{tt('org.notFoundTitle', 'Organization not found')}</h1>
+              <p className={styles.lockedSub}>{tt('org.notFoundSub', 'This link does not lead to an organization. It may have been renamed or removed.')}</p>
+              <Link href="/organizations" className={styles.lockedBtn}>
+                <LuArrowLeft /> {tt('back.toOrganizations', 'Back to organizations')}
+              </Link>
+            </div>}
           </div>
         </main>
         <BottomMenu />
