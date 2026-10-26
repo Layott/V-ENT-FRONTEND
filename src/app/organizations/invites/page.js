@@ -6,7 +6,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 import Link from 'next/link';
-import Image from 'next/image';
+import Image from '@/components/media-image/MediaImage';
 import { LuArrowLeft } from 'react-icons/lu';
 import { FiCheck, FiX } from 'react-icons/fi';
 import Header from '@/components/header/Header';

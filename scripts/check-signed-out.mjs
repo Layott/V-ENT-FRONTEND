@@ -79,19 +79,32 @@ const READS_STATUS = /\bstatus\b\s*[,}]|status\s*===|useViewer\(/;
 const middleware = fs.readFileSync('src/middleware.js', 'utf8');
 const gatedSource = fs.existsSync('src/lib/gatedRoutes.js')
   ? fs.readFileSync('src/lib/gatedRoutes.js', 'utf8') : middleware;
-const GATED = [...gatedSource.matchAll(/['"](\/[a-z0-9/-]+)['"]/g)].map((m) => m[1]);
+// Read the BODY of each exported array with its comment lines dropped. The
+// whole file used to be scanned for quoted paths, and a comment in it reads
+// 'a bare "/events" here would also gate...', so every page under /events,
+// the public event page included, was treated as gated and never checked
+// (found 25 October 2026 by the 557 audit; the same trap took /tournaments
+// from a comment once before).
+const arrayBody = (name) => {
+  const at = gatedSource.indexOf(`export const ${name} = [`);
+  if (at < 0) return '';
+  const body = gatedSource.slice(at, gatedSource.indexOf('];', at));
+  return body.split(/\r?\n/).slice(1).filter((l) => !/^\s*\/\//.test(l)).join('\n');
+};
+const routesBody = fs.existsSync('src/lib/gatedRoutes.js') ? arrayBody('PROTECTED_ROUTES') : gatedSource;
+const GATED = [...routesBody.matchAll(/['"](\/[a-z0-9/-]+)['"]/g)].map((m) => m[1]);
 // The console is gated by its own branch a few lines above `protectedRoutes`,
 // because an admin proves the second factor at the ordinary sign-in and the
 // console reads that session. It is a gated route all the same.
 if (/path\.startsWith\('\/admin'\)/.test(middleware)) GATED.push('/admin');
-// The same three shapes gatedRoutes.js holds as PROTECTED_PATTERNS. Read
-// from there rather than copied here would be better still; until then the
-// self-test below fails if the two ever disagree in count.
-const GATED_PATTERNS = [
-  /^\/events\/[^/]+\/(edit|manage|attendees)/,
-  /^\/tournaments\/[^/]+\/manage/,
-  /^\/tournaments\/[^/]+\/register/,
-];
+// The shapes gatedRoutes.js holds as PROTECTED_PATTERNS, read from there.
+// This used to be a hand copy of three, and the copy is how four ungated
+// action pages went unseen until the 557 audit opened them signed out. The
+// trailing $ is dropped so a route read from a file path still matches.
+const GATED_PATTERNS = arrayBody('PROTECTED_PATTERNS').split(/\r?\n/)
+  .map((l) => l.match(/^\s*\/(\^.*)\/([a-z]*),?\s*$/))
+  .filter(Boolean)
+  .map((m) => new RegExp(m[1].replace(/\$$/, ''), m[2]));
 {
   const declared = gatedSource.split(/\r?\n/).filter((l) => /^\s*\/\^/.test(l)).length;
   if (declared && declared !== GATED_PATTERNS.length) {
@@ -112,7 +125,7 @@ const routeOf = (rel) => {
 };
 
 const isGatedRoute = (route) => route !== null
-  && (GATED.some((g) => route.startsWith(g))
+  && (GATED.some((g) => route === g || route.startsWith(g + '/'))
       || GATED_PATTERNS.some((re) => re.test(route)));
 
 // A component has no route of its own, so whether its controls need a guard
@@ -506,7 +519,51 @@ const flagsFound = (src) => {
   return n;
 };
 
+// --------------------------------------------------------------- fault 4
+//
+// An action page a stranger can open. Twice now a page whose own name says
+// what it does was missing from the gated list: the register wizard on 12
+// September, and on 25 October (the 557 audit) the tournament editor, both
+// circuit consoles and the organisation console. Signed out, the editor drew
+// every field of somebody else's tournament, live, to be refused on save.
+// So any page whose LAST segment is one of these words is an action, and is
+// gated or named here with the reason it is public.
+const ACTION_SEGMENT = /^(edit|manage|attendees|register|scan|drafts|create(-[a-z]+)?|new)$/;
+const PUBLIC_ACTION_PAGES = new Map([
+  // none today
+]);
+const actionPageOpen = (route) => route !== null
+  && ACTION_SEGMENT.test(route.split('/').pop())
+  && !isGatedRoute(route)
+  && !PUBLIC_ACTION_PAGES.has(route);
+let openActions = 0;
+for (const file of files) {
+  const rel = file.split(path.sep).join('/');
+  if (!/\/page\.jsx?$/.test(rel)) continue;
+  const route = routeOf(rel);
+  if (!actionPageOpen(route)) continue;
+  openActions += 1;
+  report.push(`${rel}\n  ${route} is an action page and is not gated: add it to src/lib/gatedRoutes.js`);
+}
+
 let selfTestFailures = 0;
+// Fault 4 proven both ways against the live lists: the four found on 25
+// October are gated, an invented action page is reported, and a public page
+// whose slug merely begins with a gated word is not gated (`scan-party`).
+for (const [name, got, want] of [
+  ['the tournament editor is gated', actionPageOpen('/tournaments/slug/edit'), false],
+  ['an organisation console is gated', actionPageOpen('/organizations/slug/manage'), false],
+  ['a league console is gated', actionPageOpen('/circuits/leagues/slug/manage'), false],
+  ['an invented ungated editor is reported', actionPageOpen('/clubs/slug/edit'), true],
+  ['an event slugged scan-party stays public', isGatedRoute('/events/scan-party'), false],
+  ['the door itself stays gated', isGatedRoute('/events/scan'), true],
+]) {
+  const ok = got === want;
+  if (!ok) selfTestFailures += 1;
+  if (!ok || process.argv.includes('--self-test')) {
+    console.log(`${ok ? 'ok  ' : 'BAD '} self-test: ${name}`);
+  }
+}
 for (const f of FIXTURES) {
   const found = flagsFound(f.src) > 0;
   const ok = found === f.shouldFlag;
@@ -529,6 +586,7 @@ console.log('');
 console.log(`${identity} identity comparison(s) that can be true when signed out`);
 console.log(`${statusless} file(s) branching on session data without status`);
 console.log(`${unguarded} write control(s) rendered live on a public page`);
-console.log(`${identity + statusless + unguarded} live write controls at risk`);
+console.log(`${openActions} action page(s) a stranger can open`);
+console.log(`${identity + statusless + unguarded + openActions} live write controls at risk`);
 
-process.exit(identity + statusless + unguarded + selfTestFailures ? 1 : 0);
+process.exit(identity + statusless + unguarded + openActions + selfTestFailures ? 1 : 0);

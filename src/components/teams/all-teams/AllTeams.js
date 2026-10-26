@@ -5,7 +5,7 @@ import { mediaUrl, teamLogo } from '@/lib/mediaUrl';
 import { useState, useEffect, useCallback } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import Image from 'next/image';
+import Image from '@/components/media-image/MediaImage';
 import Link from 'next/link';
 import { CiSearch } from 'react-icons/ci';
 import { TiArrowSortedDown } from 'react-icons/ti';

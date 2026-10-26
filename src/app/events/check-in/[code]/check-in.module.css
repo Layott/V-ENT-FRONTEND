@@ -1,5 +1,8 @@
 .page {
   width: 100%;
+  box-sizing: border-box;
+  /* Clears the fixed sidebar on a desktop; 0 on a phone. */
+  padding-left: var(--shell-offset);
   min-height: 100vh;
   background-color: #131316;
   overflow-x: hidden;

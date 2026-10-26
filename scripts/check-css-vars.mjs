@@ -107,6 +107,18 @@ export function findingsIn(css, file, defined) {
         text: line.trim().slice(0, 110),
       });
     }
+
+    // 3. The mirror trap: `--primary-text` is #000000, so as a text colour on
+    //    this dark site it is black on grey. Six places shipped it, among them
+    //    what people type into the claim form and the selected game chip on
+    //    onboarding (audit 557, 26 October 2026). Text is `--primary-bg`.
+    if (/(?:^|[;{\s])color\s*:\s*var\(\s*--primary-text\b/.test(line)) {
+      out.push({
+        file, line: i + 1, id: 'black-text-on-dark',
+        why: '--primary-text is #000000: black text on a dark surface. Use var(--primary-bg)',
+        text: line.trim().slice(0, 110),
+      });
+    }
   });
   return out;
 }
@@ -142,6 +154,8 @@ const CASES = [
    'a white PAGE on a dark site'],
   ['bad', '.pageContainer { background: var(--primary-bg); }', 'the same, shorthand'],
   ['clean', '  color: var(--primary-bg);', 'text colour, which is what it is for'],
+  ['bad', '.ghostBTN { background-color: #303136; color: var(--primary-text); }', 'black text on dark grey, the claim page button (audit 557)'],
+  ['clean', '.lightCard { background-color: var(--primary-bg); border-radius: 8px; }', 'a background is not a text colour'],
   ['clean', '  background-color: var(--overlay-gray);', 'a real surface token'],
   ['clean', '.toggleKnob { width: 14px; background-color: var(--primary-bg); }',
    'a white knob on a toggle, which is deliberate'],

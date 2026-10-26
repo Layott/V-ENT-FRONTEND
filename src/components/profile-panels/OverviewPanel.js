@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { mediaUrl } from '@/lib/mediaUrl';
+import { mediaUrl, hideBroken } from '@/lib/mediaUrl';
 import { formatNumber } from '@/lib/datetime';
 import styles from './OverviewPanel.module.css';
 import Avatar from '@/components/avatar/Avatar';
@@ -240,7 +240,7 @@ const OverviewPanel = ({
               </div>}
             {visibleGames.map((g, idx) => <div className={styles.gameTile} key={g.id || g.name || idx}>
                 <div className={styles.gameImg}>
-                  {g.cover ? <img src={mediaUrl(g.cover)} alt={g.name || g.title || ''} /> : null}
+                  {g.cover ? <img onError={hideBroken} src={mediaUrl(g.cover)} alt={g.name || g.title || ''} /> : null}
                 </div>
                 <span className={styles.gameName}>{g.name || g.title || g}</span>
               </div>)}

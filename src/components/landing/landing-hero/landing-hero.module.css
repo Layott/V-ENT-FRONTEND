@@ -46,6 +46,8 @@
 }
 
 .headerLogoContainer .wordmark {
+  /* Display size, so tightened like every other display text (audit 557). */
+  letter-spacing: -0.02em;
   font-family: "ClashGrotesk-Medium", sans-serif;
   font-weight: var(--fw-bold);
   font-size: 1.5rem;
@@ -177,7 +179,7 @@
   font-size: 1rem;
   width: 100%;
   max-width: 500px;
-  transition: border ease-in-out 0.5s;
+  transition: border ease-in-out 0.15s;
 }
 
 .inputText:focus,
@@ -223,7 +225,7 @@
 .topLeftImageContainer {
   height: 120px;
   border-radius: 20px;
-  transition: all ease-in-out 0.5s;
+  transition: all ease-in-out 0.15s;
 }
 
 .bottomLeftImageContainer img,

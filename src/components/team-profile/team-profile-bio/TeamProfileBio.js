@@ -3,7 +3,7 @@ import Link from 'next/link';
 import { useState } from 'react';
 import { FiCamera, FiEdit3 } from 'react-icons/fi';
 import { IoLocationOutline } from 'react-icons/io5';
-import Image from 'next/image';
+import Image from '@/components/media-image/MediaImage';
 import teamProfileAvatar from "@/images/teamProfileAvatar.webp";
 import styles from './team-profile-bio.module.css';
 import { useT } from '@/i18n/LanguageProvider';

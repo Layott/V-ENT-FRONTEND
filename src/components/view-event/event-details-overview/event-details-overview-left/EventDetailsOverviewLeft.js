@@ -2,7 +2,7 @@
 
 import { mediaUrl } from '@/lib/mediaUrl';
 import { useT } from '@/i18n/LanguageProvider';
-import Image from "next/image";
+import Image from '@/components/media-image/MediaImage';
 import organizer from "@/images/signed_in_user_small.webp"
 import ventLogo from '@/images/logo_mark_red.png';
 import redBullLogo from '@/images/red_bull_logo.svg';

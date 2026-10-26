@@ -218,7 +218,7 @@
 
 .cancelBtn {
   background-color: #33343a;
-  color: var(--primary-text, #ffffff);
+  color: var(--primary-bg);
 }
 
 .cancelBtn:hover {

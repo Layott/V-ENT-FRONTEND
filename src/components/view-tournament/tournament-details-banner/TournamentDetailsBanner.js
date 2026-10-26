@@ -1,7 +1,7 @@
 // Updated TournamentDetailsBanner.js
 import { mediaIn, mediaUrl } from '@/lib/mediaUrl';
 import { useState } from 'react';
-import Image from 'next/image';
+import Image from '@/components/media-image/MediaImage';
 import Link from 'next/link';
 import tournamentDetailsBanner from "@/images/tournament_details_banner.webp";
 import { LuClock3 } from "react-icons/lu";

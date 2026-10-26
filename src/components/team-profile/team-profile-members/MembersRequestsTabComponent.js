@@ -1,7 +1,7 @@
 import { apiMessage } from '@/lib/apiMessage';
 import { mediaUrl } from '@/lib/mediaUrl';
 import { useState, useEffect } from 'react';
-import Image from 'next/image';
+import Image from '@/components/media-image/MediaImage';
 import Link from 'next/link';
 import { useSession } from 'next-auth/react';
 import tableStyles from "@/styles/modules/tables/tables.module.css";

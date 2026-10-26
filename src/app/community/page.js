@@ -5,13 +5,13 @@ import { useAutoRefresh } from '@/lib/useLiveData';
 import { apiMessage } from '@/lib/apiMessage';
 import FounderBadge from '@/components/founder-badge/FounderBadge';
 import UserPicker from '@/components/user-picker/UserPicker';
-import { mediaUrl } from '@/lib/mediaUrl';
+import { mediaUrl, hideBroken } from '@/lib/mediaUrl';
 import SignInToEngage from '@/components/community/SignInToEngage';
 import NeedsAccount from '@/components/needs-account/NeedsAccount';
 import { useEffect, useMemo, useState, Suspense, useRef } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useSession } from 'next-auth/react';
-import Image from 'next/image';
+import Image from '@/components/media-image/MediaImage';
 import Avatar from '@/components/avatar/Avatar';
 import Link from 'next/link';
 import { FaHeart, FaRegHeart, FaRegComment, FaShare, FaBookmark, FaRegBookmark, FaComments, FaUsers, FaEnvelope, FaCrosshairs, FaImage, FaPaperPlane, FaPoll, FaThumbtack, FaLock, FaSearch, FaPlus, FaCheck } from 'react-icons/fa';
@@ -829,7 +829,7 @@ const CommunityInner = () => {
 
                     {post.images && post.images.length > 0 && <Link href={`/community/post/${post.slug || post.id}`} className={styles.postBodyLink}>
                         {/* eslint-disable-next-line @next/next/no-img-element */}
-                        <img src={mediaUrl(post.images[0])} alt={tt("ui.post.attachment.e377", "post attachment")} className={styles.postImage} />
+                        <img onError={hideBroken} src={mediaUrl(post.images[0])} alt={tt("ui.post.attachment.e377", "post attachment")} className={styles.postImage} />
                       </Link>}
 
                     {post.poll && <div className={styles.poll}>
@@ -1002,7 +1002,7 @@ const CommunityInner = () => {
                   : tt('club.noneYet', 'No clubs yet. Make the first one.')}</p> : filteredClubs.map(club => <div key={club.id} className={styles.clubCard}>
                       <Link href={`/community/club/${club.slug || club.id}`} className={styles.clubLink}>
                         {/* eslint-disable-next-line @next/next/no-img-element */}
-                        {club.banner ? <img src={mediaUrl(club.banner)} alt={`${club.name} banner`} className={styles.clubBanner} /> : <div className={styles.clubBannerFallback} />}
+                        {club.banner ? <img onError={hideBroken} src={mediaUrl(club.banner)} alt={`${club.name} banner`} className={styles.clubBanner} /> : <div className={styles.clubBannerFallback} />}
                         <div className={styles.clubBody}>
                           <div className={styles.clubLogoWrap}>
                             <Avatar src={club.logo} name={club.name} size={50} />

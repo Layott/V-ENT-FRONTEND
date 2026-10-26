@@ -1,7 +1,7 @@
 import { mediaUrl } from '@/lib/mediaUrl';
 import { useState } from 'react';
 import Link from 'next/link';
-import Image from 'next/image';
+import Image from '@/components/media-image/MediaImage';
 import { FaArrowLeft } from "react-icons/fa";
 import { socialIcons } from './SocialIcons';
 import { HiPlus } from "react-icons/hi";

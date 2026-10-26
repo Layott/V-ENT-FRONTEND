@@ -210,7 +210,7 @@
   align-items: center;
   font-weight: 600;
   font-family: "ClashGrotesk-Light", sans-serif;
-  transition: all ease-in-out 0.5s;
+  transition: all ease-in-out 0.15s;
 }
 
 .acceptBTN {
@@ -249,7 +249,7 @@
 .viewProfileBTN {
 
   background-color: #303136;
-  transition: all 0.5s ease-in-out;
+  transition: all 0.15s ease-in-out;
   margin-top: 0.1rem;
 }
 

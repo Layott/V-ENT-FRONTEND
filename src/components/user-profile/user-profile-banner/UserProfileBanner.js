@@ -2,7 +2,7 @@
 
 import { mediaUrl } from '@/lib/mediaUrl';
 import { useState } from "react";
-import Image from "next/image";
+import Image from '@/components/media-image/MediaImage';
 import { FiCamera } from "react-icons/fi";
 import { useSession } from "next-auth/react";
 import profileBannerImage from "@/images/profile_image_bg.webp";

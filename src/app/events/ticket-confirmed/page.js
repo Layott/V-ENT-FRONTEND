@@ -18,6 +18,7 @@ import { apiMessage } from '@/lib/apiMessage';
 import { useT } from '@/i18n/LanguageProvider';
 import Header from '@/components/header/Header';
 import MobileHeader from '@/components/mobile-header/MobileHeader';
+import Sidebar from '@/components/sidebar/Sidebar';
 import BottomMenu from '@/components/bottom-menu/BottomMenu';
 import { GamesJoinedNote } from '@/components/party-games/CheckoutGames';
 import styles from './confirmed.module.css';
@@ -75,6 +76,10 @@ function Confirmed() {
     <div className={styles.page}>
       <Header />
       <MobileHeader />
+      {/* The header leaves the sidebar's column on a desktop whether or not
+          a sidebar is drawn; without one it read as a broken page (audit 557).
+          The signed-out sidebar serves a guest holding a ticket just as well. */}
+      <Sidebar />
 
       <main className={styles.main}>
         <BackLink href="/events">{tt('back.toEvents', 'Back to events')}</BackLink>
@@ -115,11 +120,21 @@ function Confirmed() {
             {tt('confirmed.failed', 'That did not go through')}
           </h1>
           <p className={styles.sub}>{error}</p>
-          <p className={styles.sub}>
-            {/* Said plainly, because the first fear is having been charged. */}
-            {tt('confirmed.noCharge', 'No ticket has been issued. If money did leave your account, keep this page and contact the organiser with the reference below.')}
-          </p>
-          {reference && <p className={styles.code}><strong>{reference}</strong></p>}
+          {/* Said plainly, because the first fear is having been charged. With
+              no reference in the address there is nothing below to quote, so
+              the page says where the ticket can be found instead (audit 557). */}
+          {reference ? <>
+            <p className={styles.sub}>
+              {tt('confirmed.noCharge', 'No ticket has been issued. If money did leave your account, keep this page and contact the organiser with the reference below.')}
+            </p>
+            <p className={styles.code}><strong>{reference}</strong></p>
+          </> : <p className={styles.sub}>
+            {tt('confirmed.noChargeNoRef', 'No ticket has been issued. If you did pay, your ticket can be found with your email address.')}
+            {' '}
+            <Link href="/events/find-ticket" className={styles.link}>
+              {tt('guest.findLink', 'Find a ticket')}
+            </Link>
+          </p>}
         </>}
       </main>
 

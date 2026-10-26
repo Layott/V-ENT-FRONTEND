@@ -3,11 +3,11 @@
 import { appLocale } from '@/lib/appLocale';
 import { formatLabel } from '@/lib/formatLabel';
 import FounderBadge from '@/components/founder-badge/FounderBadge';
-import { mediaUrl } from '@/lib/mediaUrl';
+import { mediaUrl, hideBroken } from '@/lib/mediaUrl';
 import { useState, useEffect, useMemo, useRef, Suspense, useCallback } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
-import Image from 'next/image';
+import Image from '@/components/media-image/MediaImage';
 import { CiSearch } from 'react-icons/ci';
 import { TiArrowSortedDown } from 'react-icons/ti';
 import { MdOutlineClose, MdOutlineFilterList, MdOutlineLocationOn, MdOutlineEvent, MdBusiness } from 'react-icons/md';
@@ -1017,7 +1017,7 @@ const ListingCard = ({
   return <Link href={`/marketplace/listing?id=${l.id}`} className={styles.listingCard}>
     <div className={styles.listingImageWrap}>
       {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img src={mediaUrl((l.images || [])[0])} alt={tx(l.title)} className={styles.listingImage} />
+      <img onError={hideBroken} src={mediaUrl((l.images || [])[0])} alt={tx(l.title)} className={styles.listingImage} />
       <span className={styles.listingCategory}>{l.category}</span>
       <span className={styles.listingCondition}>{(l.condition || '').replace('_', ' ')}</span>
     </div>
@@ -1043,7 +1043,7 @@ const ProductCard = ({
   return <Link href={`/shop/product?id=${p.id}`} className={styles.listingCard}>
     <div className={styles.listingImageWrap}>
       {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img src={mediaUrl((p.images || [])[0])} alt={p.name} className={styles.listingImage} />
+      <img onError={hideBroken} src={mediaUrl((p.images || [])[0])} alt={p.name} className={styles.listingImage} />
       <span className={styles.listingCategory}>{p.category}</span>
       {p.sale_price && <span className={styles.salePill}>{tt("ui.sale.3809", "SALE")}</span>}
     </div>

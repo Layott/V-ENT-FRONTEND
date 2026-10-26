@@ -130,7 +130,9 @@
 .stepper::-webkit-scrollbar { display: none; }
 
 .stepCell {
-  flex: 1 1 auto;
+  /* Grows, never shrinks: on a phone the row scrolls with every name whole
+     instead of cutting each to its first letter (audit 557). */
+  flex: 1 0 auto;
   display: flex;
   align-items: center;
   gap: 0.5rem;

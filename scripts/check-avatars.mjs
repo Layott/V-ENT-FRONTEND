@@ -182,6 +182,40 @@ export function findInSource(rel, rawSrc) {
     }
   }
 
+  // 3. A stored picture with nothing to draw when its file is missing.
+  //
+  //    The 557 audit (25 October 2026) found broken-image glyphs, with the
+  //    alt text printed over the card, on the events list, the organisations
+  //    list and a team page: a path the API still reports whose file is not
+  //    on the box. Banner and Avatar fall back; 44 files used next/image
+  //    directly and 13 drew a raw <img>, and neither had anything to show.
+  //    The third time this has shipped (the null src in August, the 404 on
+  //    8 September), so both shapes are held here.
+  if (rel !== 'src/components/media-image/MediaImage.js') {
+    const nextImage = src.match(/import\s+\w+\s+from\s+['"]next\/image['"]/);
+    if (nextImage && /\b(?:mediaUrl|getImageUrl)\(/.test(src)) {
+      found.push({
+        file: rel,
+        line: lineOf(nextImage.index),
+        rule: 'stored picture drawn by next/image',
+        detail: 'a missing file draws the broken-image glyph and the alt text. '
+          + "Import Image from '@/components/media-image/MediaImage', which "
+          + 'falls back to an empty surface the same size.',
+        text: nextImage[0],
+      });
+    }
+    for (const m of src.matchAll(/<img\b(?=[^>]*\bmediaUrl\()(?![^>]*\bonError=)[^>]*/g)) {
+      found.push({
+        file: rel,
+        line: lineOf(m.index),
+        rule: 'stored picture in a raw <img> with no onError',
+        detail: 'a missing file draws the broken-image glyph and the alt text. '
+          + 'Add onError={hideBroken} from @/lib/mediaUrl, or use <Banner>.',
+        text: m[0].replace(/\s+/g, ' ').slice(0, 100),
+      });
+    }
+  }
+
   return found;
 }
 
@@ -243,7 +277,7 @@ const FIXTURES = [
     why: 'a game cover in the favourite-games panel',
     flag: false,
     src: `const C = () => (gameCover(g)
-      ? <img src={mediaUrl(gameCover(g))} alt={g.name} />
+      ? <img onError={hideBroken} src={mediaUrl(gameCover(g))} alt={g.name} />
       : <span className={s.coverFallback}>{(g.name || '?').charAt(0)}</span>);`,
   },
   {
@@ -271,6 +305,31 @@ const FIXTURES = [
     why: 'an initial inside an alt string, which is text and not a drawing',
     flag: false,
     src: `const A = () => <img alt={user.full_name.charAt(0)} src={u} />;`,
+  },
+  {
+    why: 'an event card drawing a stored banner with next/image (audit 557)',
+    flag: true,
+    src: `import Image from 'next/image';
+    const C = ({ e }) => <Image src={mediaUrl(e.banner)} alt={e.name} fill />;`,
+  },
+  {
+    why: 'a club banner in a raw <img> with nothing to fall back to (audit 557)',
+    flag: true,
+    src: `const C = ({ club }) => <img src={mediaUrl(club.banner)} alt={club.name} />;`,
+  },
+  {
+    why: 'the same two after the fix: MediaImage, and a raw <img> with hideBroken',
+    flag: false,
+    src: `import Image from '@/components/media-image/MediaImage';
+    const C = ({ e }) => <><Image src={mediaUrl(e.banner)} alt={e.name} fill />
+      <img onError={hideBroken} src={mediaUrl(e.logo)} alt="" /></>;`,
+  },
+  {
+    why: 'next/image drawing only a bundled picture, which cannot go missing',
+    flag: false,
+    src: `import Image from 'next/image';
+    import logo from '@/images/logo.png';
+    const C = () => <Image src={logo} alt="V-ENT" width={40} height={40} />;`,
   },
   {
     why: 'Avatar itself, which is the one thing allowed to draw initials',

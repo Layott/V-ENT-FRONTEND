@@ -5,12 +5,12 @@ import { useAutoRefresh } from '@/lib/useLiveData';
 import { apiMessage } from '@/lib/apiMessage';
 import ErrorState from '@/components/error-state/ErrorState';
 import FounderBadge from '@/components/founder-badge/FounderBadge';
-import { mediaUrl } from '@/lib/mediaUrl';
+import { mediaUrl, hideBroken } from '@/lib/mediaUrl';
 import SignInToEngage from '@/components/community/SignInToEngage';
 import { useCallback, Suspense, useEffect, useState } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import Image from 'next/image';
+import Image from '@/components/media-image/MediaImage';
 import Avatar from '@/components/avatar/Avatar';
 import Link from 'next/link';
 import { FiArrowLeft } from 'react-icons/fi';
@@ -246,7 +246,7 @@ const PostInner = ({
                   <p className={styles.body}>{post.content}</p>
 
                   {post.images && post.images.length > 0 && (/* eslint-disable-next-line @next/next/no-img-element */
-              <img src={mediaUrl(post.images[0])} alt={tt("ui.post.attachment.e377", "post attachment")} className={styles.postImage} />)}
+              <img onError={hideBroken} src={mediaUrl(post.images[0])} alt={tt("ui.post.attachment.e377", "post attachment")} className={styles.postImage} />)}
 
                   {post.poll && <div className={styles.poll}>
                       <p className={styles.pollQuestion}>

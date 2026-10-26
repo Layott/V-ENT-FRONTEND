@@ -9,7 +9,7 @@ import { useState, useEffect, useCallback, useMemo, useRef, Suspense } from 'rea
 import { useSearchParams, useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 import Link from 'next/link';
-import Image from 'next/image';
+import Image from '@/components/media-image/MediaImage';
 import { FiShoppingCart, FiSearch } from 'react-icons/fi';
 import { FaStore, FaFire, FaCheckCircle } from 'react-icons/fa';
 import { IoLocationOutline, IoArrowBack } from 'react-icons/io5';

@@ -395,7 +395,7 @@ select {
   padding-left: 10px;
   padding-right: 10px;
   outline: none;
-  transition: ease-in-out 0.5s all;
+  transition: ease-in-out 0.15s all;
 }
 
 select:focus,
@@ -451,7 +451,7 @@ input[type=datetime-local]::-webkit-calendar-picker-indicator {
   background-color: #eaeaea;
   padding: 3px;
   cursor: pointer;
-  transition: background-color ease-in-out 0.5s;
+  transition: background-color ease-in-out 0.15s;
 }
 
 @media only screen and (min-width: 450px) {
@@ -540,4 +540,23 @@ body {
  * for the current page and a real bug worth still seeing. */
 img:not([src]) {
   display: none;
+}
+
+/* Phone tap targets (audit 557): every field and picker at least 44px tall on a phone, the size a
+   thumb can hit. Checkboxes, radios and range sliders are drawn by the platform and keep theirs. */
+@media (max-width: 720px) {
+  input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="hidden"]):not([type="color"]),
+  select {
+    min-height: 44px;
+  }
+}
+
+/* Read by screen readers and search engines, not drawn (audit 557). */
+.visually-hidden {
+  position: absolute !important;
+  width: 1px; height: 1px;
+  margin: -1px; padding: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
 }

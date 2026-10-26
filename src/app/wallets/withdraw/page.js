@@ -16,7 +16,8 @@ import PinPrompt from '@/components/wallet/PinPrompt';
 import UsdtDestination from '@/components/wallet/UsdtDestination';
 import styles from '../wallets.module.css';
 import { useT } from '@/i18n/LanguageProvider';
-import { useTx } from '@/i18n/LanguageProvider';
+import { useTx } from '@/i18n/LanguageProvider';
+import BackLink from '@/components/back-link/BackLink';
 const STEPS = [{
   n: 1,
   lbl: 'Details'
@@ -359,6 +360,7 @@ const WithdrawPage = () => {
         <Sidebar />
 
         <div className={styles.rightPaneContainer}>
+          <BackLink href="/wallets">{tt('back.toWallets', 'Back to wallets')}</BackLink>
           <div className={styles.pageHeader}>
             <div className={styles.pageHeaderLeft}>
               <h1 className={styles.pageTitle}>{tt('wallet.withdrawTitle', 'Withdraw')}</h1>

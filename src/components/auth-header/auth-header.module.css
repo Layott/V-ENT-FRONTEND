@@ -9,6 +9,8 @@
 }
 
 .headerLogoContainer .wordmark {
+  /* Display size, so tightened like every other display text (audit 557). */
+  letter-spacing: -0.02em;
   font-family: "ClashGrotesk-Medium", sans-serif;
   font-weight: var(--fw-bold);
   font-size: 1.5rem;

@@ -78,7 +78,7 @@ export const TeamProfileContent = ({
     if (sessionStatus === 'loading') return;
     if (!teamId) {
       setLoading(false);
-      setError(tt("msg.missingTeamId", "Missing team id"));
+      setError(tt("msg.missingTeamId", "This link does not say which team to open."));
       return;
     }
     try {

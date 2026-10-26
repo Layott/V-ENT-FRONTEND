@@ -31,7 +31,7 @@ import { apiMessage } from '@/lib/apiMessage';
 import { call, fill, refusalLine, tokenFrom, useAnimeOpen } from '@/lib/anime';
 import { useViewer } from '@/lib/gating';
 import PayShortfall from '@/components/pay/PayShortfall';
-import { mediaUrl } from '@/lib/mediaUrl';
+import { mediaUrl, hideBroken } from '@/lib/mediaUrl';
 import styles from './read.module.css';
 
 const MODES = [
@@ -324,7 +324,7 @@ const ReaderClient = ({ slug }) => {
           ) : mode === 'vertical' ? (
             <div className={styles.stripWrap}>
               {pages.map(p => (mediaUrl(p.image) ? (
-                <img key={p.number} className={styles.stripImage}
+                <img onError={hideBroken} key={p.number} className={styles.stripImage}
                      src={mediaUrl(p.image)} alt={p.alt || ''} loading="lazy" />
               ) : null))}
             </div>
@@ -347,7 +347,7 @@ const ReaderClient = ({ slug }) => {
                     // it. With only the first the image collapsed to a thin
                     // band on a phone, which is how this was found.
                     mediaUrl(p.image) ? (
-                      <img key={p.number}
+                      <img onError={hideBroken} key={p.number}
                            className={`${styles.pageImage} ${styles.pageImageWidth}`}
                            src={mediaUrl(p.image)} alt={p.alt || ''} />
                     ) : null
@@ -368,7 +368,7 @@ const ReaderClient = ({ slug }) => {
             <a key={ad.title} className={styles.emptyText} href={ad.url}
                rel="nofollow noopener" target="_blank">
               {ad.image
-                ? <img src={mediaUrl(ad.image)} alt={ad.title} />
+                ? <img onError={hideBroken} src={mediaUrl(ad.image)} alt={ad.title} />
                 : ad.title}
             </a>
           ))}

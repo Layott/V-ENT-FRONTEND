@@ -4,7 +4,7 @@ import { appLocale } from '@/lib/appLocale';
 import { apiMessage } from '@/lib/apiMessage';
 import { mediaUrl } from '@/lib/mediaUrl';
 import { useState, useEffect } from 'react';
-import Image from 'next/image';
+import Image from '@/components/media-image/MediaImage';
 import { useSession } from 'next-auth/react';
 import { LuCheck, LuX, LuClock } from 'react-icons/lu';
 import styles from './team-profile.module.css';

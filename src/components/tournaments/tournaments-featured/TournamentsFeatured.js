@@ -1,5 +1,5 @@
 import { imagePlaceholder, mediaIn } from '@/lib/mediaUrl';
-import Image from 'next/image'
+import Image from '@/components/media-image/MediaImage';
 import Link from 'next/link'
 import { FiCalendar } from "react-icons/fi";
 import { GrTrophy } from "react-icons/gr";

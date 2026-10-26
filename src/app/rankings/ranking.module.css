@@ -1091,6 +1091,36 @@
   }
 }
 
+/* On a phone the strip is one row: who, where, and the way to the profile.
+   As three rows it was 165px pinned over the list, and covered the podium
+   the page opens on (audit 557). Points, win rate, trend and the gap to the
+   top 100 are all on the profile it links to. */
+@media only screen and (max-width: 767px) {
+  .yourRankInner {
+    flex-direction: row;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.55rem 0.7rem;
+  }
+  .yourRankLeft {
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+  .yourRankName {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .yourRankCenter > :not(:first-child),
+  .yourRankBadge,
+  .yourRankGap {
+    display: none;
+  }
+  .yourRankRight {
+    flex-wrap: nowrap;
+  }
+}
+
 /* A thumb needs 44px. Raised only on a phone, so nothing moves on
    a desktop where a mouse is doing the pointing. */
 @media (max-width: 720px) {

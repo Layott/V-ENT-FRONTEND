@@ -5,7 +5,7 @@ import {
   DEFAULT_LOCALE, LOCALES as LOCALE_CODES, LOCALE_COOKIE, LOCALE_HEADER, PREFIXED,
   englishPath, localeForCountry, localePath, preferredLocale, splitLocale,
 } from "@/lib/locale";
-import { PROTECTED_PATTERNS, PROTECTED_ROUTES } from "@/lib/gatedRoutes";
+import { isGatedPath } from "@/lib/gatedRoutes";
 import { apiOriginOf, contentSecurityPolicy, frameAncestorsValue } from "@/lib/securityHeaders.mjs";
 import { createFramePolicy, embedTarget } from "@/lib/framePolicy";
 import { createHostLookup, hostOf, isAssetPath, isOwnHost, recordPath } from "@/lib/customHost";
@@ -36,11 +36,9 @@ async function embedPolicy(pathname) {
   });
 }
 
-// The gated lists live in src/lib/gatedRoutes.js, shared with the
-// session-expiry guard so both answer "does this page need an account"
-// the same way.
-const protectedRoutes = PROTECTED_ROUTES;
-const protectedPatterns = PROTECTED_PATTERNS;
+// The gated lists and the one test over them live in src/lib/gatedRoutes.js,
+// shared with the session-expiry guard so both answer "does this page need an
+// account" the same way.
 
 const publicRoutes = ["/login", "/register", "/forgot-password", "/reset-password"];
 
@@ -179,8 +177,7 @@ export default async function middleware(req) {
     }
   }
 
-  const isProtectedRoute = protectedRoutes.some(route => path.startsWith(route))
-    || protectedPatterns.some(pattern => pattern.test(path));
+  const isProtectedRoute = isGatedPath(path);
   const isPublicRoute = publicRoutes.some(route => path === route);
 
   const nextAuthToken = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });

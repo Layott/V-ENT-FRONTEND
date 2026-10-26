@@ -1,7 +1,7 @@
 'use client';
 
 import { mediaUrl } from '@/lib/mediaUrl';
-import Image from 'next/image';
+import Image from '@/components/media-image/MediaImage';
 import Link from 'next/link';
 import { LuGamepad2 } from 'react-icons/lu';
 import { FaTwitter, FaInstagram, FaDiscord, FaTwitch, FaYoutube, FaFacebook } from 'react-icons/fa';

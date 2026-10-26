@@ -7,7 +7,7 @@ import { useState, useEffect, useCallback, useRef, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 import Link from 'next/link';
-import Image from 'next/image';
+import Image from '@/components/media-image/MediaImage';
 import { FaCheckCircle, FaUsers, FaTrophy, FaCoins, FaTwitter, FaInstagram, FaDiscord, FaTwitch, FaYoutube, FaFacebook, FaGlobe, FaEnvelope } from 'react-icons/fa';
 import { AiOutlineTeam } from 'react-icons/ai';
 import { LuMapPin, LuUserPlus } from 'react-icons/lu';
@@ -30,7 +30,8 @@ import NeedsAccount from '@/components/needs-account/NeedsAccount';
 import SharedWallet from '@/components/shared-wallet/SharedWallet';
 import PlanCard from '@/components/memberships/PlanCard';
 import { eventStatusLabel, eventTypeLabel, tournamentStatusLabel } from '@/lib/labels';
-import { prizeText, coinText } from '@/lib/prize';
+import { prizeText, coinText } from '@/lib/prize';
+import BackLink from '@/components/back-link/BackLink';
 // `needs` names the capability a tab depends on. Without it the screen said
 // "this organisation does not do events" in Key stats and "here are its
 // events" in the tab strip at the same time, which reads as a bug in the
@@ -437,6 +438,7 @@ const OrgProfileContent = ({
         <Sidebar />
 
         <div className={styles.rightPaneContainer}>
+          <BackLink href="/organizations">{tt('back.toOrganizations', 'Back to organizations')}</BackLink>
           {/* ── Hero ── */}
           <section className={styles.heroCard}>
             <div className={styles.bannerWrap}>
@@ -792,7 +794,8 @@ const OrgProfileContent = ({
                           <td>{formatDate(m.joined_at)}</td>
                           {isOwner && <td className={styles.alignRight}>
                               {isMemberOwner ? <span className={styles.cellMuted}>-</span> : <div className={styles.menuWrap}>
-                                  <button type="button" className={styles.menuBtn} onClick={() => setOpenMenu(openMenu === m.id ? null : m.id)}>
+                                  <button type="button" className={styles.menuBtn} onClick={() => setOpenMenu(openMenu === m.id ? null : m.id)}
+                                      aria-label={tt('org.memberOptions', 'Member options')} aria-expanded={openMenu === m.id}>
                                     <BsThreeDots />
                                   </button>
                                   {openMenu === m.id && viewer.signedIn && <div className={styles.menuDropdown}>

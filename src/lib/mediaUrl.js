@@ -113,3 +113,13 @@ export const avatarOf = (user) =>
   pickMedia(user, 'avatar', 'avatar_url', 'profile_picture', 'profile_pic', 'image');
 
 export default mediaUrl;
+
+/**
+ * onError for a raw <img> drawing a stored picture. A path whose file is
+ * missing would otherwise draw the broken-image glyph with the alt text
+ * over it (audit 557); hidden, the box keeps its size and the surface
+ * behind it shows, the same as a picture nobody uploaded.
+ */
+export const hideBroken = (event) => {
+  if (event?.currentTarget) event.currentTarget.style.visibility = 'hidden';
+};

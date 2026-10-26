@@ -1,7 +1,7 @@
 'use client';
 
 import { mediaUrl, teamLogo } from '@/lib/mediaUrl';
-import Image from 'next/image';
+import Image from '@/components/media-image/MediaImage';
 import Link from 'next/link';
 import { LuGamepad2, LuMapPin, LuUsers } from 'react-icons/lu';
 import { HiOutlineTrophy } from 'react-icons/hi2';

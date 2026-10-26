@@ -719,7 +719,7 @@
 
 .capacityBox,
 .capacityWarn {
-  border-radius: 13px;
+  border-radius: 14px;
   display: flex;
   flex-direction: column;
   gap: 0.5rem;

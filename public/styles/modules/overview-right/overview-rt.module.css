@@ -198,7 +198,7 @@
   align-items: center;
   gap: 0.45rem;
   border-radius: 15px;
-  transition: all 0.5s ease-in-out;
+  transition: all 0.15s ease-in-out;
 }
 
 .socialLinks:hover {
@@ -249,7 +249,7 @@
   justify-content: center;
   font-weight: 500;
   cursor: pointer;
-  transition: border 0.5s ease-in-out, transform 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+  transition: border 0.15s ease-in-out, transform 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
   background-color: rgba(255, 255, 255, 0.04);
 }
 
@@ -284,7 +284,7 @@
   height: calc(100% - 3px);
   border-radius: 8px;
   cursor: pointer;
-  transition: transform 0.15s ease-in-out, box-shadow 0.15s ease-in-out, border 0.5s ease-in-out;
+  transition: transform 0.15s ease-in-out, box-shadow 0.15s ease-in-out, border 0.15s ease-in-out;
   max-height: 35px;
 }
 

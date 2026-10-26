@@ -2,7 +2,7 @@
 
 import { appLocale } from '@/lib/appLocale';
 import { mediaUrl } from '@/lib/mediaUrl';
-import Image from 'next/image';
+import Image from '@/components/media-image/MediaImage';
 import Link from 'next/link';
 import styles from './team-profile.module.css';
 import { useT } from '@/i18n/LanguageProvider';

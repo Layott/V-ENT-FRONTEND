@@ -4,7 +4,7 @@
 // members, game/core_game), so we normalise defensively below.
 import Link from 'next/link';
 import { apiMessage } from '@/lib/apiMessage';
-import { mediaUrl } from '@/lib/mediaUrl';
+import { mediaUrl, hideBroken } from '@/lib/mediaUrl';
 import { useState, useEffect, useMemo } from 'react';
 import { useSession } from 'next-auth/react';
 import styles from './team.module.css';
@@ -146,7 +146,7 @@ const ChooseTeamModal = ({
                       {/* Plain img keeps remote backend/CDN logos working without
                           next/image domain config; falls back to the bundled avatar. */}
                       {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img src={mediaUrl(team.logo || fallbackLogo.src)} alt={team.name} width={60} height={60} style={{
+                      <img onError={hideBroken} src={mediaUrl(team.logo || fallbackLogo.src)} alt={team.name} width={60} height={60} style={{
                   objectFit: 'cover',
                   borderRadius: '8px'
                 }} />

@@ -59,7 +59,7 @@
   justify-content: center;
   padding: 5px;
   border-radius: 8px;
-  transition: all ease-in-out 0.5s;
+  transition: all ease-in-out 0.15s;
   background-color: #303136;
 
   left: 50%;
@@ -87,7 +87,7 @@
 .searchInput {
   border: none;
   outline: none;
-  transition: width 0.5s ease-in-out, border 0.5s ease-in-out;
+  transition: width 0.15s ease-in-out, border 0.15s ease-in-out;
   margin-right: 5px;
   margin-left: 2.5px;
   background-color: transparent;
@@ -135,7 +135,7 @@
   outline: none;
   border-radius: 8px;
   cursor: pointer;
-  transition: all ease-in-out 0.5s;
+  transition: all ease-in-out 0.15s;
   background-color: rgba(255, 255, 255, 0.04);
   min-width: 80px;
   display: flex;
@@ -247,7 +247,7 @@
   justify-content: center;
   padding: 4px 4px;
   border-radius: 8px;
-  transition: all ease-in-out 0.5s;
+  transition: all ease-in-out 0.15s;
 }
 
 .galleryViewBTN:hover {
@@ -292,7 +292,7 @@
   font-size: 0.8rem;
   cursor: pointer;
   border-radius: 8px;
-  transition: all ease-in-out 0.5s;
+  transition: all ease-in-out 0.15s;
   font-family: "ClashGrotesk-Medium", sans-serif;
   display: flex;
   justify-content: center;

@@ -11,7 +11,7 @@ import InfoTip from '@/components/info-tip/InfoTip';
 import PayShortfall from '@/components/pay/PayShortfall';
 import { CollectCode, pickupSummary, refundSummary } from '@/components/vendor-orders/CollectCode';
 import { useState, useEffect, useCallback, useRef, Suspense, useMemo } from 'react';
-import Image from 'next/image';
+import Image from '@/components/media-image/MediaImage';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { track } from '@/lib/track';
@@ -94,7 +94,7 @@ export const VendorStallContent = ({ eventSlug = '', stallSlug = '' } = {}) => {
 
   useEffect(() => {
     if (!vendorId) {
-      setError(tt("msg.vendorIdMissing", "Vendor ID missing"));
+      setError(tt("msg.vendorIdMissing", "This link does not say which stall to open."));
       setLoading(false);
       return;
     }
@@ -350,7 +350,7 @@ export const VendorStallContent = ({ eventSlug = '', stallSlug = '' } = {}) => {
   if (error || !vendor) return renderShell(<div className={styles.errorState}>
         <h2 className={styles.errorTitle}>{tt("ui.couldn't.load.vendor.0e61", "Couldn't load vendor")}</h2>
         <p className={styles.errorSub}>{error || tx("Vendor not found.")}</p>
-        <Link href={`/events/${eventId}/vendor-shop`} className={`${styles.errorBtn} goldBTN`}>
+        <Link href={eventId ? `/events/${eventId}/vendor-shop` : '/events'} className={`${styles.errorBtn} goldBTN`}>
           {tt("ui.back.vendor.shop.9b5d", "Back to vendor shop")}
         </Link>
       </div>);
