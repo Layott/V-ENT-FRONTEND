@@ -6231,7 +6231,7 @@ export const dictionaries = {
     'createEvent.ticketsPerDay': '{sold} tickets across every tier. Capacity is {capacity} each day.',
     'createEvent.ticketsMatch': '{sold} tickets, one for every place.',
     'createEvent.ticketsUnder': 'Only {sold} tickets for {capacity} places. Raise a quantity if every place should have a ticket.',
-    'createEvent.ticketsOver': '{sold} tickets for {capacity} places, more tickets than places.',
+    'createEvent.ticketsOver': '{sold} tickets for {capacity} places. Sales stop at {capacity}, whichever tiers sell first.',
     'createEvent.needATier': 'Add a ticket tier, or mark the event free entry.',
     'createEvent.tierIncomplete': 'Every tier needs a name, a price of zero or more, and at least one place.',
     'createEvent.tierNotWholeCoins': '{name}: a price has to be a whole number of VENT COINS. The nearest are {lower} and {upper} naira.',
