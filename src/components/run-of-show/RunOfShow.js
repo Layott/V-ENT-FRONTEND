@@ -514,6 +514,12 @@ export function RunOfShowLoader({ token, kind, ownerRef, authToken, compact }) {
         setState('missing');
         return;
       }
+      // Answered, with nothing planned yet: not a failure (Apple review P142-1,
+      // which read "The run of show did not load" over an empty plan).
+      if (res.ok && body.status === 'success') {
+        setState('none');
+        return;
+      }
       setError(apiMessage(tt, body, 'ros.loadFailed',
         'The run of show could not be loaded.'));
       setState('error');
@@ -564,6 +570,21 @@ export function RunOfShowLoader({ token, kind, ownerRef, authToken, compact }) {
         <p className={styles.emptyLine}>
           {tt('ros.notShared', 'There is no run of show here, or it has not been shared.')}
         </p>
+      </div>
+    );
+  }
+
+  if (state === 'none') {
+    const back = ownerRef ? `/${kind === 'tournament' ? 'tournaments' : 'events'}/${encodeURIComponent(ownerRef)}` : '';
+    return (
+      <div className={styles.empty}>
+        <h1 className={styles.emptyTitle}>{tt('ros.noneYet', 'No run of show yet')}</h1>
+        <p className={styles.emptyLine}>
+          {tt('ros.noneYetLine', 'Nothing has been planned here yet. The running order appears here once it is written.')}
+        </p>
+        {back && <Link href={back} className={styles.emptyLink}>
+          {kind === 'tournament' ? tt('ros.backToTournament', 'Back to the tournament') : tt('ros.backToEvent', 'Back to the event')}
+        </Link>}
       </div>
     );
   }

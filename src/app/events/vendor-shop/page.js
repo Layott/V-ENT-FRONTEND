@@ -24,6 +24,7 @@ import { useT } from '@/i18n/LanguageProvider';
 import { useTx } from '@/i18n/LanguageProvider';
 import { fuzzyMatches } from '@/lib/fuzzy';
 import { markScrimDown, isScrimClick } from '@/lib/scrim';
+import { plural } from '@/lib/plural';
 const CART_STORAGE_KEY = eventId => `vendor_cart_${eventId || 'unknown'}`;
 const VendorShopContent = ({
   slug: slugFromPath
@@ -343,9 +344,9 @@ const VendorShopContent = ({
                       <p className={styles.vendorDesc}>{tx(v.description)}</p>
                       <div className={styles.vendorFoot}>
                         <span className={styles.productCount}>
-                          {v.products?.length || 0} {tt("ui.products.fbdc", "products")}
+                          {plural(tt, v.products?.length || 0, 'vendorShop.productOne', '{n} product', 'vendorShop.productsN', '{n} products')}
                         </span>
-                        <span className={styles.viewLink}>{tt("ui.view.stall.d3b1", "View stall →")}</span>
+                        <span className={styles.viewLink}>{tt('vendorShop.openStall', 'Open the stall')}</span>
                       </div>
                     </div>
                   </Link>)}

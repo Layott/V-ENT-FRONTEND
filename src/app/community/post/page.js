@@ -238,10 +238,12 @@ const PostInner = ({
                     <span className={styles.time}>{relativeTime(post.created_at)}</span>
                   </div>
 
-                  {/* Page heading - derived from post title or first 60 chars of body */}
-                  <h1 className={styles.postHeading}>
-                    {post.title || (post.content || '').slice(0, 60) || tx("Community post")}
-                  </h1>
+                  {/* One heading. A post with a title shows it; one without keeps a
+                      heading for screen readers only, because the first words of the
+                      body drawn as a heading and then again as the body read twice
+                      (Apple review P048-3). */}
+                  {post.title ? <h1 className={styles.postHeading}>{post.title}</h1>
+                    : <h1 className="visually-hidden">{tt('community.postBy', 'Post by {name}').replace('{name}', post.author?.username || '')}</h1>}
 
                   <p className={styles.body}>{post.content}</p>
 

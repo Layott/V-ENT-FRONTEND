@@ -8,6 +8,7 @@ import { mediaUrl } from '@/lib/mediaUrl';
 import { useState, useEffect, useMemo, useCallback, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useSession } from 'next-auth/react';
+import { useViewer } from '@/lib/gating';
 import Link from 'next/link';
 import Image from '@/components/media-image/MediaImage';
 import { CiSearch } from 'react-icons/ci';
@@ -131,6 +132,7 @@ const tagFor = event => {
 const EventsListingContent = () => {
   const tx = useTx();
   const tt = useT();
+  const viewer = useViewer();
   const router = useRouter();
   const searchParams = useSearchParams();
   const {
@@ -296,7 +298,10 @@ const EventsListingContent = () => {
               </p>
             </div>
 
-            <div className={styles.headerActions}>
+            {/* What needs an account is shown to somebody who has one; a
+                stranger gets one plain way in (Apple review P060-10). Nothing
+                is decided while the session is still resolving. */}
+            {viewer.signedIn && <div className={styles.headerActions}>
               <Link href="/events/my-tickets" className={styles.ticketsBtn}>
                 <IoTicketOutline /> {tt("ui.my.tickets.5394", "My tickets")}
               </Link>
@@ -306,7 +311,12 @@ const EventsListingContent = () => {
               <Link href="/events/create-event" className={`${styles.createBtn} redBTN`}>
                 <HiPlus /> {tt("ui.create.event.b8d8", "Create event")}
               </Link>
-            </div>
+            </div>}
+            {!viewer.loading && !viewer.signedIn && <div className={styles.headerActions}>
+              <Link href="/login?next=/events/create-event" className={styles.ticketsBtn}>
+                {tt('events.signInToCreate', 'Sign in to create an event')}
+              </Link>
+            </div>}
           </div>
 
           {/* Featured spotlight */}

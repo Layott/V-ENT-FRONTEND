@@ -342,16 +342,16 @@
   white-space: nowrap;
 }
 
+/* Verified is a success, so green; gold is money (Apple review P127-3). */
 .verifyBadgeOk {
-  background-color: rgba(212, 175, 55, 0.14);
-  color: var(--v-ent-gold);
-
+  background-color: rgba(76, 175, 80, 0.16);
+  color: var(--v-ent-success-light);
 }
 
+/* Waiting is neutral, never an alert colour (P127-3). */
 .verifyBadgeWarn {
-  background-color: rgba(251, 198, 75, 0.12);
-  color: #fbc64b;
-
+  background-color: rgba(255, 255, 255, 0.08);
+  color: var(--ink-75, rgba(255, 255, 255, 0.75));
 }
 
 .labelRow {

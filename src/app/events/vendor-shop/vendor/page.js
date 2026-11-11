@@ -367,9 +367,10 @@ export const VendorStallContent = ({ eventSlug = '', stallSlug = '' } = {}) => {
             <Link href={`/events/${eventId}/vendor-shop`} className={styles.backLink}>
               <IoArrowBack /> {tt("ui.back.vendors.5aba", "Back to vendors")}
             </Link>
-            <Link href={`/events/${eventId}/vendor-shop`} className={styles.cartChip}>
+            {/* A cart is for somebody who can check out (Apple review P067-6). */}
+            {viewer.signedIn && <Link href={`/events/${eventId}/vendor-shop`} className={styles.cartChip}>
               <FaShoppingCart /> {cartCount} {tt("ui.cart.91c0", "in cart")}
-            </Link>
+            </Link>}
           </div>
 
           {/* Banner */}
@@ -451,7 +452,7 @@ export const VendorStallContent = ({ eventSlug = '', stallSlug = '' } = {}) => {
                     </p>
                     {(p.variants || []).length > 0 && <p className={styles.productOptions}>{p.variants.join(' · ')}</p>}
                     <span className={styles.addBtn}>
-                      {p.in_stock ? tx("Add to cart") : tt('stall.unavailable', 'Unavailable')}
+                      {!p.in_stock ? tt('stall.unavailable', 'Unavailable') : viewer.signedIn ? tx("Add to cart") : tt('stall.signInToBuy', 'Sign in to buy')}
                     </span>
                   </div>
                 </button>)}
@@ -498,9 +499,12 @@ export const VendorStallContent = ({ eventSlug = '', stallSlug = '' } = {}) => {
                     {activeProduct.variants.map(v => <button key={v} type="button" className={styles.optionChip} aria-pressed={pickedVariant === v} onClick={() => setPickedVariant(v)}>{v}</button>)}
                   </div>
                 </div>}
-              <button className={`${styles.addToCartBtn} ${activeProduct.in_stock ? 'goldBTN' : ''}`} onClick={() => addToCart(activeProduct, pickedVariant)} disabled={!activeProduct.in_stock || ((activeProduct.variants || []).length > 0 && !pickedVariant)} type="button">
+              {!viewer.loading && !viewer.signedIn && activeProduct.in_stock ? <button type="button" className={`${styles.addToCartBtn} redBTN`}
+                  onClick={() => window.location.assign(`/login?next=${encodeURIComponent(window.location.pathname)}`)}>
+                  {tt('stall.signInToBuy', 'Sign in to buy')}
+                </button> : <button className={`${styles.addToCartBtn} ${activeProduct.in_stock ? 'goldBTN' : ''}`} onClick={() => addToCart(activeProduct, pickedVariant)} disabled={!activeProduct.in_stock || ((activeProduct.variants || []).length > 0 && !pickedVariant)} type="button">
                 {!activeProduct.in_stock ? tx("Sold out") : ((activeProduct.variants || []).length > 0 && !pickedVariant) ? tt('stall.pickOptionFirst', 'Pick an option first') : tx("Add to cart")}
-              </button>
+              </button>}
             </div>
           </div>
         </div>}

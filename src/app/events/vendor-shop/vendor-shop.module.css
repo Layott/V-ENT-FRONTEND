@@ -346,8 +346,8 @@
 }
 
 .categoryBtnActive {
-  background-color: var(--v-ent-red);
-  color: #fff;
+  background-color: #4a4c54;
+  color: var(--primary-bg);
 
   font-weight: var(--fw-semi-bold);
 }
@@ -498,9 +498,10 @@
   border-radius: 8px;
 }
 
+/* A link, so the link colour, not gold (gold is money; Apple review P068-4). */
 .viewLink {
-  font-size: 0.74rem;
-  color: var(--v-ent-gold);
+  font-size: 0.75rem;
+  color: var(--primary-bg);
   font-weight: var(--fw-semi-bold);
 }
 

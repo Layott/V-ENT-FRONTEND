@@ -581,7 +581,7 @@ export const ViewTournamentContent = ({
 
           {/* Sticky tab nav */}
           <div className={styles.stickyTabs}>
-            <div className={styles.tabBar}>
+            <div className={styles.tabBar} data-edge-fade="">
               {TABS.filter(t => !t.leagueOnly || isLeagueFormat(tournament?.bracket_type))
                 .map(t => <button key={t.id} className={`${styles.tabBtn} ${activeTab === t.id ? styles.tabBtnActive : ''}`} onClick={() => setActiveTab(t.id)}>
                   {tx(t.label)}

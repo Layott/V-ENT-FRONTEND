@@ -90,7 +90,9 @@ const HistoryContent = () => {
           router.replace(`/wallets/history${qs ? `?${qs}` : ''}`, {
             scroll: false
           });
-        }} emptyText={tt("wallet.noMatchingTransactions", "No transactions match your filters.")} />
+        }} emptyText={['type', 'status', 'q', 'from', 'to'].some(k => searchParams?.get(k))
+          ? tt("wallet.noMatchingTransactions", "No transactions match your filters.")
+          : tt("wallet.noTransactions", "No transactions yet. Top up your wallet to get started.")} />
         </div>
       </main>
 

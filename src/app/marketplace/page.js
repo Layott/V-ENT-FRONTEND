@@ -43,6 +43,7 @@ import { useT } from '@/i18n/LanguageProvider';
 import { call, fill, useCatalogue, useMarketplaceOpen } from '@/lib/marketplace';
 import styles from './marketplace.module.css';
 import { useAutoRefresh } from '@/lib/useLiveData';
+import { plural } from '@/lib/plural';
 
 const PAGE_SIZE = 12;
 
@@ -332,7 +333,7 @@ const MarketplaceInner = () => {
                 <span className={styles.resultsCount}>
                   {loading
                     ? tt('ui.loading.33ce', 'Loading…')
-                    : fill(tt('mk.count', '{n} listings'), { n: sorted.length })}
+                    : plural(tt, sorted.length, 'mk.countOne', '{n} listing', 'mk.count', '{n} listings')}
                 </span>
               </div>
 

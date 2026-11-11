@@ -77,12 +77,12 @@
   transition: color 0.2s, background-color 0.2s;
 }
 .tabBtn:hover { color: rgba(255, 255, 255, 0.85); }
-/* Filled chip, the wallet's look (Apple review F2): the active tab once swapped
+/* Filled chip, the house selected fill (Apple review F2, S10): the active tab once swapped
    its class for one with no background, so the browser's light button face
    showed through under white text. */
 .tabBtnActive {
   color: var(--primary-bg);
-  background-color: rgba(237, 28, 36, 0.18);
+  background-color: #4a4c54;
   font-weight: var(--fw-semi-bold);
 }
 .tabCount {

@@ -300,3 +300,10 @@
   background-color: rgba(229, 185, 78, 0.16);
   color: #E5B94E;
 }
+
+/* The scope key, after the sentence and quiet (Apple review P109-2). */
+.checkRow code.scopeKey {
+  color: var(--ink-45, rgba(255, 255, 255, 0.45));
+  font-weight: var(--fw-regular);
+  font-size: 0.75rem;
+}

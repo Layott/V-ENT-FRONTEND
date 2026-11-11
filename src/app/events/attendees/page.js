@@ -505,7 +505,7 @@ const AttendeesContent = ({
                    : gateFilter === 'door'
                      ? tt('door.nobodyAtDoorYet', 'Nobody has been verified at the door yet.')
                      : tt('door.nobodyInYet', 'Nobody has been checked in yet.')}
-          </p> : <div className={styles.tableWrap}>
+          </p> : <div className={styles.tableWrap} data-edge-fade="">
             <table className={styles.table}>
               <thead>
                 <tr>
@@ -629,9 +629,11 @@ const AttendeesContent = ({
                 phone at a gate means scrolling past three numbers to reach
                 the one control that matters. Header now, and the same
                 component every other organiser screen draws. Row 168. */}
-            <div className={styles.headAction}>
+            {/* Only for somebody the list loaded for (Apple review P062-6): a
+                ticket holder saw a live red scanner button over the refusal. */}
+            {!loading && !error && <div className={styles.headAction}>
               <DoorScannerLink eventRef={eventId} />
-            </div>
+            </div>}
           </div>
           {body()}
         </div>

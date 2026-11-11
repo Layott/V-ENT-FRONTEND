@@ -160,7 +160,8 @@ const ResetEmail = () => {
             {values.map((val, i) => <input className={styles.codeBox} key={i} type="text" inputMode="numeric" maxLength="1" value={val} onChange={e => handleChange(e, i)} onKeyDown={e => handleKeyDown(e, i)} ref={el => inputsRef.current[i] = el} />)}
           </div>
           <br />
-          <button type="submit" className={`btn redBTN ${generalStyles.formBTN}`}>
+          {/* Nothing to check until all six digits are in (Apple review P121-2). */}
+          <button type="submit" className={`btn redBTN ${generalStyles.formBTN}`} disabled={values.join('').length < 6}>
             {tt('resetEmail.checkCode', 'Check the code')}
           </button>
 

@@ -881,7 +881,7 @@ const CommunityInner = () => {
 
           {/* ─── FORUMS ─── */}
           {activeTab === 'forums' && <div className={styles.forumsLayout}>
-              <div className={styles.categoryList} role="group" aria-label={tt("ui.forum.categories.d09f", "Forum categories")}>
+              <div className={styles.categoryList} data-edge-fade="" role="group" aria-label={tt("ui.forum.categories.d09f", "Forum categories")}>
                 {FORUM_CATEGORIES.map(cat => <button key={cat} className={`${styles.categoryBtn} ${forumCategory === cat ? styles.categoryActive : ''}`} onClick={() => setForumCategory(cat)} aria-pressed={forumCategory === cat}>
                     <span>{cat}</span>
                   </button>)}

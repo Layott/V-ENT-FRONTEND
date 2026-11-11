@@ -27,6 +27,7 @@ const EmailVerified = () => {
   const [open, setOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState('');
   const [snackbarType, setSnackbarType] = useState('success');
+  const [errorReason, setErrorReason] = useState('');
   useEffect(() => {
     // For a route like /email-verified/1234/abcd
     const keys = Object.values(params);
@@ -52,13 +53,15 @@ const EmailVerified = () => {
       if (response.ok) {
         setVerificationStatus('success');
       } else {
+        // One reason, said once, inside the card (Apple review P056-3, P056-4):
+        // the heading claimed the link had expired while a toast over the way
+        // out said it was invalid.
         setVerificationStatus('error');
-        setSnackbarMessage(apiMessage(tt, data, "api.verificationFailed", "Verification failed."));
-        setSnackbarType('error');
-        setOpen(true);
+        setErrorReason(apiMessage(tt, data, "api.verificationFailed", "Verification failed."));
       }
     } catch (error) {
       setVerificationStatus('error');
+      setErrorReason(tt("msg.anErrorOccurredPleaseTry", "An error occurred. Please try again."));
       setSnackbarMessage(tt("msg.anErrorOccurredPleaseTry", "An error occurred. Please try again."));
       setSnackbarType('error');
       setOpen(true);
@@ -135,7 +138,8 @@ const EmailVerified = () => {
           </>}
 
         {verificationStatus === "error" && <>
-            <h1>{tt("ui.verification.link.expired.52d7", "Verification Link Expired")}</h1>
+            <h1>{tt('verify.failedTitle', 'We could not verify this link')}</h1>
+            {errorReason && <p>{errorReason}</p>}
             <p>{tt("ui.click.button.receive.new.2c79", "Click the button to receive a new verification link.")}</p>
 
             <button className={`btn redBTN ${styles.resendBTN}`} onClick={handleResend} disabled={resendLoadingg}>

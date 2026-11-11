@@ -255,7 +255,7 @@
 .optionBtn:hover { border-color: rgba(255, 255, 255, 0.25); color: var(--primary-bg); }
 
 .optionBtnActive {
-  background-color: rgba(237, 28, 36, 0.18);
+  background-color: #4a4c54;
 
   color: var(--primary-bg);
   font-weight: var(--fw-medium);
@@ -284,7 +284,7 @@
 }
 
 .modeBtnActive {
-  background-color: rgba(237, 28, 36, 0.22);
+  background-color: #4a4c54;
 
   color: var(--primary-bg);
   font-weight: var(--fw-medium);

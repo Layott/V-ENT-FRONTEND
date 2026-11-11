@@ -1640,3 +1640,12 @@
     min-height: 44px;
   }
 }
+
+/* Apple review P050-3: on a phone the category chips wrapped past the right
+   edge ("Marketp", "+ New t" cut), because the list was wider than its column.
+   It now keeps to the column, and New thread takes its own line. */
+@media only screen and (max-width: 1023px) {
+  .categoryList { min-width: 0; max-width: 100%; }
+  .categoryList > * { max-width: 100%; }
+  .newThreadCta { flex: 1 0 100%; }
+}

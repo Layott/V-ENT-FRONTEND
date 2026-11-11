@@ -16,6 +16,7 @@ import { useT } from '@/i18n/LanguageProvider';
 import { useTx } from '@/i18n/LanguageProvider';
 import { returnReference } from '@/lib/payReturn';
 import BackLink from '@/components/back-link/BackLink';
+import Link from 'next/link';
 
 // Thin wrapper: loads the real tournament (real entry_fee_price + prize_pool)
 // and mounts the shared TournamentRegister modal flow (Mode → Team → Roster →
@@ -102,7 +103,7 @@ const RegisterTournamentContent = ({
               runs again when the session or the words settle, and swapping
               the registration out for this line then threw away every step
               it was on, a card payment coming back included (13 Oct 2026). */}
-          {loading && !tournament ? <p className={styles.errText}>{tt("ui.loading.tournament.7024", "Loading tournament…")}</p> : loadError && !tournament ? <ErrorState message={loadError} onRetry={load} /> : !tournament ? <p className={styles.errText}>{notFound || tx("Tournament not found.")}</p> : <TournamentRegistrationModal isOpen onClose={goToTournament} onNext={goToTournament} tournament={tournament} resumeReference={reference} autoResume={searchParams.get('resume') === '1'} />}
+          {loading && !tournament ? <p className={styles.errText}>{tt("ui.loading.tournament.7024", "Loading tournament…")}</p> : loadError && !tournament ? <ErrorState message={loadError} onRetry={load} /> : !tournament ? <div className={styles.notFound}><h1 className={styles.notFoundTitle}>{tt('register.notFoundTitle', 'We could not find that tournament')}</h1><p className={styles.notFoundLine}>{notFound || tt('register.notFoundLine', 'The link may be old, or the tournament may have been taken down.')}</p><div className={styles.notFoundActions}><Link href="/tournaments" className="btn redBTN">{tt('register.browse', 'Browse tournaments')}</Link><Link href="/tournaments/my-tournaments" className="btn quietBTN">{tt('register.mine', 'My tournaments')}</Link></div></div> : <TournamentRegistrationModal isOpen onClose={goToTournament} onNext={goToTournament} tournament={tournament} resumeReference={reference} autoResume={searchParams.get('resume') === '1'} />}
         </div>
       </main>
 

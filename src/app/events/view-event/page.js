@@ -1266,12 +1266,14 @@ export const ViewEventContent = ({
               </div>}
 
               <div className={styles.heroActions}>
-                {!cancelled && <button className={`${styles.heroPrimaryBtn} redBTN`} onClick={() => openTab('tickets')} type="button">
+                {/* Nothing to buy once it has ended (Apple review P061-2, P125-3),
+                    and My tickets only for somebody signed in (P061-9). */}
+                {!cancelled && !countdown?.ended && <button className={`${styles.heroPrimaryBtn} redBTN`} onClick={() => openTab('tickets')} type="button">
                   <IoTicketOutline /> {tt("ui.get.tickets.0b90", "Get tickets")}
                 </button>}
-                <Link href="/events/my-tickets" className={styles.heroSecondaryBtn}>
+                {sessionStatus === 'authenticated' && <Link href="/events/my-tickets" className={styles.heroSecondaryBtn}>
                   {tt("ui.my.tickets.5394", "My tickets")}
-                </Link>
+                </Link>}
               </div>
             </div>
           </div>

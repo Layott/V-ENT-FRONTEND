@@ -427,7 +427,7 @@
 }
 
 .chipActive {
-  background-color: rgba(237, 28, 36, 0.18);
+  background-color: #4a4c54;
 
   color: var(--primary-bg);
 }

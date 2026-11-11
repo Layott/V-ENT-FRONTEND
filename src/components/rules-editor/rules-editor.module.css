@@ -136,7 +136,6 @@
   font-family: 'ClashGrotesk-Variable', sans-serif;
   font-size: 0.76rem;
   cursor: pointer;
-  text-transform: capitalize;
 }
 
 .chip:hover {

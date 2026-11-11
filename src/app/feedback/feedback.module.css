@@ -119,8 +119,8 @@
 .chip:hover { background-color: #33343a; color: rgba(255, 255, 255, 0.85); }
 
 .chipOn {
-  background-color: var(--v-ent-success);
-  color: #fff;
+  background-color: #4a4c54;
+  color: var(--primary-bg);
   font-weight: var(--fw-semi-bold);
 }
 
