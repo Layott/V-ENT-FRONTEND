@@ -18,6 +18,7 @@
 
 import { useCallback, useEffect, useState } from 'react';
 import Link from 'next/link';
+import { LuChevronRight } from 'react-icons/lu';
 import AdminNav from '@/components/admin/AdminNav';
 import AdminHeader from '@/components/admin/AdminHeader';
 import { useAdminAuth } from '@/components/admin/useAdminAuth';
@@ -114,6 +115,7 @@ function CommunitiesInner() {
                           <Link className={shared.sectionLink}
                                 href={`/admin/communities/${club.slug}`}>
                             <strong>{club.name}</strong>
+                            <LuChevronRight className={shared.rowChevron} aria-hidden="true" />
                           </Link>
                         </td>
                         <td>{formatNumber(club.members)}</td>

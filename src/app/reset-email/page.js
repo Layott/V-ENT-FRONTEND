@@ -161,7 +161,7 @@ const ResetEmail = () => {
           </div>
           <br />
           <button type="submit" className={`btn redBTN ${generalStyles.formBTN}`}>
-            {tt("ui.submit.2dac", "Submit")}
+            {tt('resetEmail.checkCode', 'Check the code')}
           </button>
 
           <button type="button" className={generalStyles.resendBtn}
@@ -184,7 +184,7 @@ const ResetEmail = () => {
               </div>
 
               <div className={generalStyles.formHelperContainer}>
-                  <p>{tt("ui.remember.password.62ad", "Remember password?")} <Link href={'/login'}>{tt("ui.login.4e5a", "Login")}</Link></p>
+                  <p>{tt("ui.remember.password.62ad", "Remember password?")} <Link href={'/login'}>{tt("ui.login.4e5a", "Log in")}</Link></p>
               </div>
           </div>
         </main>

@@ -423,7 +423,7 @@ const OrganizationsContent = () => {
 
                       <div className={styles.cardActions}>
                         <Link href={`/organizations/${orgId}`} className={`${styles.actionBtn} ${styles.actionSecondary}`}>
-                          {tt("ui.view.69bd", "View")}
+                          {tt('orgs.openOrg', 'Open organisation')}
                         </Link>
                         {owned ? <Link href={`/organizations/${orgId}/manage`} className={`${styles.actionBtn} ${styles.actionQuiet}`}>
                             {tt("ui.manage.bf58", "Manage")}

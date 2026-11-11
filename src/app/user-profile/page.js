@@ -410,7 +410,7 @@ const UserProfileContent = ({
                 borderRadius: 6,
                 color: '#fff',
                 textDecoration: 'none'
-              }}>{tt("ui.login.4e5a", "Login")}</Link>
+              }}>{tt("ui.login.4e5a", "Log in")}</Link>
               </div>
             </div>
           </div>

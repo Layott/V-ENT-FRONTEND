@@ -357,7 +357,7 @@ const MyTournaments = () => {
                     </div>
                     <div className={styles.rowActions}>
                       <Link href={`/tournaments/${t?.slug || t?.id || ''}`} className={styles.actionBtn}>
-                        <LuEye aria-hidden="true" /> {tt("ui.view.69bd", "View")}
+                        <LuEye aria-hidden="true" /> {tt('myTournaments.open', 'Open the tournament')}
                       </Link>
                       {/* Edit was reachable from nowhere at all, which is the
                           same as a tournament being uneditable. It is first

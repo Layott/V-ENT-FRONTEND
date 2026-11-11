@@ -404,7 +404,7 @@ const TournamentRegistrationModal = ({
                 {tt("ui.cancel.77df", "Cancel")}
               </button>
               <button className={`${styles.nextButton} ${!selectedOption ? styles.disabled : ''}`} onClick={handleNext} disabled={!selectedOption}>
-                {tt("ui.next.2f04", "Next →")}
+                {selectedOption === 'team' ? tt('register.chooseTeam', 'Choose your team') : selectedOption === 'individual' ? tt('register.continueAsPlayer', 'Continue as a player') : tt('register.pickOne', 'Pick one to continue')}
               </button>
             </div>}
           </div>

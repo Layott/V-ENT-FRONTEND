@@ -3,6 +3,7 @@ import { clearDraft, readDraft, writeDraft } from '@/lib/wizardDraft';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { useT, useTx } from '@/i18n/LanguageProvider';
+import BackLink from '@/components/back-link/BackLink';
 import { apiMessage } from '@/lib/apiMessage';
 import { ventFetch, API, tokenFrom } from '@/components/tournament-lib/tournamentApi';
 import { validateAll } from './tournamentWizardValidation';
@@ -429,6 +430,8 @@ const CreateTournamentComponent = ({ draftId = null }) => {
           {statusMessage.text}
         </div>
       )}
+      {/* A way out, as the event wizard has (Apple review S20). */}
+      <BackLink href="/tournaments">{tt('back.toTournaments', 'Back to tournaments')}</BackLink>
       <ProgressMenu selectedTab={selectedTab} setSelectedTab={setSelectedTab} />
       <div>{renderTabContent()}</div>
     </div>

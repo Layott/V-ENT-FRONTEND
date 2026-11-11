@@ -95,11 +95,11 @@ const LandingHero = ({
             {!viewer.loading && !viewer.signedIn && (
               <>
                 <Link href="/login" className={`${profileStyles.waitlistBTN} ${styles.signupBTN}`}>
-                  {tt("ui.login.4e5a", "Login")}
+                  {tt("ui.login.4e5a", "Log in")}
                 </Link>
 
                 <Link href="/signup" className={`${profileStyles.waitlistBTN} ${styles.loginBTN}`}>
-                  {tt("ui.signup.894b", "Signup")}
+                  {tt("ui.signup.894b", "Sign up")}
                 </Link>
               </>
             )}

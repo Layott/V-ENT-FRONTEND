@@ -125,7 +125,7 @@ const ForgotPassword = () => {
 
                     <div className={generalStyles.formHelperContainer}>
                         <p>{tt("ui.remember.password.62ad", "Remember password?")} </p>
-                        <Link href={'/login'}>{tt("ui.login.4e5a", "Login")}</Link>
+                        <Link href={'/login'}>{tt("ui.login.4e5a", "Log in")}</Link>
                     </div>
 
                 </div>

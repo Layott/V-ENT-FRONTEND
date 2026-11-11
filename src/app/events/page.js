@@ -350,7 +350,7 @@ const EventsListingContent = () => {
             </div>}
 
           {/* Tabs */}
-          <div className={styles.tabRow}>
+          <div className={styles.tabRow} data-edge-fade="">
             {TABS.map(t => <button key={t.id} className={`${styles.tabBtn} ${activeTab === t.id ? styles.tabBtnActive : ''}`} onClick={() => setActiveTab(t.id)} type="button">
                 {tx(t.label)}
               </button>)}

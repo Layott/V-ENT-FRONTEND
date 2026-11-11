@@ -168,6 +168,16 @@ fieldset {
   border: 0;
 }
 
+/* A button with no fill of its own is transparent, never the browser's
+   light button face (Apple review F1, F2, inbox 568). Every text colour on
+   this site is light, so a button whose class set no background drew white
+   on near-white: the comic Subscribe and the My list tab, found twice by the
+   runtime scan. Any class that sets a background still wins (a class beats
+   an element rule). scripts/check-button-face.mjs keeps this rule here. */
+button {
+  background-color: transparent;
+}
+
 button:focus-visible,
 a:focus-visible,
 input:focus-visible,
@@ -388,6 +398,24 @@ html {
    browser's own grey tap flash is turned off because this replaces it. */
 html {
   -webkit-tap-highlight-color: transparent;
+}
+
+/* Inner scrollers keep their scroll, and a sideways row fades at the edge
+   where more waits (Apple review S22). EdgeFade sets data-more. */
+[data-edge-fade] {
+  overscroll-behavior-x: contain;
+}
+[data-edge-fade][data-more="right"] {
+  mask-image: linear-gradient(to right, #000 calc(100% - 32px), transparent);
+}
+[data-edge-fade][data-more="left"] {
+  mask-image: linear-gradient(to left, #000 calc(100% - 32px), transparent);
+}
+[data-edge-fade][data-more="left right"] {
+  mask-image: linear-gradient(to right, transparent, #000 32px, #000 calc(100% - 32px), transparent);
+}
+.quietScroll {
+  overscroll-behavior: contain;
 }
 
 [data-pressed] {

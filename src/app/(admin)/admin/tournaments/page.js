@@ -348,12 +348,12 @@ function TournamentsInner() {
                               {tt("ui.score.489f", "Score")}
                             </button>}
                             {!t.deleted_at && <button className={`${shared.actBtn} ${shared.actView}`} onClick={() => setDisqTarget(t)} disabled={!!actionLoading[t.id]} title={tt("ui.disqualify.team.b320", "Disqualify team")}>
-                              DQ
+                              {tt('admin.disqualify', 'Disqualify')}
                             </button>}
                             <button className={`${shared.actBtn} ${shared.actView}`}
                                     onClick={() => setNumbersTarget(t)}
                                     title={tt('admin.tournamentNumbers', 'Entries, money and matches for this tournament')}>
-                              {tt('admin.numbers', 'Numbers')}
+                              {tt('admin.seeNumbers', 'Entries and money')}
                             </button>
                             {mayAnnounce && !t.deleted_at && <button className={`${shared.actBtn} ${shared.actApprove}`}
                                     onClick={() => setAnnounceTarget(t)}

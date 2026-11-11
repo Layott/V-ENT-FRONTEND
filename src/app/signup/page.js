@@ -402,7 +402,7 @@ const Signup = () => {
 
                     <div className={generalStyles.formHelperContainer}>
                         <p>{tt("ui.already.have.account.8559", "Already have an account?")} </p>
-                        <Link href={'/login'}>{tt("ui.login.4e5a", "Login")}</Link>
+                        <Link href={'/login'}>{tt("ui.login.4e5a", "Log in")}</Link>
                     </div>
 
                 </div>

@@ -457,7 +457,7 @@ const Overview = ({ tt, numbers, detail }) => (
               {detail.tiers.map(t => <tr key={t.id}>
                 <td>{t.name}</td>
                 {/* Naira, said so: a bare 2000.00 sat beside a revenue tile in VC (audit 557). */}
-                <td>{formatNgn(t.price_ngn)}</td>
+                <td>{Number(t.price_ngn) === 0 ? tt('tickets.free', 'Free') : formatNgn(t.price_ngn)}</td>
                 <td>{t.sold}</td>
                 <td>{t.remaining === null ? tt('admin.unlimited', 'No limit') : t.remaining}</td>
               </tr>)}

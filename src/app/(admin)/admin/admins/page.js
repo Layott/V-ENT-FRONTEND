@@ -196,7 +196,7 @@ function AdminsInner() {
                         <td>
                           <span className={`${shared.badge} ${shared.roleAdmin}`}>{tt(`adminRole.${row.admin_role}`, row.role_label)}</span>
                           {row.awaiting_feature ? <p className={styles.note}>
-                            {tt('adminAdmins.awaiting', 'Grants nothing until {what} is built.')
+                            {tt('adminAdmins.awaitingUntil', 'Grants nothing until {what}.')
                               .replace('{what}', row.awaiting_feature)}
                           </p> : null}
                         </td>
@@ -246,7 +246,7 @@ function AdminsInner() {
                 </button>
               </div>
               {row.awaiting_feature ? <p className={styles.note}>
-                {tt('adminAdmins.awaiting', 'Grants nothing until {what} is built.')
+                {tt('adminAdmins.awaitingUntil', 'Grants nothing until {what}.')
                   .replace('{what}', row.awaiting_feature)}
               </p> : null}
               {openRole === row.value ? <ul className={styles.permList}>

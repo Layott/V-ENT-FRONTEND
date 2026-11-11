@@ -7,6 +7,7 @@ import PageHelp from "@/components/page-help/PageHelp";
 import PaystackReturn from "@/components/pay/PaystackReturn";
 import ClientTimezone from "@/components/timing/ClientTimezone";
 import PressState from "@/components/press-state/PressState";
+import EdgeFade from "@/components/edge-fade/EdgeFade";
 import { PlatformModulesProvider } from "@/lib/platformModules";
 import { CurrencyProvider } from "@/lib/money";
 import { SITE, buildMetadata, currentLocale, organizationLd, websiteLd } from "@/lib/seo";
@@ -131,6 +132,8 @@ export default async function RootLayout({ children }) {
             {/* The pressed look on every control, set on pointerdown (Apple
                 review S1). One listener here instead of a rule per component. */}
             <PressState />
+            {/* Sideways rows fade at the edge that has more (Apple review S22). */}
+            <EdgeFade />
             </PlatformModulesProvider>
           </CurrencyProvider>
         </body>

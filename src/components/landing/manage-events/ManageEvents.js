@@ -41,20 +41,20 @@ const ManageEvents = ({ scrollToForm }) => {
                 {tt("landing.events.eyebrow", "Event Creation & Ticketing")}
               </p>
               <h2 className={landingStyles.headingText}>
-                {tt("landing.events.heading", "Create and Manage Events Seamlessly")}
+                {tt("landing.events.headingPlain", "Sell tickets and run the door")}
               </h2>
             </div>
             
             <div className={`${landingStyles.descriptionContainer}`}>
               <p className={`${landingStyles.descriptionParagraph} ${styles.descriptionParagraph}`}>
-                {tt("landing.events.body", "Host gaming events or anime screenings with ease using our powerful event management tools. From ticketing to attendee tracking, V-ENT empowers you to organize memorable events for your audience.")}
+                {tt("landing.events.bodyPlain", "Set your ticket types and prices, take payment by card or VENT COINS, and check people in at the door from a phone, even with no signal. Every ticket carries its own signed code, so a copied one is caught.")}
               </p>
 
               <Link
                   href={'/signup'}
                   className={`${profileStyles.waitlistBTN} ${profileStyles.loginBTN}`}
                 >
-                  {tt("landing.signup", "Signup")}
+                  {tt("landing.signup", "Sign up")}
               </Link>
             </div>
 

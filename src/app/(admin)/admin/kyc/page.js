@@ -211,7 +211,7 @@ function KycInner() {
         <main className={shared.contentArea}>
           <div className={shared.pageHeader}>
             <div>
-              <h1 className={shared.pageTitle}>{tt("ui.kyc.review.1a55", "KYC Review")}</h1>
+              <h1 className={shared.pageTitle}>{tt('adminNav.identityChecks', 'Identity checks')}</h1>
               <p className={shared.pageSubtitle}>{tt("ui.verify.user.identity.documents.d0fa", "Verify user identity documents.")}</p>
             </div>
           </div>

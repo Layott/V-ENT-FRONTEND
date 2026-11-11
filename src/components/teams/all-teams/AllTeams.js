@@ -429,7 +429,7 @@ const AllTeams = () => {
                       </button> : open ? <Link href={signInHref(teamHref)} className={`${styles.actionBtn} ${styles.actionPrimary}`}>
                         {tt('team.signInToJoin', 'Sign in to join')}
                       </Link> : <Link href={teamHref} className={`${styles.actionBtn} ${styles.actionSecondary}`}>
-                        {tt("ui.view.69bd", "View")}
+                        {tt('teams.openTeam', 'Open team')}
                       </Link>}
 
                     <Link href={teamHref} className={`${styles.actionBtn} ${styles.actionGhost}`}>

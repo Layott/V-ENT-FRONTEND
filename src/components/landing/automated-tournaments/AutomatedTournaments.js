@@ -78,7 +78,7 @@ const AutomatedTournaments = () => {
                 <div className={styles.actions}>
                     {!viewer.loading && !viewer.signedIn && (
                         <Link href="/signup" className="btn redBTN">
-                            {tt("ui.signup.894b", "Signup")}
+                            {tt("ui.signup.894b", "Sign up")}
                         </Link>
                     )}
                     <Link href="/tournaments" className={`btn ${viewer.signedIn ? 'redBTN' : styles.quietBtn}`}>

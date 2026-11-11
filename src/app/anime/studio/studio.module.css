@@ -106,6 +106,10 @@
   font-size: var(--fs-p-size-mobile);
 }
 
+/* A row that opens a page says so (Apple review S21). */
+.row:has(.rowChevron) { position: relative; padding-right: 2.25rem; }
+.rowChevron { position: absolute; right: 0.8rem; top: 50%; translate: 0 -50%; font-size: 1.1rem; color: var(--ink-45, rgba(255, 255, 255, 0.45)); }
+
 .rowMeta {
   font-size: 0.78rem;
   color: var(--ink-45, rgba(255, 255, 255, 0.45));

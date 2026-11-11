@@ -156,7 +156,7 @@ const MyEventsPage = () => {
 
                       <div className={styles.actions}>
                         <Link href={`/events/${ref}`} className={styles.ghostBtn}>
-                          {tt('myEvents.view', 'View')}
+                          {tt('myEvents.openEvent', 'Open the event')}
                         </Link>
                         {/* The one action that was missing entirely. The edit
                             endpoint has existed for weeks with nothing calling
@@ -240,7 +240,7 @@ const MyEventsPage = () => {
                         {copied === link.code ? tt('myLinks.copied', 'Copied') : tt('myLinks.copy', 'Copy the link')}
                       </button>
                       <Link href={`/events/${link.event.slug || link.event.event_id}`} className={styles.ghostBtn}>
-                        {tt('myEvents.view', 'View')}
+                        {tt('myEvents.openEvent', 'Open the event')}
                       </Link>
                     </div>
                   </div>)}

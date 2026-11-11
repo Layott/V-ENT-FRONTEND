@@ -323,7 +323,7 @@ function UsersInner() {
                         <td>
                           <div className={shared.actGroup}>
                             <Link href={`/admin/users/${encodeURIComponent(u.username)}`} className={`${shared.actBtn} ${shared.actView} ${styles.rowAction}`}>
-                              {tt("ui.view.69bd", "View")}
+                              {tt('admin.openUser', 'Open user')}
                             </Link>
                             {u.status === 'banned' ? <button className={`${shared.actBtn} ${shared.actApprove} ${styles.rowAction}`} onClick={() => actOnUser(u.id, 'unban')}>
                                 {tt("ui.unban.d267", "Unban")}

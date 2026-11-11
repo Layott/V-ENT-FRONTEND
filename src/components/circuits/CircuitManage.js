@@ -536,6 +536,7 @@ export default function CircuitManage({ slug }) {
   if (!viewer.signedIn) {
     return (
       <div className={styles.container}>
+        <BackLink href={`/circuits/${encodeURIComponent(slug)}`}>{tt('back.toCircuit', 'Back to circuit')}</BackLink>
         <p className={styles.empty}>
           {tt('circuit.manageSignedOut', 'Only the person running this circuit can change it.')}{' '}
           <Link href={`/circuits/${encodeURIComponent(slug)}`} className={styles.textLink}>{tt('circuit.seePublic', 'See the circuit')}</Link>
@@ -552,10 +553,11 @@ export default function CircuitManage({ slug }) {
       </div>
     );
   }
-  if (problem) return <div className={styles.container}><p className={styles.problem} role="alert">{problem}</p></div>;
+  if (problem) return <div className={styles.container}><BackLink href={`/circuits/${encodeURIComponent(slug)}`}>{tt('back.toCircuit', 'Back to circuit')}</BackLink><p className={styles.problem} role="alert">{problem}</p></div>;
   if (!data) {
     return (
       <div className={styles.container} aria-busy="true">
+        <BackLink href={`/circuits/${encodeURIComponent(slug)}`}>{tt('back.toCircuit', 'Back to circuit')}</BackLink>
         <div className={styles.skeletonList}>{[0, 1, 2].map((i) => <div key={i} className={styles.skeleton} />)}</div>
       </div>
     );
@@ -565,6 +567,7 @@ export default function CircuitManage({ slug }) {
   if (!circuit.can_manage) {
     return (
       <div className={styles.container}>
+        <BackLink href={`/circuits/${encodeURIComponent(slug)}`}>{tt('back.toCircuit', 'Back to circuit')}</BackLink>
         <p className={styles.empty}>
           {tt('circuit.manageSignedOut', 'Only the person running this circuit can change it.')}{' '}
           <Link href={`/circuits/${encodeURIComponent(circuit.slug)}`} className={styles.textLink}>{tt('circuit.seePublic', 'See the circuit')}</Link>

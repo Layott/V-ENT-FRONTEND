@@ -132,6 +132,8 @@
   background-color: var(--overlay-gray, #212225); border-radius: 12px; padding: 0.85rem 1rem;
   color: var(--primary-bg); text-decoration: none; min-width: 0;
 }
+/* The row opens a page, so it says so (Apple review S21). */
+.itemChevron { flex: 0 0 auto; margin-left: auto; color: var(--ink-45, rgba(255, 255, 255, 0.45)); font-size: 1.1rem; }
 .itemStep { background-color: #2a2b30; }
 /* A control inside a stepped row takes one more step, or it reads as text (P5 walk F3). */
 .itemStep .ghost, .itemStep .linkBtn { background-color: #33343a; }
