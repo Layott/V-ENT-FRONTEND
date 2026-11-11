@@ -47,7 +47,7 @@
 .pageSub {
   font-family: 'ClashGrotesk-Variable', sans-serif;
   font-size: 0.9rem;
-  color: rgba(255, 255, 255, 0.5);
+  color: var(--ink-50, rgba(255, 255, 255, 0.5));
   max-width: 60ch;
 }
 
@@ -99,7 +99,7 @@
 .badge,
 .org {
   background-color: rgba(255, 255, 255, 0.09);
-  color: rgba(255, 255, 255, 0.65);
+  color: var(--ink-65, rgba(255, 255, 255, 0.65));
   font-size: 0.6875rem;
   letter-spacing: 0.03em;
   padding: 3px 8px;
@@ -117,7 +117,7 @@
   gap: 0.4rem 1.1rem;
   font-family: 'ClashGrotesk-Variable', sans-serif;
   font-size: 0.8rem;
-  color: rgba(255, 255, 255, 0.5);
+  color: var(--ink-50, rgba(255, 255, 255, 0.5));
 }
 
 .meta span {
@@ -210,7 +210,7 @@
   margin: 0.6rem 0 0;
   font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
   font-size: 0.8rem;
-  color: rgba(255, 255, 255, 0.6);
+  color: var(--ink-60, rgba(255, 255, 255, 0.6));
   word-break: break-all;
   user-select: all;
 }
@@ -231,7 +231,7 @@
 .muted {
   font-family: 'ClashGrotesk-Variable', sans-serif;
   font-size: 0.88rem;
-  color: rgba(255, 255, 255, 0.45);
+  color: var(--ink-45, rgba(255, 255, 255, 0.45));
   margin-bottom: 1.25rem;
   max-width: 60ch;
   margin-left: auto;

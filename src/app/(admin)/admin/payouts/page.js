@@ -16,6 +16,7 @@ import Avatar from '@/components/avatar/Avatar';
 import { mediaUrl } from '@/lib/mediaUrl';
 import { adminToken } from '@/lib/adminToken'
 import PagerArrow from '@/components/pager-arrow/PagerArrow';
+import { markScrimDown, isScrimClick } from '@/lib/scrim';
 const PAGE_SIZE = 20;
 const REJECT_REASONS = ['Insufficient documentation', 'Bank details mismatch', 'Suspicious activity', 'Account under review', 'Duplicate request'];
 function statusBadgeClass(s) {
@@ -203,7 +204,7 @@ function PayoutsInner() {
   const totalPages = Math.ceil(total / PAGE_SIZE) || 1;
   if (authLoading) return null;
   return <div className={shared.pageContainer}>
-      <div className={`${shared.sidebarOverlay} ${sidebarOpen ? shared.open : ''}`} onClick={() => setSidebarOpen(false)} />
+      <div className={`${shared.sidebarOverlay} ${sidebarOpen ? shared.open : ''}`} onPointerDown={markScrimDown} onClick={(e) => isScrimClick(e) && (setSidebarOpen(false))} />
       <AdminNav admin={admin} onLogout={logout} sidebarOpen={sidebarOpen} badges={{
       payouts: pendingPayouts.length
     }} />
@@ -279,7 +280,7 @@ function PayoutsInner() {
                             <span>{p.username}</span>
                           </div>
                         </td>
-                        <td><strong>{Number(p.amount_vc).toLocaleString()} VC</strong></td>
+                        <td data-primary><strong>{Number(p.amount_vc).toLocaleString()} VC</strong></td>
                         {/* What the bank receives: the coins' worth less the
                             fee stamped on the request. A row from before the
                             fee carries no payout_ngn and is sent whole. */}

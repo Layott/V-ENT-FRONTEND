@@ -24,7 +24,7 @@
 }
 
 .backLink {
-  color: rgba(255,255,255,0.6);
+  color: var(--ink-60, rgba(255, 255, 255, 0.6));
   font-size: 0.78rem;
   text-decoration: none;
   font-weight: var(--fw-medium);
@@ -43,7 +43,7 @@
 
 .pageSub {
   font-size: var(--fs-p-size-mobile);
-  color: rgba(255,255,255,0.45);
+  color: var(--ink-45, rgba(255, 255, 255, 0.45));
   margin: 0;
 }
 
@@ -94,7 +94,7 @@
   background-color: #1a1a1d;
   border: none;
   border-radius: 8px;
-  color: rgba(255, 255, 255, 0.6);
+  color: var(--ink-60, rgba(255, 255, 255, 0.6));
   font-family: inherit;
   font-size: var(--fs-p-size-mobile);
   font-weight: var(--fw-medium);
@@ -123,7 +123,7 @@
 .tabCount {
   font-size: 0.7rem;
   background-color: rgba(255,255,255,0.06);
-  color: rgba(255,255,255,0.6);
+  color: var(--ink-60, rgba(255, 255, 255, 0.6));
   padding: 1px 7px;
   border-radius: 10px;
   font-weight: var(--fw-medium);
@@ -193,7 +193,7 @@
   flex-wrap: wrap;
   gap: 0.4rem;
   font-size: 0.72rem;
-  color: rgba(255,255,255,0.5);
+  color: var(--ink-50, rgba(255, 255, 255, 0.5));
   margin: 0;
 }
 
@@ -216,7 +216,7 @@
 
 .status_upcoming { background: rgba(245,158,11,0.15); color: #f59e0b; }
 .status_in_progress { background: rgba(0,255,8,0.12); color: var(--v-ent-light-gold); }
-.status_completed { background: rgba(255,255,255,0.07); color: rgba(255,255,255,0.5); }
+.status_completed { background: rgba(255,255,255,0.07); color: var(--ink-50, rgba(255, 255, 255, 0.5)); }
 .status_draft { background: rgba(245,158,11,0.15); color: #f59e0b; }
 
 
@@ -287,7 +287,7 @@
 
 .emptySub {
   font-size: var(--fs-p-size-mobile);
-  color: rgba(255,255,255,0.45);
+  color: var(--ink-45, rgba(255, 255, 255, 0.45));
   margin: 0 0 1rem;
 }
 
@@ -352,7 +352,7 @@
 
 .inlineErrorSub {
   font-size: var(--fs-p-size-mobile);
-  color: rgba(255, 255, 255, 0.45);
+  color: var(--ink-45, rgba(255, 255, 255, 0.45));
   margin: 0 0 1rem;
 }
 
@@ -369,7 +369,7 @@
   border-radius: 8px;
 }
 
-.regBadge { background: rgba(255,255,255,0.06); color: rgba(255,255,255,0.6); }
+.regBadge { background: rgba(255,255,255,0.06); color: var(--ink-60, rgba(255, 255, 255, 0.6)); }
 .disputeBadge { background: rgba(237,28,36,0.15); color: var(--v-ent-red); }
 
 /* Deleting a draft. The destructive half of the pair reads as destructive,
@@ -380,7 +380,7 @@
 }
 
 .dangerBtn:hover:enabled { background-color: #5c2023; color: #fff; }
-.dangerBtn:disabled { color: rgba(255, 255, 255, 0.4); cursor: default; }
+.dangerBtn:disabled { color: var(--ink-40, rgba(255, 255, 255, 0.4)); cursor: default; }
 
 /* Delete and Turn it off: quiet red text, set apart at the end of the row
    so it is never mistaken for View or Edit. A row's own destructive action

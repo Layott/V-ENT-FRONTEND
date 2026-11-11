@@ -129,7 +129,7 @@ const MyList = () => {
       <div className={styles.tabsBar}>
         {tabs.map(t => (
           <button key={t.id} type="button" aria-pressed={tab === t.id}
-                  className={tab === t.id ? styles.tabBtnActive : styles.tabBtn}
+                  className={tab === t.id ? `${styles.tabBtn} ${styles.tabBtnActive}` : styles.tabBtn}
                   onClick={() => setTab(t.id)}>
             {t.label}
             <span className={styles.tabCount}>{t.rows.length}</span>

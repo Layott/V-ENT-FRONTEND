@@ -5,6 +5,7 @@ import { useT } from '@/i18n/LanguageProvider';
 import styles from './success.module.css';
 import { entryFeeVc } from '@/components/tournament-lib/tournamentApi';
 import { formatNumber, formatWithZone } from '@/lib/datetime';
+import { markScrimDown, isScrimClick } from '@/lib/scrim';
 
 const SuccessModal = ({ isOpen, onClose, tournament, registrationData }) => {
   const tt = useT();
@@ -21,7 +22,7 @@ const SuccessModal = ({ isOpen, onClose, tournament, registrationData }) => {
   const starts = tournament?.start_date_and_time || tournament?.start_date || null;
 
   return (
-    <div className={styles.modalOverlay} onClick={handleClose}>
+    <div className={styles.modalOverlay} onPointerDown={markScrimDown} onClick={(e) => isScrimClick(e) && handleClose(e)}>
       <div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
         <div className={styles.modalBody}>
           {/* Success Icon */}

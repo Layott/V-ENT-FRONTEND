@@ -239,13 +239,13 @@ button.card { cursor: pointer; }
 .empty {
   background-color: #33343a;
   background-image: none;
-  color: rgba(255, 255, 255, 0.45);
+  color: var(--ink-45, rgba(255, 255, 255, 0.45));
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
-.empty:hover { background-color: #3d3e45; color: rgba(255, 255, 255, 0.7); }
+.empty:hover { background-color: #3d3e45; color: var(--ink-70, rgba(255, 255, 255, 0.7)); }
 
 .emptySlot {
   font-size: 0.78em;

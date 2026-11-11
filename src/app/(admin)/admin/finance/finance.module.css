@@ -31,7 +31,7 @@
 
 .streamNote {
   font-size: 0.76rem;
-  color: rgba(255, 255, 255, 0.4);
+  color: var(--ink-40, rgba(255, 255, 255, 0.4));
   margin-top: 0.3rem;
 }
 
@@ -40,7 +40,7 @@
 /* What the cards above leave out, said once under them (inbox 437). */
 .leftOut {
   font-size: 0.8rem;
-  color: rgba(255, 255, 255, 0.55);
+  color: var(--ink-55, rgba(255, 255, 255, 0.55));
   margin: -0.5rem 0 1.5rem;
   max-width: 70ch;
 }

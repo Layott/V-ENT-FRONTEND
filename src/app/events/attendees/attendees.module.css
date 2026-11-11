@@ -22,7 +22,7 @@
 
 .backLink {
   display: inline-block;
-  color: rgba(255, 255, 255, 0.55);
+  color: var(--ink-55, rgba(255, 255, 255, 0.55));
   font-size: 0.85rem;
   text-decoration: none;
   margin-bottom: 0.6rem;
@@ -35,9 +35,9 @@
   margin: 0 0 0.35rem;
 }
 
-.pageSubtitle { color: rgba(255, 255, 255, 0.55); margin: 0; }
+.pageSubtitle { color: var(--ink-55, rgba(255, 255, 255, 0.55)); margin: 0; }
 
-.stateText { color: rgba(255, 255, 255, 0.55); padding: 2rem 0; }
+.stateText { color: var(--ink-55, rgba(255, 255, 255, 0.55)); padding: 2rem 0; }
 
 /* stats */
 .statRow {
@@ -59,7 +59,7 @@
 
 .statIcon { font-size: 1.4rem; color: var(--v-ent-red); flex-shrink: 0; }
 .statValue { font-size: 1.6rem; font-weight: var(--fw-bold); margin: 0; line-height: 1.1; }
-.statLabel { font-size: 0.78rem; color: rgba(255, 255, 255, 0.5); margin: 0.15rem 0 0; }
+.statLabel { font-size: 0.78rem; color: var(--ink-50, rgba(255, 255, 255, 0.5)); margin: 0.15rem 0 0; }
 
 /* check-in */
 .scanCard {
@@ -113,7 +113,7 @@
   margin-bottom: 1rem;
 }
 
-.searchIcon { position: absolute; left: 0.8rem; color: rgba(255, 255, 255, 0.4); }
+.searchIcon { position: absolute; left: 0.8rem; color: var(--ink-40, rgba(255, 255, 255, 0.4)); }
 
 .searchInput {
   width: 100%;
@@ -141,7 +141,7 @@
   font-size: 0.72rem;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.45);
+  color: var(--ink-45, rgba(255, 255, 255, 0.45));
   font-weight: var(--fw-semi-bold);
   padding: 0.85rem 1rem;
 
@@ -158,9 +158,9 @@
 .table tbody tr:nth-child(even) td { background: rgba(255, 255, 255, 0.025); }
 
 .name { display: block; font-weight: var(--fw-medium); }
-.handle { display: block; font-size: 0.78rem; color: rgba(255, 255, 255, 0.45); }
+.handle { display: block; font-size: 0.78rem; color: var(--ink-45, rgba(255, 255, 255, 0.45)); }
 .code { font-family: ui-monospace, Menlo, Consolas, monospace; letter-spacing: 0.04em; }
-.muted { color: rgba(255, 255, 255, 0.5); }
+.muted { color: var(--ink-50, rgba(255, 255, 255, 0.5)); }
 
 .badge {
   display: inline-block;
@@ -169,12 +169,12 @@
   font-size: 0.72rem;
   text-transform: capitalize;
   background: rgba(255, 255, 255, 0.08);
-  color: rgba(255, 255, 255, 0.7);
+  color: var(--ink-70, rgba(255, 255, 255, 0.7));
 }
 
 .badge_valid { background: rgba(224, 165, 38, 0.16); color: #e0a526; }
 .badge_checked_in { background: rgba(76, 175, 80, 0.16); color: #66bb6a; }
-.badge_refunded, .badge_cancelled { background: rgba(255, 255, 255, 0.08); color: rgba(255, 255, 255, 0.55); }
+.badge_refunded, .badge_cancelled { background: rgba(255, 255, 255, 0.08); color: var(--ink-55, rgba(255, 255, 255, 0.55)); }
 
 .errorBox {
   background-color: var(--overlay-gray);
@@ -184,7 +184,7 @@
   text-align: center;
 }
 .errorTitle { font-weight: var(--fw-semi-bold); margin: 0 0 0.4rem; }
-.errorSub { color: rgba(255, 255, 255, 0.55); margin: 0 0 1rem; }
+.errorSub { color: var(--ink-55, rgba(255, 255, 255, 0.55)); margin: 0 0 1rem; }
 
 @media only screen and (min-width: 1024px) {
   .rightPaneContainer {
@@ -228,7 +228,7 @@
 }
 
 .answerLabel {
-  color: rgba(255, 255, 255, 0.5);
+  color: var(--ink-50, rgba(255, 255, 255, 0.5));
   font-size: 0.72rem;
 }
 
@@ -267,7 +267,7 @@
   padding: 0 1rem;
   border-radius: 8px;
   background-color: #2a2b30;
-  color: rgba(255, 255, 255, 0.65);
+  color: var(--ink-65, rgba(255, 255, 255, 0.65));
   font-size: 0.85rem;
   cursor: pointer;
 }
@@ -286,7 +286,7 @@
   padding: 0.75rem 0.95rem;
   border-radius: 10px;
   background-color: #2a2b30;
-  color: rgba(255, 255, 255, 0.75);
+  color: var(--ink-75, rgba(255, 255, 255, 0.75));
   font-size: 0.85rem;
 }
 
@@ -304,13 +304,13 @@
 
 .rowDone {
   font-size: 0.78rem;
-  color: rgba(255, 255, 255, 0.4);
+  color: var(--ink-40, rgba(255, 255, 255, 0.4));
 }
 
 .selfTag {
   display: block;
   font-size: 0.72rem;
-  color: rgba(255, 255, 255, 0.4);
+  color: var(--ink-40, rgba(255, 255, 255, 0.4));
 }
 
 /* A header a screen reader announces and nobody else sees. */
@@ -333,7 +333,7 @@
   padding: 0 0.95rem;
   border-radius: 8px;
   background-color: #33343a;
-  color: rgba(255, 255, 255, 0.8);
+  color: var(--ink-80, rgba(255, 255, 255, 0.8));
   font-size: 0.82rem;
   cursor: pointer;
   white-space: nowrap;

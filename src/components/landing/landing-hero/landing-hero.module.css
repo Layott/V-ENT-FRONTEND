@@ -230,7 +230,7 @@
 .topLeftImageContainer {
   height: 120px;
   border-radius: 20px;
-  transition: all ease-in-out 0.15s;
+  transition: background-color 150ms ease-out, color 150ms ease-out, opacity 150ms ease-out;
 }
 
 .bottomLeftImageContainer img,

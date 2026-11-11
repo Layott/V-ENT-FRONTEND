@@ -80,7 +80,7 @@
   font-size: 0.7rem;
   font-weight: var(--fw-semi-bold);
   background: rgba(255, 255, 255, 0.07);
-  color: rgba(255, 255, 255, 0.65);
+  color: var(--ink-65, rgba(255, 255, 255, 0.65));
   white-space: nowrap;
 }
 
@@ -116,7 +116,7 @@
   font-size: 0.6875rem;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.45);
+  color: var(--ink-45, rgba(255, 255, 255, 0.45));
 }
 
 .chipName {
@@ -147,7 +147,7 @@
 .blurb {
   margin: 0 0 1rem;
   max-width: 62ch;
-  color: rgba(255, 255, 255, 0.68);
+  color: var(--ink-68, rgba(255, 255, 255, 0.68));
   line-height: 1.55;
 }
 

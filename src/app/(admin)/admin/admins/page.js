@@ -32,6 +32,7 @@ import shared from '@/components/admin/admin.module.css';
 import styles from './admins.module.css';
 import { adminToken } from '@/lib/adminToken'
 import UserPicker from '@/components/user-picker/UserPicker';
+import { markScrimDown, isScrimClick } from '@/lib/scrim';
 
 const API = process.env.NEXT_PUBLIC_API_URL;
 
@@ -142,7 +143,7 @@ function AdminsInner() {
 
   return <div className={shared.pageContainer}>
       <div className={`${shared.sidebarOverlay} ${sidebarOpen ? shared.open : ''}`}
-           onClick={() => setSidebarOpen(false)} />
+           onPointerDown={markScrimDown} onClick={(e) => isScrimClick(e) && (setSidebarOpen(false))} />
       <AdminNav admin={admin} onLogout={logout} sidebarOpen={sidebarOpen} badges={{}} />
       <div className={shared.mainContainer}>
         <AdminHeader admin={admin} onLogout={logout} onMenuOpen={() => setSidebarOpen(true)}
@@ -257,7 +258,7 @@ function AdminsInner() {
       </div>
 
       {grantOpen ? <div className={shared.modalOverlay}
-                        onClick={(e) => { if (e.target === e.currentTarget) setGrantOpen(false); }}>
+                        onPointerDown={markScrimDown} onClick={(e) => { if (isScrimClick(e)) setGrantOpen(false); }}>
         <div className={shared.modal}>
           <h3 className={shared.modalTitle}>{tt('adminAdmins.grantTitle', 'Give somebody a role')}</h3>
           <p className={shared.modalSub}>
@@ -288,7 +289,7 @@ function AdminsInner() {
       </div> : null}
 
       {revoking ? <div className={shared.modalOverlay}
-                       onClick={(e) => { if (e.target === e.currentTarget) setRevoking(null); }}>
+                       onPointerDown={markScrimDown} onClick={(e) => { if (isScrimClick(e)) setRevoking(null); }}>
         <div className={shared.modal}>
           <h3 className={shared.modalTitle}>
             {tt('adminAdmins.revokeTitle', 'Take the console away from {who}?')

@@ -34,7 +34,7 @@
 .select:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
 
 .hint {
-  color: rgba(255, 255, 255, 0.6);
+  color: var(--ink-60, rgba(255, 255, 255, 0.6));
   font-size: 0.85rem;
   line-height: 1.5;
   margin: 0.6rem 0 0;

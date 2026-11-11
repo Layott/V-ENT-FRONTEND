@@ -23,6 +23,7 @@ import styles from './vendor-shop.module.css';
 import { useT } from '@/i18n/LanguageProvider';
 import { useTx } from '@/i18n/LanguageProvider';
 import { fuzzyMatches } from '@/lib/fuzzy';
+import { markScrimDown, isScrimClick } from '@/lib/scrim';
 const CART_STORAGE_KEY = eventId => `vendor_cart_${eventId || 'unknown'}`;
 const VendorShopContent = ({
   slug: slugFromPath
@@ -357,8 +358,8 @@ const VendorShopContent = ({
       <BottomMenu />
 
       {/* Product modal */}
-      {activeProduct && <div className={styles.modalOverlay} onClick={e => {
-      if (e.target === e.currentTarget) setActiveProduct(null);
+      {activeProduct && <div className={styles.modalOverlay} onPointerDown={markScrimDown} onClick={e => {
+      if (isScrimClick(e)) setActiveProduct(null);
     }}>
           <div className={styles.productModal}>
             <button className={styles.modalCloseAbs} onClick={() => setActiveProduct(null)} type="button" aria-label={tt("ui.close.bbfa", "Close")}>
@@ -391,8 +392,8 @@ const VendorShopContent = ({
         </div>}
 
       {/* Cart drawer */}
-      {cartOpen && <div className={styles.modalOverlay} onClick={e => {
-      if (e.target === e.currentTarget) setCartOpen(false);
+      {cartOpen && <div className={styles.modalOverlay} onPointerDown={markScrimDown} onClick={e => {
+      if (isScrimClick(e)) setCartOpen(false);
     }}>
           <aside className={styles.cartDrawer}>
             <div className={styles.cartHeader}>

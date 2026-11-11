@@ -18,7 +18,7 @@
 }
 
 .backLink {
-  color: rgba(255, 255, 255, 0.55);
+  color: var(--ink-55, rgba(255, 255, 255, 0.55));
   font-size: var(--fs-p-size-mobile);
   text-decoration: none;
   width: fit-content;
@@ -52,7 +52,7 @@
 
 .subTitle {
   margin: 0.2rem 0 0;
-  color: rgba(255, 255, 255, 0.55);
+  color: var(--ink-55, rgba(255, 255, 255, 0.55));
   font-size: var(--fs-p-size-mobile);
 }
 
@@ -88,7 +88,7 @@
   border-radius: 999px;
 
   background-color: transparent;
-  color: rgba(255, 255, 255, 0.65);
+  color: var(--ink-65, rgba(255, 255, 255, 0.65));
   font-family: inherit;
   font-size: 0.8rem;
   cursor: pointer;
@@ -149,7 +149,7 @@
 .orderDate {
   margin: 0.15rem 0 0;
   font-size: 0.75rem;
-  color: rgba(255, 255, 255, 0.5);
+  color: var(--ink-50, rgba(255, 255, 255, 0.5));
 }
 
 .orderThumbs {
@@ -177,7 +177,7 @@
   justify-content: center;
   font-size: 0.85rem;
   font-weight: var(--fw-semi-bold);
-  color: rgba(255, 255, 255, 0.7);
+  color: var(--ink-70, rgba(255, 255, 255, 0.7));
 }
 
 .orderCardFoot {
@@ -191,7 +191,7 @@
 .orderItemsCount {
   margin: 0;
   font-size: 0.75rem;
-  color: rgba(255, 255, 255, 0.5);
+  color: var(--ink-50, rgba(255, 255, 255, 0.5));
 }
 
 .orderTotal {
@@ -207,7 +207,7 @@
   align-items: center;
   gap: 0.3rem;
   font-size: 0.8rem;
-  color: rgba(255, 255, 255, 0.7);
+  color: var(--ink-70, rgba(255, 255, 255, 0.7));
   font-weight: var(--fw-semi-bold);
 }
 
@@ -285,7 +285,7 @@
 
 .detailSub {
   margin: 0.2rem 0 0;
-  color: rgba(255, 255, 255, 0.55);
+  color: var(--ink-55, rgba(255, 255, 255, 0.55));
   font-size: 0.85rem;
 }
 
@@ -306,7 +306,7 @@
   font-size: 0.85rem;
   text-transform: uppercase;
   letter-spacing: 0.06em;
-  color: rgba(255, 255, 255, 0.55);
+  color: var(--ink-55, rgba(255, 255, 255, 0.55));
   font-weight: var(--fw-semi-bold);
 }
 
@@ -354,7 +354,7 @@
   border-radius: 50%;
   background-color: rgba(255, 255, 255, 0.06);
 
-  color: rgba(255, 255, 255, 0.5);
+  color: var(--ink-50, rgba(255, 255, 255, 0.5));
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -390,7 +390,7 @@
 .timelineHint {
   margin: 0;
   font-size: 0.75rem;
-  color: rgba(255, 255, 255, 0.5);
+  color: var(--ink-50, rgba(255, 255, 255, 0.5));
 }
 
 .timelineCancelled {
@@ -468,7 +468,7 @@
 .itemMeta {
   margin: 0.15rem 0 0;
   font-size: 0.72rem;
-  color: rgba(255, 255, 255, 0.45);
+  color: var(--ink-45, rgba(255, 255, 255, 0.45));
 }
 
 .itemPrice {
@@ -492,7 +492,7 @@
   display: flex;
   justify-content: space-between;
   font-size: 0.85rem;
-  color: rgba(255, 255, 255, 0.7);
+  color: var(--ink-70, rgba(255, 255, 255, 0.7));
 }
 
 .totalRow span:last-child { color: var(--primary-bg); font-weight: var(--fw-medium); }
@@ -531,7 +531,7 @@
 .addrLineMuted {
   margin: 0;
   font-size: 0.8rem;
-  color: rgba(255, 255, 255, 0.6);
+  color: var(--ink-60, rgba(255, 255, 255, 0.6));
   line-height: 1.5;
 }
 
@@ -575,7 +575,7 @@
 
 .emptySub {
   margin: 0 0 0.75rem;
-  color: rgba(255, 255, 255, 0.55);
+  color: var(--ink-55, rgba(255, 255, 255, 0.55));
   font-size: 0.85rem;
   max-width: 400px;
 }

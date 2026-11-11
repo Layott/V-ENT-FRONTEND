@@ -25,7 +25,7 @@
 .codeIntro {
   font-size: 0.88rem;
   line-height: 1.5;
-  color: rgba(255, 255, 255, 0.6);
+  color: var(--ink-60, rgba(255, 255, 255, 0.6));
   max-width: 46ch;
 }
 
@@ -42,7 +42,7 @@
   font-size: 0.72rem;
   text-transform: uppercase;
   letter-spacing: 0.08em;
-  color: rgba(255, 255, 255, 0.4);
+  color: var(--ink-40, rgba(255, 255, 255, 0.4));
 }
 
 .secret {
@@ -61,7 +61,7 @@
 
 .codeLabel {
   font-size: 0.8rem;
-  color: rgba(255, 255, 255, 0.6);
+  color: var(--ink-60, rgba(255, 255, 255, 0.6));
 }
 
 .codeInput {
@@ -84,7 +84,7 @@
 
 .codeHelp {
   font-size: 0.76rem;
-  color: rgba(255, 255, 255, 0.4);
+  color: var(--ink-40, rgba(255, 255, 255, 0.4));
 }
 
 .codeSubmit {
@@ -94,7 +94,7 @@
 
 .codeBack {
   background: none;
-  color: rgba(255, 255, 255, 0.5);
+  color: var(--ink-50, rgba(255, 255, 255, 0.5));
   font-size: 0.8rem;
   padding: 0.4rem;
   cursor: pointer;

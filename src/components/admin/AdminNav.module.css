@@ -59,11 +59,11 @@
 }
 .role_super    { background: rgba(237,28,36,0.15); color: var(--v-ent-red); }
 .role_finance  { background: rgba(212, 175, 55,0.12); color: var(--v-ent-gold); }
-.role_moderator { background: rgba(255,255,255,0.07); color: rgba(255,255,255,0.5); }
+.role_moderator { background: rgba(255,255,255,0.07); color: var(--ink-50, rgba(255, 255, 255, 0.5)); }
 .roleUsername {
   font-family: "ClashGrotesk-Variable", sans-serif;
   font-size: 0.72rem;
-  color: rgba(255, 255, 255, 0.38);
+  color: var(--ink-38, rgba(255, 255, 255, 0.38));
 }
 
 /* Nav */
@@ -83,7 +83,7 @@
   width: calc(100% - 1.5rem);
   border-radius: 8px;
 
-  transition: all 0.3s ease;
+  transition: background-color 150ms ease-out, color 150ms ease-out, opacity 150ms ease-out;
 }
 .navItem:hover { border-color: #6e6e6e; }
 .activeItem { background-color: rgba(237, 28, 36, 0.2392); border-color: transparent !important; }
@@ -147,17 +147,17 @@
   display: block;
   font-size: 0.8rem;
   font-weight: 500;
-  color: rgba(255, 255, 255, 0.8);
+  color: var(--ink-80, rgba(255, 255, 255, 0.8));
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
-.userRole { font-size: 0.6875rem; color: rgba(255, 255, 255, 0.38); }
+.userRole { font-size: 0.6875rem; color: var(--ink-38, rgba(255, 255, 255, 0.38)); }
 .logoutBtn {
   background: none;
   border: none;
   cursor: pointer;
-  color: rgba(255, 255, 255, 0.3);
+  color: var(--ink-30, rgba(255, 255, 255, 0.3));
   font-size: 0.95rem;
   display: flex;
   align-items: center;
@@ -191,7 +191,7 @@
   padding: 9px 12px;
   border-radius: 10px;
   background: rgba(255, 255, 255, 0.05);
-  color: rgba(255, 255, 255, 0.78);
+  color: var(--ink-78, rgba(255, 255, 255, 0.78));
   font-size: 0.8rem;
   font-weight: 500;
   text-decoration: none;

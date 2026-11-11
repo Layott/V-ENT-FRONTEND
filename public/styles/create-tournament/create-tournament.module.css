@@ -206,7 +206,7 @@
   padding: 0.45rem 1rem;
   font-size: 1rem;
   border-radius: 8px;
-  transition: all ease-in-out 0.15s;
+  transition: background-color 150ms ease-out;
   cursor: pointer;
 }
 
@@ -375,7 +375,7 @@
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  transition: all ease-in-out 0.15s;
+  transition: background-color 150ms ease-out;
 }
 
 .editBTN:hover {
@@ -514,7 +514,7 @@
 /* "No sponsors added". A written answer on the page background rather than a
    dashed rectangle, which is the empty state this design uses everywhere. */
 .mutedNote {
-  color: rgba(255, 255, 255, 0.45);
+  color: var(--ink-45, rgba(255, 255, 255, 0.45));
   font-size: var(--fs-p-size-desktop);
   margin: 0.5rem 0 1.5rem;
 }

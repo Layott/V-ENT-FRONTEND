@@ -22,6 +22,7 @@ import PayShortfall from '@/components/pay/PayShortfall';
 import { useT } from '@/i18n/LanguageProvider';
 import { useTx } from '@/i18n/LanguageProvider';
 import { formatDateTime, formatNumber } from '@/lib/datetime';
+import { markScrimDown, isScrimClick } from '@/lib/scrim';
 const EMPTY_PIN = ['', '', '', ''];
 const CoinIcon = ({
   size = 16
@@ -556,7 +557,7 @@ const PaymentModal = ({
         </p>
       </div>;
   }
-  return <div className={styles.modalOverlay} onClick={handleClose}>
+  return <div className={styles.modalOverlay} onPointerDown={markScrimDown} onClick={(e) => isScrimClick(e) && handleClose(e)}>
       <div className={styles.modalContent} onClick={e => e.stopPropagation()}>
         <div className={styles.modalHeader}>
           <div className={styles.headerLeft}>

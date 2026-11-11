@@ -16,6 +16,7 @@ import DateField from '@/components/date-field/DateField';
 import { formatDateTime, formatNumber } from '@/lib/datetime';
 import { adminToken } from '@/lib/adminToken'
 import PagerArrow from '@/components/pager-arrow/PagerArrow';
+import { markScrimDown, isScrimClick } from '@/lib/scrim';
 const PAGE_SIZE = 50;
 const ACTION_BADGE = {
   user_banned: {
@@ -176,7 +177,7 @@ function AuditLogInner() {
       </span>;
   }
   return <div className={shared.pageContainer}>
-      <div className={`${shared.sidebarOverlay} ${sidebarOpen ? shared.open : ''}`} onClick={() => setSidebarOpen(false)} />
+      <div className={`${shared.sidebarOverlay} ${sidebarOpen ? shared.open : ''}`} onPointerDown={markScrimDown} onClick={(e) => isScrimClick(e) && (setSidebarOpen(false))} />
       <AdminNav admin={admin} onLogout={logout} sidebarOpen={sidebarOpen} badges={{}} />
       <div className={shared.mainContainer}>
         <AdminHeader admin={admin} onLogout={logout} onMenuOpen={() => setSidebarOpen(true)} searchValue={search} onSearch={setSearch} />
@@ -231,7 +232,7 @@ function AuditLogInner() {
                           {l.created_at ? formatDateTime(l.created_at) : '-'}
                         </td>
                         <td>{l.admin_username || '-'}</td>
-                        <td>{actionBadge(l.action)}</td>
+                        <td data-primary>{actionBadge(l.action)}</td>
                         <td className={shared.hideMobile}>
                           {l.target_type ? adminTargetLabel(tt, l.target_type, l.target_id) : '-'}
                         </td>

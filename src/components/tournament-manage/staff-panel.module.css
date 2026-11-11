@@ -20,7 +20,7 @@
 .sub {
   margin: 0 0 1rem;
   max-width: 64ch;
-  color: rgba(255, 255, 255, 0.62);
+  color: var(--ink-62, rgba(255, 255, 255, 0.62));
   line-height: 1.5;
 }
 
@@ -36,9 +36,9 @@
 
 .legendRow { min-width: 0; }
 .legendTerm { color: var(--primary-bg); font-weight: var(--fw-semi-bold); font-size: 0.9rem; }
-.legendText { margin: 0.1rem 0 0; color: rgba(255, 255, 255, 0.6); font-size: 0.84rem; line-height: 1.4; }
+.legendText { margin: 0.1rem 0 0; color: var(--ink-60, rgba(255, 255, 255, 0.6)); font-size: 0.84rem; line-height: 1.4; }
 
-.muted { color: rgba(255, 255, 255, 0.55); margin: 0 0 0.6rem; }
+.muted { color: var(--ink-55, rgba(255, 255, 255, 0.55)); margin: 0 0 0.6rem; }
 
 .note {
   margin: 0 0 0.8rem;
@@ -71,7 +71,7 @@
 .rowHead { display: flex; align-items: center; gap: 0.8rem; min-width: 0; }
 .rowMain { display: flex; flex-direction: column; min-width: 0; flex: 1; }
 .rowName { color: var(--primary-bg); font-weight: var(--fw-bold); }
-.rowMeta { color: rgba(255, 255, 255, 0.55); font-size: 0.88rem; }
+.rowMeta { color: var(--ink-55, rgba(255, 255, 255, 0.55)); font-size: 0.88rem; }
 
 .chips { display: flex; flex-wrap: wrap; gap: 0.4rem; }
 
@@ -81,7 +81,7 @@
   border: none;
   border-radius: 8px;
   background-color: #33343a;
-  color: rgba(255, 255, 255, 0.75);
+  color: var(--ink-75, rgba(255, 255, 255, 0.75));
   cursor: pointer;
   font: inherit;
   font-size: 0.86rem;

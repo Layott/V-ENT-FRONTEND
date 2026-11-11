@@ -13,6 +13,7 @@ import { useT } from '@/i18n/LanguageProvider';
 import { useTx } from '@/i18n/LanguageProvider';
 import { adminToken } from '@/lib/adminToken'
 import StudioReview from '@/components/admin/StudioReview';
+import { markScrimDown, isScrimClick } from '@/lib/scrim';
 
 // The partner queue. Approving is not one button: an admin ticks exactly which
 // scopes a partner gets, and SSO is a second decision on top, because a partner
@@ -412,7 +413,7 @@ function PartnersInner() {
         </div>
       </div>
 
-      {open && <div className={styles.drawerBackdrop} onClick={() => setOpen(null)}>
+      {open && <div className={styles.drawerBackdrop} onPointerDown={markScrimDown} onClick={(e) => isScrimClick(e) && (setOpen(null))}>
           <div className={styles.drawer} onClick={e => e.stopPropagation()}>
             <h2 className={styles.drawerTitle}>{open.name}</h2>
             <p className={styles.muted}>

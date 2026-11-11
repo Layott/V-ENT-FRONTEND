@@ -22,7 +22,7 @@
 .title:first-child { margin-top: 0; }
 
 .hint {
-  color: rgba(255, 255, 255, 0.55);
+  color: var(--ink-55, rgba(255, 255, 255, 0.55));
   font-size: 0.9rem;
   line-height: 1.6;
   margin-top: 0.5rem;
@@ -30,7 +30,7 @@
 }
 
 .muted {
-  color: rgba(255, 255, 255, 0.45);
+  color: var(--ink-45, rgba(255, 255, 255, 0.45));
   font-size: 0.92rem;
   margin-top: 0.5rem;
 }
@@ -54,7 +54,7 @@
   border: none;
   border-radius: 10px;
   background-color: #2a2b30;
-  color: rgba(255, 255, 255, 0.72);
+  color: var(--ink-72, rgba(255, 255, 255, 0.72));
   font-family: 'ClashGrotesk-Variable', sans-serif;
   font-size: 0.9rem;
   cursor: pointer;
@@ -104,7 +104,7 @@
   flex: 0 0 6rem;
 }
 
-.input::placeholder, .inputShort::placeholder { color: rgba(255, 255, 255, 0.3); }
+.input::placeholder, .inputShort::placeholder { color: var(--ink-30, rgba(255, 255, 255, 0.3)); }
 .input:focus-visible, .inputShort:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
 
 .primary {
@@ -124,7 +124,7 @@
 
 .primary:hover:enabled { background-color: #ff2229; }
 .primary:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
-.primary:disabled { background-color: #33343a; color: rgba(255, 255, 255, 0.4); cursor: default; }
+.primary:disabled { background-color: #33343a; color: var(--ink-40, rgba(255, 255, 255, 0.4)); cursor: default; }
 
 .secondary {
   composes: primary;
@@ -140,7 +140,7 @@
   border: none;
   border-radius: 10px;
   background-color: transparent;
-  color: rgba(255, 255, 255, 0.55);
+  color: var(--ink-55, rgba(255, 255, 255, 0.55));
   font-family: 'ClashGrotesk-Variable', sans-serif;
   font-size: 0.88rem;
   cursor: pointer;
@@ -179,7 +179,7 @@
   flex: 0 0 auto;
   background-color: #3d3e45;
   border-radius: 8px;
-  color: rgba(255, 255, 255, 0.8);
+  color: var(--ink-80, rgba(255, 255, 255, 0.8));
   font-size: 0.78rem;
   letter-spacing: 0.06em;
   padding: 0.25rem 0.5rem;
@@ -216,7 +216,7 @@
 .represents {
   flex: 1 1 12rem;
   min-width: 0;
-  color: rgba(255, 255, 255, 0.55);
+  color: var(--ink-55, rgba(255, 255, 255, 0.55));
   font-size: 0.88rem;
 }
 

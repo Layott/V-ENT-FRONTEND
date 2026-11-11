@@ -25,7 +25,7 @@
   margin: 0 0 1rem;
   font-size: 0.85rem;
   line-height: 1.55;
-  color: rgba(255, 255, 255, 0.55);
+  color: var(--ink-55, rgba(255, 255, 255, 0.55));
   max-width: 70ch;
 }
 
@@ -71,7 +71,7 @@
   font-weight: var(--fw-semi-bold);
 }
 
-.badgeOk { background-color: rgba(255, 255, 255, 0.07); color: rgba(255, 255, 255, 0.6); }
+.badgeOk { background-color: rgba(255, 255, 255, 0.07); color: var(--ink-60, rgba(255, 255, 255, 0.6)); }
 .badgeBad { background-color: rgba(237, 28, 36, 0.16); color: var(--v-ent-red); }
 
 .capRow {
@@ -111,7 +111,7 @@
   min-width: 0;
 }
 
-.cap { background-color: #2a2b30; color: rgba(255, 255, 255, 0.6); }
+.cap { background-color: #2a2b30; color: var(--ink-60, rgba(255, 255, 255, 0.6)); }
 
 .capOn { background-color: #33413a; color: #fff; }
 
@@ -124,7 +124,7 @@
 .capBlurb {
   font-size: 0.78rem;
   line-height: 1.45;
-  color: rgba(255, 255, 255, 0.5);
+  color: var(--ink-50, rgba(255, 255, 255, 0.5));
 }
 
 .controls {
@@ -160,7 +160,7 @@
   margin: 0;
   font-size: 0.76rem;
   line-height: 1.45;
-  color: rgba(255, 255, 255, 0.6);
+  color: var(--ink-60, rgba(255, 255, 255, 0.6));
 }
 
 .input {
@@ -174,7 +174,7 @@
   min-width: 0;
 }
 
-.input::placeholder { color: rgba(255, 255, 255, 0.3); }
+.input::placeholder { color: var(--ink-30, rgba(255, 255, 255, 0.3)); }
 
 .pair { display: flex; gap: 0.5rem; flex-wrap: wrap; }
 
@@ -189,11 +189,11 @@
 
 .go, .save { background-color: var(--v-ent-success); color: #fff; }
 .danger { background-color: var(--v-ent-red); color: #fff; }
-.ghost { background-color: #33343a; color: rgba(255, 255, 255, 0.75); font-weight: var(--fw-medium); }
+.ghost { background-color: #33343a; color: var(--ink-75, rgba(255, 255, 255, 0.75)); font-weight: var(--fw-medium); }
 
 .go:disabled, .save:disabled, .danger:disabled, .ghost:disabled {
   background-color: #2a2b30;
-  color: rgba(255, 255, 255, 0.3);
+  color: var(--ink-30, rgba(255, 255, 255, 0.3));
   cursor: not-allowed;
 }
 
@@ -219,7 +219,7 @@
   padding: 0.45rem 0.6rem;
   border-radius: 8px;
   font-size: 0.85rem;
-  color: rgba(255, 255, 255, 0.8);
+  color: var(--ink-80, rgba(255, 255, 255, 0.8));
 }
 
 .log li:nth-child(odd) { background-color: #2a2b30; }
@@ -228,7 +228,7 @@
 
 .logWhen {
   flex: 0 0 auto;
-  color: rgba(255, 255, 255, 0.5);
+  color: var(--ink-50, rgba(255, 255, 255, 0.5));
 }
 
 .logWhat {

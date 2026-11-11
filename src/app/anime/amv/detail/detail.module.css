@@ -18,7 +18,7 @@
   gap: 0.4rem;
   margin-bottom: 1rem;
   font-size: var(--fs-p-size-mobile);
-  color: rgba(255, 255, 255, 0.6);
+  color: var(--ink-60, rgba(255, 255, 255, 0.6));
   text-decoration: none;
   transition: color 0.2s;
 }
@@ -114,7 +114,7 @@
 }
 .metaText {
   font-size: var(--fs-p-size-mobile);
-  color: rgba(255, 255, 255, 0.55);
+  color: var(--ink-55, rgba(255, 255, 255, 0.55));
   margin: 0;
 }
 .actionBtns { display: inline-flex; gap: 0.45rem; }
@@ -165,7 +165,7 @@
 }
 .uploaderSub {
   font-size: 0.78rem;
-  color: rgba(255, 255, 255, 0.5);
+  color: var(--ink-50, rgba(255, 255, 255, 0.5));
   margin: 0.1rem 0 0;
 }
 .followBtn {
@@ -189,13 +189,13 @@
 }
 .descText {
   font-size: var(--fs-p-size-mobile);
-  color: rgba(255, 255, 255, 0.78);
+  color: var(--ink-78, rgba(255, 255, 255, 0.78));
   margin: 0;
   line-height: 1.6;
 }
 .songText {
   font-size: 0.82rem;
-  color: rgba(255, 255, 255, 0.6);
+  color: var(--ink-60, rgba(255, 255, 255, 0.6));
   margin: 0;
 }
 .songText strong { color: rgba(255, 255, 255, 0.85); }
@@ -204,7 +204,7 @@
   padding: 0.2rem 0.55rem;
   border-radius: 8px;
   background-color: rgba(255, 255, 255, 0.06);
-  color: rgba(255, 255, 255, 0.7);
+  color: var(--ink-70, rgba(255, 255, 255, 0.7));
   font-size: 0.72rem;
 
   font-weight: var(--fw-medium);
@@ -236,7 +236,7 @@
   outline: none;
 }
 .commentInput:focus { background-color: rgba(255, 255, 255, 0.05); }
-.commentInput::placeholder { color: rgba(255, 255, 255, 0.35); }
+.commentInput::placeholder { color: var(--ink-35, rgba(255, 255, 255, 0.35)); }
 .commentBtn {
   height: 38px;
   padding: 0 1.1rem;
@@ -255,10 +255,10 @@
   font-weight: var(--fw-semi-bold);
   color: var(--primary-bg);
 }
-.commentTime { font-size: 0.72rem; color: rgba(255, 255, 255, 0.4); }
+.commentTime { font-size: 0.72rem; color: var(--ink-40, rgba(255, 255, 255, 0.4)); }
 .commentText {
   font-size: var(--fs-p-size-mobile);
-  color: rgba(255, 255, 255, 0.78);
+  color: var(--ink-78, rgba(255, 255, 255, 0.78));
   margin: 0.15rem 0 0;
   line-height: 1.45;
 }
@@ -268,7 +268,7 @@
 .sideTitle {
   font-size: 0.82rem;
   font-weight: var(--fw-semi-bold);
-  color: rgba(255, 255, 255, 0.78);
+  color: var(--ink-78, rgba(255, 255, 255, 0.78));
   margin: 0 0 0.35rem;
   text-transform: uppercase;
   letter-spacing: 0.06em;
@@ -320,7 +320,7 @@
 }
 .relatedMeta {
   font-size: 0.7rem;
-  color: rgba(255, 255, 255, 0.5);
+  color: var(--ink-50, rgba(255, 255, 255, 0.5));
   margin: 0;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -328,7 +328,7 @@
 }
 .emptyText {
   padding: 1.5rem 1rem;
-  color: rgba(255, 255, 255, 0.45);
+  color: var(--ink-45, rgba(255, 255, 255, 0.45));
   text-align: center;
   font-size: var(--fs-p-size-mobile);
   background-color: var(--overlay-gray);

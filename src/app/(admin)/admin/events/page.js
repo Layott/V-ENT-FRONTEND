@@ -25,6 +25,7 @@ import { useT } from '@/i18n/LanguageProvider';
 import DateField from '@/components/date-field/DateField';
 import { adminToken } from '@/lib/adminToken'
 import PagerArrow from '@/components/pager-arrow/PagerArrow';
+import { markScrimDown, isScrimClick } from '@/lib/scrim';
 const PAGE_SIZE = 20;
 function statusBadgeClass(s) {
   if (s === 'upcoming') return shared.sActive;
@@ -168,7 +169,7 @@ function EventsInner() {
   const totalPages = Math.ceil(total / PAGE_SIZE) || 1;
   if (authLoading) return null;
   return <div className={shared.pageContainer}>
-      <div className={`${shared.sidebarOverlay} ${sidebarOpen ? shared.open : ''}`} onClick={() => setSidebarOpen(false)} />
+      <div className={`${shared.sidebarOverlay} ${sidebarOpen ? shared.open : ''}`} onPointerDown={markScrimDown} onClick={(e) => isScrimClick(e) && (setSidebarOpen(false))} />
       <AdminNav admin={admin} onLogout={logout} sidebarOpen={sidebarOpen} badges={{}} />
       <div className={shared.mainContainer}>
         <AdminHeader admin={admin} onLogout={logout} onMenuOpen={() => setSidebarOpen(true)} searchValue={search} onSearch={setSearch} />
@@ -347,7 +348,7 @@ function EditEventModal({
     });
     onSubmit(payload);
   };
-  return <div className={styles.modalOverlay} onClick={onCancel}>
+  return <div className={styles.modalOverlay} onPointerDown={markScrimDown} onClick={(e) => isScrimClick(e) && onCancel(e)}>
       <div className={styles.modal} onClick={e => e.stopPropagation()}>
         <p className={styles.modalTitle}>{tt("admin.editEventTitle", "Edit event")}</p>
         <p className={styles.modalSub}>

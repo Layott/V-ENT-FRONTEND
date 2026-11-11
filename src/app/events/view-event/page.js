@@ -69,6 +69,7 @@ import { eventTypeLabel } from '@/lib/labels';
 import { plural } from '@/lib/plural';
 import { prizeText } from '@/lib/prize';
 import BackLink from '@/components/back-link/BackLink';
+import { markScrimDown, isScrimClick } from '@/lib/scrim';
 const TABS = [{
   id: 'overview',
   label: 'Overview'
@@ -1901,8 +1902,8 @@ export const ViewEventContent = ({
       <BottomMenu />
 
       {/* Buy ticket modal */}
-      {buyOpen && buyTier && <div className={styles.modalOverlay} onClick={e => {
-      if (e.target === e.currentTarget) closeBuy();
+      {buyOpen && buyTier && <div className={styles.modalOverlay} onPointerDown={markScrimDown} onClick={e => {
+      if (isScrimClick(e)) closeBuy();
     }}>
           <div className={styles.modal}>
             <div className={styles.modalHeader}>

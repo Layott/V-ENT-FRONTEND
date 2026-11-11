@@ -4,7 +4,7 @@
 
 .title {
   margin: 0;
-  color: rgba(255, 255, 255, 0.45);
+  color: var(--ink-45, rgba(255, 255, 255, 0.45));
   font-size: 0.72rem;
   text-transform: uppercase;
   letter-spacing: 0.08em;
@@ -42,7 +42,7 @@
 
 .text { display: flex; flex-direction: column; min-width: 0; flex: 1; gap: 0.1rem; }
 .email { color: #fff; font-size: 0.9rem; overflow-wrap: anywhere; }
-.meta { color: rgba(255, 255, 255, 0.5); font-size: 0.78rem; }
+.meta { color: var(--ink-50, rgba(255, 255, 255, 0.5)); font-size: 0.78rem; }
 
 .withdraw {
   min-height: 44px;

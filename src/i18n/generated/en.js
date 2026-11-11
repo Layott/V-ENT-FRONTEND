@@ -8791,6 +8791,7 @@ const table = {
  "admin.notYours": "This section is not part of your role",
  "admin.notYoursBody": "Your role does not include this part of the console, so there is nothing here for you to change. If you need it, ask a super admin to widen your role.",
  "admin.notYoursNeeds": "It needs: {perms}",
+ "admin.notYoursSection": "Ask a super admin to add {section} to your role.",
  "admin.backToDashboard": "Back to the dashboard",
  "menu.allTournaments": "All tournaments",
  "menu.drafts": "Drafts",

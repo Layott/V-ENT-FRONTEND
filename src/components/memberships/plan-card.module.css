@@ -39,16 +39,16 @@
 .tagline {
   margin: 0;
   font-size: var(--fs-p-size-mobile);
-  color: rgba(255, 255, 255, 0.55);
+  color: var(--ink-55, rgba(255, 255, 255, 0.55));
 }
 
 .seller {
   font-size: var(--fs-p-size-sm-mobile);
-  color: rgba(255, 255, 255, 0.45);
+  color: var(--ink-45, rgba(255, 255, 255, 0.45));
 }
 
 .sellerLink {
-  color: rgba(255, 255, 255, 0.75);
+  color: var(--ink-75, rgba(255, 255, 255, 0.75));
   text-decoration: none;
   font-weight: var(--fw-semi-bold);
 }
@@ -83,12 +83,12 @@
 
 .per {
   font-size: var(--fs-p-size-mobile);
-  color: rgba(255, 255, 255, 0.5);
+  color: var(--ink-50, rgba(255, 255, 255, 0.5));
 }
 
 .priceNgn {
   font-size: var(--fs-p-size-sm-mobile);
-  color: rgba(255, 255, 255, 0.45);
+  color: var(--ink-45, rgba(255, 255, 255, 0.45));
 }
 
 .benefits {
@@ -124,7 +124,7 @@
   border-radius: 8px;
   padding: 0.28rem 0.6rem;
   font-size: var(--fs-p-size-sm-mobile);
-  color: rgba(255, 255, 255, 0.65);
+  color: var(--ink-65, rgba(255, 255, 255, 0.65));
 }
 
 .chipDraft {
@@ -186,7 +186,7 @@
 
 .note {
   font-size: var(--fs-p-size-sm-mobile);
-  color: rgba(255, 255, 255, 0.5);
+  color: var(--ink-50, rgba(255, 255, 255, 0.5));
   margin: 0;
 }
 

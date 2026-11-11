@@ -20,6 +20,7 @@ import { LuChevronRight, LuCircleHelp, LuX } from 'react-icons/lu';
 import { guideFor } from './pageGuides';
 import { useT } from '@/i18n/LanguageProvider';
 import styles from './page-help.module.css';
+import { markScrimDown, isScrimClick } from '@/lib/scrim';
 
 // Pages that are already an explanation, or where a floating button would sit
 // on top of the thing somebody is trying to use.
@@ -96,7 +97,7 @@ export default function PageHelp() {
           role="dialog"
           aria-modal="true"
           aria-label={label}
-          onClick={(e) => { if (e.target === e.currentTarget) setOpen(false); }}
+          onPointerDown={markScrimDown} onClick={(e) => { if (isScrimClick(e)) setOpen(false); }}
         >
           <div className={styles.panel}>
             <div className={styles.head}>

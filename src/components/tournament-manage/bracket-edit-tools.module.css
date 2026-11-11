@@ -20,12 +20,12 @@
 .sub {
   margin: 0 0 1rem;
   max-width: 68ch;
-  color: rgba(255, 255, 255, 0.55);
+  color: var(--ink-55, rgba(255, 255, 255, 0.55));
   font-size: 0.9rem;
   line-height: 1.5;
 }
 
-.muted { margin: 0; color: rgba(255, 255, 255, 0.55); font-size: 0.85rem; }
+.muted { margin: 0; color: var(--ink-55, rgba(255, 255, 255, 0.55)); font-size: 0.85rem; }
 
 .problem {
   margin: 0 0 0.8rem;
@@ -73,7 +73,7 @@
 .field { display: flex; flex-direction: column; gap: 0.3rem; min-width: 0; margin-bottom: 0.6rem; }
 
 .label {
-  color: rgba(255, 255, 255, 0.55);
+  color: var(--ink-55, rgba(255, 255, 255, 0.55));
   font-size: 0.78rem;
   letter-spacing: 0.06em;
   text-transform: uppercase;

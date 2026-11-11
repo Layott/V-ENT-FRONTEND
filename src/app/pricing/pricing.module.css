@@ -79,7 +79,7 @@
 .lede {
   font-size: 1.02rem;
   line-height: 1.65;
-  color: rgba(255, 255, 255, 0.62);
+  color: var(--ink-62, rgba(255, 255, 255, 0.62));
   margin: 0;
   max-width: 56ch;
 }
@@ -107,7 +107,7 @@
 .sectionNote {
   font-size: 0.9rem;
   line-height: 1.6;
-  color: rgba(255, 255, 255, 0.55);
+  color: var(--ink-55, rgba(255, 255, 255, 0.55));
   margin: 0 0 1.5rem;
   max-width: 62ch;
 }
@@ -136,7 +136,7 @@
 .rowNum {
   font-family: ui-monospace, Menlo, Consolas, monospace;
   font-size: 0.82rem;
-  color: rgba(255, 255, 255, 0.32);
+  color: var(--ink-32, rgba(255, 255, 255, 0.32));
 }
 
 .rowTitle {
@@ -150,7 +150,7 @@
   grid-column: 2;
   font-size: 0.9rem;
   line-height: 1.6;
-  color: rgba(255, 255, 255, 0.58);
+  color: var(--ink-58, rgba(255, 255, 255, 0.58));
   margin: 0;
   max-width: 64ch;
 }
@@ -176,7 +176,7 @@
 .promiseBody {
   font-size: 1rem;
   line-height: 1.7;
-  color: rgba(255, 255, 255, 0.78);
+  color: var(--ink-78, rgba(255, 255, 255, 0.78));
   margin: 0;
   max-width: 62ch;
 }
@@ -227,7 +227,7 @@
   padding: 0 1.5rem;
   border-radius: 10px;
   background-color: #2a2b30;
-  color: rgba(255, 255, 255, 0.8);
+  color: var(--ink-80, rgba(255, 255, 255, 0.8));
   font-size: 0.95rem;
   text-decoration: none;
 }

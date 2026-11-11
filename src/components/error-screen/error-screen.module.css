@@ -24,7 +24,7 @@
 
 .icon {
   font-size: 2rem;
-  color: rgba(255, 255, 255, 0.55);
+  color: var(--ink-55, rgba(255, 255, 255, 0.55));
 }
 
 .title {
@@ -36,7 +36,7 @@
 .body {
   font-size: 0.95rem;
   line-height: 1.6;
-  color: rgba(255, 255, 255, 0.68);
+  color: var(--ink-68, rgba(255, 255, 255, 0.68));
   margin: 0;
   max-width: 42ch;
 }
@@ -46,7 +46,7 @@
 .reference {
   margin: 0.25rem 0 0;
   font-size: 0.82rem;
-  color: rgba(255, 255, 255, 0.45);
+  color: var(--ink-45, rgba(255, 255, 255, 0.45));
 }
 
 .code {
@@ -54,7 +54,7 @@
   background-color: #2a2b30;
   border-radius: 8px;
   padding: 3px 7px;
-  color: rgba(255, 255, 255, 0.8);
+  color: var(--ink-80, rgba(255, 255, 255, 0.8));
   letter-spacing: 0.03em;
 }
 
@@ -82,7 +82,7 @@
   padding: 0 1.2rem;
   border-radius: 10px;
   background-color: #33343a;
-  color: rgba(255, 255, 255, 0.8);
+  color: var(--ink-80, rgba(255, 255, 255, 0.8));
   font-size: 0.9rem;
   text-decoration: none;
   cursor: pointer;

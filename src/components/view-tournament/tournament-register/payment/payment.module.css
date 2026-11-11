@@ -48,7 +48,7 @@
   cursor: pointer;
   padding: 8px;
   border-radius: 8px;
-  transition: all 0.2s ease;
+  transition: background-color 150ms ease-out, color 150ms ease-out, opacity 150ms ease-out;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -164,7 +164,7 @@
   border-radius: 12px;
   padding: 24px;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: background-color 150ms ease-out, color 150ms ease-out;
 }
 
 .paymentMethod:hover {
@@ -278,7 +278,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.2s ease;
+  transition: background-color 150ms ease-out;
 }
 
 .paymentMethod.selected .radioButton {
@@ -290,7 +290,7 @@
   height: 12px;
   border-radius: 50%;
   background-color: transparent;
-  transition: all 0.2s ease;
+  transition: background-color 150ms ease-out;
 }
 
 .radioInner.radioSelected {
@@ -315,7 +315,7 @@
   font-size: 1rem;
   font-weight: 500;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: color 150ms ease-out, width 200ms ease-out;
 }
 
 .cancelButton:hover {
@@ -332,7 +332,7 @@
   font-size: 1rem;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: background-color 150ms ease-out, color 150ms ease-out, transform 200ms ease-out, width 200ms ease-out, box-shadow 150ms ease-out;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -567,5 +567,5 @@
   flex-basis: 100%;
   margin-top: 0.35rem;
   font-size: 0.8rem;
-  color: rgba(255, 255, 255, 0.6);
+  color: var(--ink-60, rgba(255, 255, 255, 0.6));
 }

@@ -73,7 +73,7 @@
   margin: 0 0 0.4rem;
   font-size: 0.85rem;
   font-weight: var(--fw-semi-bold);
-  color: rgba(255, 255, 255, 0.8);
+  color: var(--ink-80, rgba(255, 255, 255, 0.8));
 }
 
 .layoutButton {
@@ -104,13 +104,13 @@
 .count {
   font-size: 0.78rem;
   font-weight: var(--fw-regular);
-  color: rgba(255, 255, 255, 0.5);
+  color: var(--ink-50, rgba(255, 255, 255, 0.5));
 }
 
 .help {
   margin: 0.25rem 0 0.6rem;
   font-size: 0.78rem;
-  color: rgba(255, 255, 255, 0.55);
+  color: var(--ink-55, rgba(255, 255, 255, 0.55));
 }
 
 .tiles {
@@ -218,7 +218,7 @@
   border: none;
   border-radius: 10px;
   background: #2a2b30;
-  color: rgba(255, 255, 255, 0.8);
+  color: var(--ink-80, rgba(255, 255, 255, 0.8));
   display: flex;
   flex-direction: column;
   align-items: center;

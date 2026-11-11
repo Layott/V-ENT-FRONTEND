@@ -23,6 +23,7 @@ import Tag from '@/components/tag/Tag';
 import { slotsText } from '@/lib/slots';
 import { prizeText } from '@/lib/prize';
 import BackLink from '@/components/back-link/BackLink';
+import { markScrimDown, isScrimClick } from '@/lib/scrim';
 const formatDate = d => d ? new Date(d).toLocaleDateString(appLocale(), {
   day: 'numeric',
   month: 'short',
@@ -486,7 +487,7 @@ const ManageContent = ({
 
       {toast && <div className={styles.toast}>{toast}</div>}
 
-      {cancelOpen && <div className={styles.modalOverlay} onClick={e => e.target === e.currentTarget && setCancelOpen(false)}>
+      {cancelOpen && <div className={styles.modalOverlay} onPointerDown={markScrimDown} onClick={e => isScrimClick(e) && setCancelOpen(false)}>
           <div className={styles.modal}>
             <div className={styles.modalHeader}>
               <h2 className={styles.modalTitle}>{tt("ui.cancel.tournament.34b3", "Cancel Tournament")}</h2>

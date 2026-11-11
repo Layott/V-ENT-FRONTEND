@@ -15,7 +15,7 @@
 }
 
 .subTitle {
-  color: rgba(255, 255, 255, 0.5);
+  color: var(--ink-50, rgba(255, 255, 255, 0.5));
   font-family: 'ClashGrotesk-Variable', sans-serif;
   font-size: 0.74rem;
   letter-spacing: 0.09em;
@@ -24,7 +24,7 @@
 }
 
 .hint {
-  color: rgba(255, 255, 255, 0.55);
+  color: var(--ink-55, rgba(255, 255, 255, 0.55));
   font-size: 0.9rem;
   line-height: 1.6;
   margin-top: 0.5rem;
@@ -32,7 +32,7 @@
 }
 
 .muted {
-  color: rgba(255, 255, 255, 0.45);
+  color: var(--ink-45, rgba(255, 255, 255, 0.45));
   font-size: 0.92rem;
   margin-top: 0.5rem;
 }
@@ -49,7 +49,7 @@
   border: none;
   border-radius: 10px;
   background-color: #2a2b30;
-  color: rgba(255, 255, 255, 0.72);
+  color: var(--ink-72, rgba(255, 255, 255, 0.72));
   font-family: 'ClashGrotesk-Variable', sans-serif;
   font-size: 0.9rem;
   cursor: pointer;
@@ -83,7 +83,7 @@
   outline: none;
 }
 
-.input::placeholder { color: rgba(255, 255, 255, 0.3); }
+.input::placeholder { color: var(--ink-30, rgba(255, 255, 255, 0.3)); }
 .input:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
 
 .error {
@@ -110,7 +110,7 @@
 
 .send:hover:enabled { background-color: #ff2229; }
 .send:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
-.send:disabled { background-color: #33343a; color: rgba(255, 255, 255, 0.4); cursor: default; }
+.send:disabled { background-color: #33343a; color: var(--ink-40, rgba(255, 255, 255, 0.4)); cursor: default; }
 
 .rows {
   display: flex;
@@ -142,12 +142,12 @@
 .status {
   flex: 0 0 auto;
   font-size: 0.86rem;
-  color: rgba(255, 255, 255, 0.6);
+  color: var(--ink-60, rgba(255, 255, 255, 0.6));
 }
 
 .status_accepted { color: var(--v-ent-success, #4caf50); }
 .status_declined { color: #FF6B6B; }
-.status_withdrawn { color: rgba(255, 255, 255, 0.4); }
+.status_withdrawn { color: var(--ink-40, rgba(255, 255, 255, 0.4)); }
 
 .withdraw {
   flex: 0 0 auto;
@@ -156,7 +156,7 @@
   border: none;
   border-radius: 10px;
   background-color: #33343a;
-  color: rgba(255, 255, 255, 0.8);
+  color: var(--ink-80, rgba(255, 255, 255, 0.8));
   font-size: 0.86rem;
   cursor: pointer;
   outline: none;
@@ -164,4 +164,4 @@
 
 .withdraw:hover:enabled { background-color: #3d3e45; color: #fff; }
 .withdraw:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
-.withdraw:disabled { color: rgba(255, 255, 255, 0.35); cursor: default; }
+.withdraw:disabled { color: var(--ink-35, rgba(255, 255, 255, 0.35)); cursor: default; }

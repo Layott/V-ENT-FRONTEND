@@ -174,7 +174,7 @@
   font-size: 1rem;
   font-weight: 500;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: background-color 150ms ease-out, color 150ms ease-out, width 200ms ease-out;
 }
 
 .closeButton:hover {
@@ -192,7 +192,7 @@
   font-size: 1rem;
   font-weight: 500;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: background-color 150ms ease-out, width 200ms ease-out, box-shadow 150ms ease-out;
 }
 
 .viewTournamentButton:hover {

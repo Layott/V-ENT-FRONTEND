@@ -59,7 +59,7 @@
   justify-content: center;
   padding: 5px;
   border-radius: 8px;
-  transition: all ease-in-out 0.15s;
+  transition: box-shadow 150ms ease-out;
   background-color: #303136;
 
   left: 50%;
@@ -135,7 +135,7 @@
   outline: none;
   border-radius: 8px;
   cursor: pointer;
-  transition: all ease-in-out 0.15s;
+  transition: background-color 150ms ease-out;
   background-color: rgba(255, 255, 255, 0.04);
   min-width: 80px;
   display: flex;
@@ -247,7 +247,7 @@
   justify-content: center;
   padding: 4px 4px;
   border-radius: 8px;
-  transition: all ease-in-out 0.15s;
+  transition: background-color 150ms ease-out;
 }
 
 .galleryViewBTN:hover {
@@ -292,7 +292,7 @@
   font-size: 0.8rem;
   cursor: pointer;
   border-radius: 8px;
-  transition: all ease-in-out 0.15s;
+  transition: background-color 150ms ease-out;
   font-family: "ClashGrotesk-Medium", sans-serif;
   display: flex;
   justify-content: center;

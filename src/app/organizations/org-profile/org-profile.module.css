@@ -19,7 +19,7 @@
 }
 
 .statusText {
-  color: rgba(255, 255, 255, 0.6);
+  color: var(--ink-60, rgba(255, 255, 255, 0.6));
   font-size: var(--fs-p-size-mobile);
   padding: 1rem;
 }
@@ -78,7 +78,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  color: rgba(255, 255, 255, 0.5);
+  color: var(--ink-50, rgba(255, 255, 255, 0.5));
   font-size: 2rem;
   flex-shrink: 0;
 }
@@ -116,7 +116,7 @@
   font-size: 0.7rem;
   font-weight: var(--fw-bold);
   letter-spacing: 0.05em;
-  color: rgba(255, 255, 255, 0.7);
+  color: var(--ink-70, rgba(255, 255, 255, 0.7));
   background-color: rgba(255, 255, 255, 0.08);
   padding: 3px 8px;
   border-radius: 8px;
@@ -143,7 +143,7 @@
   align-items: center;
   gap: 0.85rem;
   font-size: var(--fs-p-size-mobile);
-  color: rgba(255, 255, 255, 0.65);
+  color: var(--ink-65, rgba(255, 255, 255, 0.65));
 }
 
 .metaItem {
@@ -154,7 +154,7 @@
 
 .metaIcon {
   font-size: 0.95rem;
-  color: rgba(255, 255, 255, 0.55);
+  color: var(--ink-55, rgba(255, 255, 255, 0.55));
 }
 
 .focusPill {
@@ -170,7 +170,7 @@
 
 .orgBio {
   font-size: var(--fs-p-size-mobile);
-  color: rgba(255, 255, 255, 0.75);
+  color: var(--ink-75, rgba(255, 255, 255, 0.75));
   line-height: 1.5;
   max-width: 720px;
   margin: 0;
@@ -212,7 +212,7 @@
 .heroBtnPrimary:disabled {
   background-color: rgba(255, 255, 255, 0.08);
 
-  color: rgba(255, 255, 255, 0.5);
+  color: var(--ink-50, rgba(255, 255, 255, 0.5));
   cursor: not-allowed;
 }
 
@@ -251,7 +251,7 @@
 .tabBTN {
   background: transparent;
 
-  color: rgba(255, 255, 255, 0.7);
+  color: var(--ink-70, rgba(255, 255, 255, 0.7));
   font-family: inherit;
   font-size: var(--fs-p-size-mobile);
   font-weight: var(--fw-medium);
@@ -296,7 +296,7 @@
 
 .bioText {
   font-size: var(--fs-p-size-mobile);
-  color: rgba(255, 255, 255, 0.7);
+  color: var(--ink-70, rgba(255, 255, 255, 0.7));
   line-height: 1.55;
   margin: 0;
 }
@@ -341,7 +341,7 @@
 .statLabel {
   display: block;
   font-size: 0.6875rem;
-  color: rgba(255, 255, 255, 0.5);
+  color: var(--ink-50, rgba(255, 255, 255, 0.5));
   text-transform: uppercase;
   letter-spacing: 0.08em;
 }
@@ -384,12 +384,12 @@
   flex-direction: column;
   gap: 0.15rem;
   font-size: var(--fs-p-size-mobile);
-  color: rgba(255, 255, 255, 0.8);
+  color: var(--ink-80, rgba(255, 255, 255, 0.8));
 }
 
 .activityTime {
   font-size: 0.7rem;
-  color: rgba(255, 255, 255, 0.4);
+  color: var(--ink-40, rgba(255, 255, 255, 0.4));
 }
 
 /* ── Founders ── */
@@ -443,7 +443,7 @@
   border-radius: 8px;
 
   font-size: var(--fs-p-size-mobile);
-  color: rgba(255, 255, 255, 0.75);
+  color: var(--ink-75, rgba(255, 255, 255, 0.75));
   cursor: pointer;
   text-decoration: none;
   transition: background-color 0.2s, color 0.2s;
@@ -513,7 +513,7 @@
 
 .miniMeta {
   font-size: 0.78rem;
-  color: rgba(255, 255, 255, 0.55);
+  color: var(--ink-55, rgba(255, 255, 255, 0.55));
   margin: 0;
 }
 
@@ -539,7 +539,7 @@
   font-size: 0.7rem;
   text-transform: uppercase;
   letter-spacing: 0.08em;
-  color: rgba(255, 255, 255, 0.55);
+  color: var(--ink-55, rgba(255, 255, 255, 0.55));
 
   background-color: #1a1a1d;
   font-weight: var(--fw-semi-bold);
@@ -573,7 +573,7 @@
   font-weight: var(--fw-semi-bold);
   text-transform: capitalize;
   background-color: rgba(255, 255, 255, 0.08);
-  color: rgba(255, 255, 255, 0.8);
+  color: var(--ink-80, rgba(255, 255, 255, 0.8));
   letter-spacing: 0.02em;
 }
 
@@ -645,7 +645,7 @@
 
 .memberHandle {
   font-size: 0.7rem;
-  color: rgba(255, 255, 255, 0.5);
+  color: var(--ink-50, rgba(255, 255, 255, 0.5));
 }
 
 .rolePill {
@@ -656,7 +656,7 @@
   font-weight: var(--fw-semi-bold);
   text-transform: capitalize;
   background-color: rgba(255, 255, 255, 0.06);
-  color: rgba(255, 255, 255, 0.7);
+  color: var(--ink-70, rgba(255, 255, 255, 0.7));
 
 }
 
@@ -679,7 +679,7 @@
 }
 
 .cellMuted {
-  color: rgba(255, 255, 255, 0.5);
+  color: var(--ink-50, rgba(255, 255, 255, 0.5));
 }
 
 /* Member action menu */
@@ -691,7 +691,7 @@
 .menuBtn {
   background: transparent;
 
-  color: rgba(255, 255, 255, 0.7);
+  color: var(--ink-70, rgba(255, 255, 255, 0.7));
   border-radius: 8px;
   width: 32px;
   height: 32px;
@@ -743,7 +743,7 @@
   padding: 1.25rem 1rem;
   text-align: center;
   font-size: var(--fs-p-size-mobile);
-  color: rgba(255, 255, 255, 0.5);
+  color: var(--ink-50, rgba(255, 255, 255, 0.5));
 }
 
 /* ── About tab ── */
@@ -772,7 +772,7 @@
 
 .aboutRow dt {
   font-size: 0.72rem;
-  color: rgba(255, 255, 255, 0.5);
+  color: var(--ink-50, rgba(255, 255, 255, 0.5));
   text-transform: uppercase;
   letter-spacing: 0.08em;
   display: inline-flex;

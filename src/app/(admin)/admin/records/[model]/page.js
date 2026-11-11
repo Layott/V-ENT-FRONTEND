@@ -17,6 +17,7 @@ import { apiMessage } from '@/lib/apiMessage';
 import { formatNumber } from '@/lib/datetime';
 import { recordHref, recordsCall } from '@/lib/adminRecords';
 import styles from '../records.module.css';
+import { markScrimDown, isScrimClick } from '@/lib/scrim';
 
 function KindInner() {
   const tt = useT();
@@ -54,7 +55,7 @@ function KindInner() {
   if (authLoading) return null;
   return (
     <div className={shared.pageContainer}>
-      <div className={`${shared.sidebarOverlay} ${sidebarOpen ? shared.open : ''}`} onClick={() => setSidebarOpen(false)} />
+      <div className={`${shared.sidebarOverlay} ${sidebarOpen ? shared.open : ''}`} onPointerDown={markScrimDown} onClick={(e) => isScrimClick(e) && (setSidebarOpen(false))} />
       <AdminNav admin={admin} onLogout={logout} sidebarOpen={sidebarOpen} badges={{}} />
       <div className={shared.mainContainer}>
         <AdminHeader admin={admin} onLogout={logout} onMenuOpen={() => setSidebarOpen(true)} />

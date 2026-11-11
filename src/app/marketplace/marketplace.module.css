@@ -58,7 +58,7 @@
 }
 
 .heroTagline {
-  color: rgba(255, 255, 255, 0.55);
+  color: var(--ink-55, rgba(255, 255, 255, 0.55));
   font-size: var(--fs-p-size-mobile);
   line-height: 1.5;
   margin: 0;
@@ -132,7 +132,7 @@
 .heroSearch:focus-within { background-color: rgba(255, 255, 255, 0.05); }
 
 .heroSearchIcon {
-  color: rgba(255, 255, 255, 0.45);
+  color: var(--ink-45, rgba(255, 255, 255, 0.45));
   font-size: 1rem;
   flex-shrink: 0;
 }
@@ -147,7 +147,7 @@
   font-size: var(--fs-p-size-mobile);
 }
 
-.heroSearchInput::placeholder { color: rgba(255, 255, 255, 0.35); }
+.heroSearchInput::placeholder { color: var(--ink-35, rgba(255, 255, 255, 0.35)); }
 
 /* ── Tabs ── */
 .tabsRow {
@@ -174,7 +174,7 @@
 .tabBtn {
   background: transparent;
 
-  color: rgba(255, 255, 255, 0.7);
+  color: var(--ink-70, rgba(255, 255, 255, 0.7));
   font-family: inherit;
   font-size: var(--fs-p-size-mobile);
   font-weight: var(--fw-medium);
@@ -215,7 +215,7 @@
 
 .catGroupTitle {
   font-size: 0.72rem;
-  color: rgba(255, 255, 255, 0.5);
+  color: var(--ink-50, rgba(255, 255, 255, 0.5));
   text-transform: uppercase;
   letter-spacing: 0.08em;
   font-weight: var(--fw-medium);
@@ -240,7 +240,7 @@
   border-radius: 8px;
   background: transparent;
 
-  color: rgba(255, 255, 255, 0.7);
+  color: var(--ink-70, rgba(255, 255, 255, 0.7));
   cursor: pointer;
   font-family: inherit;
   font-size: var(--fs-p-size-mobile);
@@ -259,7 +259,7 @@
 
 .catCount {
   font-size: 0.7rem;
-  color: rgba(255, 255, 255, 0.45);
+  color: var(--ink-45, rgba(255, 255, 255, 0.45));
   background: rgba(255, 255, 255, 0.06);
   padding: 1px 7px;
   border-radius: 10px;
@@ -284,7 +284,7 @@
 
 .filterLabel {
   font-size: 0.72rem;
-  color: rgba(255, 255, 255, 0.5);
+  color: var(--ink-50, rgba(255, 255, 255, 0.5));
   text-transform: uppercase;
   letter-spacing: 0.08em;
   font-weight: var(--fw-medium);
@@ -303,7 +303,7 @@
   outline: none;
 }
 
-.priceInput::placeholder { color: rgba(255, 255, 255, 0.35); }
+.priceInput::placeholder { color: var(--ink-35, rgba(255, 255, 255, 0.35)); }
 .priceInput:focus { background-color: rgba(255, 255, 255, 0.05); }
 
 .filterSelect {
@@ -333,7 +333,7 @@
   position: absolute;
   right: 0.5rem;
   pointer-events: none;
-  color: rgba(255, 255, 255, 0.45);
+  color: var(--ink-45, rgba(255, 255, 255, 0.45));
 }
 
 .verifiedToggle {
@@ -341,7 +341,7 @@
   align-items: center;
   gap: 0.4rem;
   font-size: var(--fs-p-size-mobile);
-  color: rgba(255, 255, 255, 0.7);
+  color: var(--ink-70, rgba(255, 255, 255, 0.7));
   cursor: pointer;
   user-select: none;
   padding: 0.4rem 0.7rem;
@@ -356,7 +356,7 @@
 .resultsCount {
   margin-left: auto;
   font-size: var(--fs-p-size-mobile);
-  color: rgba(255, 255, 255, 0.5);
+  color: var(--ink-50, rgba(255, 255, 255, 0.5));
 }
 
 /* ── Grid ── */
@@ -470,7 +470,7 @@
   border-radius: 50%;
   background-color: rgba(19, 19, 22, 0.7);
 
-  color: rgba(255, 255, 255, 0.65);
+  color: var(--ink-65, rgba(255, 255, 255, 0.65));
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -524,13 +524,13 @@
 
 .cardPriceUnit {
   font-size: 0.8rem;
-  color: rgba(255, 255, 255, 0.45);
+  color: var(--ink-45, rgba(255, 255, 255, 0.45));
   font-weight: var(--fw-medium);
 }
 
 .cardPriceNgn {
   font-size: 0.75rem;
-  color: rgba(255, 255, 255, 0.45);
+  color: var(--ink-45, rgba(255, 255, 255, 0.45));
   margin-left: auto;
 }
 
@@ -552,7 +552,7 @@
 
 .sellerHandle {
   font-size: 0.78rem;
-  color: rgba(255, 255, 255, 0.7);
+  color: var(--ink-70, rgba(255, 255, 255, 0.7));
   margin: 0;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -573,7 +573,7 @@
   gap: 0.4rem;
   margin-left: auto;
   font-size: 0.7rem;
-  color: rgba(255, 255, 255, 0.5);
+  color: var(--ink-50, rgba(255, 255, 255, 0.5));
 }
 
 .viewBtn {
@@ -594,7 +594,7 @@
 .stateText {
   padding: 3rem 1rem;
   text-align: center;
-  color: rgba(255, 255, 255, 0.45);
+  color: var(--ink-45, rgba(255, 255, 255, 0.45));
   font-size: var(--fs-p-size-desktop);
 }
 
@@ -614,7 +614,7 @@
   border-radius: 8px;
 
   background-color: var(--overlay-gray);
-  color: rgba(255, 255, 255, 0.7);
+  color: var(--ink-70, rgba(255, 255, 255, 0.7));
   font-family: inherit;
   font-size: var(--fs-p-size-mobile);
   cursor: pointer;

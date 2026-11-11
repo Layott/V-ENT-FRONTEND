@@ -6,7 +6,7 @@
   border-radius: 14px;
   padding: 1rem 1.25rem;
   margin: 0 0 1.25rem;
-  color: rgba(255, 255, 255, 0.62);
+  color: var(--ink-62, rgba(255, 255, 255, 0.62));
   font-size: var(--fs-p-size-desktop);
   line-height: 1.55;
 }

@@ -32,7 +32,7 @@
 .backLink {
   display: inline-block;
   font-size: 0.85rem;
-  color: rgba(255, 255, 255, 0.55);
+  color: var(--ink-55, rgba(255, 255, 255, 0.55));
   text-decoration: none;
   margin-bottom: 1rem;
 }
@@ -50,7 +50,7 @@
 .pageSub {
   font-family: 'ClashGrotesk-Variable', sans-serif;
   font-size: 0.9rem;
-  color: rgba(255, 255, 255, 0.5);
+  color: var(--ink-50, rgba(255, 255, 255, 0.5));
   margin-bottom: 1.5rem;
 }
 
@@ -65,7 +65,7 @@
 
 .tab {
   background-color: rgba(255, 255, 255, 0.06);
-  color: rgba(255, 255, 255, 0.7);
+  color: var(--ink-70, rgba(255, 255, 255, 0.7));
   font-family: 'ClashGrotesk-Variable', sans-serif;
   font-size: 0.85rem;
   padding: 8px 16px;
@@ -94,7 +94,7 @@
 .cardHint {
   font-family: 'ClashGrotesk-Variable', sans-serif;
   font-size: 0.82rem;
-  color: rgba(255, 255, 255, 0.45);
+  color: var(--ink-45, rgba(255, 255, 255, 0.45));
   margin-bottom: 1.25rem;
   max-width: 70ch;
 }
@@ -102,7 +102,7 @@
 .muted {
   font-family: 'ClashGrotesk-Variable', sans-serif;
   font-size: 0.88rem;
-  color: rgba(255, 255, 255, 0.45);
+  color: var(--ink-45, rgba(255, 255, 255, 0.45));
   margin-bottom: 1.25rem;
   max-width: 70ch;
 }
@@ -139,7 +139,7 @@
 
 .code {
   background-color: rgba(255, 255, 255, 0.09);
-  color: rgba(255, 255, 255, 0.75);
+  color: var(--ink-75, rgba(255, 255, 255, 0.75));
   font-size: 0.72rem;
   letter-spacing: 0.04em;
   padding: 3px 8px;
@@ -148,7 +148,7 @@
 
 .creditedTo {
   font-size: 0.76rem;
-  color: rgba(255, 255, 255, 0.45);
+  color: var(--ink-45, rgba(255, 255, 255, 0.45));
 }
 
 .offBadge {
@@ -164,7 +164,7 @@
   gap: 1.1rem;
   font-family: 'ClashGrotesk-Variable', sans-serif;
   font-size: 0.8rem;
-  color: rgba(255, 255, 255, 0.5);
+  color: var(--ink-50, rgba(255, 255, 255, 0.5));
 }
 
 .rowStats strong {
@@ -321,7 +321,7 @@
 }
 
 .subTitle {
-  color: rgba(255, 255, 255, 0.55);
+  color: var(--ink-55, rgba(255, 255, 255, 0.55));
   font-family: 'ClashGrotesk-Variable', sans-serif;
   font-size: 0.78rem;
   letter-spacing: 0.06em;
@@ -341,7 +341,7 @@
   display: inline-flex;
   align-items: center;
   gap: 0.4rem;
-  color: rgba(255, 255, 255, 0.7);
+  color: var(--ink-70, rgba(255, 255, 255, 0.7));
   font-size: 0.82rem;
   cursor: pointer;
   white-space: nowrap;
@@ -406,7 +406,7 @@
 .figureLabel {
   font-family: 'ClashGrotesk-Variable', sans-serif;
   font-size: 0.75rem;
-  color: rgba(255, 255, 255, 0.45);
+  color: var(--ink-45, rgba(255, 255, 255, 0.45));
 }
 
 @media (max-width: 480px) {
@@ -455,7 +455,7 @@
   border: none;
   border-radius: 10px;
   background-color: #26262c;
-  color: rgba(255, 255, 255, 0.72);
+  color: var(--ink-72, rgba(255, 255, 255, 0.72));
   font-family: 'ClashGrotesk-Variable', sans-serif;
   font-size: 0.88rem;
   cursor: pointer;
@@ -602,7 +602,7 @@
 }
 
 .limitNote {
-  color: rgba(255, 255, 255, 0.45);
+  color: var(--ink-45, rgba(255, 255, 255, 0.45));
   font-size: 0.78rem;
   max-width: 62ch;
 }
@@ -620,10 +620,10 @@
 
 .limitInput:focus { background-color: rgba(255, 255, 255, 0.08); }
 
-.limitInput::placeholder { color: rgba(255, 255, 255, 0.35); }
+.limitInput::placeholder { color: var(--ink-35, rgba(255, 255, 255, 0.35)); }
 
 .limitGroup {
-  color: rgba(255, 255, 255, 0.55);
+  color: var(--ink-55, rgba(255, 255, 255, 0.55));
   font-family: 'ClashGrotesk-Variable', sans-serif;
   font-size: 0.78rem;
   letter-spacing: 0.06em;
@@ -739,7 +739,7 @@
    one they cannot see. Dimmer, not absent. */
 .primaryBtn:disabled {
   background-color: rgba(237, 28, 36, 0.35);
-  color: rgba(255, 255, 255, 0.6);
+  color: var(--ink-60, rgba(255, 255, 255, 0.6));
   cursor: default;
 }
 
@@ -785,7 +785,7 @@
 }
 
 .capacityLine {
-  color: rgba(255, 255, 255, 0.6);
+  color: var(--ink-60, rgba(255, 255, 255, 0.6));
   font-size: 0.85rem;
   margin: 0;
 }
@@ -853,7 +853,7 @@
 .funnelHint {
   display: block;
   font-size: 0.7rem;
-  color: rgba(255, 255, 255, 0.45);
+  color: var(--ink-45, rgba(255, 255, 255, 0.45));
 }
 
 .funnelCount {
@@ -868,7 +868,7 @@
 .funnelPeople {
   font-size: 0.7rem;
   font-weight: 400;
-  color: rgba(255, 255, 255, 0.45);
+  color: var(--ink-45, rgba(255, 255, 255, 0.45));
   margin-left: 6px;
 }
 
@@ -962,7 +962,7 @@
   cursor: pointer;
 }
 
-.scopeChip { background-color: #2a2b30; color: rgba(255, 255, 255, 0.6); }
+.scopeChip { background-color: #2a2b30; color: var(--ink-60, rgba(255, 255, 255, 0.6)); }
 .scopeChipOn { background-color: #3a3b42; color: #fff; }
 
 .shopBadge {

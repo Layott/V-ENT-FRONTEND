@@ -27,7 +27,7 @@
   justify-content: flex-end;
   min-height: 180px;
   width: 100%;
-  transition: all ease-in-out 0.15s;
+  transition: background-color 150ms ease-out, color 150ms ease-out, opacity 150ms ease-out;
   margin-top: 4rem;
 }
 

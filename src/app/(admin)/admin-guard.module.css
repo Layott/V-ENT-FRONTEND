@@ -29,15 +29,15 @@
 .body {
   font-size: 0.92rem;
   line-height: 1.55;
-  color: rgba(255, 255, 255, 0.72);
+  color: var(--ink-72, rgba(255, 255, 255, 0.72));
   margin: 0 0 1rem;
 }
 
 .needed {
-  font-size: 0.8rem;
-  color: rgba(255, 255, 255, 0.5);
+  font-size: var(--fs-p-size-mobile);
+  color: var(--ink-70, rgba(255, 255, 255, 0.5));
   margin: 0 0 1.4rem;
-  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-family: inherit;
 }
 
 .back {
@@ -47,6 +47,8 @@
   min-height: 44px;
   padding: 0 1.4rem;
   border-radius: 10px;
+  background-color: #303136;
+  color: var(--primary-bg);
   text-decoration: none;
 }
 

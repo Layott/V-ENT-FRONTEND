@@ -24,7 +24,7 @@
   display: inline-flex;
   align-items: center;
   min-height: 44px;
-  color: rgba(255, 255, 255, 0.5);
+  color: var(--ink-50, rgba(255, 255, 255, 0.5));
   font-size: var(--fs-p-size-mobile);
   text-decoration: none;
 }
@@ -47,7 +47,7 @@
 .pageSub {
   margin: 0;
   font-size: var(--fs-p-size-mobile);
-  color: rgba(255, 255, 255, 0.45);
+  color: var(--ink-45, rgba(255, 255, 255, 0.45));
   max-width: 44rem;
 }
 
@@ -89,7 +89,7 @@
   border: none;
   border-radius: 10px;
   padding: 0.6rem 0.8rem;
-  color: rgba(255, 255, 255, 0.8);
+  color: var(--ink-80, rgba(255, 255, 255, 0.8));
   cursor: pointer;
   display: flex;
   flex-direction: column;
@@ -108,7 +108,7 @@
 
 .rowMeta {
   font-size: 0.78rem;
-  color: rgba(255, 255, 255, 0.45);
+  color: var(--ink-45, rgba(255, 255, 255, 0.45));
   margin: 0;
 }
 
@@ -121,7 +121,7 @@
 
 .label {
   font-size: 0.78rem;
-  color: rgba(255, 255, 255, 0.5);
+  color: var(--ink-50, rgba(255, 255, 255, 0.5));
   margin-top: 0.4rem;
 }
 
@@ -180,14 +180,14 @@
 .primaryBtn:disabled,
 .quietBtn:disabled {
   background-color: #3a3b41;
-  color: rgba(255, 255, 255, 0.4);
+  color: var(--ink-40, rgba(255, 255, 255, 0.4));
   cursor: not-allowed;
 }
 
 .empty {
   padding: 2rem 1rem;
   text-align: center;
-  color: rgba(255, 255, 255, 0.5);
+  color: var(--ink-50, rgba(255, 255, 255, 0.5));
   font-size: var(--fs-p-size-mobile);
 }
 

@@ -26,6 +26,7 @@ import Sidebar from '@/components/sidebar/Sidebar';
 import styles from './vendor.module.css';
 import { useT } from '@/i18n/LanguageProvider';
 import { useTx } from '@/i18n/LanguageProvider';
+import { markScrimDown, isScrimClick } from '@/lib/scrim';
 const CART_STORAGE_KEY = eventId => `vendor_cart_${eventId || 'unknown'}`;
 // `eventSlug` and `stallSlug` come from the named address
 // (/events/<event>/stall/<stall>); the query string is the address links
@@ -461,8 +462,8 @@ export const VendorStallContent = ({ eventSlug = '', stallSlug = '' } = {}) => {
       <BottomMenu />
 
       {/* Product modal */}
-      {activeProduct && <div className={styles.modalOverlay} onClick={e => {
-      if (e.target === e.currentTarget) { setActiveProduct(null); setPickedVariant(''); }
+      {activeProduct && <div className={styles.modalOverlay} onPointerDown={markScrimDown} onClick={e => {
+      if (isScrimClick(e)) { setActiveProduct(null); setPickedVariant(''); }
     }}>
           <div className={styles.productModal}>
             <button className={styles.modalCloseAbs} onClick={() => { setActiveProduct(null); setPickedVariant(''); }} type="button" aria-label={tt("ui.close.bbfa", "Close")}>
@@ -505,8 +506,8 @@ export const VendorStallContent = ({ eventSlug = '', stallSlug = '' } = {}) => {
         </div>}
 
       {/* Contact modal */}
-      {contactOpen && <div className={styles.modalOverlay} onClick={e => {
-      if (e.target === e.currentTarget) closeContact();
+      {contactOpen && <div className={styles.modalOverlay} onPointerDown={markScrimDown} onClick={e => {
+      if (isScrimClick(e)) closeContact();
     }}>
           <div className={styles.contactModal}>
             <div className={styles.contactHeader}>
@@ -557,8 +558,8 @@ export const VendorStallContent = ({ eventSlug = '', stallSlug = '' } = {}) => {
         </div>}
 
       {/* ── Cart / checkout ── */}
-      {cartOpen && <div className={styles.modalOverlay} onClick={e => {
-      if (e.target === e.currentTarget) setCartOpen(false);
+      {cartOpen && <div className={styles.modalOverlay} onPointerDown={markScrimDown} onClick={e => {
+      if (isScrimClick(e)) setCartOpen(false);
     }}>
           <div className={styles.cartPanel}>
             <div className={styles.cartHeader}>

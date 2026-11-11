@@ -9,6 +9,7 @@ import shared from './settingsShared.module.css';
 import styles from './PaymentsPanel.module.css';
 import { useT } from '@/i18n/LanguageProvider';
 import { useTx } from '@/i18n/LanguageProvider';
+import { markScrimDown, isScrimClick } from '@/lib/scrim';
 const METHODS = [{
   v: 'wallet',
   label: 'V-ENT Wallet (VC)'
@@ -278,7 +279,7 @@ const PaymentsPanel = ({
       </div>
 
       {/* Add card modal */}
-      {showAddCard && <div className={shared.modalBackdrop} onClick={() => setShowAddCard(false)}>
+      {showAddCard && <div className={shared.modalBackdrop} onPointerDown={markScrimDown} onClick={(e) => isScrimClick(e) && (setShowAddCard(false))}>
           <div className={shared.modal} onClick={e => e.stopPropagation()}>
             <h3 className={shared.modalTitle}>{tt("ui.add.card.5e8c", "Add a card")}</h3>
             <p className={shared.modalSub}>
@@ -295,7 +296,7 @@ const PaymentsPanel = ({
           </div>
         </div>}
 
-      {showPinModal && <div className={shared.modalBackdrop} onClick={() => setShowPinModal(false)}>
+      {showPinModal && <div className={shared.modalBackdrop} onPointerDown={markScrimDown} onClick={(e) => isScrimClick(e) && (setShowPinModal(false))}>
           <div className={shared.modal} onClick={e => e.stopPropagation()}>
             <h3 className={shared.modalTitle}>{hasPin ? tx("Change wallet PIN") : tx("Set wallet PIN")}</h3>
             <p className={shared.modalSub}>

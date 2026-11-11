@@ -5,6 +5,7 @@ import { createPortal } from 'react-dom';
 import { FiChevronLeft, FiChevronRight, FiX } from 'react-icons/fi';
 import { useT } from '@/i18n/LanguageProvider';
 import styles from './image-viewer.module.css';
+import { markScrimDown, isScrimClick } from '@/lib/scrim';
 
 // One picture, large, with the others a press away. Used for what a pitch or
 // stall will look like and for the venue layout (inbox 419: "users should be
@@ -47,7 +48,7 @@ const ImageViewer = ({ images = [], start = 0, onClose }) => {
   // at the same level) can draw over it or hide its buttons.
   return createPortal(
     <div ref={dialogRef} tabIndex={-1} className={styles.backdrop} role="dialog" aria-modal="true" aria-label={current.alt}
-         onClick={(e) => { if (e.target === e.currentTarget) onClose?.(); }}>
+         onPointerDown={markScrimDown} onClick={(e) => { if (isScrimClick(e)) onClose?.(); }}>
       <button type="button" className={`${styles.round} ${styles.close}`}
               onClick={onClose} aria-label={tt('viewer.close', 'Close')}>
         <FiX aria-hidden="true" />

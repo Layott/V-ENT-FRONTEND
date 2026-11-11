@@ -18,7 +18,7 @@
 }
 
 .backLink {
-  color: rgba(255, 255, 255, 0.55);
+  color: var(--ink-55, rgba(255, 255, 255, 0.55));
   font-size: var(--fs-p-size-mobile);
   text-decoration: none;
   width: fit-content;
@@ -32,7 +32,7 @@
 .stateText {
   padding: 3rem 1rem;
   text-align: center;
-  color: rgba(255, 255, 255, 0.55);
+  color: var(--ink-55, rgba(255, 255, 255, 0.55));
   font-size: var(--fs-p-size-desktop);
 }
 
@@ -168,7 +168,7 @@
   font-size: 0.7rem;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.45);
+  color: var(--ink-45, rgba(255, 255, 255, 0.45));
   margin: 0;
   font-weight: var(--fw-semi-bold);
 }
@@ -200,7 +200,7 @@
 }
 
 .reviewCount {
-  color: rgba(255, 255, 255, 0.55);
+  color: var(--ink-55, rgba(255, 255, 255, 0.55));
   font-size: 0.85rem;
 }
 
@@ -221,19 +221,19 @@
 
 .priceUnit {
   font-size: 0.95rem;
-  color: rgba(255, 255, 255, 0.6);
+  color: var(--ink-60, rgba(255, 255, 255, 0.6));
   font-weight: var(--fw-medium);
 }
 
 .priceStrike {
   font-size: 0.95rem;
-  color: rgba(255, 255, 255, 0.4);
+  color: var(--ink-40, rgba(255, 255, 255, 0.4));
   text-decoration: line-through;
 }
 
 .priceNgn {
   font-size: 0.85rem;
-  color: rgba(255, 255, 255, 0.55);
+  color: var(--ink-55, rgba(255, 255, 255, 0.55));
   margin-left: 0.25rem;
 }
 
@@ -275,7 +275,7 @@
 .variantLabel {
   font-size: 0.75rem;
   font-weight: var(--fw-semi-bold);
-  color: rgba(255, 255, 255, 0.7);
+  color: var(--ink-70, rgba(255, 255, 255, 0.7));
   text-transform: uppercase;
   letter-spacing: 0.06em;
 }
@@ -419,7 +419,7 @@
 .qtyHint {
   margin-left: 0.5rem;
   font-size: 0.7rem;
-  color: rgba(255, 255, 255, 0.4);
+  color: var(--ink-40, rgba(255, 255, 255, 0.4));
 }
 
 /* Action row */
@@ -528,7 +528,7 @@
   align-items: center;
   gap: 0.5rem;
   font-size: 0.8rem;
-  color: rgba(255, 255, 255, 0.65);
+  color: var(--ink-65, rgba(255, 255, 255, 0.65));
 }
 
 /* Tabs */
@@ -551,7 +551,7 @@
   padding: 0.7rem 1rem;
   border: none;
   background-color: transparent;
-  color: rgba(255, 255, 255, 0.55);
+  color: var(--ink-55, rgba(255, 255, 255, 0.55));
   font-family: inherit;
   font-size: 0.85rem;
   font-weight: var(--fw-semi-bold);
@@ -570,7 +570,7 @@
 .tabBody { padding: 1.25rem 1.1rem; }
 
 .tabBodyText {
-  color: rgba(255, 255, 255, 0.75);
+  color: var(--ink-75, rgba(255, 255, 255, 0.75));
   font-size: 0.9rem;
   line-height: 1.65;
   margin: 0 0 0.65rem;
@@ -591,7 +591,7 @@
   background-color: rgba(255, 255, 255, 0.06);
 
   font-size: 0.7rem;
-  color: rgba(255, 255, 255, 0.7);
+  color: var(--ink-70, rgba(255, 255, 255, 0.7));
 }
 
 .specsList {
@@ -610,7 +610,7 @@
 
 .specRow:last-child { border-bottom: none; }
 
-.specKey { color: rgba(255, 255, 255, 0.55); }
+.specKey { color: var(--ink-55, rgba(255, 255, 255, 0.55)); }
 
 .specVal {
   color: var(--primary-bg);
@@ -654,7 +654,7 @@
 .reviewBody {
   margin: 0;
   font-size: 0.85rem;
-  color: rgba(255, 255, 255, 0.7);
+  color: var(--ink-70, rgba(255, 255, 255, 0.7));
   line-height: 1.55;
 }
 
@@ -746,7 +746,7 @@
 
 .relatedStrike {
   font-size: 0.75rem;
-  color: rgba(255, 255, 255, 0.4);
+  color: var(--ink-40, rgba(255, 255, 255, 0.4));
   text-decoration: line-through;
 }
 

@@ -92,7 +92,7 @@
   justify-content: center;
   padding: 5px;
   border-radius: 8px;
-  transition: all ease-in-out 0.15s;
+  transition: box-shadow 150ms ease-out;
   background-color: #303136;
 
   right: 1rem;
@@ -392,7 +392,7 @@
   display: block;
   height: 100%;
   position: absolute;
-  transition: all 0.2s ease-out;
+  transition: width 200ms ease-out;
   width: 100%;
   background-color: #FFF;
   right: 0;

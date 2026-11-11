@@ -14,6 +14,7 @@ import PrizeDistribution from './prize-distribution/PrizeDistribution';
 import SponsorsLinks from './sponsors-links/SponsorsLinks';
 import Review from './review/Review';
 import styles from './create-tournament-component.module.css';
+import { scrollBehavior } from '@/lib/scrollMotion';
 
 // Reads the persisted wizard draft synchronously. Used both as the lazy
 // initializer for formData (so the very first render - and therefore every
@@ -409,7 +410,7 @@ const CreateTournamentComponent = ({ draftId = null }) => {
   // Scrolled to, not just rendered. See the note on the banner below.
   useEffect(() => {
     if (statusMessage && bannerRef.current) {
-      bannerRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      bannerRef.current.scrollIntoView({ behavior: scrollBehavior(), block: 'center' });
     }
   }, [statusMessage]);
 

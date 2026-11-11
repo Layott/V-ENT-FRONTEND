@@ -59,7 +59,7 @@
 
 .pageSubtitle {
   font-size: var(--fs-p-size-mobile);
-  color: rgba(255, 255, 255, 0.45);
+  color: var(--ink-45, rgba(255, 255, 255, 0.45));
   margin: 0.25rem 0 0;
 }
 
@@ -85,7 +85,7 @@
   border: none;
   border-radius: 8px;
   padding: 0.5rem 0.9rem;
-  color: rgba(255, 255, 255, 0.7);
+  color: var(--ink-70, rgba(255, 255, 255, 0.7));
   font-family: inherit;
   font-size: 0.9rem;
   font-weight: var(--fw-medium);
@@ -103,7 +103,7 @@
 
 /* ── Shared ── */
 .stateText {
-  color: rgba(255, 255, 255, 0.45);
+  color: var(--ink-45, rgba(255, 255, 255, 0.45));
   font-size: var(--fs-p-size-mobile);
   text-align: center;
   padding: 2rem 1rem;
@@ -137,7 +137,7 @@
   position: absolute;
   left: 0.95rem;
   font-size: 0.85rem;
-  color: rgba(255, 255, 255, 0.4);
+  color: var(--ink-40, rgba(255, 255, 255, 0.4));
 }
 
 .feedSearchInput {
@@ -150,7 +150,7 @@
   font-size: 0.85rem;
 }
 
-.feedSearchInput::placeholder { color: rgba(255, 255, 255, 0.35); }
+.feedSearchInput::placeholder { color: var(--ink-35, rgba(255, 255, 255, 0.35)); }
 
 .composeBox {
   display: flex;
@@ -196,7 +196,7 @@
 }
 
 .composeTextarea:focus { background-color: rgba(255, 255, 255, 0.05); }
-.composeTextarea::placeholder { color: rgba(255, 255, 255, 0.35); }
+.composeTextarea::placeholder { color: var(--ink-35, rgba(255, 255, 255, 0.35)); }
 
 .composeImageWrap {
   position: relative;
@@ -241,7 +241,7 @@
   background: transparent;
 
   border-radius: 8px;
-  color: rgba(255, 255, 255, 0.75);
+  color: var(--ink-75, rgba(255, 255, 255, 0.75));
   font-family: inherit;
   font-size: 0.78rem;
   cursor: pointer;
@@ -256,7 +256,7 @@
 .composeCounter {
   margin-left: auto;
   font-size: 0.7rem;
-  color: rgba(255, 255, 255, 0.4);
+  color: var(--ink-40, rgba(255, 255, 255, 0.4));
 }
 
 .composePostBtn {
@@ -330,13 +330,13 @@
 
 .postAuthorHandle {
   font-size: 0.75rem;
-  color: rgba(255, 255, 255, 0.45);
+  color: var(--ink-45, rgba(255, 255, 255, 0.45));
 }
 
 .postTime {
   margin-left: auto;
   font-size: 0.75rem;
-  color: rgba(255, 255, 255, 0.4);
+  color: var(--ink-40, rgba(255, 255, 255, 0.4));
   flex-shrink: 0;
 }
 
@@ -412,7 +412,7 @@
 .pollFooter {
   margin: 0.25rem 0 0;
   font-size: 0.7rem;
-  color: rgba(255, 255, 255, 0.4);
+  color: var(--ink-40, rgba(255, 255, 255, 0.4));
 }
 
 .postActions {
@@ -432,7 +432,7 @@
   gap: 0.4rem;
   background: transparent;
   border: none;
-  color: rgba(255, 255, 255, 0.5);
+  color: var(--ink-50, rgba(255, 255, 255, 0.5));
   font-family: inherit;
   font-size: 0.8rem;
   cursor: pointer;
@@ -491,7 +491,7 @@
   border: none;
   border-radius: 8px;
   padding: 0.55rem 0.75rem;
-  color: rgba(255, 255, 255, 0.7);
+  color: var(--ink-70, rgba(255, 255, 255, 0.7));
   font-family: inherit;
   font-size: 0.85rem;
   cursor: pointer;
@@ -607,7 +607,7 @@
 .newThreadCancel {
   background: transparent;
 
-  color: rgba(255, 255, 255, 0.65);
+  color: var(--ink-65, rgba(255, 255, 255, 0.65));
   border-radius: 8px;
   padding: 0.5rem 1rem;
   font-family: inherit;
@@ -685,14 +685,14 @@
 }
 
 .threadPin { color: var(--v-ent-gold); font-size: 0.72rem; flex-shrink: 0; }
-.threadLock { color: rgba(255, 255, 255, 0.4); font-size: 0.7rem; flex-shrink: 0; }
+.threadLock { color: var(--ink-40, rgba(255, 255, 255, 0.4)); font-size: 0.7rem; flex-shrink: 0; }
 
 .threadMeta {
   display: flex;
   align-items: center;
   gap: 0.65rem;
   font-size: 0.72rem;
-  color: rgba(255, 255, 255, 0.45);
+  color: var(--ink-45, rgba(255, 255, 255, 0.45));
   flex-wrap: wrap;
 }
 
@@ -723,7 +723,7 @@
 
 .threadReplyLabel {
   font-size: 0.6875rem;
-  color: rgba(255, 255, 255, 0.35);
+  color: var(--ink-35, rgba(255, 255, 255, 0.35));
   text-transform: uppercase;
   letter-spacing: 0.08em;
 }
@@ -824,13 +824,13 @@
 
 .clubMeta {
   font-size: 0.72rem;
-  color: rgba(255, 255, 255, 0.45);
+  color: var(--ink-45, rgba(255, 255, 255, 0.45));
   margin: 0;
 }
 
 .clubDesc {
   font-size: 0.78rem;
-  color: rgba(255, 255, 255, 0.6);
+  color: var(--ink-60, rgba(255, 255, 255, 0.6));
   margin: 0.25rem 0 0;
   line-height: 1.4;
   display: -webkit-box;
@@ -968,13 +968,13 @@
 
 .dmConvoTime {
   font-size: 0.6875rem;
-  color: rgba(255, 255, 255, 0.4);
+  color: var(--ink-40, rgba(255, 255, 255, 0.4));
   flex-shrink: 0;
 }
 
 .dmConvoPreview {
   font-size: 0.75rem;
-  color: rgba(255, 255, 255, 0.5);
+  color: var(--ink-50, rgba(255, 255, 255, 0.5));
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -1020,13 +1020,13 @@
 
 .dmThreadHandle {
   font-size: 0.72rem;
-  color: rgba(255, 255, 255, 0.45);
+  color: var(--ink-45, rgba(255, 255, 255, 0.45));
 }
 
 .dmFullScreenLink {
   margin-left: auto;
   font-size: 0.75rem;
-  color: rgba(255, 255, 255, 0.6);
+  color: var(--ink-60, rgba(255, 255, 255, 0.6));
   text-decoration: none;
   padding: 0.35rem 0.65rem;
 
@@ -1122,7 +1122,7 @@
 }
 
 .dmNewInput::placeholder,
-.dmNewTextarea::placeholder { color: rgba(255, 255, 255, 0.35); }
+.dmNewTextarea::placeholder { color: var(--ink-35, rgba(255, 255, 255, 0.35)); }
 
 .dmNewSendBtn {
   align-self: flex-end;
@@ -1181,7 +1181,7 @@
   align-items: center;
   justify-content: center;
   gap: 0.35rem;
-  color: rgba(255, 255, 255, 0.35);
+  color: var(--ink-35, rgba(255, 255, 255, 0.35));
   padding: 2rem 1rem;
 }
 
@@ -1273,7 +1273,7 @@
   padding: 0.7rem 1rem;
   background-color: #262729;
   font-size: 0.7rem;
-  color: rgba(255, 255, 255, 0.5);
+  color: var(--ink-50, rgba(255, 255, 255, 0.5));
   text-transform: uppercase;
   letter-spacing: 0.08em;
   font-weight: var(--fw-semi-bold);
@@ -1308,12 +1308,12 @@
 }
 
 .scrimOpenSlot {
-  color: rgba(255, 255, 255, 0.4);
+  color: var(--ink-40, rgba(255, 255, 255, 0.4));
   font-style: italic;
 }
 
 .scrimRegionMini {
-  color: rgba(255, 255, 255, 0.4);
+  color: var(--ink-40, rgba(255, 255, 255, 0.4));
   font-weight: var(--fw-regular);
   margin-left: 0.25rem;
 }
@@ -1340,7 +1340,7 @@
 
 .scrimStatusCompleted {
   background-color: rgba(255, 255, 255, 0.08);
-  color: rgba(255, 255, 255, 0.6);
+  color: var(--ink-60, rgba(255, 255, 255, 0.6));
 }
 
 .scrimAcceptBtn {
@@ -1351,7 +1351,7 @@
   font-weight: var(--fw-semi-bold);
 
   background-color: rgba(255, 255, 255, 0.04);
-  color: rgba(255, 255, 255, 0.6);
+  color: var(--ink-60, rgba(255, 255, 255, 0.6));
   cursor: pointer;
 }
 
@@ -1379,7 +1379,7 @@
   }
   .scrimCol::before {
     content: attr(data-label) ': ';
-    color: rgba(255, 255, 255, 0.4);
+    color: var(--ink-40, rgba(255, 255, 255, 0.4));
     font-size: 0.7rem;
     margin-right: 0.35rem;
   }
@@ -1390,7 +1390,7 @@
 /* Scrim accept: own posts are labelled, not actionable. */
 .scrimOwnLabel {
   font-size: 0.75rem;
-  color: rgba(255, 255, 255, 0.4);
+  color: var(--ink-40, rgba(255, 255, 255, 0.4));
 }
 
 .scrimTeamPicker {
@@ -1428,7 +1428,7 @@
   padding: 0.42rem 0.9rem;
   border-radius: 8px;
   background-color: rgba(255, 255, 255, 0.07);
-  color: rgba(255, 255, 255, 0.8);
+  color: var(--ink-80, rgba(255, 255, 255, 0.8));
   font-size: 0.78rem;
   font-weight: var(--fw-semi-bold);
   text-decoration: none;
@@ -1510,7 +1510,7 @@
 
 .clubScopeOff {
   background: rgba(255, 255, 255, 0.05);
-  color: rgba(255, 255, 255, 0.6);
+  color: var(--ink-60, rgba(255, 255, 255, 0.6));
 }
 
 .clubScopeOff:hover { background: rgba(255, 255, 255, 0.1); }
@@ -1534,7 +1534,7 @@
 }
 
 .clubFormHint {
-  color: rgba(255, 255, 255, 0.5);
+  color: var(--ink-50, rgba(255, 255, 255, 0.5));
   font-size: 0.83rem;
   line-height: 1.5;
   margin: 0 0 0.2rem;
@@ -1554,11 +1554,11 @@
 .clubFormArea { resize: vertical; }
 
 .clubFormInput::placeholder,
-.clubFormArea::placeholder { color: rgba(255, 255, 255, 0.35); }
+.clubFormArea::placeholder { color: var(--ink-35, rgba(255, 255, 255, 0.35)); }
 
 .clubFormCheck {
   align-items: center;
-  color: rgba(255, 255, 255, 0.72);
+  color: var(--ink-72, rgba(255, 255, 255, 0.72));
   cursor: pointer;
   display: flex;
   font-size: 0.86rem;
@@ -1584,7 +1584,7 @@
 .clubFormCancel {
   background: rgba(255, 255, 255, 0.06);
   border-radius: 10px;
-  color: rgba(255, 255, 255, 0.7);
+  color: var(--ink-70, rgba(255, 255, 255, 0.7));
   font-size: 0.88rem;
   padding: 0.62rem 1rem;
 }

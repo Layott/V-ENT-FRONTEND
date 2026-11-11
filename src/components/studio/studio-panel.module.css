@@ -13,7 +13,7 @@
 }
 
 .sub, .hint {
-  color: rgba(255, 255, 255, 0.5);
+  color: var(--ink-50, rgba(255, 255, 255, 0.5));
   font-size: 0.85rem;
   line-height: 1.6;
   margin: 0 0 1.25rem;
@@ -22,7 +22,7 @@
 
 .hint { margin-bottom: 0.85rem; }
 
-.muted { color: rgba(255, 255, 255, 0.45); font-size: 0.85rem; }
+.muted { color: var(--ink-45, rgba(255, 255, 255, 0.45)); font-size: 0.85rem; }
 
 .error {
   background: rgba(237, 28, 36, 0.14);
@@ -34,7 +34,7 @@
 }
 
 .section {
-  color: rgba(255, 255, 255, 0.55);
+  color: var(--ink-55, rgba(255, 255, 255, 0.55));
   font-family: 'ClashGrotesk-Variable', sans-serif;
   font-size: 0.78rem;
   letter-spacing: 0.06em;
@@ -51,7 +51,7 @@
 }
 
 .startText {
-  color: rgba(255, 255, 255, 0.62);
+  color: var(--ink-62, rgba(255, 255, 255, 0.62));
   font-size: 0.88rem;
   line-height: 1.6;
   margin: 0 0 1rem;
@@ -83,7 +83,7 @@
   font-weight: 600;
 }
 
-.liveMeta { color: rgba(255, 255, 255, 0.45); font-size: 0.82rem; flex: 1 1 auto; }
+.liveMeta { color: var(--ink-45, rgba(255, 255, 255, 0.45)); font-size: 0.82rem; flex: 1 1 auto; }
 
 /* ------------------------------------------------------------- elements */
 
@@ -124,7 +124,7 @@
 }
 
 .elUrl {
-  color: rgba(255, 255, 255, 0.42);
+  color: var(--ink-42, rgba(255, 255, 255, 0.42));
   font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
   font-size: 0.76rem;
   margin: 0.5rem 0 0;
@@ -143,7 +143,7 @@
 
 .field { display: flex; flex: 1 1 9rem; flex-direction: column; gap: 0.25rem; min-width: 0; }
 
-.fieldLabel { color: rgba(255, 255, 255, 0.5); font-size: 0.76rem; }
+.fieldLabel { color: var(--ink-50, rgba(255, 255, 255, 0.5)); font-size: 0.76rem; }
 
 .input {
   background: rgba(255, 255, 255, 0.06);
@@ -158,7 +158,7 @@
 
 .input:focus { background: rgba(255, 255, 255, 0.1); }
 
-.input::placeholder { color: rgba(255, 255, 255, 0.3); }
+.input::placeholder { color: var(--ink-30, rgba(255, 255, 255, 0.3)); }
 
 .fieldActions { align-items: flex-end; display: flex; flex: 0 0 auto; gap: 0.5rem; }
 
@@ -192,7 +192,7 @@
 .offBtn { background: rgba(255, 255, 255, 0.14); color: #fff; }
 .offBtn:hover { background: rgba(255, 255, 255, 0.2); }
 
-.copyBtn { background: rgba(255, 255, 255, 0.08); color: rgba(255, 255, 255, 0.8); }
+.copyBtn { background: rgba(255, 255, 255, 0.08); color: var(--ink-80, rgba(255, 255, 255, 0.8)); }
 .copyBtn:hover { background: rgba(255, 255, 255, 0.14); }
 
 .primary:focus-visible, .ghost:focus-visible, .onBtn:focus-visible,
@@ -227,7 +227,7 @@
 
 .sectionOff {
   background: rgba(255, 255, 255, 0.08);
-  color: rgba(255, 255, 255, 0.72);
+  color: var(--ink-72, rgba(255, 255, 255, 0.72));
 }
 
 .sectionOff:hover { background: rgba(255, 255, 255, 0.14); }
@@ -237,7 +237,7 @@
    sections alone would not have fixed. */
 .foldBtn {
   background: rgba(255, 255, 255, 0.08);
-  color: rgba(255, 255, 255, 0.8);
+  color: var(--ink-80, rgba(255, 255, 255, 0.8));
 }
 
 .foldBtn:hover { background: rgba(255, 255, 255, 0.14); }
@@ -257,7 +257,7 @@
   padding: 0.6rem 0.85rem;
 }
 
-.pastName { color: rgba(255, 255, 255, 0.8); flex: 1 1 auto; font-size: 0.88rem; }
+.pastName { color: var(--ink-80, rgba(255, 255, 255, 0.8)); flex: 1 1 auto; font-size: 0.88rem; }
 
 @media (max-width: 640px) {
   .field { flex: 1 1 100%; }
@@ -287,7 +287,7 @@
 
 .lookCheck {
   align-items: center;
-  color: rgba(255, 255, 255, 0.78);
+  color: var(--ink-78, rgba(255, 255, 255, 0.78));
   display: flex;
   gap: 0.45rem;
   padding-bottom: 0.5rem;
@@ -371,7 +371,7 @@
 }
 
 .layerOn { background-color: var(--v-ent-red); color: #fff; }
-.layerOff { background-color: #33343a; color: rgba(255, 255, 255, 0.75); }
+.layerOff { background-color: #33343a; color: var(--ink-75, rgba(255, 255, 255, 0.75)); }
 .layerOn:disabled,
 .layerOff:disabled { opacity: 0.45; cursor: not-allowed; }
 
@@ -427,7 +427,7 @@
 .groupCount {
   background: rgba(255, 255, 255, 0.08);
   border-radius: 8px;
-  color: rgba(255, 255, 255, 0.6);
+  color: var(--ink-60, rgba(255, 255, 255, 0.6));
   font-size: 0.75rem;
   padding: 0.1rem 0.5rem;
 }

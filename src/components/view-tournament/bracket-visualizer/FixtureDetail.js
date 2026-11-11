@@ -21,6 +21,7 @@ import { formatWithZone } from '@/lib/datetime';
 import styles from './fixture-detail.module.css';
 import { useAutoRefresh } from '@/lib/useLiveData';
 import { sideLabel } from '@/lib/slotLabel';
+import { markScrimDown, isScrimClick } from '@/lib/scrim';
 
 const API = process.env.NEXT_PUBLIC_API_URL;
 
@@ -85,7 +86,7 @@ export default function FixtureDetail({ match, onClose, format }) {
 
   return (
     <div className={styles.overlay}
-         onClick={e => { if (e.target === e.currentTarget) onClose(); }}>
+         onPointerDown={markScrimDown} onClick={e => { if (isScrimClick(e)) onClose(); }}>
       <div className={styles.panel} role="dialog" aria-modal="true">
         <div className={styles.head}>
           <p className={styles.title}>{tt('fixture.title', 'This fixture')}</p>

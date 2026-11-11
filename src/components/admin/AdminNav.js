@@ -244,6 +244,21 @@ function canSeeItem(item, permissions) {
  * One map, read by both, so a new section cannot be hidden in the nav and open
  * at its own address.
  */
+// The nav entry a console path belongs to (the longest href that holds it),
+// so a refusal can name the section in words rather than print a key.
+export function itemForPath(pathname) {
+  const path = splitLocale(String(pathname || '')).path.replace(/\/+$/, '') || '/admin';
+  let best = null;
+  for (const group of NAV) {
+    for (const item of group.items) {
+      if (path === item.href || path.startsWith(`${item.href}/`)) {
+        if (!best || item.href.length > best.href.length) best = item;
+      }
+    }
+  }
+  return best;
+}
+
 export function permsForPath(pathname) {
   const path = splitLocale(String(pathname || '')).path.replace(/\/+$/, '') || '/admin';
   let best = null;

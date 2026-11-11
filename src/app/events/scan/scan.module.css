@@ -28,7 +28,7 @@
 }
 
 .sub {
-  color: rgba(255, 255, 255, 0.5);
+  color: var(--ink-50, rgba(255, 255, 255, 0.5));
   font-size: 0.82rem;
   line-height: 1.5;
   max-width: 46ch;
@@ -45,7 +45,7 @@
 }
 
 .gateLabel {
-  color: rgba(255, 255, 255, 0.6);
+  color: var(--ink-60, rgba(255, 255, 255, 0.6));
   font-size: 0.82rem;
   font-family: 'ClashGrotesk-Variable', sans-serif;
 }
@@ -87,7 +87,7 @@
   cursor: pointer;
 }
 
-.dayOff { background-color: rgba(255, 255, 255, 0.08); color: rgba(255, 255, 255, 0.75); }
+.dayOff { background-color: rgba(255, 255, 255, 0.08); color: var(--ink-75, rgba(255, 255, 255, 0.75)); }
 .dayOn { background-color: var(--v-ent-red); color: #fff; font-weight: var(--fw-semi-bold); }
 .dayOn:focus-visible, .dayOff:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
 
@@ -111,7 +111,7 @@
    information rather than as an alarm. */
 .offline {
   background-color: rgba(255, 255, 255, 0.1);
-  color: rgba(255, 255, 255, 0.8);
+  color: var(--ink-80, rgba(255, 255, 255, 0.8));
 }
 
 .counts {
@@ -124,7 +124,7 @@
   background-color: rgba(255, 255, 255, 0.06);
   border-radius: 8px;
   padding: 6px 12px;
-  color: rgba(255, 255, 255, 0.75);
+  color: var(--ink-75, rgba(255, 255, 255, 0.75));
   font-size: 0.8rem;
 }
 
@@ -195,7 +195,7 @@
 }
 
 .resultSub {
-  color: rgba(255, 255, 255, 0.7);
+  color: var(--ink-70, rgba(255, 255, 255, 0.7));
   font-size: 0.88rem !important;
 }
 
@@ -352,7 +352,7 @@
 /* A quiet line for a state that is not an error: the session still resolving,
    or a list that is genuinely empty. */
 .note {
-  color: rgba(255, 255, 255, 0.55);
+  color: var(--ink-55, rgba(255, 255, 255, 0.55));
   font-size: 0.88rem;
   background-color: rgba(255, 255, 255, 0.05);
   border-radius: 10px;

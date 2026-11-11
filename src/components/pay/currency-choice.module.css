@@ -9,7 +9,7 @@
   margin: 0;
   font-size: 0.8rem;
   font-weight: var(--fw-semi-bold);
-  color: rgba(255, 255, 255, 0.6);
+  color: var(--ink-60, rgba(255, 255, 255, 0.6));
   text-transform: uppercase;
   letter-spacing: 0.06em;
 }
@@ -27,7 +27,7 @@
   border: 0;
   border-radius: 8px;
   background-color: #2a2b30;
-  color: rgba(255, 255, 255, 0.8);
+  color: var(--ink-80, rgba(255, 255, 255, 0.8));
   font: inherit;
   font-weight: var(--fw-semi-bold);
   cursor: pointer;
@@ -43,9 +43,9 @@
   margin: 0;
   font-size: 0.85rem;
   line-height: 1.55;
-  color: rgba(255, 255, 255, 0.75);
+  color: var(--ink-75, rgba(255, 255, 255, 0.75));
 }
 
 .hint {
-  color: rgba(255, 255, 255, 0.55);
+  color: var(--ink-55, rgba(255, 255, 255, 0.55));
 }

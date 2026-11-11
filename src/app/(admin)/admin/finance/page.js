@@ -34,6 +34,7 @@ import shared from '@/components/admin/admin.module.css';
 import styles from './finance.module.css';
 import { adminToken } from '@/lib/adminToken'
 import NamePicker from '@/components/name-picker/NamePicker';
+import { markScrimDown, isScrimClick } from '@/lib/scrim';
 
 const API = process.env.NEXT_PUBLIC_API_URL;
 
@@ -263,7 +264,7 @@ function FinanceInner() {
 
   return <div className={shared.pageContainer}>
       <div className={`${shared.sidebarOverlay} ${sidebarOpen ? shared.open : ''}`}
-           onClick={() => setSidebarOpen(false)} />
+           onPointerDown={markScrimDown} onClick={(e) => isScrimClick(e) && (setSidebarOpen(false))} />
       <AdminNav admin={admin} onLogout={logout} sidebarOpen={sidebarOpen} badges={{}} />
       <div className={shared.mainContainer}>
         <AdminHeader admin={admin} onLogout={logout} onMenuOpen={() => setSidebarOpen(true)}
@@ -498,7 +499,7 @@ function FinanceInner() {
       </div>
 
       {transferOpen ? <div className={shared.modalOverlay}
-                           onClick={(e) => { if (e.target === e.currentTarget) setTransferOpen(false); }}>
+                           onPointerDown={markScrimDown} onClick={(e) => { if (isScrimClick(e)) setTransferOpen(false); }}>
         <div className={shared.modal}>
           <h3 className={shared.modalTitle}>{tt('adminFinance.moveTitle', 'Move funds')}</h3>
           <p className={shared.modalSub}>

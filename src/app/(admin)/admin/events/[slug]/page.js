@@ -35,6 +35,7 @@ import { useT } from '@/i18n/LanguageProvider';
 import { adminToken } from '@/lib/adminToken'
 import PagerArrow from '@/components/pager-arrow/PagerArrow';
 import { formatNgn } from '@/lib/currency';
+import { markScrimDown, isScrimClick } from '@/lib/scrim';
 
 const TABS = ['overview', 'tickets', 'sent'];
 const PAGE_SIZE = 25;
@@ -256,7 +257,7 @@ function AdminEventDetailInner() {
   return (
     <div className={shared.pageContainer}>
       <div className={`${shared.sidebarOverlay} ${sidebarOpen ? shared.open : ''}`}
-        onClick={() => setSidebarOpen(false)} />
+        onPointerDown={markScrimDown} onClick={(e) => isScrimClick(e) && (setSidebarOpen(false))} />
       <AdminNav admin={admin} onLogout={logout} sidebarOpen={sidebarOpen} badges={{}} />
       <div className={shared.mainContainer}>
         <AdminHeader admin={admin} onLogout={logout} onMenuOpen={() => setSidebarOpen(true)} />

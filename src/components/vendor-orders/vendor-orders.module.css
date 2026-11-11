@@ -16,7 +16,7 @@
 }
 
 .hint {
-  color: rgba(255, 255, 255, 0.55);
+  color: var(--ink-55, rgba(255, 255, 255, 0.55));
   font-size: 0.92rem;
   margin-top: 0.35rem;
 }
@@ -27,7 +27,7 @@
   margin-top: 0.9rem;
 }
 
-.state { color: rgba(255, 255, 255, 0.5); }
+.state { color: var(--ink-50, rgba(255, 255, 255, 0.5)); }
 .problem { color: var(--v-ent-red, #ed1c24); }
 
 .grid {
@@ -66,7 +66,7 @@
 }
 
 .booth {
-  color: rgba(255, 255, 255, 0.5);
+  color: var(--ink-50, rgba(255, 255, 255, 0.5));
   font-size: 0.82rem;
 }
 
@@ -75,7 +75,7 @@
   border-radius: 8px;
   padding: 4px 9px;
   background-color: #33343a;
-  color: rgba(255, 255, 255, 0.75);
+  color: var(--ink-75, rgba(255, 255, 255, 0.75));
   font-size: 0.78rem;
 }
 
@@ -85,7 +85,7 @@
 .status_pending { color: var(--v-ent-gold, #e0b357); }
 
 .codeLabel {
-  color: rgba(255, 255, 255, 0.45);
+  color: var(--ink-45, rgba(255, 255, 255, 0.45));
   font-size: 0.74rem;
   letter-spacing: 0.09em;
   text-transform: uppercase;
@@ -135,7 +135,7 @@
   white-space: nowrap;
 }
 
-.itemQty { color: rgba(255, 255, 255, 0.55); flex: 0 0 auto; }
+.itemQty { color: var(--ink-55, rgba(255, 255, 255, 0.55)); flex: 0 0 auto; }
 .itemPrice { flex: 0 0 auto; }
 
 .foot {
@@ -155,7 +155,7 @@
 }
 
 .when {
-  color: rgba(255, 255, 255, 0.5);
+  color: var(--ink-50, rgba(255, 255, 255, 0.5));
   font-size: 0.84rem;
 }
 
@@ -192,7 +192,7 @@
 }
 
 .collectWhere {
-  color: rgba(255, 255, 255, 0.6);
+  color: var(--ink-60, rgba(255, 255, 255, 0.6));
   font-size: 0.84rem;
   margin: 0.45rem 0 0;
 }
@@ -239,18 +239,18 @@
 
 .cancelKeepBtn {
   background-color: transparent;
-  color: rgba(255, 255, 255, 0.75);
+  color: var(--ink-75, rgba(255, 255, 255, 0.75));
 }
 
 .cancelQuestion {
-  color: rgba(255, 255, 255, 0.75);
+  color: var(--ink-75, rgba(255, 255, 255, 0.75));
   font-size: 0.88rem;
   margin: 0;
   flex: 1 1 100%;
 }
 
 .cancelNote {
-  color: rgba(255, 255, 255, 0.5);
+  color: var(--ink-50, rgba(255, 255, 255, 0.5));
   font-size: 0.84rem;
   margin: 0.7rem 0 0;
 }
@@ -262,7 +262,7 @@
 }
 
 .refundNote {
-  color: rgba(255, 255, 255, 0.5);
+  color: var(--ink-50, rgba(255, 255, 255, 0.5));
   font-size: 0.84rem;
   margin: 0.5rem 0 0;
 }

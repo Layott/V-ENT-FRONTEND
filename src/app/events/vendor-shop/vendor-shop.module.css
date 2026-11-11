@@ -31,7 +31,7 @@
   gap: 0.35rem;
   min-height: 44px;
   font-size: 0.78rem;
-  color: rgba(255, 255, 255, 0.55);
+  color: var(--ink-55, rgba(255, 255, 255, 0.55));
   text-decoration: none;
   font-weight: var(--fw-medium);
   transition: color 0.2s;
@@ -54,7 +54,7 @@
   font-size: 0.82rem;
   font-weight: var(--fw-semi-bold);
   cursor: pointer;
-  transition: all 0.2s;
+  transition: background-color 150ms ease-out;
 }
 
 .cartBtn:hover {
@@ -100,7 +100,7 @@
 
 .pageSub {
   font-size: var(--fs-p-size-mobile);
-  color: rgba(255, 255, 255, 0.5);
+  color: var(--ink-50, rgba(255, 255, 255, 0.5));
   margin: 0;
   max-width: 540px;
 }
@@ -116,7 +116,7 @@
   font-size: 0.7rem;
   text-transform: uppercase;
   letter-spacing: 0.08em;
-  color: rgba(255, 255, 255, 0.5);
+  color: var(--ink-50, rgba(255, 255, 255, 0.5));
   font-weight: var(--fw-medium);
 }
 
@@ -146,7 +146,7 @@
   position: absolute;
   right: 0.6rem;
   pointer-events: none;
-  color: rgba(255, 255, 255, 0.5);
+  color: var(--ink-50, rgba(255, 255, 255, 0.5));
   font-size: 0.85rem;
 }
 
@@ -155,7 +155,7 @@
   align-items: center;
   gap: 0.4rem;
   font-size: 0.78rem;
-  color: rgba(255, 255, 255, 0.6);
+  color: var(--ink-60, rgba(255, 255, 255, 0.6));
   background-color: var(--overlay-gray);
   padding: 0.4rem 0.85rem;
   border-radius: 999px;
@@ -209,7 +209,7 @@
   text-align: left;
   font-family: inherit;
   color: inherit;
-  transition: all 0.2s;
+  transition: background-color 150ms ease-out, color 150ms ease-out, opacity 150ms ease-out;
   display: flex;
   flex-direction: column;
   gap: 0.45rem;
@@ -231,7 +231,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  color: rgba(255, 255, 255, 0.3);
+  color: var(--ink-30, rgba(255, 255, 255, 0.3));
   font-size: 2rem;
 }
 
@@ -262,7 +262,7 @@
 
 .featuredVendor {
   font-size: 0.7rem;
-  color: rgba(255, 255, 255, 0.45);
+  color: var(--ink-45, rgba(255, 255, 255, 0.45));
   margin: 0;
 }
 
@@ -292,7 +292,7 @@
 }
 
 .searchIcon {
-  color: rgba(255, 255, 255, 0.45);
+  color: var(--ink-45, rgba(255, 255, 255, 0.45));
   font-size: 1.05rem;
 }
 
@@ -306,7 +306,7 @@
   width: 100%;
 }
 
-.searchInput::placeholder { color: rgba(255, 255, 255, 0.35); }
+.searchInput::placeholder { color: var(--ink-35, rgba(255, 255, 255, 0.35)); }
 
 .categoryRow {
   display: flex;
@@ -329,7 +329,7 @@
   background-color: var(--overlay-gray);
 
   border-radius: 999px;
-  color: rgba(255, 255, 255, 0.6);
+  color: var(--ink-60, rgba(255, 255, 255, 0.6));
   font-family: inherit;
   font-size: 0.74rem;
   font-weight: var(--fw-medium);
@@ -337,7 +337,7 @@
   padding: 0.35rem 0.85rem;
   cursor: pointer;
   white-space: nowrap;
-  transition: all 0.2s;
+  transition: background-color 150ms ease-out, color 150ms ease-out;
 }
 
 .categoryBtn:hover {
@@ -366,7 +366,7 @@
 
 .resultCount {
   font-size: 0.78rem;
-  color: rgba(255, 255, 255, 0.45);
+  color: var(--ink-45, rgba(255, 255, 255, 0.45));
 }
 
 .vendorGrid {
@@ -383,7 +383,7 @@
   text-decoration: none;
   display: flex;
   flex-direction: column;
-  transition: all 0.2s;
+  transition: background-color 150ms ease-out, color 150ms ease-out, opacity 150ms ease-out;
 }
 
 
@@ -400,7 +400,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  color: rgba(255, 255, 255, 0.3);
+  color: var(--ink-30, rgba(255, 255, 255, 0.3));
   font-size: 1.6rem;
 }
 
@@ -423,7 +423,7 @@
 
 .status_paused {
   background-color: rgba(0, 0, 0, 0.55);
-  color: rgba(255, 255, 255, 0.7);
+  color: var(--ink-70, rgba(255, 255, 255, 0.7));
 
 }
 
@@ -455,7 +455,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  color: rgba(255, 255, 255, 0.4);
+  color: var(--ink-40, rgba(255, 255, 255, 0.4));
 }
 
 .vendorName {
@@ -467,13 +467,13 @@
 
 .vendorMeta {
   font-size: 0.7rem;
-  color: rgba(255, 255, 255, 0.5);
+  color: var(--ink-50, rgba(255, 255, 255, 0.5));
   margin: 0.15rem 0 0;
 }
 
 .vendorDesc {
   font-size: 0.78rem;
-  color: rgba(255, 255, 255, 0.6);
+  color: var(--ink-60, rgba(255, 255, 255, 0.6));
   margin: 0;
   line-height: 1.45;
   display: -webkit-box;
@@ -492,7 +492,7 @@
 
 .productCount {
   font-size: 0.72rem;
-  color: rgba(255, 255, 255, 0.5);
+  color: var(--ink-50, rgba(255, 255, 255, 0.5));
   background-color: var(--overlay-gray);
   padding: 3px 8px;
   border-radius: 8px;
@@ -507,7 +507,7 @@
 /* ── Empty / state ── */
 .stateText {
   padding: 2.5rem 1rem;
-  color: rgba(255, 255, 255, 0.45);
+  color: var(--ink-45, rgba(255, 255, 255, 0.45));
   font-size: var(--fs-p-size-mobile);
   text-align: center;
 }
@@ -539,7 +539,7 @@
 
 .emptySub {
   font-size: var(--fs-p-size-mobile);
-  color: rgba(255, 255, 255, 0.5);
+  color: var(--ink-50, rgba(255, 255, 255, 0.5));
   margin: 0;
 }
 
@@ -579,7 +579,7 @@
   right: 0.6rem;
   background: rgba(0, 0, 0, 0.55);
   border: none;
-  color: rgba(255, 255, 255, 0.7);
+  color: var(--ink-70, rgba(255, 255, 255, 0.7));
   font-size: 1.4rem;
   cursor: pointer;
   border-radius: 50%;
@@ -621,7 +621,7 @@
 
 .productModalVendor {
   font-size: 0.74rem;
-  color: rgba(255, 255, 255, 0.45);
+  color: var(--ink-45, rgba(255, 255, 255, 0.45));
   margin: 0;
   text-transform: uppercase;
   letter-spacing: 0.08em;
@@ -644,7 +644,7 @@
 
 .productModalDesc {
   font-size: 0.82rem;
-  color: rgba(255, 255, 255, 0.6);
+  color: var(--ink-60, rgba(255, 255, 255, 0.6));
   margin: 0;
   line-height: 1.5;
 }
@@ -728,7 +728,7 @@
 
 .cartEmpty {
   font-size: var(--fs-p-size-mobile);
-  color: rgba(255, 255, 255, 0.45);
+  color: var(--ink-45, rgba(255, 255, 255, 0.45));
   text-align: center;
   padding: 2rem 0;
   margin: 0;
@@ -784,7 +784,7 @@
 
 .cartItemVendor {
   font-size: 0.7rem;
-  color: rgba(255, 255, 255, 0.5);
+  color: var(--ink-50, rgba(255, 255, 255, 0.5));
   margin: 0;
 }
 
@@ -837,7 +837,7 @@
 .removeBtn {
   background: transparent;
   border: none;
-  color: rgba(255, 255, 255, 0.4);
+  color: var(--ink-40, rgba(255, 255, 255, 0.4));
   font-size: 1.2rem;
   cursor: pointer;
   padding: 0.2rem;
@@ -861,7 +861,7 @@
   justify-content: space-between;
   align-items: center;
   font-size: var(--fs-p-size-desktop);
-  color: rgba(255, 255, 255, 0.7);
+  color: var(--ink-70, rgba(255, 255, 255, 0.7));
 }
 
 .cartTotalRow strong {
@@ -889,13 +889,13 @@
 .clearBtn {
   background: transparent;
 
-  color: rgba(255, 255, 255, 0.55);
+  color: var(--ink-55, rgba(255, 255, 255, 0.55));
   border-radius: 8px;
   padding: 0.55rem;
   cursor: pointer;
   font-family: inherit;
   font-size: 0.78rem;
-  transition: all 0.2s;
+  transition: color 150ms ease-out;
 }
 
 .clearBtn:hover {

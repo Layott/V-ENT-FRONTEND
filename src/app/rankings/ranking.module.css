@@ -39,7 +39,7 @@
 
 .loadingText {
   padding: 2rem 1rem;
-  color: rgba(255, 255, 255, 0.65);
+  color: var(--ink-65, rgba(255, 255, 255, 0.65));
   font-size: var(--fs-p-size-mobile);
 }
 
@@ -96,7 +96,7 @@
 
 .pageSub {
   font-size: var(--fs-p-size-mobile);
-  color: rgba(255, 255, 255, 0.5);
+  color: var(--ink-50, rgba(255, 255, 255, 0.5));
   margin: 0.2rem 0 0;
 }
 
@@ -133,7 +133,7 @@
 .tabBTN {
   background: transparent;
 
-  color: rgba(255, 255, 255, 0.7);
+  color: var(--ink-70, rgba(255, 255, 255, 0.7));
   font-family: inherit;
   font-size: var(--fs-p-size-mobile);
   font-weight: var(--fw-medium);
@@ -175,7 +175,7 @@
 }
 
 .searchIcon {
-  color: rgba(255, 255, 255, 0.5);
+  color: var(--ink-50, rgba(255, 255, 255, 0.5));
   font-size: 1rem;
 }
 
@@ -191,7 +191,7 @@
 }
 
 .searchInput::placeholder {
-  color: rgba(255, 255, 255, 0.35);
+  color: var(--ink-35, rgba(255, 255, 255, 0.35));
 }
 
 .filterSelect {
@@ -222,7 +222,7 @@
   position: absolute;
   right: 0.55rem;
   pointer-events: none;
-  color: rgba(255, 255, 255, 0.45);
+  color: var(--ink-45, rgba(255, 255, 255, 0.45));
   font-size: 0.85rem;
 }
 
@@ -333,7 +333,7 @@
   align-items: center;
   gap: 0.25rem;
   font-size: 0.78rem;
-  color: rgba(255, 255, 255, 0.55);
+  color: var(--ink-55, rgba(255, 255, 255, 0.55));
   margin: 0;
 }
 
@@ -364,7 +364,7 @@
   font-size: 0.6875rem;
   text-transform: uppercase;
   letter-spacing: 0.08em;
-  color: rgba(255, 255, 255, 0.45);
+  color: var(--ink-45, rgba(255, 255, 255, 0.45));
 }
 
 .podiumStatDivider {
@@ -476,7 +476,7 @@
   align-items: center;
   justify-content: center;
   background-color: rgba(255, 255, 255, 0.06);
-  color: rgba(255, 255, 255, 0.7);
+  color: var(--ink-70, rgba(255, 255, 255, 0.7));
   border-radius: 8px;
   padding: 3px 8px;
   font-size: 0.78rem;
@@ -547,7 +547,7 @@
 
 .gameText {
   font-size: 0.7rem;
-  color: rgba(255, 255, 255, 0.45);
+  color: var(--ink-45, rgba(255, 255, 255, 0.45));
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -562,12 +562,12 @@
 
 .regionIcon {
   font-size: 0.85rem;
-  color: rgba(255, 255, 255, 0.5);
+  color: var(--ink-50, rgba(255, 255, 255, 0.5));
 }
 
 .regionSub {
   font-size: 0.7rem;
-  color: rgba(255, 255, 255, 0.45);
+  color: var(--ink-45, rgba(255, 255, 255, 0.45));
   margin-left: 1.05rem;
 }
 
@@ -590,11 +590,11 @@
 }
 
 .losses {
-  color: rgba(255, 255, 255, 0.55);
+  color: var(--ink-55, rgba(255, 255, 255, 0.55));
 }
 
 .wlSep {
-  color: rgba(255, 255, 255, 0.35);
+  color: var(--ink-35, rgba(255, 255, 255, 0.35));
 }
 
 .winRateWrap {
@@ -648,7 +648,7 @@
 
 .trendFlat {
   background-color: rgba(255, 255, 255, 0.06);
-  color: rgba(255, 255, 255, 0.55);
+  color: var(--ink-55, rgba(255, 255, 255, 0.55));
 }
 
 .colActions {
@@ -725,7 +725,7 @@
   border-radius: 8px;
   width: 28px;
   height: 28px;
-  color: rgba(255, 255, 255, 0.7);
+  color: var(--ink-70, rgba(255, 255, 255, 0.7));
   cursor: pointer;
   display: inline-flex;
   align-items: center;
@@ -768,7 +768,7 @@
   font-size: 0.6875rem;
   text-transform: uppercase;
   letter-spacing: 0.08em;
-  color: rgba(255, 255, 255, 0.4);
+  color: var(--ink-40, rgba(255, 255, 255, 0.4));
 }
 
 .mobileDetailValue {
@@ -803,7 +803,7 @@
     font-size: 0.72rem;
     text-transform: uppercase;
     letter-spacing: 0.08em;
-    color: rgba(255, 255, 255, 0.5);
+    color: var(--ink-50, rgba(255, 255, 255, 0.5));
     font-weight: var(--fw-semi-bold);
   }
 
@@ -911,7 +911,7 @@
 
 .emptySub {
   font-size: var(--fs-p-size-mobile);
-  color: rgba(255, 255, 255, 0.5);
+  color: var(--ink-50, rgba(255, 255, 255, 0.5));
   margin: 0;
 }
 
@@ -1011,7 +1011,7 @@
   font-size: 0.6875rem;
   text-transform: uppercase;
   letter-spacing: 0.08em;
-  color: rgba(255, 255, 255, 0.45);
+  color: var(--ink-45, rgba(255, 255, 255, 0.45));
 }
 
 .yourRankTrendStat {
@@ -1020,7 +1020,7 @@
 
 .yourRankDot {
   font-size: 0.6875rem;
-  color: rgba(255, 255, 255, 0.3);
+  color: var(--ink-30, rgba(255, 255, 255, 0.3));
 }
 
 .yourRankRight {
@@ -1045,7 +1045,7 @@
 
 .yourRankGap {
   font-size: 0.78rem;
-  color: rgba(255, 255, 255, 0.7);
+  color: var(--ink-70, rgba(255, 255, 255, 0.7));
   background-color: rgba(255, 255, 255, 0.05);
 
   border-radius: 8px;

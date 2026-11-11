@@ -16,6 +16,7 @@ import { formatDate, formatNumber } from '@/lib/datetime';
 import { adminToken } from '@/lib/adminToken'
 import { fuzzyMatches } from '@/lib/fuzzy';
 import PagerArrow from '@/components/pager-arrow/PagerArrow';
+import { markScrimDown, isScrimClick } from '@/lib/scrim';
 const PAGE_SIZE = 20;
 function statusBadgeClass(s) {
   if (s === 'open') return shared.sPending;
@@ -157,7 +158,7 @@ function DisputesInner() {
   const visible = q ? disputes.filter(d => fuzzyMatches(q, `${d.tournament_title || ''} ${d.raised_by || ''} ${d.description || ''}`)) : disputes;
   if (authLoading) return null;
   return <div className={shared.pageContainer}>
-      <div className={`${shared.sidebarOverlay} ${sidebarOpen ? shared.open : ''}`} onClick={() => setSidebarOpen(false)} />
+      <div className={`${shared.sidebarOverlay} ${sidebarOpen ? shared.open : ''}`} onPointerDown={markScrimDown} onClick={(e) => isScrimClick(e) && (setSidebarOpen(false))} />
       <AdminNav admin={admin} onLogout={logout} sidebarOpen={sidebarOpen} badges={{
       disputes: openCount
     }} />
@@ -212,7 +213,7 @@ function DisputesInner() {
                               <span>{d.raised_by || '-'}</span>
                             </div>
                           </td>
-                          <td className={shared.hideMobile}>
+                          <td className={shared.hideMobile} data-primary>
                             <span className={styles.descCell} title={d.description || ''}>
                               {d.description || '-'}
                             </span>

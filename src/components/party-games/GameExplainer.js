@@ -16,6 +16,7 @@ import { BY_KEY } from '@/lib/partyGames/catalogue';
 import { GameStage, useGamePlayer } from './stage/Stage';
 import { kindName, regionName } from './names';
 import styles from './game-explainer.module.css';
+import { markScrimDown, isScrimClick } from '@/lib/scrim';
 
 /**
  * @param gameKey  a catalogue key, or null for an organiser's own game
@@ -61,7 +62,7 @@ export default function GameExplainer({ gameKey, words, say, onClose, action }) 
       role="dialog"
       aria-modal="true"
       aria-label={words.name}
-      onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}
+      onPointerDown={markScrimDown} onClick={(e) => { if (isScrimClick(e)) onClose(); }}
     >
       <div className={`${styles.sheet} ${meta ? '' : styles.wordsOnly}`}>
         {meta && (

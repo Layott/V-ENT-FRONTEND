@@ -23,7 +23,7 @@
   font-size: 0.76rem;
   letter-spacing: 0.06em;
   text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.5);
+  color: var(--ink-50, rgba(255, 255, 255, 0.5));
 }
 
 .balanceValue {
@@ -36,7 +36,7 @@
 
 .balanceOwner {
   font-size: 0.85rem;
-  color: rgba(255, 255, 255, 0.5);
+  color: var(--ink-50, rgba(255, 255, 255, 0.5));
 }
 
 .panel {
@@ -50,7 +50,7 @@
   font-size: 0.78rem;
   letter-spacing: 0.06em;
   text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.55);
+  color: var(--ink-55, rgba(255, 255, 255, 0.55));
   margin: 0 0 0.75rem;
 }
 
@@ -63,7 +63,7 @@
 
 .label {
   font-size: 0.74rem;
-  color: rgba(255, 255, 255, 0.5);
+  color: var(--ink-50, rgba(255, 255, 255, 0.5));
 }
 
 .input {
@@ -78,7 +78,7 @@
   font-size: 0.9rem;
 }
 
-.input::placeholder { color: rgba(255, 255, 255, 0.3); }
+.input::placeholder { color: var(--ink-30, rgba(255, 255, 255, 0.3)); }
 
 .primaryBtn {
   margin-top: 0.5rem;
@@ -136,19 +136,19 @@
 .out {
   font-family: 'ClashGrotesk-Variable', sans-serif;
   font-weight: 600;
-  color: rgba(255, 255, 255, 0.75);
+  color: var(--ink-75, rgba(255, 255, 255, 0.75));
   white-space: nowrap;
 }
 
 .muted {
   font-size: 0.85rem;
-  color: rgba(255, 255, 255, 0.45);
+  color: var(--ink-45, rgba(255, 255, 255, 0.45));
 }
 
 .hint {
   font-size: 0.82rem;
   line-height: 1.5;
-  color: rgba(255, 255, 255, 0.55);
+  color: var(--ink-55, rgba(255, 255, 255, 0.55));
   margin: 0;
 }
 

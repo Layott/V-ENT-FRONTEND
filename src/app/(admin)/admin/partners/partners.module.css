@@ -252,7 +252,7 @@
 .keyId {
   font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
   font-size: 0.76rem;
-  color: rgba(255, 255, 255, 0.6);
+  color: var(--ink-60, rgba(255, 255, 255, 0.6));
   background-color: rgba(255, 255, 255, 0.06);
   border-radius: 8px;
   padding: 2px 7px;
@@ -301,7 +301,7 @@
 }
 
 .redirectTitle {
-  color: rgba(255, 255, 255, 0.5);
+  color: var(--ink-50, rgba(255, 255, 255, 0.5));
   font-family: 'ClashGrotesk-Variable', sans-serif;
   font-size: 0.72rem;
   letter-spacing: 0.08em;
@@ -310,7 +310,7 @@
 }
 
 .redirectHint {
-  color: rgba(255, 255, 255, 0.45);
+  color: var(--ink-45, rgba(255, 255, 255, 0.45));
   font-size: 0.78rem;
   line-height: 1.5;
   max-width: 62ch;
@@ -330,7 +330,7 @@
 .redirectUri {
   font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
   font-size: 0.76rem;
-  color: rgba(255, 255, 255, 0.75);
+  color: var(--ink-75, rgba(255, 255, 255, 0.75));
   word-break: break-all;
   min-width: 0;
   flex: 1;
@@ -382,7 +382,7 @@
 /* Asked before the address is removed. Sign-in that returns to it stops
    working, so this is the one control here that takes two presses. */
 .confirmAsk {
-  color: rgba(255, 255, 255, 0.65);
+  color: var(--ink-65, rgba(255, 255, 255, 0.65));
   font-size: 0.76rem;
   line-height: 1.45;
   margin-left: auto;

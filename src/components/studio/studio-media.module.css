@@ -17,11 +17,11 @@
 .sub {
   margin: 0 0 1rem;
   max-width: 66ch;
-  color: rgba(255, 255, 255, 0.62);
+  color: var(--ink-62, rgba(255, 255, 255, 0.62));
   line-height: 1.5;
 }
 
-.muted { color: rgba(255, 255, 255, 0.55); margin: 0; }
+.muted { color: var(--ink-55, rgba(255, 255, 255, 0.55)); margin: 0; }
 
 .note {
   margin: 0 0 0.8rem;
@@ -73,7 +73,7 @@
 }
 
 .rowMeta {
-  color: rgba(255, 255, 255, 0.55);
+  color: var(--ink-55, rgba(255, 255, 255, 0.55));
   font-size: 0.85rem;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -92,7 +92,7 @@
 .field { display: flex; flex-direction: column; gap: 0.3rem; }
 
 .label {
-  color: rgba(255, 255, 255, 0.62);
+  color: var(--ink-62, rgba(255, 255, 255, 0.62));
   font-size: 0.82rem;
 }
 
@@ -107,7 +107,7 @@
 
 .addRow { align-items: center; display: flex; flex-wrap: wrap; gap: 0.8rem; }
 
-.file { color: rgba(255, 255, 255, 0.72); font: inherit; }
+.file { color: var(--ink-72, rgba(255, 255, 255, 0.72)); font: inherit; }
 
 .primary,
 .ghost {

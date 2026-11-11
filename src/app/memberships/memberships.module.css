@@ -36,7 +36,7 @@
 .pageSubtitle {
   margin: 0;
   font-size: var(--fs-p-size-mobile);
-  color: rgba(255, 255, 255, 0.45);
+  color: var(--ink-45, rgba(255, 255, 255, 0.45));
 }
 
 /* ── Wallet strip: what the next charge comes out of ── */
@@ -60,7 +60,7 @@
 
 .sourceLabel {
   font-size: var(--fs-p-size-sm-mobile);
-  color: rgba(255, 255, 255, 0.45);
+  color: var(--ink-45, rgba(255, 255, 255, 0.45));
 }
 
 .sourceValue {
@@ -91,7 +91,7 @@
 
 .tabBTN {
   background-color: #2a2b30;
-  color: rgba(255, 255, 255, 0.6);
+  color: var(--ink-60, rgba(255, 255, 255, 0.6));
   border: none;
   border-radius: 8px;
   min-height: 44px;
@@ -136,7 +136,7 @@
 
 .factLabel {
   font-size: var(--fs-p-size-sm-mobile);
-  color: rgba(255, 255, 255, 0.45);
+  color: var(--ink-45, rgba(255, 255, 255, 0.45));
 }
 
 .factValue {
@@ -158,7 +158,7 @@
   border-radius: 10px;
   padding: 0.8rem 1rem;
   font-size: var(--fs-p-size-mobile);
-  color: rgba(255, 255, 255, 0.75);
+  color: var(--ink-75, rgba(255, 255, 255, 0.75));
 }
 
 /* ── Moving to another plan ── */
@@ -176,7 +176,7 @@
 .chooserEmpty {
   margin: 0;
   font-size: var(--fs-p-size-mobile);
-  color: rgba(255, 255, 255, 0.75);
+  color: var(--ink-75, rgba(255, 255, 255, 0.75));
 }
 
 .choiceRow {
@@ -212,7 +212,7 @@
 
 .choicePrice {
   font-size: 0.8rem;
-  color: rgba(255, 255, 255, 0.6);
+  color: var(--ink-60, rgba(255, 255, 255, 0.6));
 }
 
 /* ── Invoices ── */
@@ -233,7 +233,7 @@
 .invoiceTable th {
   text-align: left;
   padding: 0.7rem 0.9rem;
-  color: rgba(255, 255, 255, 0.45);
+  color: var(--ink-45, rgba(255, 255, 255, 0.45));
   font-weight: var(--fw-semi-bold);
   font-size: var(--fs-p-size-sm-mobile);
 }
@@ -275,7 +275,7 @@
 .empty {
   padding: 3rem 1rem;
   text-align: center;
-  color: rgba(255, 255, 255, 0.5);
+  color: var(--ink-50, rgba(255, 255, 255, 0.5));
   font-size: var(--fs-p-size-mobile);
 }
 

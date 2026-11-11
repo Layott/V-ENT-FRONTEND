@@ -38,7 +38,7 @@
 
 .pageSubtitle {
   font-size: var(--fs-p-size-mobile);
-  color: rgba(255, 255, 255, 0.5);
+  color: var(--ink-50, rgba(255, 255, 255, 0.5));
   margin: 0.25rem 0 0;
   max-width: 640px;
   line-height: 1.45;
@@ -92,7 +92,7 @@
 .tabBTN {
   background: transparent;
 
-  color: rgba(255, 255, 255, 0.7);
+  color: var(--ink-70, rgba(255, 255, 255, 0.7));
   font-family: inherit;
   font-size: var(--fs-p-size-mobile);
   font-weight: var(--fw-medium);
@@ -132,7 +132,7 @@
 }
 
 .searchIcon {
-  color: rgba(255, 255, 255, 0.5);
+  color: var(--ink-50, rgba(255, 255, 255, 0.5));
   font-size: 1rem;
 }
 
@@ -148,7 +148,7 @@
 }
 
 .searchInput::placeholder {
-  color: rgba(255, 255, 255, 0.35);
+  color: var(--ink-35, rgba(255, 255, 255, 0.35));
 }
 
 .filterSelect {
@@ -179,7 +179,7 @@
   position: absolute;
   right: 0.55rem;
   pointer-events: none;
-  color: rgba(255, 255, 255, 0.45);
+  color: var(--ink-45, rgba(255, 255, 255, 0.45));
   font-size: 0.85rem;
 }
 
@@ -238,7 +238,7 @@
 .toggleText {
   font-size: var(--fs-p-size-mobile);
   font-weight: var(--fw-medium);
-  color: rgba(255, 255, 255, 0.8);
+  color: var(--ink-80, rgba(255, 255, 255, 0.8));
 }
 
 /* ── Card grid ── */
@@ -367,14 +367,14 @@
   font-weight: var(--fw-semi-bold);
   padding: 2px 6px;
   background-color: rgba(255, 255, 255, 0.08);
-  color: rgba(255, 255, 255, 0.7);
+  color: var(--ink-70, rgba(255, 255, 255, 0.7));
   border-radius: 8px;
   letter-spacing: 0.04em;
 }
 
 .orgBio {
   font-size: var(--fs-p-size-mobile);
-  color: rgba(255, 255, 255, 0.65);
+  color: var(--ink-65, rgba(255, 255, 255, 0.65));
   line-height: 1.45;
   margin: 0;
   display: -webkit-box;
@@ -395,10 +395,10 @@
   align-items: center;
   gap: 0.3rem;
   font-size: 0.78rem;
-  color: rgba(255, 255, 255, 0.6);
+  color: var(--ink-60, rgba(255, 255, 255, 0.6));
 }
 
-.metaIcon { font-size: 0.95rem; color: rgba(255, 255, 255, 0.55); }
+.metaIcon { font-size: 0.95rem; color: var(--ink-55, rgba(255, 255, 255, 0.55)); }
 
 .focusPill {
   font-size: 0.6875rem;
@@ -439,12 +439,12 @@
 
 .statIcon {
   font-size: 0.85rem;
-  color: rgba(255, 255, 255, 0.55);
+  color: var(--ink-55, rgba(255, 255, 255, 0.55));
 }
 
 .statLabel {
   font-size: 0.7rem;
-  color: rgba(255, 255, 255, 0.45);
+  color: var(--ink-45, rgba(255, 255, 255, 0.45));
   text-transform: uppercase;
   letter-spacing: 0.08em;
 }
@@ -508,7 +508,7 @@
 .actionDisabled {
   background-color: rgba(255, 255, 255, 0.04);
 
-  color: rgba(255, 255, 255, 0.45);
+  color: var(--ink-45, rgba(255, 255, 255, 0.45));
   cursor: not-allowed;
 }
 
@@ -557,7 +557,7 @@
 
 .emptySub {
   font-size: var(--fs-p-size-mobile);
-  color: rgba(255, 255, 255, 0.5);
+  color: var(--ink-50, rgba(255, 255, 255, 0.5));
   margin: 0 0 0.75rem;
 }
 
@@ -703,7 +703,7 @@
 }
 
 .followItemOrg {
-  color: rgba(255, 255, 255, 0.55);
+  color: var(--ink-55, rgba(255, 255, 255, 0.55));
   flex: 0 1 auto;
   font-size: 0.83rem;
   min-width: 0;
@@ -713,7 +713,7 @@
 }
 
 .followItemWhen {
-  color: rgba(255, 255, 255, 0.45);
+  color: var(--ink-45, rgba(255, 255, 255, 0.45));
   flex: 0 0 auto;
   font-size: 0.82rem;
   font-variant-numeric: tabular-nums;

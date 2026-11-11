@@ -48,7 +48,7 @@
   cursor: pointer;
   padding: 8px;
   border-radius: 8px;
-  transition: all 0.2s ease;
+  transition: background-color 150ms ease-out, color 150ms ease-out;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -181,7 +181,7 @@
   border-radius: 12px;
   padding: 16px;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: background-color 150ms ease-out;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -281,7 +281,7 @@
   font-size: 1rem;
   font-weight: 500;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: color 150ms ease-out, width 200ms ease-out;
 }
 
 .cancelButton:hover {
@@ -298,7 +298,7 @@
   font-size: 1rem;
   font-weight: 500;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: background-color 150ms ease-out, color 150ms ease-out, width 200ms ease-out, box-shadow 150ms ease-out;
   display: flex;
   align-items: center;
   gap: 8px;

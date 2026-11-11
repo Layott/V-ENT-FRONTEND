@@ -16,6 +16,7 @@ import Avatar from '@/components/avatar/Avatar';
 import { mediaUrl } from '@/lib/mediaUrl';
 import { adminToken } from '@/lib/adminToken'
 import { fuzzyMatches } from '@/lib/fuzzy';
+import { markScrimDown, isScrimClick } from '@/lib/scrim';
 const REJECT_REASONS = ['Document unclear or unreadable', 'Name mismatch', 'Expired document', 'Document not acceptable', 'Suspected fraud'];
 const TABS = [{
   key: 'pending',
@@ -201,7 +202,7 @@ function KycInner() {
   if (authLoading) return null;
   const pendingCount = submissions.filter(k => k.status === 'pending').length;
   return <div className={shared.pageContainer}>
-      <div className={`${shared.sidebarOverlay} ${sidebarOpen ? shared.open : ''}`} onClick={() => setSidebarOpen(false)} />
+      <div className={`${shared.sidebarOverlay} ${sidebarOpen ? shared.open : ''}`} onPointerDown={markScrimDown} onClick={(e) => isScrimClick(e) && (setSidebarOpen(false))} />
       <AdminNav admin={admin} onLogout={logout} sidebarOpen={sidebarOpen} badges={{
       kyc: pendingCount
     }} />
@@ -289,7 +290,7 @@ function KycInner() {
       </div>
 
       {/* KYC preview / reject modal */}
-      {previewModal && <div className={styles.modalOverlay} onClick={() => setPreviewModal(null)}>
+      {previewModal && <div className={styles.modalOverlay} onPointerDown={markScrimDown} onClick={(e) => isScrimClick(e) && (setPreviewModal(null))}>
           <div className={`${styles.modal} ${previewModal.mode === 'reject' ? styles.modalNarrow : ''}`} onClick={e => e.stopPropagation()}>
             <div className={styles.modalHeader}>
               <div>

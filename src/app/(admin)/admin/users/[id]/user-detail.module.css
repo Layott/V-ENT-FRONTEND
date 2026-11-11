@@ -1,7 +1,7 @@
 .backLink {
   font-family: "ClashGrotesk-Variable", sans-serif;
   font-size: 0.78rem;
-  color: rgba(255, 255, 255, 0.45);
+  color: var(--ink-45, rgba(255, 255, 255, 0.45));
   text-decoration: none;
   margin-bottom: 0.4rem;
   display: inline-block;
@@ -45,7 +45,7 @@
   font-size: 0.6875rem;
   text-transform: uppercase;
   letter-spacing: 0.08em;
-  color: rgba(255, 255, 255, 0.35);
+  color: var(--ink-35, rgba(255, 255, 255, 0.35));
   margin-bottom: 0.3rem;
 }
 .value {
@@ -71,14 +71,14 @@
 .tab {
   font-family: "ClashGrotesk-Variable", sans-serif;
   font-size: 0.82rem;
-  color: rgba(255, 255, 255, 0.5);
+  color: var(--ink-50, rgba(255, 255, 255, 0.5));
   background: transparent;
 
   border-radius: 8px;
   padding: 0.4rem 0.85rem;
   cursor: pointer;
   white-space: nowrap;
-  transition: all 0.15s;
+  transition: color 150ms ease-out;
 }
 .tab:hover { border-color: rgba(255, 255, 255, 0.25); color: #fff; }
 .tabActive {
@@ -90,7 +90,7 @@
 .code {
   font-family: monospace;
   font-size: 0.78rem;
-  color: rgba(255, 255, 255, 0.6);
+  color: var(--ink-60, rgba(255, 255, 255, 0.6));
   background: rgba(255, 255, 255, 0.04);
   padding: 1px 6px;
   border-radius: 8px;
@@ -115,7 +115,7 @@
 .banMeta {
   font-family: "ClashGrotesk-Variable", sans-serif;
   font-size: 0.72rem;
-  color: rgba(255, 255, 255, 0.4);
+  color: var(--ink-40, rgba(255, 255, 255, 0.4));
 }
 
 /* Modals */
@@ -146,7 +146,7 @@
 .modalSub {
   font-family: "ClashGrotesk-Variable", sans-serif;
   font-size: 0.82rem;
-  color: rgba(255, 255, 255, 0.5);
+  color: var(--ink-50, rgba(255, 255, 255, 0.5));
   margin-bottom: 1rem;
 }
 .modalSelect, .modalTextarea {
@@ -178,7 +178,7 @@
  * decides whether the report is actionable, so it is on the row and not
  * hidden behind a click. */
 .reportDetail {
-  color: rgba(255, 255, 255, 0.5);
+  color: var(--ink-50, rgba(255, 255, 255, 0.5));
   font-size: 0.78rem;
   line-height: 1.5;
   margin-top: 0.3rem;
@@ -193,5 +193,5 @@
 .premiumNote {
   margin-left: 0.5rem;
   font-size: 0.82rem;
-  color: rgba(255, 255, 255, 0.55);
+  color: var(--ink-55, rgba(255, 255, 255, 0.55));
 }

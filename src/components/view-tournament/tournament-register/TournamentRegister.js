@@ -13,6 +13,7 @@ import { apiMessage } from '@/lib/apiMessage';
 import { formatDateTime } from '@/lib/datetime';
 import { discardDraft, readDraft, saveDraft, stepText } from '@/lib/registrationDraft';
 import { peekResume } from '@/components/pay/PayShortfall';
+import { markScrimDown, isScrimClick } from '@/lib/scrim';
 const TournamentRegistrationModal = ({
   isOpen,
   onClose,
@@ -335,7 +336,7 @@ const TournamentRegistrationModal = ({
   if (!isOpen) return null;
   return <>
       
-      {!showTeamModal && !showReviewModal && !showPaymentModal && !showSuccessModal && !showTicket && <div className={styles.modalOverlay} onClick={handleCancel}>
+      {!showTeamModal && !showReviewModal && !showPaymentModal && !showSuccessModal && !showTicket && <div className={styles.modalOverlay} onPointerDown={markScrimDown} onClick={(e) => isScrimClick(e) && handleCancel(e)}>
           <div className={styles.modalContent} onClick={e => e.stopPropagation()}>
             <div className={styles.modalHeader}>
               <h2 className={styles.modalTitle}>{tt("ui.register.tournament.0b66", "Register For Tournament")}</h2>

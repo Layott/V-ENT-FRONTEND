@@ -24,7 +24,7 @@
 }
 
 .hint {
-  color: rgba(255, 255, 255, 0.55);
+  color: var(--ink-55, rgba(255, 255, 255, 0.55));
   font-size: 0.9rem;
   line-height: 1.6;
   margin-top: 0.5rem;
@@ -33,7 +33,7 @@
 
 .state,
 .empty {
-  color: rgba(255, 255, 255, 0.5);
+  color: var(--ink-50, rgba(255, 255, 255, 0.5));
   font-size: 0.95rem;
   margin-top: 1rem;
 }
@@ -74,7 +74,7 @@
   height: 28px;
   border-radius: 8px;
   background-color: #33343a;
-  color: rgba(255, 255, 255, 0.7);
+  color: var(--ink-70, rgba(255, 255, 255, 0.7));
   font-size: 0.85rem;
   font-weight: var(--fw-semi-bold, 600);
 }
@@ -95,7 +95,7 @@
 }
 
 .stageLine {
-  color: rgba(255, 255, 255, 0.6);
+  color: var(--ink-60, rgba(255, 255, 255, 0.6));
   font-size: 0.88rem;
   line-height: 1.5;
 }
@@ -188,7 +188,7 @@
   border: none;
   border-radius: 10px;
   background-color: #33343a;
-  color: rgba(255, 255, 255, 0.75);
+  color: var(--ink-75, rgba(255, 255, 255, 0.75));
   cursor: pointer;
   outline: none;
 }
@@ -213,7 +213,7 @@
 }
 
 .fieldLabel {
-  color: rgba(255, 255, 255, 0.55);
+  color: var(--ink-55, rgba(255, 255, 255, 0.55));
   font-size: 0.78rem;
   letter-spacing: 0.06em;
   text-transform: uppercase;
@@ -315,14 +315,14 @@
    two-line row rather than repeating the tournament's date on every stage. */
 .stageWhen {
   font-size: 0.82rem;
-  color: rgba(255, 255, 255, 0.55);
+  color: var(--ink-55, rgba(255, 255, 255, 0.55));
 }
 
 /* The stage builder's own switches, 27 September 2026. Filled chips with
    aria-pressed, never a ring; a quiet heading per block of settings. */
 
 .subhead {
-  color: rgba(255, 255, 255, 0.8);
+  color: var(--ink-80, rgba(255, 255, 255, 0.8));
   font-family: 'ClashGrotesk-Variable', sans-serif;
   font-size: 0.86rem;
   font-weight: var(--fw-semi-bold, 600);
@@ -330,7 +330,7 @@
 }
 
 .note {
-  color: rgba(255, 255, 255, 0.55);
+  color: var(--ink-55, rgba(255, 255, 255, 0.55));
   font-size: 0.84rem;
   line-height: 1.5;
   flex: 1 1 100%;
@@ -350,7 +350,7 @@
   border: none;
   border-radius: 8px;
   background-color: #33343a;
-  color: rgba(255, 255, 255, 0.75);
+  color: var(--ink-75, rgba(255, 255, 255, 0.75));
   cursor: pointer;
   font-family: 'ClashGrotesk-Variable', sans-serif;
   font-size: 0.86rem;

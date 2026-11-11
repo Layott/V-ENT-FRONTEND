@@ -6,6 +6,7 @@ import WalkthroughProvider from "@/components/walkthrough/WalkthroughProvider";
 import PageHelp from "@/components/page-help/PageHelp";
 import PaystackReturn from "@/components/pay/PaystackReturn";
 import ClientTimezone from "@/components/timing/ClientTimezone";
+import PressState from "@/components/press-state/PressState";
 import { PlatformModulesProvider } from "@/lib/platformModules";
 import { CurrencyProvider } from "@/lib/money";
 import { SITE, buildMetadata, currentLocale, organizationLd, websiteLd } from "@/lib/seo";
@@ -127,6 +128,9 @@ export default async function RootLayout({ children }) {
             {/* The browser's zone on every API request, so a time typed with
                 no zone lands where the person meant it. */}
             <ClientTimezone />
+            {/* The pressed look on every control, set on pointerdown (Apple
+                review S1). One listener here instead of a rule per component. */}
+            <PressState />
             </PlatformModulesProvider>
           </CurrencyProvider>
         </body>

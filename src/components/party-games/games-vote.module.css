@@ -20,7 +20,7 @@
 
 .label {
   display: block;
-  color: rgba(255, 255, 255, 0.5);
+  color: var(--ink-50, rgba(255, 255, 255, 0.5));
   font-size: 0.72rem;
   font-weight: 600;
   letter-spacing: 0.08em;
@@ -36,7 +36,7 @@
 
 .muted {
   margin: 0;
-  color: rgba(255, 255, 255, 0.6);
+  color: var(--ink-60, rgba(255, 255, 255, 0.6));
   font-size: 0.85rem;
 }
 
@@ -59,7 +59,7 @@
 
 .tag {
   background: #33343a;
-  color: rgba(255, 255, 255, 0.62);
+  color: var(--ink-62, rgba(255, 255, 255, 0.62));
 }
 
 .greenTag {
@@ -157,7 +157,7 @@
 .how,
 .quiet {
   background: #2a2b30;
-  color: rgba(255, 255, 255, 0.72);
+  color: var(--ink-72, rgba(255, 255, 255, 0.72));
 }
 
 .how:hover,

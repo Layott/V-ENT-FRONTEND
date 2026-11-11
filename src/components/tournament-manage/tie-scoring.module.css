@@ -11,7 +11,7 @@
   color: var(--primary-bg);
 }
 
-.sub { margin: 0; color: rgba(255, 255, 255, 0.62); line-height: 1.5; max-width: 62ch; }
+.sub { margin: 0; color: var(--ink-62, rgba(255, 255, 255, 0.62)); line-height: 1.5; max-width: 62ch; }
 
 .aggregate {
   display: flex;
@@ -22,14 +22,14 @@
   padding: 0.8rem 1.1rem;
 }
 
-.aggLabel { color: rgba(255, 255, 255, 0.62); text-transform: uppercase; letter-spacing: 0.06em; font-size: 0.8rem; }
+.aggLabel { color: var(--ink-62, rgba(255, 255, 255, 0.62)); text-transform: uppercase; letter-spacing: 0.06em; font-size: 0.8rem; }
 .aggScore { font-size: 1.6rem; font-weight: var(--fw-extra-bold); color: var(--primary-bg); display: inline-flex; align-items: center; gap: 0.5rem; }
 .aggDash { display: inline-block; width: 14px; height: 4px; background-color: rgba(255, 255, 255, 0.5); border-radius: 2px; }
 
 .status {
   margin-left: auto;
   background-color: #35363c;
-  color: rgba(255, 255, 255, 0.8);
+  color: var(--ink-80, rgba(255, 255, 255, 0.8));
   border-radius: 8px;
   padding: 0.25rem 0.6rem;
   font-size: 0.8rem;
@@ -57,7 +57,7 @@
 
 .seatHead { display: flex; justify-content: space-between; margin-bottom: 0.6rem; }
 .seatLabel { font-weight: var(--fw-bold); color: var(--primary-bg); }
-.seatStatus { color: rgba(255, 255, 255, 0.55); font-size: 0.85rem; }
+.seatStatus { color: var(--ink-55, rgba(255, 255, 255, 0.55)); font-size: 0.85rem; }
 
 .seatRow {
   display: grid;

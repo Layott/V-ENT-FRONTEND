@@ -37,7 +37,7 @@
 
 .pageSubtitle {
   font-size: var(--fs-p-size-mobile);
-  color: rgba(255, 255, 255, 0.45);
+  color: var(--ink-45, rgba(255, 255, 255, 0.45));
   margin: 0;
 }
 
@@ -176,7 +176,7 @@
 .tabBtn {
   background: transparent;
   border: none;
-  color: rgba(255, 255, 255, 0.5);
+  color: var(--ink-50, rgba(255, 255, 255, 0.5));
   font-family: inherit;
   font-size: var(--fs-p-size-mobile);
   font-weight: var(--fw-medium);
@@ -219,7 +219,7 @@
 }
 
 .searchIcon {
-  color: rgba(255, 255, 255, 0.45);
+  color: var(--ink-45, rgba(255, 255, 255, 0.45));
   font-size: 1rem;
   flex-shrink: 0;
 }
@@ -235,7 +235,7 @@
 }
 
 .searchInput::placeholder {
-  color: rgba(255, 255, 255, 0.35);
+  color: var(--ink-35, rgba(255, 255, 255, 0.35));
 }
 
 .filterSelect {
@@ -262,7 +262,7 @@
   position: absolute;
   right: 0.5rem;
   pointer-events: none;
-  color: rgba(255, 255, 255, 0.45);
+  color: var(--ink-45, rgba(255, 255, 255, 0.45));
   font-size: 0.85rem;
 }
 
@@ -292,7 +292,7 @@
 }
 
 .dateSep {
-  color: rgba(255, 255, 255, 0.35);
+  color: var(--ink-35, rgba(255, 255, 255, 0.35));
   font-size: 0.8rem;
 }
 
@@ -300,7 +300,7 @@
   background-color: transparent;
 
   border-radius: 8px;
-  color: rgba(255, 255, 255, 0.65);
+  color: var(--ink-65, rgba(255, 255, 255, 0.65));
   font-family: inherit;
   font-size: var(--fs-p-size-mobile);
   padding: 0 0.85rem;
@@ -316,7 +316,7 @@
 
 .resultCount {
   font-size: var(--fs-p-size-mobile);
-  color: rgba(255, 255, 255, 0.45);
+  color: var(--ink-45, rgba(255, 255, 255, 0.45));
   margin: 0 0 1rem;
 }
 
@@ -351,8 +351,7 @@
   position: absolute;
   top: 10px;
   left: 10px;
-  background: rgba(0, 0, 0, 0.65);
-  backdrop-filter: blur(4px);
+  background: rgba(0, 0, 0, 0.8);
   font-size: 0.6875rem;
   font-weight: var(--fw-bold);
   letter-spacing: 0.08em;
@@ -366,7 +365,7 @@
 
 .status_upcoming { color: #f59e0b; }
 .status_in_progress { color: var(--v-ent-light-gold); }
-.status_completed { color: rgba(255, 255, 255, 0.6); }
+.status_completed { color: var(--ink-60, rgba(255, 255, 255, 0.6)); }
 
 .liveDot {
   color: var(--v-ent-light-gold);
@@ -430,11 +429,11 @@
   align-items: center;
   gap: 0.45rem;
   font-size: var(--fs-p-size-mobile);
-  color: rgba(255, 255, 255, 0.65);
+  color: var(--ink-65, rgba(255, 255, 255, 0.65));
 }
 
 .metaIcon {
-  color: rgba(255, 255, 255, 0.4);
+  color: var(--ink-40, rgba(255, 255, 255, 0.4));
   font-size: 0.85rem;
   flex-shrink: 0;
 }
@@ -445,7 +444,7 @@
 }
 
 .metaNoPrize {
-  color: rgba(255, 255, 255, 0.6);
+  color: var(--ink-60, rgba(255, 255, 255, 0.6));
 }
 
 /* The V-ENT mark, muted and centred, on a card with no banner. */
@@ -472,7 +471,7 @@
 
 .formatTag {
   font-size: 0.7rem;
-  color: rgba(255, 255, 255, 0.55);
+  color: var(--ink-55, rgba(255, 255, 255, 0.55));
 }
 
 .entryFee {
@@ -507,7 +506,7 @@
 .gameGroupCount {
   font-size: 0.75rem;
   background-color: var(--overlay-gray);
-  color: rgba(255, 255, 255, 0.55);
+  color: var(--ink-55, rgba(255, 255, 255, 0.55));
   padding: 2px 8px;
   border-radius: 10px;
   font-weight: var(--fw-medium);
@@ -541,7 +540,7 @@
 
 .emptySub {
   font-size: var(--fs-p-size-mobile);
-  color: rgba(255, 255, 255, 0.45);
+  color: var(--ink-45, rgba(255, 255, 255, 0.45));
   margin: 0 0 1rem;
 }
 
@@ -690,7 +689,7 @@
 
 .inlineErrorSub {
   font-size: var(--fs-p-size-mobile);
-  color: rgba(255, 255, 255, 0.45);
+  color: var(--ink-45, rgba(255, 255, 255, 0.45));
   margin: 0 0 1rem;
 }
 

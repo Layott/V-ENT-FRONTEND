@@ -29,7 +29,7 @@
   font-size: 0.72rem;
   text-transform: uppercase;
   letter-spacing: 0.1em;
-  color: rgba(255, 255, 255, 0.45);
+  color: var(--ink-45, rgba(255, 255, 255, 0.45));
   padding: 0.5rem 0.75rem 0.75rem;
 }
 
@@ -83,7 +83,7 @@
 }
 
 .chev {
-  color: rgba(255, 255, 255, 0.45);
+  color: var(--ink-45, rgba(255, 255, 255, 0.45));
   font-size: 0.85rem;
 }
 
@@ -145,7 +145,7 @@
 
 .formInput::placeholder,
 .formTextarea::placeholder {
-  color: rgba(255, 255, 255, 0.45);
+  color: var(--ink-45, rgba(255, 255, 255, 0.45));
 }
 
 .formInput:focus,
@@ -172,7 +172,7 @@
 .fieldHelper {
   font-family: "ClashGrotesk-Variable", sans-serif;
   font-size: 0.72rem;
-  color: rgba(255, 255, 255, 0.45);
+  color: var(--ink-45, rgba(255, 255, 255, 0.45));
 }
 
 .formFooter {

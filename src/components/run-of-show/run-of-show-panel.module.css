@@ -33,7 +33,7 @@
 
 .hint,
 .blockHint {
-  color: rgba(255, 255, 255, 0.55);
+  color: var(--ink-55, rgba(255, 255, 255, 0.55));
   font-size: 0.85rem;
   line-height: 1.55;
   margin: 0;
@@ -101,7 +101,7 @@
   padding: 0.45rem 0.85rem;
   border-radius: 999px;
   background-color: rgba(255, 255, 255, 0.08);
-  color: rgba(255, 255, 255, 0.72);
+  color: var(--ink-72, rgba(255, 255, 255, 0.72));
   font-size: 0.82rem;
   cursor: pointer;
 }
@@ -136,7 +136,7 @@
 
 .primaryBtn:disabled {
   background-color: rgba(255, 255, 255, 0.12);
-  color: rgba(255, 255, 255, 0.4);
+  color: var(--ink-40, rgba(255, 255, 255, 0.4));
   cursor: not-allowed;
 }
 
@@ -186,7 +186,7 @@
 }
 
 .label {
-  color: rgba(255, 255, 255, 0.55);
+  color: var(--ink-55, rgba(255, 255, 255, 0.55));
   font-size: 0.78rem;
 }
 
@@ -212,7 +212,7 @@
 
 .input::placeholder,
 .textarea::placeholder {
-  color: rgba(255, 255, 255, 0.35);
+  color: var(--ink-35, rgba(255, 255, 255, 0.35));
 }
 
 .pasteBox {
@@ -240,7 +240,7 @@
 }
 
 .count {
-  color: rgba(255, 255, 255, 0.45);
+  color: var(--ink-45, rgba(255, 255, 255, 0.45));
   font-size: 0.8rem;
   white-space: nowrap;
 }
@@ -274,7 +274,7 @@
 }
 
 .cueDayName {
-  color: rgba(255, 255, 255, 0.45);
+  color: var(--ink-45, rgba(255, 255, 255, 0.45));
   font-size: 0.76rem;
   letter-spacing: 0.14em;
   text-transform: uppercase;
@@ -295,7 +295,7 @@
 .cueTime {
   font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
   font-size: 0.83rem;
-  color: rgba(255, 255, 255, 0.8);
+  color: var(--ink-80, rgba(255, 255, 255, 0.8));
   flex: 0 0 3.4rem;
 }
 
@@ -311,7 +311,7 @@
   background-color: rgba(255, 255, 255, 0.09);
   border-radius: 8px;
   padding: 0.16rem 0.42rem;
-  color: rgba(255, 255, 255, 0.65);
+  color: var(--ink-65, rgba(255, 255, 255, 0.65));
   font-size: 0.74rem;
 }
 

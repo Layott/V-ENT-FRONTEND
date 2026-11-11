@@ -29,6 +29,7 @@ import { mediaUrl } from '@/lib/mediaUrl';
 import shared from '@/components/admin/admin.module.css';
 import styles from './community-detail.module.css';
 import { adminToken } from '@/lib/adminToken'
+import { markScrimDown, isScrimClick } from '@/lib/scrim';
 
 const API = process.env.NEXT_PUBLIC_API_URL;
 
@@ -119,7 +120,7 @@ function CommunityDetailInner() {
 
   return <div className={shared.pageContainer}>
       <div className={`${shared.sidebarOverlay} ${sidebarOpen ? shared.open : ''}`}
-           onClick={() => setSidebarOpen(false)} />
+           onPointerDown={markScrimDown} onClick={(e) => isScrimClick(e) && (setSidebarOpen(false))} />
       <AdminNav admin={admin} onLogout={logout} sidebarOpen={sidebarOpen} badges={{}} />
       <div className={shared.mainContainer}>
         <AdminHeader admin={admin} onLogout={logout} onMenuOpen={() => setSidebarOpen(true)} />
@@ -265,7 +266,7 @@ function CommunityDetailInner() {
       </div>
 
       {removing ? <div className={shared.modalOverlay}
-                       onClick={(e) => { if (e.target === e.currentTarget) setRemoving(null); }}>
+                       onPointerDown={markScrimDown} onClick={(e) => { if (isScrimClick(e)) setRemoving(null); }}>
         <div className={shared.modal}>
           <h3 className={shared.modalTitle}>{tt('adminClub.removeTitle', 'Remove this message?')}</h3>
           <p className={shared.modalSub}>

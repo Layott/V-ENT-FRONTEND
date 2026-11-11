@@ -29,7 +29,7 @@
 
 .crumb {
   font-size: var(--fs-p-size-sm-mobile);
-  color: rgba(255, 255, 255, 0.45);
+  color: var(--ink-45, rgba(255, 255, 255, 0.45));
   text-decoration: none;
   min-height: 44px;
   display: inline-flex;
@@ -37,7 +37,7 @@
 }
 
 .crumb:hover {
-  color: rgba(255, 255, 255, 0.8);
+  color: var(--ink-80, rgba(255, 255, 255, 0.8));
 }
 
 .panel {
@@ -59,7 +59,7 @@
 .body {
   margin: 0;
   font-size: var(--fs-p-size-mobile);
-  color: rgba(255, 255, 255, 0.75);
+  color: var(--ink-75, rgba(255, 255, 255, 0.75));
   line-height: 1.6;
   white-space: pre-wrap;
 }
@@ -76,7 +76,7 @@
 
 .terms {
   font-size: var(--fs-p-size-sm-mobile);
-  color: rgba(255, 255, 255, 0.5);
+  color: var(--ink-50, rgba(255, 255, 255, 0.5));
   line-height: 1.6;
   margin: 0;
 }
@@ -92,7 +92,7 @@
 .empty {
   padding: 3rem 1rem;
   text-align: center;
-  color: rgba(255, 255, 255, 0.55);
+  color: var(--ink-55, rgba(255, 255, 255, 0.55));
   font-size: var(--fs-p-size-mobile);
 }
 

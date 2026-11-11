@@ -42,7 +42,7 @@
   display: inline-flex;
   align-items: center;
   gap: 0.4rem;
-  color: rgba(255, 255, 255, 0.6);
+  color: var(--ink-60, rgba(255, 255, 255, 0.6));
   font-size: 0.85rem;
   cursor: pointer;
   background: transparent;
@@ -56,7 +56,7 @@
 .backLink:hover { color: #fff; }
 
 .stateText {
-  color: rgba(255, 255, 255, 0.45);
+  color: var(--ink-45, rgba(255, 255, 255, 0.45));
   font-size: var(--fs-p-size-mobile);
   text-align: center;
   padding: 2rem 1rem;
@@ -117,13 +117,13 @@
 
 .authorHandle {
   font-size: 0.78rem;
-  color: rgba(255, 255, 255, 0.45);
+  color: var(--ink-45, rgba(255, 255, 255, 0.45));
 }
 
 .time {
   margin-left: auto;
   font-size: 0.78rem;
-  color: rgba(255, 255, 255, 0.4);
+  color: var(--ink-40, rgba(255, 255, 255, 0.4));
 }
 
 .postHeading {
@@ -207,7 +207,7 @@
 .pollFooter {
   margin: 0.25rem 0 0;
   font-size: 0.7rem;
-  color: rgba(255, 255, 255, 0.4);
+  color: var(--ink-40, rgba(255, 255, 255, 0.4));
 }
 
 .actions {
@@ -225,7 +225,7 @@
   gap: 0.4rem;
   background: transparent;
   border: none;
-  color: rgba(255, 255, 255, 0.55);
+  color: var(--ink-55, rgba(255, 255, 255, 0.55));
   font-family: inherit;
   font-size: 0.82rem;
   cursor: pointer;
@@ -283,7 +283,7 @@
 }
 
 .composeTextarea:focus { background-color: rgba(255, 255, 255, 0.05); }
-.composeTextarea::placeholder { color: rgba(255, 255, 255, 0.35); }
+.composeTextarea::placeholder { color: var(--ink-35, rgba(255, 255, 255, 0.35)); }
 
 .composeActions {
   display: flex;
@@ -294,7 +294,7 @@
 .counter {
   margin-right: auto;
   font-size: 0.7rem;
-  color: rgba(255, 255, 255, 0.4);
+  color: var(--ink-40, rgba(255, 255, 255, 0.4));
 }
 
 .commentBtn {
@@ -312,7 +312,7 @@
 .commentCount {
   font-size: 0.85rem;
   font-weight: var(--fw-medium);
-  color: rgba(255, 255, 255, 0.55);
+  color: var(--ink-55, rgba(255, 255, 255, 0.55));
   margin: 0.5rem 0 0.25rem;
 }
 
@@ -365,13 +365,13 @@
 
 .commentHandle {
   font-size: 0.7rem;
-  color: rgba(255, 255, 255, 0.45);
+  color: var(--ink-45, rgba(255, 255, 255, 0.45));
 }
 
 .commentTime {
   margin-left: auto;
   font-size: 0.7rem;
-  color: rgba(255, 255, 255, 0.35);
+  color: var(--ink-35, rgba(255, 255, 255, 0.35));
 }
 
 .commentText {

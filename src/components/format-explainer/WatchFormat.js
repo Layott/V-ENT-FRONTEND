@@ -18,6 +18,7 @@ import { useT } from '@/i18n/LanguageProvider';
 import { explainerKey, sceneFor } from '@/lib/explainers';
 import FormatExplainer, { explainerWords } from './FormatExplainer';
 import styles from './watch-format.module.css';
+import { markScrimDown, isScrimClick } from '@/lib/scrim';
 
 /**
  * The sheet itself. `keys` are explainer keys; the first is shown first.
@@ -52,9 +53,9 @@ export function ExplainerSheet({ keys, onClose, allFormatsLink = false }) {
       role="dialog"
       aria-modal="true"
       aria-label={words.title}
-      onClick={(e) => {
+      onPointerDown={markScrimDown} onClick={(e) => {
         e.stopPropagation();
-        if (e.target === e.currentTarget) onClose();
+        if (isScrimClick(e)) onClose();
       }}
     >
       <div className={styles.sheet}>

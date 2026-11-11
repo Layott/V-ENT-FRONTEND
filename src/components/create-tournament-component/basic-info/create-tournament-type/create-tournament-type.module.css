@@ -216,7 +216,7 @@
 }
 
 .eventMeta {
-  color: rgba(255, 255, 255, 0.5);
+  color: var(--ink-50, rgba(255, 255, 255, 0.5));
   font-size: 0.78rem;
 }
 

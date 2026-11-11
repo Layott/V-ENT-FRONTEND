@@ -12,7 +12,7 @@
   border: none;
   border-radius: 10px;
   background-color: #33343a;
-  color: rgba(255, 255, 255, 0.8);
+  color: var(--ink-80, rgba(255, 255, 255, 0.8));
   font-family: 'ClashGrotesk-Variable', sans-serif;
   font-size: 0.88rem;
   cursor: pointer;
@@ -40,7 +40,7 @@
 }
 
 .reassure {
-  color: rgba(255, 255, 255, 0.6);
+  color: var(--ink-60, rgba(255, 255, 255, 0.6));
   font-size: 0.86rem;
   line-height: 1.55;
   margin-top: 0.35rem;
@@ -82,7 +82,7 @@
 
 .quiet {
   background-color: #33343a;
-  color: rgba(255, 255, 255, 0.8);
+  color: var(--ink-80, rgba(255, 255, 255, 0.8));
 }
 
 .quiet:hover { background-color: #3d3e45; color: #fff; }

@@ -6,13 +6,13 @@
   margin: 0 0 1rem;
   font-size: var(--fs-p-size-mobile);
   line-height: 1.5;
-  color: rgba(255, 255, 255, 0.62);
+  color: var(--ink-62, rgba(255, 255, 255, 0.62));
 }
 
 .note {
   margin: 0;
   font-size: var(--fs-p-size-mobile);
-  color: rgba(255, 255, 255, 0.55);
+  color: var(--ink-55, rgba(255, 255, 255, 0.55));
 }
 
 .retry {
@@ -74,7 +74,7 @@
 
 .handle {
   font-size: 0.85rem;
-  color: rgba(255, 255, 255, 0.8);
+  color: var(--ink-80, rgba(255, 255, 255, 0.8));
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -82,7 +82,7 @@
 
 .muted {
   font-size: 0.82rem;
-  color: rgba(255, 255, 255, 0.45);
+  color: var(--ink-45, rgba(255, 255, 255, 0.45));
 }
 
 .action {

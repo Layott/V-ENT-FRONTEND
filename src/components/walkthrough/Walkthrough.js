@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import { useRoutePath } from '@/lib/routePath';
 import styles from './walkthrough.module.css';
 import { useT, useTx } from '@/i18n/LanguageProvider';
+import { scrollBehavior } from '@/lib/scrollMotion';
 
 // The first-run walkthrough.
 //
@@ -54,7 +55,7 @@ const measure = anchor => {
   if (r.bottom < 0 || r.top > window.innerHeight) {
     el.scrollIntoView({
       block: 'center',
-      behavior: 'smooth'
+      behavior: scrollBehavior()
     });
     return null;
   }

@@ -19,7 +19,7 @@
 }
 
 .input::placeholder {
-  color: rgba(255, 255, 255, 0.38);
+  color: var(--ink-38, rgba(255, 255, 255, 0.38));
 }
 
 .input:focus-visible {
@@ -30,7 +30,7 @@
 .picked {
   margin: 0.5rem 0 0;
   font-size: var(--fs-p-size-mobile);
-  color: rgba(255, 255, 255, 0.62);
+  color: var(--ink-62, rgba(255, 255, 255, 0.62));
 }
 
 .pickedHandle {
@@ -57,7 +57,7 @@
 
 .note {
   padding: 0.75rem 0.65rem;
-  color: rgba(255, 255, 255, 0.45);
+  color: var(--ink-45, rgba(255, 255, 255, 0.45));
   font-size: var(--fs-p-size-mobile);
 }
 
@@ -138,13 +138,13 @@
 }
 
 .handle {
-  color: rgba(255, 255, 255, 0.45);
+  color: var(--ink-45, rgba(255, 255, 255, 0.45));
   font-size: var(--fs-p-size-mobile);
 }
 
 .closed {
   font-size: 0.7rem;
-  color: rgba(255, 255, 255, 0.42);
+  color: var(--ink-42, rgba(255, 255, 255, 0.42));
   flex-shrink: 0;
 }
 

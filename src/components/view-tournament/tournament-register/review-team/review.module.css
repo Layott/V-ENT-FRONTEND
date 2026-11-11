@@ -187,7 +187,7 @@
   margin-top: 0.35rem;
   font-size: 0.8rem;
   font-weight: 400;
-  color: rgba(255, 255, 255, 0.6);
+  color: var(--ink-60, rgba(255, 255, 255, 0.6));
 }
 
 /* Registrants Section */
@@ -296,7 +296,7 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.2s;
+  transition: background-color 150ms ease-out, color 150ms ease-out, transform 200ms ease-out;
 }
 
 .toggleButton:hover {
@@ -387,7 +387,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.2s;
+  transition: background-color 150ms ease-out, color 150ms ease-out;
   flex-shrink: 0;
   margin-top: 2px;
 }
@@ -437,7 +437,7 @@
   font-size: 0.875rem;
   font-weight: 500;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: background-color 150ms ease-out, width 200ms ease-out;
 }
 
 .cancelButton:hover {
@@ -454,7 +454,7 @@
   font-size: 0.875rem;
   font-weight: 500;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: background-color 150ms ease-out, opacity 150ms ease-out, transform 200ms ease-out, width 200ms ease-out;
   display: flex;
   align-items: center;
   gap: 8px;

@@ -19,6 +19,7 @@ import { mediaUrl } from '@/lib/mediaUrl';
 import { adminToken } from '@/lib/adminToken'
 import { COUNTRIES } from '@/constants/countries';
 import PagerArrow from '@/components/pager-arrow/PagerArrow';
+import { markScrimDown, isScrimClick } from '@/lib/scrim';
 const PAGE_SIZE = 20;
 // The one country list, alphabetical (inbox 443). The filter had eight of its
 // own, in no order, and could not find a member from anywhere else.
@@ -207,7 +208,7 @@ function UsersInner() {
   }
   if (authLoading) return null;
   return <div className={shared.pageContainer}>
-      <div className={`${shared.sidebarOverlay} ${sidebarOpen ? shared.open : ''}`} onClick={() => setSidebarOpen(false)} />
+      <div className={`${shared.sidebarOverlay} ${sidebarOpen ? shared.open : ''}`} onPointerDown={markScrimDown} onClick={(e) => isScrimClick(e) && (setSidebarOpen(false))} />
       <AdminNav admin={admin} onLogout={logout} sidebarOpen={sidebarOpen} badges={{}} />
       <div className={shared.mainContainer}>
         <AdminHeader admin={admin} onLogout={logout} onMenuOpen={() => setSidebarOpen(true)} searchValue={search} onSearch={setSearch} />
@@ -356,7 +357,7 @@ function UsersInner() {
         </main>
       </div>
 
-      {banTarget && <div className={shared.modalOverlay} onClick={() => setBanTarget(null)}>
+      {banTarget && <div className={shared.modalOverlay} onPointerDown={markScrimDown} onClick={(e) => isScrimClick(e) && (setBanTarget(null))}>
           <div className={shared.modal} onClick={e => e.stopPropagation()}>
             <p className={shared.modalTitle}>{tt('admin.banTitle', 'Ban this account?')}</p>
             <p className={shared.modalSub}>

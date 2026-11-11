@@ -44,7 +44,7 @@
   cursor: pointer;
   outline: none !important;
 
-  transition: all 0.15s ease-in-out;
+  transition: background-color 150ms ease-out, color 150ms ease-out, opacity 150ms ease-out;
 }
 
 .inputWithDropdown:hover,
@@ -86,7 +86,7 @@
   padding: 0.25rem 0.6rem;
   border-radius: 8px;
   position: relative;
-  transition: all 0.15s ease-in-out;
+  transition: background-color 150ms ease-out, color 150ms ease-out, opacity 150ms ease-out;
 
   gap: 0;
   width: 100%;
@@ -101,7 +101,7 @@
   padding: 0 0.5rem;
   flex-grow: 1;
   font-size: 0.9rem;
-  transition: all ease-in-out 0.15s;
+  transition: background-color 150ms ease-out, color 150ms ease-out, opacity 150ms ease-out;
 }
 
 .searchBar:focus-within {

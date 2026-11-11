@@ -605,7 +605,7 @@
 }
 
 .ladderRecord {
-  color: rgba(255, 255, 255, 0.7);
+  color: var(--ink-70, rgba(255, 255, 255, 0.7));
   font-size: 0.86rem;
   font-variant-numeric: tabular-nums;
 }
@@ -634,7 +634,7 @@
 
 .ladderLevelTitle {
   margin: 0;
-  color: rgba(255, 255, 255, 0.5);
+  color: var(--ink-50, rgba(255, 255, 255, 0.5));
   font-size: 0.74rem;
   letter-spacing: 0.04em;
 }

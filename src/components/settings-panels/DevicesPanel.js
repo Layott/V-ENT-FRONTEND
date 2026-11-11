@@ -7,6 +7,7 @@ import { useT } from '@/i18n/LanguageProvider';
 import { useTx } from '@/i18n/LanguageProvider';
 import { formatDate, formatRelative } from '@/lib/datetime';
 import { plural } from '@/lib/plural';
+import { markScrimDown, isScrimClick } from '@/lib/scrim';
 // "3 hours ago" in the reader's language (formatRelative), then a date once
 // it is a fortnight old. Was built by hand in English, "hour" + "s" (inbox 364).
 const formatLastActive = iso => {
@@ -111,7 +112,7 @@ const DevicesPanel = ({
       </div>
 
       {/* Single revoke confirm */}
-      {confirm && <div className={shared.modalBackdrop} onClick={() => !busy && setConfirm(null)}>
+      {confirm && <div className={shared.modalBackdrop} onPointerDown={markScrimDown} onClick={(e) => isScrimClick(e) && (!busy && setConfirm(null))}>
           <div className={shared.modal} onClick={e => e.stopPropagation()}>
             <h3 className={shared.modalTitle}>{tt("ui.sign.out.device.6309", "Sign out this device?")}</h3>
             <p className={shared.modalSub}>
@@ -129,7 +130,7 @@ const DevicesPanel = ({
         </div>}
 
       {/* All-others confirm */}
-      {confirmAll && <div className={shared.modalBackdrop} onClick={() => !busy && setConfirmAll(false)}>
+      {confirmAll && <div className={shared.modalBackdrop} onPointerDown={markScrimDown} onClick={(e) => isScrimClick(e) && (!busy && setConfirmAll(false))}>
           <div className={shared.modal} onClick={e => e.stopPropagation()}>
             <h3 className={shared.modalTitle}>{tt("ui.sign.out.all.other.7094", "Sign out all other devices?")}</h3>
             <p className={shared.modalSub}>

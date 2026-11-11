@@ -28,7 +28,7 @@
 .organiserNote {
   font-size: 0.92rem;
   line-height: 1.55;
-  color: rgba(255, 255, 255, 0.7);
+  color: var(--ink-70, rgba(255, 255, 255, 0.7));
   margin: 0;
 }
 
@@ -58,7 +58,7 @@
 }
 
 .barText > span {
-  color: rgba(255, 255, 255, 0.62);
+  color: var(--ink-62, rgba(255, 255, 255, 0.62));
   font-size: 0.86rem;
 }
 
@@ -71,7 +71,7 @@
 }
 
 .chipsLabel {
-  color: rgba(255, 255, 255, 0.5);
+  color: var(--ink-50, rgba(255, 255, 255, 0.5));
   font-size: 0.8rem;
   margin-right: 4px;
 }
@@ -82,7 +82,7 @@
   border: 0;
   border-radius: 8px;
   background: #33343a;
-  color: rgba(255, 255, 255, 0.72);
+  color: var(--ink-72, rgba(255, 255, 255, 0.72));
   font-family: inherit;
   font-size: 0.82rem;
   font-weight: 500;
@@ -103,7 +103,7 @@
 }
 
 .codeLabel {
-  color: rgba(255, 255, 255, 0.62);
+  color: var(--ink-62, rgba(255, 255, 255, 0.62));
   font-size: 0.82rem;
 }
 
@@ -174,7 +174,7 @@
 
 .quietBtn {
   background: #2a2b30;
-  color: rgba(255, 255, 255, 0.72);
+  color: var(--ink-72, rgba(255, 255, 255, 0.72));
 }
 
 .quietBtn:hover {
@@ -236,7 +236,7 @@
   padding: 18px 16px;
   border-radius: 14px;
   background: var(--overlay-gray);
-  color: rgba(255, 255, 255, 0.62);
+  color: var(--ink-62, rgba(255, 255, 255, 0.62));
   font-size: 0.92rem;
   line-height: 1.55;
 }
@@ -302,7 +302,7 @@
 
 .meta {
   margin: 0;
-  color: rgba(255, 255, 255, 0.6);
+  color: var(--ink-60, rgba(255, 255, 255, 0.6));
   font-size: 0.82rem;
 }
 
@@ -318,7 +318,7 @@
 
 .tag {
   background: #33343a;
-  color: rgba(255, 255, 255, 0.62);
+  color: var(--ink-62, rgba(255, 255, 255, 0.62));
 }
 
 .goldTag {
@@ -338,7 +338,7 @@
   padding: 0 16px;
   border-radius: 10px;
   background: #2a2b30;
-  color: rgba(255, 255, 255, 0.55);
+  color: var(--ink-55, rgba(255, 255, 255, 0.55));
   font-size: 0.85rem;
   font-weight: 600;
   display: flex;
@@ -353,7 +353,7 @@
   flex-wrap: wrap;
   gap: 8px;
   margin-top: 4px;
-  color: rgba(255, 255, 255, 0.6);
+  color: var(--ink-60, rgba(255, 255, 255, 0.6));
   font-size: 0.8rem;
 }
 

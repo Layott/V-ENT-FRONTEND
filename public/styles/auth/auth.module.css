@@ -164,7 +164,7 @@
 }
 
 .inputGroup input::placeholder {
-  color: rgba(255, 255, 255, 0.672);
+  color: var(--ink-672, rgba(255, 255, 255, 0.672));
   font-weight: 100;
 }
 

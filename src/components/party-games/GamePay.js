@@ -16,6 +16,7 @@ import { formatNumber, formatWithZone } from '@/lib/datetime';
 import { ventFetch } from '@/components/tournament-lib/tournamentApi';
 import PayShortfall from '@/components/pay/PayShortfall';
 import styles from './game-pay.module.css';
+import { markScrimDown, isScrimClick } from '@/lib/scrim';
 
 /**
  * @param game     the game being paid for (fee_vc, fee_total_vc, starts_at)
@@ -68,7 +69,7 @@ export default function GamePay({ game, name, ticket, path, token, onPaid, onClo
   return (
     <div className={styles.scrim} role="dialog" aria-modal="true"
          aria-label={tt('games.pay.title', 'Play {name}').replace('{name}', name)}
-         onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}>
+         onPointerDown={markScrimDown} onClick={(e) => { if (isScrimClick(e)) onClose(); }}>
       <div className={styles.sheet}>
         <div className={styles.head}>
           <div>

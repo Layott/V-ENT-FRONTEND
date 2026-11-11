@@ -49,6 +49,7 @@ import PendingInvites from '@/components/invitations/PendingInvites';
 import { formatWithZone, formatNumber, isoToLocalInput, withLocalDatesAsISO } from '@/lib/datetime';
 import LegacyIdRoute from '@/components/legacy-id-route/LegacyIdRoute';
 import BackLink from '@/components/back-link/BackLink';
+import { scrollBehavior } from '@/lib/scrollMotion';
 const API = process.env.NEXT_PUBLIC_API_URL;
 
 // The site's language, not the browser's.
@@ -542,7 +543,7 @@ export const ManageEventContent = ({
   // once it is on the page.
   useEffect(() => {
     if (!error) return;
-    document.querySelector('[data-console-error]')?.scrollIntoView({ block: 'center', behavior: 'smooth' });
+    document.querySelector('[data-console-error]')?.scrollIntoView({ block: 'center', behavior: scrollBehavior() });
   }, [error]);
 
   // ------------------------------------------------------ messages and polls

@@ -45,7 +45,7 @@
 }
 .pageSubtitle {
   font-size: var(--fs-p-size-mobile);
-  color: rgba(255, 255, 255, 0.38);
+  color: var(--ink-38, rgba(255, 255, 255, 0.38));
 }
 .pageActions { display: flex; gap: 0.65rem; flex-wrap: wrap; }
 
@@ -69,7 +69,7 @@
   font-size: 0.72rem;
   text-transform: uppercase;
   letter-spacing: 0.08em;
-  color: rgba(255, 255, 255, 0.4);
+  color: var(--ink-40, rgba(255, 255, 255, 0.4));
   margin-bottom: 0.5rem;
 }
 .metricValue {
@@ -82,7 +82,7 @@
 .metricDelta { font-family: "ClashGrotesk-Variable", sans-serif; font-size: 0.72rem; }
 .deltaUp   { color: var(--v-ent-gold); }
 .deltaDown { color: var(--v-ent-red); }
-.deltaNeu  { color: rgba(255, 255, 255, 0.35); }
+.deltaNeu  { color: var(--ink-35, rgba(255, 255, 255, 0.35)); }
 
 /* Section header */
 .sectionHeader {
@@ -136,7 +136,7 @@
 .resultsCount {
   font-family: "ClashGrotesk-Variable", sans-serif;
   font-size: 0.82rem;
-  color: rgba(255, 255, 255, 0.4);
+  color: var(--ink-40, rgba(255, 255, 255, 0.4));
   margin-left: auto;
 }
 
@@ -150,42 +150,78 @@
   font-size: 0.72rem;
   text-transform: uppercase;
   letter-spacing: 0.08em;
-  color: rgba(255, 255, 255, 0.4);
+  color: var(--ink-40, rgba(255, 255, 255, 0.4));
   padding: 0.7rem 1rem;
   white-space: nowrap;
   cursor: pointer;
   user-select: none;
 }
-.table th:hover { color: rgba(255, 255, 255, 0.7); }
+.table th:hover { color: var(--ink-70, rgba(255, 255, 255, 0.7)); }
 .table td {
   padding: 0.8rem 1rem;
 
-  color: rgba(255, 255, 255, 0.75);
+  color: var(--ink-75, rgba(255, 255, 255, 0.75));
   vertical-align: middle;
 }
 .table tbody tr:last-child td { border-bottom: none; }
 .table tbody tr:hover td { background-color: rgba(255, 255, 255, 0.02); }
 
-/* On a phone the action column stays in view while the rest of the row
-   scrolls under it. Approve, Resolve and Ban sat off the edge of a panel that
-   scrolled sideways with nothing to say so (audit 557). Only a last column
-   holding a control is pinned, so a table with no actions is left alone. */
+/* On a phone every console table is a list of stacked rows (Apple review S11
+   and F4, inbox 569). At 390px the tables used to keep two or three columns
+   and hide the rest off to the right with no cue: the payouts table showed the
+   user and Approve / Reject but not the amount, the bank or the account, so a
+   payout could be approved blind. Now each row is one filled card, every cell
+   on its own line under the column's name (TableLabels copies each <th> into
+   its cells' data-label), columns hidden on a phone come back, and the cell
+   marked data-primary (the amount, what a dispute says, what was done) leads
+   the card. The actions come last, together. */
 @media (max-width: 720px) {
+  .tableWrap { overflow-x: visible; }
+  .table, .table tbody { display: block; width: 100%; }
+  .table thead { display: none; }
+  .table tbody tr {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    padding: 0.85rem 1rem;
+    margin-bottom: 0.6rem;
+    border-radius: 12px;
+    background-color: #2a2b30;
+  }
+  .table tbody tr:hover td { background-color: transparent; }
+  .table td,
+  .table td.hideMobile {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 0.75rem;
+    padding: 0;
+    min-width: 0;
+    overflow-wrap: anywhere;
+    text-align: right;
+  }
+  .table td[data-label]::before {
+    content: attr(data-label);
+    flex: 0 0 auto;
+    max-width: 45%;
+    text-align: left;
+    font-size: 0.6875rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--ink-45, rgba(255, 255, 255, 0.45));
+  }
+  .table td[data-primary] {
+    order: -1;
+    font-size: var(--fs-p-size-desktop);
+    color: var(--primary-bg);
+  }
   .table td:last-child:has(button, a) {
-    position: sticky;
-    right: 0;
-    background-color: #212225;
-    box-shadow: -10px 0 10px -10px rgba(0, 0, 0, 0.6);
+    justify-content: flex-start;
+    flex-wrap: wrap;
+    padding-top: 0.4rem;
   }
-  .table tbody tr:hover td:last-child:has(button, a) {
-    background-color: #212225;
-  }
-  .table:has(td:last-child button, td:last-child a) th:last-child {
-    position: sticky;
-    right: 0;
-    background-color: #303136;
-    box-shadow: -10px 0 10px -10px rgba(0, 0, 0, 0.6);
-  }
+  .table td:last-child:has(button, a)::before { display: none; }
+  .table td:empty { display: none; }
 }
 
 /* Badges */
@@ -205,11 +241,11 @@
 .sBanned   { background: rgba(237,28,36,0.15);   color: var(--v-ent-red); }
 .sActive   { background: rgba(212, 175, 55,0.1);    color: var(--v-ent-gold); }
 .sOngoing  { background: rgba(33,150,243,0.12);  color: #64B5F6; }
-.sDraft    { background: rgba(255,255,255,0.06); color: rgba(255,255,255,0.45); }
+.sDraft    { background: rgba(255,255,255,0.06); color: var(--ink-45, rgba(255, 255, 255, 0.45)); }
 .sCancelled { background: rgba(237,28,36,0.08); color: rgba(237,28,36,0.7); }
 .sKyc      { background: rgba(255,193,7,0.1);   color: #FFD54F; }
 .sSuspended { background: rgba(255,152,0,0.12); color: #FFB74D; }
-.roleUser   { background: rgba(255,255,255,0.06); color: rgba(255,255,255,0.5); }
+.roleUser   { background: rgba(255,255,255,0.06); color: var(--ink-50, rgba(255, 255, 255, 0.5)); }
 .roleOrganizer { background: rgba(212, 175, 55,0.1); color: var(--v-ent-gold); }
 .roleAdmin  { background: rgba(237,28,36,0.12); color: var(--v-ent-red); }
 
@@ -231,7 +267,7 @@
 .actApprove:hover { background: rgba(212, 175, 55,0.28); }
 .actReject  { background: rgba(237,28,36,0.12);   color: var(--v-ent-red); }
 .actReject:hover  { background: rgba(237,28,36,0.25); }
-.actView    { background: rgba(255,255,255,0.06); color: rgba(255,255,255,0.6); }
+.actView    { background: rgba(255,255,255,0.06); color: var(--ink-60, rgba(255, 255, 255, 0.6)); }
 .actView:hover    { background: rgba(255,255,255,0.12); }
 .actBan     { background: rgba(237,28,36,0.1);    color: rgba(237,28,36,0.75); }
 .actBan:hover     { background: rgba(237,28,36,0.22); }
@@ -245,7 +281,7 @@
   background-color: #303136;
   display: flex; align-items: center; justify-content: center;
   font-size: 0.6875rem; font-weight: 700;
-  color: rgba(255, 255, 255, 0.55);
+  color: var(--ink-55, rgba(255, 255, 255, 0.55));
   flex-shrink: 0;
 }
 
@@ -261,7 +297,7 @@
 .paginationInfo {
   font-family: "ClashGrotesk-Variable", sans-serif;
   font-size: 0.82rem;
-  color: rgba(255, 255, 255, 0.4);
+  color: var(--ink-40, rgba(255, 255, 255, 0.4));
 }
 .paginationBtns { display: flex; gap: 0.3rem; }
 .pageBtn {
@@ -283,7 +319,7 @@
 /* State text */
 .stateText {
   font-family: "ClashGrotesk-Variable", sans-serif;
-  color: rgba(255, 255, 255, 0.35);
+  color: var(--ink-35, rgba(255, 255, 255, 0.35));
   font-size: var(--fs-p-size-desktop);
   padding: 2rem 0;
   text-align: center;
@@ -372,7 +408,7 @@
 .modalSub {
   font-size: 0.82rem;
   line-height: 1.55;
-  color: rgba(255, 255, 255, 0.55);
+  color: var(--ink-55, rgba(255, 255, 255, 0.55));
   margin-bottom: 0.9rem;
 }
 
@@ -387,7 +423,7 @@
   margin-bottom: 1.25rem;
 }
 
-.modalInput::placeholder { color: rgba(255, 255, 255, 0.35); }
+.modalInput::placeholder { color: var(--ink-35, rgba(255, 255, 255, 0.35)); }
 
 /* A name picker in a modal: the same gap below it that a modal input has. */
 .modalPicker { margin-bottom: 1.25rem; }

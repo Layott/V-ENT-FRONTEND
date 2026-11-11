@@ -47,7 +47,7 @@
   font-size: 0.72rem;
   text-transform: uppercase;
   letter-spacing: 0.08em;
-  color: rgba(255, 255, 255, 0.5);
+  color: var(--ink-50, rgba(255, 255, 255, 0.5));
   margin: 0;
   font-weight: var(--fw-medium);
 }
@@ -97,7 +97,7 @@
   text-decoration: none;
   white-space: nowrap;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: background-color 150ms ease-out, color 150ms ease-out, opacity 150ms ease-out;
 }
 
 .heroBtnIcon {
@@ -189,7 +189,7 @@
 
 .statIcon {
   font-size: 1.05rem;
-  color: rgba(255, 255, 255, 0.55);
+  color: var(--ink-55, rgba(255, 255, 255, 0.55));
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -210,12 +210,12 @@
 .statUnit {
   font-size: 0.9rem;
   font-weight: var(--fw-medium);
-  color: rgba(255, 255, 255, 0.45);
+  color: var(--ink-45, rgba(255, 255, 255, 0.45));
 }
 
 .statSub {
   font-size: 0.76rem;
-  color: rgba(255, 255, 255, 0.45);
+  color: var(--ink-45, rgba(255, 255, 255, 0.45));
   margin: 0;
 }
 
@@ -272,14 +272,14 @@
 
 .activityCount {
   font-size: 0.75rem;
-  color: rgba(255, 255, 255, 0.5);
+  color: var(--ink-50, rgba(255, 255, 255, 0.5));
   text-transform: uppercase;
   letter-spacing: 0.06em;
   font-weight: var(--fw-medium);
 }
 
 .emptyState {
-  color: rgba(255, 255, 255, 0.45);
+  color: var(--ink-45, rgba(255, 255, 255, 0.45));
   font-size: var(--fs-p-size-mobile);
   padding: 1rem 0;
 }
@@ -373,13 +373,13 @@
 
 .matchTimeUntil {
   font-size: 0.7rem;
-  color: rgba(255, 255, 255, 0.55);
+  color: var(--ink-55, rgba(255, 255, 255, 0.55));
   font-weight: var(--fw-medium);
 }
 
 .matchTournament {
   font-size: 0.72rem;
-  color: rgba(255, 255, 255, 0.45);
+  color: var(--ink-45, rgba(255, 255, 255, 0.45));
   margin: 0;
   text-transform: uppercase;
   letter-spacing: 0.08em;
@@ -440,7 +440,7 @@
   top: 50%;
   transform: translateY(-50%);
   font-size: 0.6875rem;
-  color: rgba(255, 255, 255, 0.3);
+  color: var(--ink-30, rgba(255, 255, 255, 0.3));
   text-transform: uppercase;
   letter-spacing: 0.08em;
   font-weight: var(--fw-bold);
@@ -466,7 +466,7 @@
   background-color: transparent;
 
   color: var(--primary-bg);
-  transition: all 0.3s ease;
+  transition: background-color 150ms ease-out;
 }
 
 .matchCtaOutline:hover {
@@ -625,7 +625,7 @@
   align-items: center;
   gap: 0.25rem;
   font-size: 0.7rem;
-  color: rgba(255, 255, 255, 0.5);
+  color: var(--ink-50, rgba(255, 255, 255, 0.5));
   margin: 0;
 }
 
@@ -673,7 +673,7 @@
 
 .walletLabel {
   font-size: 0.72rem;
-  color: rgba(255, 255, 255, 0.55);
+  color: var(--ink-55, rgba(255, 255, 255, 0.55));
   text-transform: uppercase;
   letter-spacing: 0.08em;
   font-weight: var(--fw-medium);
@@ -692,12 +692,12 @@
 .walletUnit {
   font-size: 1rem;
   font-weight: var(--fw-medium);
-  color: rgba(255, 255, 255, 0.5);
+  color: var(--ink-50, rgba(255, 255, 255, 0.5));
 }
 
 .walletRate {
   font-size: var(--fs-p-size-mobile);
-  color: rgba(255, 255, 255, 0.45);
+  color: var(--ink-45, rgba(255, 255, 255, 0.45));
   margin: 0;
 }
 
@@ -720,7 +720,7 @@
   font-weight: var(--fw-semi-bold);
   text-decoration: none;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: background-color 150ms ease-out;
   padding: 0 0.5rem;
   color: var(--primary-bg);
 }
@@ -746,7 +746,7 @@
 
 .txListHeading {
   font-size: 0.72rem;
-  color: rgba(255, 255, 255, 0.55);
+  color: var(--ink-55, rgba(255, 255, 255, 0.55));
   text-transform: uppercase;
   letter-spacing: 0.08em;
   font-weight: var(--fw-medium);
@@ -818,7 +818,7 @@
 
 .txDate {
   font-size: 0.6875rem;
-  color: rgba(255, 255, 255, 0.4);
+  color: var(--ink-40, rgba(255, 255, 255, 0.4));
   margin: 0;
 }
 
@@ -908,7 +908,7 @@
 
 .activityMessage {
   font-size: 0.74rem;
-  color: rgba(255, 255, 255, 0.55);
+  color: var(--ink-55, rgba(255, 255, 255, 0.55));
   margin: 0;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -917,7 +917,7 @@
 
 .activityMeta {
   font-size: 0.7rem;
-  color: rgba(255, 255, 255, 0.4);
+  color: var(--ink-40, rgba(255, 255, 255, 0.4));
   margin: 0;
 }
 
@@ -952,9 +952,7 @@
   display: inline-flex;
   align-items: center;
   gap: 0.3rem;
-  background-color: rgba(0, 0, 0, 0.55);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
+  background-color: rgba(0, 0, 0, 0.78);
   color: var(--v-ent-light-gold);
   font-size: 0.6875rem;
   font-weight: var(--fw-semi-bold);

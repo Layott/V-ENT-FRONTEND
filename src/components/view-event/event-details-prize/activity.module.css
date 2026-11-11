@@ -74,7 +74,7 @@
   justify-content: center;
   padding: 5px;
   border-radius: 8px;
-  transition: all ease-in-out 0.15s;
+  transition: width 150ms ease-out, box-shadow 150ms ease-out;
   background-color: #303136;
 
   left: 50%;
@@ -216,7 +216,7 @@
   outline: none;
   border-radius: 8px;
   cursor: pointer;
-  transition: all ease-in-out 0.15s;
+  transition: background-color 150ms ease-out;
   background-color: rgba(255, 255, 255, 0.04);
 }
 
@@ -297,7 +297,7 @@
   border: none;
   outline: none;
   padding: 5px;
-  transition: all ease-in-out 0.15s;
+  transition: background-color 150ms ease-out;
 }
 
 .closeBTN:hover {
@@ -311,9 +311,9 @@
 }
 
 .closeIcon path {
-  color: rgba(255, 255, 255, 0.7);
+  color: var(--ink-70, rgba(255, 255, 255, 0.7));
   fill: rgba(255, 255, 255, 0.7);
-  transition: all ease-in-out 0.15s;
+  transition: color 150ms ease-out, fill 150ms ease-out;
 }
 
 .closeIcon:hover path {
@@ -354,7 +354,7 @@
   font-size: 0.8rem;
   cursor: pointer;
   border-radius: 8px;
-  transition: all ease-in-out 0.15s;
+  transition: background-color 150ms ease-out;
   font-family: "ClashGrotesk-Medium", sans-serif;
   display: flex;
   justify-content: center;

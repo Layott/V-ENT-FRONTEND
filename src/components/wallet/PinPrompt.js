@@ -25,6 +25,7 @@ import Link from 'next/link';
 import { LuX } from 'react-icons/lu';
 import { useT } from '@/i18n/LanguageProvider';
 import styles from './pin-prompt.module.css';
+import { markScrimDown, isScrimClick } from '@/lib/scrim';
 
 export default function PinPrompt({
   open,
@@ -69,7 +70,7 @@ export default function PinPrompt({
       role="dialog"
       aria-modal="true"
       aria-label={title || tt('wallet.pinPrompt.title', 'Enter your wallet PIN')}
-      onClick={(e) => { if (e.target === e.currentTarget && !busy) onCancel(); }}
+      onPointerDown={markScrimDown} onClick={(e) => { if (isScrimClick(e) && !busy) onCancel(); }}
     >
       <form className={styles.panel} onSubmit={submit}>
         <div className={styles.head}>

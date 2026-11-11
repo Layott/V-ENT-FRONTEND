@@ -33,6 +33,7 @@ import { useAutoRefresh } from '@/lib/useLiveData';
 import { sideLabel } from '@/lib/slotLabel';
 import { rulesSource } from '@/lib/rulesSource';
 import { PREVIEW_SHOWN, matchLine, undoSentence } from '@/lib/undoPreview';
+import { markScrimDown, isScrimClick } from '@/lib/scrim';
 
 const API = process.env.NEXT_PUBLIC_API_URL;
 
@@ -347,7 +348,7 @@ export default function MatchRoom({ matchId, tournamentRef, token, canRecord = f
 
   return (
     <div className={styles.overlay}
-         onClick={e => { if (e.target === e.currentTarget) onClose(); }}>
+         onPointerDown={markScrimDown} onClick={e => { if (isScrimClick(e)) onClose(); }}>
       <div className={styles.panel} role="dialog" aria-modal="true"
            aria-label={tt('match.title', 'Match')}>
         <div className={styles.head}>

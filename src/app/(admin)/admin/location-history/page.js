@@ -22,6 +22,7 @@ import { adminToken } from '@/lib/adminToken';
 import { formatDateTime } from '@/lib/datetime';
 import { plural } from '@/lib/plural';
 import styles from './location-history.module.css';
+import { markScrimDown, isScrimClick } from '@/lib/scrim';
 
 const VISIBLE_TO = {
   off: ['together.vis.off', 'Nobody'],
@@ -67,7 +68,7 @@ function LocationHistoryInner() {
 
   if (authLoading) return null;
   return <div className={shared.pageContainer}>
-    <div className={`${shared.sidebarOverlay} ${sidebarOpen ? shared.open : ''}`} onClick={() => setSidebarOpen(false)} />
+    <div className={`${shared.sidebarOverlay} ${sidebarOpen ? shared.open : ''}`} onPointerDown={markScrimDown} onClick={(e) => isScrimClick(e) && (setSidebarOpen(false))} />
     <AdminNav admin={admin} onLogout={logout} sidebarOpen={sidebarOpen} badges={{}} />
     <div className={shared.mainContainer}>
       <AdminHeader admin={admin} onLogout={logout} onMenuOpen={() => setSidebarOpen(true)} />

@@ -8,6 +8,7 @@ import styles from './FavoriteGamesEditPanel.module.css';
 import { useT } from '@/i18n/LanguageProvider';
 import { useTx } from '@/i18n/LanguageProvider';
 import { fuzzyMatches } from '@/lib/fuzzy';
+import { markScrimDown, isScrimClick } from '@/lib/scrim';
 const StarSvg = () => <svg viewBox="0 0 24 24" fill="currentColor">
     <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
   </svg>;
@@ -176,8 +177,8 @@ const FavoriteGamesEditPanel = ({
         </button>
       </div>
 
-      {modalOpen && <div className={styles.overlay} onClick={e => {
-      if (e.target === e.currentTarget) setModalOpen(false);
+      {modalOpen && <div className={styles.overlay} onPointerDown={markScrimDown} onClick={e => {
+      if (isScrimClick(e)) setModalOpen(false);
     }}>
           <div className={styles.modal}>
             <button type="button" className={styles.modalClose} onClick={() => setModalOpen(false)}>

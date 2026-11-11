@@ -14,6 +14,7 @@ import { useT } from '@/i18n/LanguageProvider';
 import { useTx } from '@/i18n/LanguageProvider';
 import { adminTargetLabel, adminActivityText } from '@/lib/adminTarget';
 import { adminToken } from '@/lib/adminToken'
+import { markScrimDown, isScrimClick } from '@/lib/scrim';
 const KPI_DEFS = [
 // Icons come from the set the admin nav already uses, not emoji: emoji render
 // as a different picture on every operating system and read as decoration on a
@@ -139,7 +140,7 @@ function OverviewInner() {
   }, [authLoading, admin, fetchAll]);
   if (authLoading) return null;
   return <div className={shared.pageContainer}>
-      <div className={`${shared.sidebarOverlay} ${sidebarOpen ? shared.open : ''}`} onClick={() => setSidebarOpen(false)} />
+      <div className={`${shared.sidebarOverlay} ${sidebarOpen ? shared.open : ''}`} onPointerDown={markScrimDown} onClick={(e) => isScrimClick(e) && (setSidebarOpen(false))} />
       <AdminNav admin={admin} onLogout={logout} sidebarOpen={sidebarOpen} badges={{
       kyc: kpis.pending_kyc || 0,
       payouts: kpis.pending_payouts || 0

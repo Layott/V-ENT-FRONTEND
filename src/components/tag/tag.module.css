@@ -33,14 +33,14 @@
 .tone_neutral { color: rgba(255, 255, 255, 0.86); }
 
 /* Quieter still, for something present but secondary. */
-.tone_muted { color: rgba(255, 255, 255, 0.5); }
+.tone_muted { color: var(--ink-50, rgba(255, 255, 255, 0.5)); }
 
 /* From here down the colour is the message.
    Solid text on the same muted fill: no tinted background, because a coloured
    wash under coloured text is the muddy shape being replaced. */
 .tone_live { color: #ff6b70; }
 .tone_good { color: #6cc46f; }
-.tone_bad { color: rgba(255, 255, 255, 0.45); text-decoration: line-through; }
+.tone_bad { color: var(--ink-45, rgba(255, 255, 255, 0.45)); text-decoration: line-through; }
 .tone_warn { color: var(--v-ent-gold, #d4af37); }
 
 /* Cancelled reads as struck through rather than as another colour, so it is

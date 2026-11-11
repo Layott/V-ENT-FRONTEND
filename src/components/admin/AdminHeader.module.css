@@ -31,9 +31,9 @@
 .breadcrumb {
   font-family: "ClashGrotesk-Variable", sans-serif;
   font-size: 0.85rem;
-  color: rgba(255, 255, 255, 0.4);
+  color: var(--ink-40, rgba(255, 255, 255, 0.4));
 }
-.breadcrumb span { color: rgba(255, 255, 255, 0.75); }
+.breadcrumb span { color: var(--ink-75, rgba(255, 255, 255, 0.75)); }
 
 .right {
   display: flex;
@@ -53,7 +53,7 @@
   transition: background-color 0.2s;
 }
 .search:focus-within { background-color: rgba(255, 255, 255, 0.05); }
-.searchIcon { color: rgba(255, 255, 255, 0.4); font-size: 0.9rem; flex-shrink: 0; }
+.searchIcon { color: var(--ink-40, rgba(255, 255, 255, 0.4)); font-size: 0.9rem; flex-shrink: 0; }
 .searchInput {
   background: transparent;
   border: none;
@@ -63,7 +63,7 @@
   font-size: 0.85rem;
   width: 180px;
 }
-.searchInput::placeholder { color: rgba(255, 255, 255, 0.35); }
+.searchInput::placeholder { color: var(--ink-35, rgba(255, 255, 255, 0.35)); }
 
 /* Notification bell */
 .iconBtn {
@@ -77,7 +77,7 @@
   flex-shrink: 0;
 }
 .iconBtn:hover { border-color: #6e6e6e; }
-.bellIcon { color: rgba(255, 255, 255, 0.55); font-size: 0.95rem; }
+.bellIcon { color: var(--ink-55, rgba(255, 255, 255, 0.55)); font-size: 0.95rem; }
 .notifDot {
   position: absolute;
   top: 6px; right: 6px;
@@ -107,7 +107,7 @@
   align-items: flex-end;
 }
 .adminName { font-size: 0.8rem; font-weight: 600; color: #fff; }
-.adminRole { font-size: 0.6875rem; color: rgba(255, 255, 255, 0.4); }
+.adminRole { font-size: 0.6875rem; color: var(--ink-40, rgba(255, 255, 255, 0.4)); }
 .avatar {
   width: 30px; height: 30px;
   border-radius: 50%;
@@ -144,7 +144,7 @@
 
 }
 .dropdownName { font-size: 0.85rem; font-weight: 600; color: #fff; }
-.dropdownRole { font-size: 0.7rem; color: rgba(255, 255, 255, 0.4); margin-top: 0.1rem; }
+.dropdownRole { font-size: 0.7rem; color: var(--ink-40, rgba(255, 255, 255, 0.4)); margin-top: 0.1rem; }
 .dropdownItem {
   display: block;
   width: 100%;
@@ -181,13 +181,13 @@
   font-weight: 600;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.45);
+  color: var(--ink-45, rgba(255, 255, 255, 0.45));
 }
 
 .dropdownEmpty {
   padding: 0.35rem 0.85rem 0.75rem;
   font-size: 0.8rem;
-  color: rgba(255, 255, 255, 0.55);
+  color: var(--ink-55, rgba(255, 255, 255, 0.55));
 }
 
 .dropdownCount {
