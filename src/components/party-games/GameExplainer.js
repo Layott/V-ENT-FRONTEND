@@ -62,7 +62,7 @@ export default function GameExplainer({ gameKey, words, say, onClose, action }) 
       role="dialog"
       aria-modal="true"
       aria-label={words.name}
-      onPointerDown={markScrimDown} onClick={(e) => { if (isScrimClick(e)) onClose(); }}
+      onPointerDown={markScrimDown} data-scrim="" onClick={(e) => { if (isScrimClick(e)) onClose(); }}
     >
       <div className={`${styles.sheet} ${meta ? '' : styles.wordsOnly}`}>
         {meta && (

@@ -557,7 +557,7 @@ const PaymentModal = ({
         </p>
       </div>;
   }
-  return <div className={styles.modalOverlay} onPointerDown={markScrimDown} onClick={(e) => isScrimClick(e) && handleClose(e)}>
+  return <div className={styles.modalOverlay} onPointerDown={markScrimDown} data-scrim="" onClick={(e) => isScrimClick(e) && handleClose(e)}>
       <div className={styles.modalContent} onClick={e => e.stopPropagation()}>
         <div className={styles.modalHeader}>
           <div className={styles.headerLeft}>
@@ -568,7 +568,7 @@ const PaymentModal = ({
             </button>
             <h2 className={styles.modalTitle}>{TITLES[phase]}</h2>
           </div>
-          <button className={styles.closeButton} onClick={handleClose}>×</button>
+          <button aria-label={tt('ui.close', 'Close')} className={styles.closeButton} onClick={handleClose}>×</button>
         </div>
 
         <div className={styles.modalBody}>

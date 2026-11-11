@@ -487,11 +487,11 @@ const ManageContent = ({
 
       {toast && <div className={styles.toast}>{toast}</div>}
 
-      {cancelOpen && <div className={styles.modalOverlay} onPointerDown={markScrimDown} onClick={e => isScrimClick(e) && setCancelOpen(false)}>
+      {cancelOpen && <div className={styles.modalOverlay} onPointerDown={markScrimDown} data-scrim="" onClick={e => isScrimClick(e) && setCancelOpen(false)}>
           <div className={styles.modal}>
             <div className={styles.modalHeader}>
               <h2 className={styles.modalTitle}>{tt("ui.cancel.tournament.34b3", "Cancel Tournament")}</h2>
-              <button className={styles.modalClose} onClick={() => setCancelOpen(false)}><LuX /></button>
+              <button aria-label={tt('ui.close', 'Close')} className={styles.modalClose} onClick={() => setCancelOpen(false)}><LuX /></button>
             </div>
             <div className={styles.modalBody}>
               <p className={styles.modalSub}>{tt("ui.all.paid.entries.will.435e", "All paid entries will be refunded to participants' wallets. This cannot be undone.")}</p>

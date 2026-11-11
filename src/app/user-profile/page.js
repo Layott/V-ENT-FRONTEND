@@ -675,7 +675,7 @@ const UserProfileContent = ({
                 {/* Report asks why. A report with no reason and no location is
                     a report nobody can action, and the queue fills with rows a
                     moderator has to go and investigate from scratch. */}
-                {reportOpen && status === 'authenticated' && <div className={styles.reportOverlay} onPointerDown={markScrimDown} onClick={e => { if (isScrimClick(e)) setReportOpen(false); }}>
+                {reportOpen && status === 'authenticated' && <div className={styles.reportOverlay} onPointerDown={markScrimDown} data-scrim="" onClick={e => { if (isScrimClick(e)) setReportOpen(false); }}>
                     <div className={styles.reportPanel} role="dialog" aria-modal="true">
                       <p className={styles.reportTitle}>
                         {tt('safety.reportTitle', 'Report @{name}').replace('{name}', username)}

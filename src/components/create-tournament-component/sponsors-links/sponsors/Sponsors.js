@@ -139,7 +139,7 @@ const Sponsors = ({
                   <p className={styles.uploadHintLine}>{uploadHint(tt, 'sponsorLogo')}</p>
                 </div>
               </div>
-              <button className={styles.deleteFieldBTN} onClick={() => handleDeleteField(index)}>
+              <button aria-label={tt('ui.remove', 'Remove')} className={styles.deleteFieldBTN} onClick={() => handleDeleteField(index)}>
                 <FaTrash className={styles.deleteFieldIcon} />
               </button>
             </div>

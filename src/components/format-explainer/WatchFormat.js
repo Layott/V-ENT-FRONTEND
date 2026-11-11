@@ -53,7 +53,7 @@ export function ExplainerSheet({ keys, onClose, allFormatsLink = false }) {
       role="dialog"
       aria-modal="true"
       aria-label={words.title}
-      onPointerDown={markScrimDown} onClick={(e) => {
+      onPointerDown={markScrimDown} data-scrim="" onClick={(e) => {
         e.stopPropagation();
         if (isScrimClick(e)) onClose();
       }}

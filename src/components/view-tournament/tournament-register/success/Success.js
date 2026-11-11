@@ -22,7 +22,7 @@ const SuccessModal = ({ isOpen, onClose, tournament, registrationData }) => {
   const starts = tournament?.start_date_and_time || tournament?.start_date || null;
 
   return (
-    <div className={styles.modalOverlay} onPointerDown={markScrimDown} onClick={(e) => isScrimClick(e) && handleClose(e)}>
+    <div className={styles.modalOverlay} onPointerDown={markScrimDown} data-scrim="" onClick={(e) => isScrimClick(e) && handleClose(e)}>
       <div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
         <div className={styles.modalBody}>
           {/* Success Icon */}

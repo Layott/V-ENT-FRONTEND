@@ -158,7 +158,7 @@ function DisputesInner() {
   const visible = q ? disputes.filter(d => fuzzyMatches(q, `${d.tournament_title || ''} ${d.raised_by || ''} ${d.description || ''}`)) : disputes;
   if (authLoading) return null;
   return <div className={shared.pageContainer}>
-      <div className={`${shared.sidebarOverlay} ${sidebarOpen ? shared.open : ''}`} onPointerDown={markScrimDown} onClick={(e) => isScrimClick(e) && (setSidebarOpen(false))} />
+      <div className={`${shared.sidebarOverlay} ${sidebarOpen ? shared.open : ''}`} onPointerDown={markScrimDown} data-scrim="" onClick={(e) => isScrimClick(e) && (setSidebarOpen(false))} />
       <AdminNav admin={admin} onLogout={logout} sidebarOpen={sidebarOpen} badges={{
       disputes: openCount
     }} />

@@ -336,11 +336,11 @@ const TournamentRegistrationModal = ({
   if (!isOpen) return null;
   return <>
       
-      {!showTeamModal && !showReviewModal && !showPaymentModal && !showSuccessModal && !showTicket && <div className={styles.modalOverlay} onPointerDown={markScrimDown} onClick={(e) => isScrimClick(e) && handleCancel(e)}>
+      {!showTeamModal && !showReviewModal && !showPaymentModal && !showSuccessModal && !showTicket && <div className={styles.modalOverlay} onPointerDown={markScrimDown} data-scrim="" onClick={(e) => isScrimClick(e) && handleCancel(e)}>
           <div className={styles.modalContent} onClick={e => e.stopPropagation()}>
             <div className={styles.modalHeader}>
               <h2 className={styles.modalTitle}>{tt("ui.register.tournament.0b66", "Register For Tournament")}</h2>
-              <button className={styles.closeButton} onClick={handleCancel}>
+              <button aria-label={tt('ui.close', 'Close')} className={styles.closeButton} onClick={handleCancel}>
                 ×
               </button>
             </div>

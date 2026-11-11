@@ -97,7 +97,7 @@ export default function PageHelp() {
           role="dialog"
           aria-modal="true"
           aria-label={label}
-          onPointerDown={markScrimDown} onClick={(e) => { if (isScrimClick(e)) setOpen(false); }}
+          onPointerDown={markScrimDown} data-scrim="" onClick={(e) => { if (isScrimClick(e)) setOpen(false); }}
         >
           <div className={styles.panel}>
             <div className={styles.head}>

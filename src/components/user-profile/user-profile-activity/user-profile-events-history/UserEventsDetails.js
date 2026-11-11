@@ -53,7 +53,7 @@ const UserEventsDetails = ({ selectedTournament, setSelectedTournament }) => {
             />
           </div>
         </div>
-        <button
+        <button aria-label={tt('ui.close', 'Close')}
           onClick={() => setSelectedTournament(null)}
           className={styles.closeBTN}
         >

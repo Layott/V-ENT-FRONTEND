@@ -174,7 +174,7 @@ function OrganizationsInner() {
   if (authLoading) return null;
 
   return <div className={shared.pageContainer}>
-      <div className={`${shared.sidebarOverlay} ${sidebarOpen ? shared.open : ''}`} onPointerDown={markScrimDown} onClick={(e) => isScrimClick(e) && (setSidebarOpen(false))} />
+      <div className={`${shared.sidebarOverlay} ${sidebarOpen ? shared.open : ''}`} onPointerDown={markScrimDown} data-scrim="" onClick={(e) => isScrimClick(e) && (setSidebarOpen(false))} />
       <AdminNav admin={admin} onLogout={logout} sidebarOpen={sidebarOpen} badges={{}} />
       <div className={shared.mainContainer}>
         <AdminHeader admin={admin} onLogout={logout} onMenuOpen={() => setSidebarOpen(true)} searchValue={search} onSearch={setSearch} />
@@ -246,7 +246,7 @@ function OrganizationsInner() {
         </main>
       </div>
 
-      {creating ? <div className={shared.modalOverlay} onPointerDown={markScrimDown} onClick={(e) => {
+      {creating ? <div className={shared.modalOverlay} onPointerDown={markScrimDown} data-scrim="" onClick={(e) => {
         if (isScrimClick(e)) setCreating(false);
       }}>
         <div className={shared.modal}>
@@ -291,7 +291,7 @@ function OrganizationsInner() {
           lands on the organisation's OWN statement - which this says out loud,
           because an admin who thinks a transfer is invisible will use it
           differently from one who knows the owner sees it. */}
-      {moving ? <div className={shared.modalOverlay} onPointerDown={markScrimDown} onClick={(e) => {
+      {moving ? <div className={shared.modalOverlay} onPointerDown={markScrimDown} data-scrim="" onClick={(e) => {
         if (isScrimClick(e)) setMoving(null);
       }}>
         <div className={shared.modal}>

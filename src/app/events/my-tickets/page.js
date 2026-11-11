@@ -404,7 +404,7 @@ const MyTickets = () => {
       <BottomMenu />
 
       {/* Full QR modal */}
-      {activeTicket && <div className={styles.modalOverlay} onPointerDown={markScrimDown} onClick={e => {
+      {activeTicket && <div className={styles.modalOverlay} onPointerDown={markScrimDown} data-scrim="" onClick={e => {
       if (isScrimClick(e)) closeTicket();
     }}>
           <div className={styles.qrModal}>

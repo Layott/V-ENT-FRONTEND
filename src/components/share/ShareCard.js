@@ -230,7 +230,7 @@ export default function ShareCard({ url, title, text, label, compact = false,
       {open && (
         <div
           className={styles.overlay}
-          onPointerDown={markScrimDown} onClick={event => { if (isScrimClick(event)) setOpen(false); }}
+          onPointerDown={markScrimDown} data-scrim="" onClick={event => { if (isScrimClick(event)) setOpen(false); }}
         >
           <div className={styles.panel} role="dialog" aria-modal="true">
             <div className={styles.head}>

@@ -348,7 +348,7 @@ export default function MatchRoom({ matchId, tournamentRef, token, canRecord = f
 
   return (
     <div className={styles.overlay}
-         onPointerDown={markScrimDown} onClick={e => { if (isScrimClick(e)) onClose(); }}>
+         onPointerDown={markScrimDown} data-scrim="" onClick={e => { if (isScrimClick(e)) onClose(); }}>
       <div className={styles.panel} role="dialog" aria-modal="true"
            aria-label={tt('match.title', 'Match')}>
         <div className={styles.head}>

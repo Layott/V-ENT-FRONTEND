@@ -165,13 +165,13 @@ const TeamEventsHistory = ({
         </p>
 
         <div className={styles.pagination}>
-          <button className={`${styles.navIconBTN} ${currentPage === 1 ? styles.hidden : ''}`} onClick={handlePrevClick} disabled={currentPage === 1}>
+          <button aria-label={tt('pager.previous', 'Previous page')} className={`${styles.navIconBTN} ${currentPage === 1 ? styles.hidden : ''}`} onClick={handlePrevClick} disabled={currentPage === 1}>
             <BsChevronLeft className={styles.navIcon} />
           </button>
           {pageNumbers.map(number => <button key={number} className={`${styles.pageBTN} ${currentPage === number ? styles.activePage : ''}`} onClick={() => handlePageChange(number)}>
               {number}
             </button>)}
-          <button className={`${styles.navIconBTN} ${currentPage === Math.ceil(events.length / rowsPerPage) ? styles.hidden : ''}`} onClick={handleNextClick} disabled={currentPage === Math.ceil(events.length / rowsPerPage)}>
+          <button aria-label={tt('pager.next', 'Next page')} className={`${styles.navIconBTN} ${currentPage === Math.ceil(events.length / rowsPerPage) ? styles.hidden : ''}`} onClick={handleNextClick} disabled={currentPage === Math.ceil(events.length / rowsPerPage)}>
             <BsChevronRight className={styles.navIcon} />
           </button>
         </div>

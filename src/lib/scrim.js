@@ -9,7 +9,7 @@
    downward drag from the box released over the scrim shut it.
 
    Use both halves on the backdrop element:
-     <div className={styles.overlay} onPointerDown={markScrimDown}
+     <div className={styles.overlay} onPointerDown={markScrimDown} data-scrim=""
           onClick={(e) => { if (isScrimClick(e)) onClose(); }}>
    scripts/check-scrim-close.mjs fails on a backdrop that closes without them. */
 

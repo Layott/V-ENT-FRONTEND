@@ -378,7 +378,7 @@ const SecurityPanel = ({
       </div>
 
       {/* 2FA QR Modal */}
-      {showQR && <div className={shared.modalBackdrop} onPointerDown={markScrimDown} onClick={(e) => isScrimClick(e) && (setShowQR(false))}>
+      {showQR && <div className={shared.modalBackdrop} onPointerDown={markScrimDown} data-scrim="" onClick={(e) => isScrimClick(e) && (setShowQR(false))}>
           <div className={shared.modal} onClick={e => e.stopPropagation()}>
             <h3 className={shared.modalTitle}>{tt("ui.set.up.two.factor.9be4", "Set up two-factor authentication")}</h3>
             <p className={shared.modalSub}>
@@ -428,7 +428,7 @@ const SecurityPanel = ({
 
       {/* Turning it OFF costs a code too. A stolen session must not be enough
           to remove the protection that exists because sessions get stolen. */}
-      {disabling && <div className={shared.modalBackdrop} onPointerDown={markScrimDown} onClick={(e) => isScrimClick(e) && (setDisabling(false))}>
+      {disabling && <div className={shared.modalBackdrop} onPointerDown={markScrimDown} data-scrim="" onClick={(e) => isScrimClick(e) && (setDisabling(false))}>
           <div className={shared.modal} onClick={e => e.stopPropagation()}>
             <h3 className={shared.modalTitle}>{tt('settings.twoFactorOffTitle', 'Turn off two-factor authentication')}</h3>
             <p className={shared.modalSub}>

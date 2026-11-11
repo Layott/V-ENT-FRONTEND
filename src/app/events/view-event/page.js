@@ -1715,7 +1715,7 @@ export const ViewEventContent = ({
                   if (session?.user?.sessionToken) openBuy(t);
                   else setGuestTier(t);
                 }} type="button">
-                        {countdown?.ended ? tx("Event over") : t.available === 0 ? tx("Sold out") : tx("Buy ticket")}
+                        {countdown?.ended ? tx("Event over") : t.available === 0 ? tx("Sold out") : Number(t.price) === 0 ? tt('buy.getFreeTicket', 'Get a free ticket') : tx("Buy ticket")}
                       </button>
                     </div>)}
                 </div>}
@@ -1904,16 +1904,18 @@ export const ViewEventContent = ({
       <BottomMenu />
 
       {/* Buy ticket modal */}
-      {buyOpen && buyTier && <div className={styles.modalOverlay} onPointerDown={markScrimDown} onClick={e => {
+      {buyOpen && buyTier && <div className={styles.modalOverlay} onPointerDown={markScrimDown} data-scrim="" onClick={e => {
       if (isScrimClick(e)) closeBuy();
     }}>
           <div className={styles.modal}>
             <div className={styles.modalHeader}>
               <h2 className={styles.modalTitle}>
                 {buyStep === 3 ? tx("Ticket secured")
-                  : tt('buy.title', 'Buy {tier}').replace('{tier}', buyTier.name)}
+                  : Number(buyTier.price) === 0
+                    ? tt('buy.titleFree', 'Get {tier}').replace('{tier}', buyTier.name)
+                    : tt('buy.title', 'Buy {tier}').replace('{tier}', buyTier.name)}
               </h2>
-              <button className={styles.modalClose} onClick={closeBuy} type="button">
+              <button aria-label={tt('ui.close', 'Close')} className={styles.modalClose} onClick={closeBuy} type="button">
                 <MdOutlineClose />
               </button>
             </div>
@@ -1963,7 +1965,7 @@ export const ViewEventContent = ({
                 <div className={styles.confirmRow}>
                   <span className={styles.confirmLabel}>{tt("ui.price.3e82", "Price")}</span>
                   <span className={styles.confirmValue}>
-                    {formatNumber(unitCost)} VC x {buyQty}
+                    {unitCost === 0 ? tt('tickets.free', 'Free') : `${formatNumber(unitCost)} VC x ${buyQty}`}
                   </span>
                 </div>
                 {/* Why the unit price is not the one on the card. A discount
@@ -2023,14 +2025,14 @@ export const ViewEventContent = ({
                 <div className={styles.confirmRow}>
                   <span className={styles.confirmLabel}>{tt("ui.total.b259", "Total")}</span>
                   <span className={`${styles.confirmValue} ${styles.confirmGreen}`}>
-                    {formatNumber(totalCost)} VC
+                    {totalCost === 0 ? tt('tickets.free', 'Free') : `${formatNumber(totalCost)} VC`}
                   </span>
                 </div>
                 {quoteError && !priced && <p className={styles.modalError}>
                     {tt('buy.quoteFailed',
                       'We could not confirm the price just now. Try again in a moment.')}
                   </p>}
-                {walletBalance !== null && <div className={styles.confirmRow}>
+                {walletBalance !== null && totalCost > 0 && <div className={styles.confirmRow}>
                     <span className={styles.confirmLabel}>{tt("ui.wallet.balance.f6c5", "Wallet balance")}</span>
                     <span className={styles.confirmValue}>
                       {walletBalance.toLocaleString()} VC

@@ -8,6 +8,7 @@ import PaystackReturn from "@/components/pay/PaystackReturn";
 import ClientTimezone from "@/components/timing/ClientTimezone";
 import PressState from "@/components/press-state/PressState";
 import EdgeFade from "@/components/edge-fade/EdgeFade";
+import DialogManager from "@/components/dialog-manager/DialogManager";
 import { PlatformModulesProvider } from "@/lib/platformModules";
 import { CurrencyProvider } from "@/lib/money";
 import { SITE, buildMetadata, currentLocale, organizationLd, websiteLd } from "@/lib/seo";
@@ -134,6 +135,8 @@ export default async function RootLayout({ children }) {
             <PressState />
             {/* Sideways rows fade at the edge that has more (Apple review S22). */}
             <EdgeFade />
+            {/* Every pop-up: focus, Escape, Back, scroll lock, motion, phone sheet (Apple review S2, S3). */}
+            <DialogManager />
             </PlatformModulesProvider>
           </CurrencyProvider>
         </body>

@@ -177,7 +177,7 @@ const FavoriteGamesEditPanel = ({
         </button>
       </div>
 
-      {modalOpen && <div className={styles.overlay} onPointerDown={markScrimDown} onClick={e => {
+      {modalOpen && <div className={styles.overlay} onPointerDown={markScrimDown} data-scrim="" onClick={e => {
       if (isScrimClick(e)) setModalOpen(false);
     }}>
           <div className={styles.modal}>

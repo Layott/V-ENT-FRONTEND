@@ -462,7 +462,7 @@ export const VendorStallContent = ({ eventSlug = '', stallSlug = '' } = {}) => {
       <BottomMenu />
 
       {/* Product modal */}
-      {activeProduct && <div className={styles.modalOverlay} onPointerDown={markScrimDown} onClick={e => {
+      {activeProduct && <div className={styles.modalOverlay} onPointerDown={markScrimDown} data-scrim="" onClick={e => {
       if (isScrimClick(e)) { setActiveProduct(null); setPickedVariant(''); }
     }}>
           <div className={styles.productModal}>
@@ -506,7 +506,7 @@ export const VendorStallContent = ({ eventSlug = '', stallSlug = '' } = {}) => {
         </div>}
 
       {/* Contact modal */}
-      {contactOpen && <div className={styles.modalOverlay} onPointerDown={markScrimDown} onClick={e => {
+      {contactOpen && <div className={styles.modalOverlay} onPointerDown={markScrimDown} data-scrim="" onClick={e => {
       if (isScrimClick(e)) closeContact();
     }}>
           <div className={styles.contactModal}>
@@ -558,7 +558,7 @@ export const VendorStallContent = ({ eventSlug = '', stallSlug = '' } = {}) => {
         </div>}
 
       {/* ── Cart / checkout ── */}
-      {cartOpen && <div className={styles.modalOverlay} onPointerDown={markScrimDown} onClick={e => {
+      {cartOpen && <div className={styles.modalOverlay} onPointerDown={markScrimDown} data-scrim="" onClick={e => {
       if (isScrimClick(e)) setCartOpen(false);
     }}>
           <div className={styles.cartPanel}>

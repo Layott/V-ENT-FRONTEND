@@ -413,7 +413,7 @@ function PartnersInner() {
         </div>
       </div>
 
-      {open && <div className={styles.drawerBackdrop} onPointerDown={markScrimDown} onClick={(e) => isScrimClick(e) && (setOpen(null))}>
+      {open && <div className={styles.drawerBackdrop} onPointerDown={markScrimDown} data-scrim="" onClick={(e) => isScrimClick(e) && (setOpen(null))}>
           <div className={styles.drawer} onClick={e => e.stopPropagation()}>
             <h2 className={styles.drawerTitle}>{open.name}</h2>
             <p className={styles.muted}>

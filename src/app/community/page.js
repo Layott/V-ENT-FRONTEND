@@ -1115,7 +1115,7 @@ const CommunityInner = () => {
                 }} onKeyDown={e => {
                   if (e.key === 'Enter') handleSendDm();
                 }} />
-                      <button className={`${styles.dmSendBtn} redBTN`} onClick={handleSendDm} disabled={!dmInput.trim() || dmSending}>
+                      <button aria-label={tt('ui.send', 'Send')} className={`${styles.dmSendBtn} redBTN`} onClick={handleSendDm} disabled={!dmInput.trim() || dmSending}>
                         <FaPaperPlane />
                       </button>
                     </div>

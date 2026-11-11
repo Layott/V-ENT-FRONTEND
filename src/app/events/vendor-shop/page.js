@@ -358,7 +358,7 @@ const VendorShopContent = ({
       <BottomMenu />
 
       {/* Product modal */}
-      {activeProduct && <div className={styles.modalOverlay} onPointerDown={markScrimDown} onClick={e => {
+      {activeProduct && <div className={styles.modalOverlay} onPointerDown={markScrimDown} data-scrim="" onClick={e => {
       if (isScrimClick(e)) setActiveProduct(null);
     }}>
           <div className={styles.productModal}>
@@ -392,7 +392,7 @@ const VendorShopContent = ({
         </div>}
 
       {/* Cart drawer */}
-      {cartOpen && <div className={styles.modalOverlay} onPointerDown={markScrimDown} onClick={e => {
+      {cartOpen && <div className={styles.modalOverlay} onPointerDown={markScrimDown} data-scrim="" onClick={e => {
       if (isScrimClick(e)) setCartOpen(false);
     }}>
           <aside className={styles.cartDrawer}>

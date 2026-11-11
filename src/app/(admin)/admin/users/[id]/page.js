@@ -221,7 +221,7 @@ function UserDetailInner() {
   if (authLoading) return null;
   const u = detail?.user;
   return <div className={shared.pageContainer}>
-      <div className={`${shared.sidebarOverlay} ${sidebarOpen ? shared.open : ''}`} onPointerDown={markScrimDown} onClick={(e) => isScrimClick(e) && (setSidebarOpen(false))} />
+      <div className={`${shared.sidebarOverlay} ${sidebarOpen ? shared.open : ''}`} onPointerDown={markScrimDown} data-scrim="" onClick={(e) => isScrimClick(e) && (setSidebarOpen(false))} />
       <AdminNav admin={admin} onLogout={logout} sidebarOpen={sidebarOpen} badges={{}} />
       <div className={shared.mainContainer}>
         <AdminHeader admin={admin} onLogout={logout} onMenuOpen={() => setSidebarOpen(true)} />
@@ -465,7 +465,7 @@ function UserDetailInner() {
       </div>
 
       {/* Role assignment modal */}
-      {roleModalOpen && <div className={styles.modalOverlay} onPointerDown={markScrimDown} onClick={(e) => isScrimClick(e) && (setRoleModalOpen(false))}>
+      {roleModalOpen && <div className={styles.modalOverlay} onPointerDown={markScrimDown} data-scrim="" onClick={(e) => isScrimClick(e) && (setRoleModalOpen(false))}>
           <div className={styles.modal} onClick={e => e.stopPropagation()}>
             <p className={styles.modalTitle}>{tt("ui.change.role.7b55", "Change Role")}</p>
             <p className={styles.modalSub}>
@@ -496,7 +496,7 @@ function UserDetailInner() {
       {/* Premium, with the reason in the same press. A note added afterwards
           is a note nobody adds, and "why does this account have premium" is
           the question the field exists to answer. */}
-      {premiumOpen && <div className={shared.modalOverlay} onPointerDown={markScrimDown} onClick={(e) => {
+      {premiumOpen && <div className={shared.modalOverlay} onPointerDown={markScrimDown} data-scrim="" onClick={(e) => {
         if (isScrimClick(e)) setPremiumOpen(false);
       }}>
           <div className={shared.modal}>
@@ -526,7 +526,7 @@ function UserDetailInner() {
           </div>
         </div>}
 
-      {banOpen && <div className={shared.modalOverlay} onPointerDown={markScrimDown} onClick={(e) => {
+      {banOpen && <div className={shared.modalOverlay} onPointerDown={markScrimDown} data-scrim="" onClick={(e) => {
         if (isScrimClick(e)) setBanOpen(false);
       }}>
           <div className={shared.modal}>
@@ -553,7 +553,7 @@ function UserDetailInner() {
           </div>
         </div>}
 
-      {resetOpen && <div className={shared.modalOverlay} onPointerDown={markScrimDown} onClick={(e) => {
+      {resetOpen && <div className={shared.modalOverlay} onPointerDown={markScrimDown} data-scrim="" onClick={(e) => {
         if (isScrimClick(e)) setResetOpen(false);
       }}>
           <div className={shared.modal}>
@@ -578,7 +578,7 @@ function UserDetailInner() {
           </div>
         </div>}
 
-      {deleteOpen && <div className={shared.modalOverlay} onPointerDown={markScrimDown} onClick={(e) => {
+      {deleteOpen && <div className={shared.modalOverlay} onPointerDown={markScrimDown} data-scrim="" onClick={(e) => {
         if (isScrimClick(e)) setDeleteOpen(false);
       }}>
           <div className={shared.modal}>
@@ -605,7 +605,7 @@ function UserDetailInner() {
           </div>
         </div>}
 
-      {notifyModalOpen && <div className={styles.modalOverlay} onPointerDown={markScrimDown} onClick={(e) => isScrimClick(e) && (setNotifyModalOpen(false))}>
+      {notifyModalOpen && <div className={styles.modalOverlay} onPointerDown={markScrimDown} data-scrim="" onClick={(e) => isScrimClick(e) && (setNotifyModalOpen(false))}>
           <div className={styles.modal} onClick={e => e.stopPropagation()}>
             <p className={styles.modalTitle}>{tt("ui.send.notification.0df1", "Send Notification")}</p>
             <p className={styles.modalSub}>

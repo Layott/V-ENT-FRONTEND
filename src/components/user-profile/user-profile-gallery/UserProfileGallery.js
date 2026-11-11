@@ -392,7 +392,7 @@ const UserProfileGallery = () => {
       backgroundColor: getSnackbarBackgroundColor(snackbarType)
     }}>
           <span>{snackbarMessage}</span>
-          <button onClick={() => setShowSnackbar(false)} className={`${styles.snackbarMessageBtn}`}>
+          <button aria-label={tt('ui.dismiss', 'Dismiss')} onClick={() => setShowSnackbar(false)} className={`${styles.snackbarMessageBtn}`}>
             ×
           </button>
         </div>}
@@ -456,7 +456,7 @@ const UserProfileGallery = () => {
     }}>
           <Image src={gallery.src} alt={gallery.name} width={300} height={200} />
           {/* Delete Icon */}
-          <button onClick={() => handleDeleteClick(gallery)} className={styles.deleteButton}>
+          <button aria-label={tt('ui.remove', 'Remove')} onClick={() => handleDeleteClick(gallery)} className={styles.deleteButton}>
             <MdDeleteForever />
           </button>
         </div>)}

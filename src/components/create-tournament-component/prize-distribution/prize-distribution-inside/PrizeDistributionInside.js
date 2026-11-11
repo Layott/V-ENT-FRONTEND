@@ -261,7 +261,7 @@ const PrizeDistributionInside = ({
                   </span>
                 </div>
 
-                {position > 3 && <button type="button" className={`${styles.deleteBTN}`} onClick={() => deletePosition(position)}>
+                {position > 3 && <button aria-label={tt('ui.remove', 'Remove')} type="button" className={`${styles.deleteBTN}`} onClick={() => deletePosition(position)}>
                     <FaTrash className={styles.deleteIcon} />
                   </button>}
               </div>)}

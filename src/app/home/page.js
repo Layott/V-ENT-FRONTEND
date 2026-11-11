@@ -18,6 +18,7 @@ import Header from '@/components/header/Header';
 import MobileHeader from '@/components/mobile-header/MobileHeader';
 import BottomMenu from '@/components/bottom-menu/BottomMenu';
 import Sidebar from '@/components/sidebar/Sidebar';
+import TourOffer from '@/components/walkthrough/TourOffer';
 import styles from './home.module.css';
 import { useT } from '@/i18n/LanguageProvider';
 import { useTx } from '@/i18n/LanguageProvider';
@@ -398,6 +399,7 @@ const HomePage = () => {
         <Sidebar />
 
         <div className={styles.rightPaneContainer}>
+          <TourOffer />
           {/* ═════════════ 1. GREETING HERO ═════════════ */}
           <section className={styles.heroSection}>
             <div className={styles.heroContent}>

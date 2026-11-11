@@ -71,7 +71,7 @@ export default function ConvertPanel({ open, onClose, balance = 0 }) {
       role="dialog"
       aria-modal="true"
       aria-label={tt('wallet.convert.title', 'What is it worth?')}
-      onPointerDown={markScrimDown} onClick={(e) => { if (isScrimClick(e)) onClose(); }}
+      onPointerDown={markScrimDown} data-scrim="" onClick={(e) => { if (isScrimClick(e)) onClose(); }}
     >
       <div className={styles.panel}>
         <div className={styles.head}>

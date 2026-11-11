@@ -197,7 +197,7 @@ function ContentInner() {
 
   return <div className={shared.pageContainer}>
       <div className={`${shared.sidebarOverlay} ${sidebarOpen ? shared.open : ''}`}
-           onPointerDown={markScrimDown} onClick={(e) => isScrimClick(e) && (setSidebarOpen(false))} />
+           onPointerDown={markScrimDown} data-scrim="" onClick={(e) => isScrimClick(e) && (setSidebarOpen(false))} />
       <AdminNav admin={admin} onLogout={logout} sidebarOpen={sidebarOpen}
                 badges={{ reports: reportMeta?.counts?.open || 0 }} />
       <div className={shared.mainContainer}>
@@ -381,7 +381,7 @@ function ContentInner() {
       </div>
 
       {deciding ? <div className={shared.modalOverlay}
-                       onPointerDown={markScrimDown} onClick={(e) => { if (isScrimClick(e)) setDeciding(null); }}>
+                       onPointerDown={markScrimDown} data-scrim="" onClick={(e) => { if (isScrimClick(e)) setDeciding(null); }}>
         <div className={shared.modal}>
           <h3 className={shared.modalTitle}>
             {tt('adminContent.decideTitle', 'A report about {who}')
@@ -416,7 +416,7 @@ function ContentInner() {
       </div> : null}
 
       {withdrawing ? <div className={shared.modalOverlay}
-                          onPointerDown={markScrimDown} onClick={(e) => { if (isScrimClick(e)) setWithdrawing(null); }}>
+                          onPointerDown={markScrimDown} data-scrim="" onClick={(e) => { if (isScrimClick(e)) setWithdrawing(null); }}>
         <div className={shared.modal}>
           <h3 className={shared.modalTitle}>
             {tt('adminContent.withdrawTitle', 'Withdraw this licence?')}
@@ -446,7 +446,7 @@ function ContentInner() {
       </div> : null}
 
       {removing ? <div className={shared.modalOverlay}
-                       onPointerDown={markScrimDown} onClick={(e) => { if (isScrimClick(e)) setRemoving(null); }}>
+                       onPointerDown={markScrimDown} data-scrim="" onClick={(e) => { if (isScrimClick(e)) setRemoving(null); }}>
         <div className={shared.modal}>
           <h3 className={shared.modalTitle}>{tt('adminContent.removeTitle', 'Remove this?')}</h3>
           <p className={shared.modalSub}>

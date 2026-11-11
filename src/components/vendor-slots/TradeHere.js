@@ -185,7 +185,7 @@ const TradeHere = ({ eventRef, eventName }) => {
         ))}
       </ul>
 
-      {open && <div className={styles.backdrop} onPointerDown={markScrimDown} onClick={(e) => isScrimClick(e) && (setOpen(null))}>
+      {open && <div className={styles.backdrop} onPointerDown={markScrimDown} data-scrim="" onClick={(e) => isScrimClick(e) && (setOpen(null))}>
         <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
           <h3 className={styles.modalTitle}>{open.name}</h3>
           <p className={styles.modalSub}>

@@ -170,7 +170,7 @@ export default function AdminBar({
         </div>
       </div>
 
-      {open && <div className={styles.overlay} onPointerDown={markScrimDown} onClick={(e) => isScrimClick(e) && (setOpen(false))}>
+      {open && <div className={styles.overlay} onPointerDown={markScrimDown} data-scrim="" onClick={(e) => isScrimClick(e) && (setOpen(false))}>
           <div className={styles.modal} onClick={e => e.stopPropagation()}>
             <p className={styles.modalTitle}>{title}</p>
             <p className={styles.modalSub}>

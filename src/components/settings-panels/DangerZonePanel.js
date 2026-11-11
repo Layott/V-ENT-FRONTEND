@@ -106,7 +106,7 @@ const DangerZonePanel = ({
       </div>
 
       {/* Deactivate confirm */}
-      {confirmDeactivate && <div className={shared.modalBackdrop} onPointerDown={markScrimDown} onClick={(e) => isScrimClick(e) && (!busy && setConfirmDeactivate(false))}>
+      {confirmDeactivate && <div className={shared.modalBackdrop} onPointerDown={markScrimDown} data-scrim="" onClick={(e) => isScrimClick(e) && (!busy && setConfirmDeactivate(false))}>
           <div className={shared.modal} onClick={e => e.stopPropagation()}>
             <h3 className={shared.modalTitle}>{tt("ui.deactivate.account.2daf", "Deactivate account?")}</h3>
             <p className={shared.modalSub}>
@@ -124,7 +124,7 @@ const DangerZonePanel = ({
         </div>}
 
       {/* Delete confirm */}
-      {confirmDelete && <div className={shared.modalBackdrop} onPointerDown={markScrimDown} onClick={(e) => isScrimClick(e) && (!busy && setConfirmDelete(false))}>
+      {confirmDelete && <div className={shared.modalBackdrop} onPointerDown={markScrimDown} data-scrim="" onClick={(e) => isScrimClick(e) && (!busy && setConfirmDelete(false))}>
           <div className={shared.modal} onClick={e => e.stopPropagation()}>
             <h3 className={shared.modalTitle}>{tt("ui.permanently.delete.account.35d3", "Permanently delete your account?")}</h3>
             <p className={shared.modalSub}>

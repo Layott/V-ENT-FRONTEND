@@ -75,6 +75,10 @@ function problemsIn(text, file) {
       out.push(`${file}:${lineOf(start)}: isScrimClick without onPointerDown={markScrimDown} on the same element`);
     } else if (SCRIM_CLASS.test(tag) && /\bonClick=/.test(tag) && !marked) {
       out.push(`${file}:${lineOf(start)}: a backdrop that closes on click without onPointerDown={markScrimDown}`);
+    } else if (marked && !/\bdata-scrim\b/.test(tag)) {
+      // DialogManager finds pop-ups by this attribute (Apple review S2): without
+      // it a pop-up gets no focus, Escape, Back, scroll lock or phone sheet.
+      out.push(`${file}:${lineOf(start)}: a backdrop without data-scrim; DialogManager will not see this pop-up`);
     }
   }
   return out;
@@ -103,8 +107,9 @@ function selfTest() {
     ['a backdrop closing with stopPropagation on the box (24 shipped)', `{open && <div className={styles.modalOverlay} onClick={() => setOpen(false)}>`, 1],
     ['a shared backdrop class', `<div className={shared.modalBackdrop} onClick={handleClose}>`, 1],
     ['isScrimClick without the down half', `<div className={s.box} onClick={(e) => isScrimClick(e) && close()}>`, 1],
-    ['the fix passes', `<div className={s.modalOverlay} onPointerDown={markScrimDown} onClick={(e) => isScrimClick(e) && (setOpen(false))}>`, 0],
-    ['the fix over two lines passes', `<div\n  className={styles.backdrop}\n  onPointerDown={markScrimDown} onClick={(e) => { if (isScrimClick(e) && !busy) onCancel(); }}\n>`, 0],
+    ['the fix passes', `<div className={s.modalOverlay} onPointerDown={markScrimDown} data-scrim="" onClick={(e) => isScrimClick(e) && (setOpen(false))}>`, 0],
+    ['the fix over two lines passes', `<div\n  className={styles.backdrop}\n  onPointerDown={markScrimDown} data-scrim="" onClick={(e) => { if (isScrimClick(e) && !busy) onCancel(); }}\n>`, 0],
+    ['a backdrop the DialogManager cannot see', `<div className={s.modalOverlay} onPointerDown={markScrimDown} onClick={(e) => isScrimClick(e) && close()}>`, 1],
     ['an overlay with no click is not a backdrop that closes', `<div className={styles.overlay} aria-hidden="true">`, 0],
     ['a button with an arrow in a handler is read whole', `<button className={s.btn} onClick={() => go(a > b)}>`, 0],
     ['a comment is not code', `// was: if (e.target === e.currentTarget) close();`, 0],

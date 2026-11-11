@@ -70,7 +70,7 @@ export default function PinPrompt({
       role="dialog"
       aria-modal="true"
       aria-label={title || tt('wallet.pinPrompt.title', 'Enter your wallet PIN')}
-      onPointerDown={markScrimDown} onClick={(e) => { if (isScrimClick(e) && !busy) onCancel(); }}
+      onPointerDown={markScrimDown} data-scrim="" onClick={(e) => { if (isScrimClick(e) && !busy) onCancel(); }}
     >
       <form className={styles.panel} onSubmit={submit}>
         <div className={styles.head}>

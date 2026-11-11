@@ -86,7 +86,7 @@ export default function FixtureDetail({ match, onClose, format }) {
 
   return (
     <div className={styles.overlay}
-         onPointerDown={markScrimDown} onClick={e => { if (isScrimClick(e)) onClose(); }}>
+         onPointerDown={markScrimDown} data-scrim="" onClick={e => { if (isScrimClick(e)) onClose(); }}>
       <div className={styles.panel} role="dialog" aria-modal="true">
         <div className={styles.head}>
           <p className={styles.title}>{tt('fixture.title', 'This fixture')}</p>

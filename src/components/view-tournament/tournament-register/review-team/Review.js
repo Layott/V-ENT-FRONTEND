@@ -81,7 +81,7 @@ const ReviewModal = ({
   const charge = coveredByTicket ? 0
     : quote && quote.total_vc != null ? Number(quote.total_vc) : listedFee;
   if (!isOpen) return null;
-  return <div className={styles.modalOverlay} onPointerDown={markScrimDown} onClick={(e) => isScrimClick(e) && handleClose(e)}>
+  return <div className={styles.modalOverlay} onPointerDown={markScrimDown} data-scrim="" onClick={(e) => isScrimClick(e) && handleClose(e)}>
       <div className={styles.modalContent} onClick={e => e.stopPropagation()}>
         <div className={styles.modalHeader}>
           <div className={styles.headerLeft}>
@@ -92,7 +92,7 @@ const ReviewModal = ({
             </button>
             <h2 className={styles.modalTitle}>{tt("ui.review.e29a", "Review")}</h2>
           </div>
-          <button className={styles.closeButton} onClick={handleClose}>
+          <button aria-label={tt('ui.close', 'Close')} className={styles.closeButton} onClick={handleClose}>
             ×
           </button>
         </div>

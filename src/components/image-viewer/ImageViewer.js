@@ -48,7 +48,7 @@ const ImageViewer = ({ images = [], start = 0, onClose }) => {
   // at the same level) can draw over it or hide its buttons.
   return createPortal(
     <div ref={dialogRef} tabIndex={-1} className={styles.backdrop} role="dialog" aria-modal="true" aria-label={current.alt}
-         onPointerDown={markScrimDown} onClick={(e) => { if (isScrimClick(e)) onClose?.(); }}>
+         onPointerDown={markScrimDown} data-scrim="" onClick={(e) => { if (isScrimClick(e)) onClose?.(); }}>
       <button type="button" className={`${styles.round} ${styles.close}`}
               onClick={onClose} aria-label={tt('viewer.close', 'Close')}>
         <FiX aria-hidden="true" />

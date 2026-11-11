@@ -165,10 +165,11 @@ const MobileHeader = ({
 
           <div className={styles.breadcrumbContainer}>
             <p className={styles.breadcrumbTitle}>
-              {showBackArrow && <span className={styles.backArrow} onClick={() => handleBackNavigation(fallbackURL)}>
-                  
-                  <FiArrowLeft className={styles.backArrowIcon} />
-                </span>}
+              {showBackArrow && <button type="button" className={styles.backArrow}
+                  onClick={() => handleBackNavigation(fallbackURL)}
+                  aria-label={tt('ui.back.b52b', 'Back')}>
+                  <FiArrowLeft className={styles.backArrowIcon} aria-hidden="true" />
+                </button>}
               <span className={styles.currentSection}>{tx(currentSection)}</span>
             </p>
             
@@ -229,11 +230,16 @@ const MobileHeader = ({
             onUnreadChange={setNotifCount}
           />}
 
-          <div className={`${styles.headerAction} ${styles.hamburgerContainer}`} onClick={toggleMobileMenu}>
-            <label className={styles.hamburger}>
+          {/* A real button (Apple review S4): the opener was a div, with no
+              role, no name and no way to reach it from a keyboard. */}
+          <button type="button" className={`${styles.headerAction} ${styles.hamburgerContainer}`}
+                  onClick={toggleMobileMenu}
+                  aria-label={isMobileMenuOpen ? tt('nav.closeMenu', 'Close the menu') : tt('nav.openMenu', 'Open the menu')}
+                  aria-expanded={isMobileMenuOpen} aria-controls="mobile-menu">
+            <span className={styles.hamburger}>
               <span className={`${styles.hamburgerLines} ${isMobileMenuOpen ? styles.show : ''}`}></span>
-            </label>
-          </div>
+            </span>
+          </button>
         </div>
 
         <MobileSidebar isOpen={isMobileMenuOpen} closeSidebar={() => setIsMobileMenuOpen(false)} />

@@ -153,13 +153,13 @@ const UserProfileTournamentsHistory = () => {
         </p>
 
         <div className={styles.pagination}>
-          <button className={`${styles.navIconBTN} ${currentPage === 1 ? styles.hidden : ''}`} onClick={() => setCurrentPage(p => p - 1)} disabled={currentPage === 1}>
+          <button aria-label={tt('pager.previous', 'Previous page')} className={`${styles.navIconBTN} ${currentPage === 1 ? styles.hidden : ''}`} onClick={() => setCurrentPage(p => p - 1)} disabled={currentPage === 1}>
             <BsChevronLeft className={styles.navIcon} />
           </button>
           {pageNumbers.map(n => <button key={n} className={`${styles.pageBTN} ${currentPage === n ? styles.activePage : ''}`} onClick={() => setCurrentPage(n)}>
               {n}
             </button>)}
-          <button className={`${styles.navIconBTN} ${currentPage === pageNumbers.length ? styles.hidden : ''}`} onClick={() => setCurrentPage(p => p + 1)} disabled={currentPage === pageNumbers.length}>
+          <button aria-label={tt('pager.next', 'Next page')} className={`${styles.navIconBTN} ${currentPage === pageNumbers.length ? styles.hidden : ''}`} onClick={() => setCurrentPage(p => p + 1)} disabled={currentPage === pageNumbers.length}>
             <BsChevronRight className={styles.navIcon} />
           </button>
         </div>

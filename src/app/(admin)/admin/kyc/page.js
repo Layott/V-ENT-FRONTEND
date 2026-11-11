@@ -202,7 +202,7 @@ function KycInner() {
   if (authLoading) return null;
   const pendingCount = submissions.filter(k => k.status === 'pending').length;
   return <div className={shared.pageContainer}>
-      <div className={`${shared.sidebarOverlay} ${sidebarOpen ? shared.open : ''}`} onPointerDown={markScrimDown} onClick={(e) => isScrimClick(e) && (setSidebarOpen(false))} />
+      <div className={`${shared.sidebarOverlay} ${sidebarOpen ? shared.open : ''}`} onPointerDown={markScrimDown} data-scrim="" onClick={(e) => isScrimClick(e) && (setSidebarOpen(false))} />
       <AdminNav admin={admin} onLogout={logout} sidebarOpen={sidebarOpen} badges={{
       kyc: pendingCount
     }} />
@@ -290,7 +290,7 @@ function KycInner() {
       </div>
 
       {/* KYC preview / reject modal */}
-      {previewModal && <div className={styles.modalOverlay} onPointerDown={markScrimDown} onClick={(e) => isScrimClick(e) && (setPreviewModal(null))}>
+      {previewModal && <div className={styles.modalOverlay} onPointerDown={markScrimDown} data-scrim="" onClick={(e) => isScrimClick(e) && (setPreviewModal(null))}>
           <div className={`${styles.modal} ${previewModal.mode === 'reject' ? styles.modalNarrow : ''}`} onClick={e => e.stopPropagation()}>
             <div className={styles.modalHeader}>
               <div>
@@ -301,7 +301,7 @@ function KycInner() {
                   {previewModal.kyc.username} · {(previewModal.kyc.doc_type || '').replace('_', ' ')}
                 </p>
               </div>
-              <button className={styles.modalClose} onClick={() => setPreviewModal(null)}>×</button>
+              <button aria-label={tt('ui.close', 'Close')} className={styles.modalClose} onClick={() => setPreviewModal(null)}>×</button>
             </div>
 
             {previewModal.mode === 'view' && <>

@@ -112,7 +112,7 @@ const DevicesPanel = ({
       </div>
 
       {/* Single revoke confirm */}
-      {confirm && <div className={shared.modalBackdrop} onPointerDown={markScrimDown} onClick={(e) => isScrimClick(e) && (!busy && setConfirm(null))}>
+      {confirm && <div className={shared.modalBackdrop} onPointerDown={markScrimDown} data-scrim="" onClick={(e) => isScrimClick(e) && (!busy && setConfirm(null))}>
           <div className={shared.modal} onClick={e => e.stopPropagation()}>
             <h3 className={shared.modalTitle}>{tt("ui.sign.out.device.6309", "Sign out this device?")}</h3>
             <p className={shared.modalSub}>
@@ -130,7 +130,7 @@ const DevicesPanel = ({
         </div>}
 
       {/* All-others confirm */}
-      {confirmAll && <div className={shared.modalBackdrop} onPointerDown={markScrimDown} onClick={(e) => isScrimClick(e) && (!busy && setConfirmAll(false))}>
+      {confirmAll && <div className={shared.modalBackdrop} onPointerDown={markScrimDown} data-scrim="" onClick={(e) => isScrimClick(e) && (!busy && setConfirmAll(false))}>
           <div className={shared.modal} onClick={e => e.stopPropagation()}>
             <h3 className={shared.modalTitle}>{tt("ui.sign.out.all.other.7094", "Sign out all other devices?")}</h3>
             <p className={shared.modalSub}>

@@ -25,6 +25,7 @@ import { useT, useTx } from '@/i18n/LanguageProvider';
 import { listNotifications, markRead, markAllRead } from './notificationsApi';
 import { categoryIcon, relativeTime } from './notificationMeta';
 import styles from './notification-drawer.module.css';
+import { markScrimDown, isScrimClick } from '@/lib/scrim';
 
 // Enough to answer "what happened while I was away" without becoming the inbox.
 const HOW_MANY = 6;
@@ -62,25 +63,9 @@ const NotificationDrawer = ({ open, onClose, token, unread = 0, onUnreadChange }
   // it until they ask.
   useEffect(() => { if (open) load(); }, [open, load]);
 
-  // Escape closes it, and so does a press anywhere outside. Both are what a
-  // person expects from something that opened over the page.
-  useEffect(() => {
-    if (!open) return undefined;
-    const onKey = e => { if (e.key === 'Escape') onClose?.(); };
-    const onDown = e => {
-      if (panelRef.current && !panelRef.current.contains(e.target)) onClose?.();
-    };
-    document.addEventListener('keydown', onKey);
-    // `mousedown`, not `click`: a click that starts inside and ends outside
-    // should not close it, and the bell's own toggle fires on click.
-    document.addEventListener('mousedown', onDown);
-    document.addEventListener('touchstart', onDown);
-    return () => {
-      document.removeEventListener('keydown', onKey);
-      document.removeEventListener('mousedown', onDown);
-      document.removeEventListener('touchstart', onDown);
-    };
-  }, [open, onClose]);
+  // Escape, Back and a press on the layer around the panel close it, the way
+  // every other pop-up closes: the layer is a backdrop (scrim.js) and
+  // DialogManager does the rest (Apple review S2).
 
   if (!open) return null;
 
@@ -109,9 +94,10 @@ const NotificationDrawer = ({ open, onClose, token, unread = 0, onUnreadChange }
   };
 
   return (
-    <div className={styles.layer} role="dialog" aria-modal="true"
-         aria-label={tt('ui.notifications.753a', 'Notifications')}>
-      <div className={styles.panel} ref={panelRef}>
+    <div className={styles.layer} onPointerDown={markScrimDown} data-scrim=""
+         onClick={(e) => isScrimClick(e) && onClose?.()}>
+      <div className={styles.panel} ref={panelRef} role="dialog" aria-modal="true"
+           aria-label={tt('ui.notifications.753a', 'Notifications')}>
         <div className={styles.head}>
           <p className={styles.title}>
             {tt('ui.notifications.753a', 'Notifications')}

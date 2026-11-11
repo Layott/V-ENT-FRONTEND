@@ -259,7 +259,7 @@ function TournamentsInner() {
   const totalPages = Math.ceil(total / PAGE_SIZE) || 1;
   if (authLoading) return null;
   return <div className={shared.pageContainer}>
-      <div className={`${shared.sidebarOverlay} ${sidebarOpen ? shared.open : ''}`} onPointerDown={markScrimDown} onClick={(e) => isScrimClick(e) && (setSidebarOpen(false))} />
+      <div className={`${shared.sidebarOverlay} ${sidebarOpen ? shared.open : ''}`} onPointerDown={markScrimDown} data-scrim="" onClick={(e) => isScrimClick(e) && (setSidebarOpen(false))} />
       <AdminNav admin={admin} onLogout={logout} sidebarOpen={sidebarOpen} badges={{}} />
       <div className={shared.mainContainer}>
         <AdminHeader admin={admin} onLogout={logout} onMenuOpen={() => setSidebarOpen(true)} searchValue={search} onSearch={setSearch} />
@@ -395,7 +395,7 @@ function TournamentsInner() {
       </div>
 
       {/* Cancel modal */}
-      {cancelTarget && <div className={styles.modalOverlay} onPointerDown={markScrimDown} onClick={(e) => isScrimClick(e) && (setCancelTarget(null))}>
+      {cancelTarget && <div className={styles.modalOverlay} onPointerDown={markScrimDown} data-scrim="" onClick={(e) => isScrimClick(e) && (setCancelTarget(null))}>
           <div className={styles.modal} onClick={e => e.stopPropagation()}>
             <p className={styles.modalTitle}>{tt("ui.cancel.tournament.0324", "Cancel Tournament?")}</p>
             <p className={styles.modalSub}>
@@ -462,7 +462,7 @@ function TournamentNumbersModal({ tournament, onCancel }) {
     return () => { cancelled = true; };
   }, [tournament, tt]);
 
-  return <div className={shared.modalOverlay} onPointerDown={markScrimDown} onClick={(e) => { if (isScrimClick(e)) onCancel(); }}>
+  return <div className={shared.modalOverlay} onPointerDown={markScrimDown} data-scrim="" onClick={(e) => { if (isScrimClick(e)) onCancel(); }}>
       <div className={shared.modal}>
         <p className={shared.modalTitle}>{tournament.name}</p>
         {loading ? <p className={shared.stateText}>{tt('ui.loading', 'Loading...')}</p>
@@ -548,7 +548,7 @@ function AnnounceModal({ tournament, onCancel }) {
     }
   };
 
-  return <div className={shared.modalOverlay} onPointerDown={markScrimDown} onClick={(e) => { if (isScrimClick(e)) onCancel(); }}>
+  return <div className={shared.modalOverlay} onPointerDown={markScrimDown} data-scrim="" onClick={(e) => { if (isScrimClick(e)) onCancel(); }}>
       <div className={shared.modal}>
         <p className={shared.modalTitle}>
           {tt('admin.announceTo', 'Message everybody in {name}').replace('{name}', tournament.name)}
@@ -668,7 +668,7 @@ function EditTournamentModal({
     });
     onSubmit(payload);
   };
-  return <div className={styles.modalOverlay} onPointerDown={markScrimDown} onClick={(e) => isScrimClick(e) && onCancel(e)}>
+  return <div className={styles.modalOverlay} onPointerDown={markScrimDown} data-scrim="" onClick={(e) => isScrimClick(e) && onCancel(e)}>
       <div className={styles.modal} onClick={e => e.stopPropagation()}>
         <p className={styles.modalTitle}>{tt("admin.editTournamentTitle", "Edit tournament")}</p>
         <p className={styles.modalSub}>
@@ -907,7 +907,7 @@ function OverrideScoreModal({
     tt('admin.roundMatch', 'Round {r}, match {m}').replace('{r}', m.round).replace('{m}', m.match_number),
   ].filter(Boolean).join(' · ');
 
-  return <div className={styles.modalOverlay} onPointerDown={markScrimDown} onClick={(e) => isScrimClick(e) && onCancel(e)}>
+  return <div className={styles.modalOverlay} onPointerDown={markScrimDown} data-scrim="" onClick={(e) => isScrimClick(e) && onCancel(e)}>
       <div className={styles.modal} onClick={e => e.stopPropagation()}>
         <p className={styles.modalTitle}>{tt("ui.override.match.score.4b28", "Override Match Score")}</p>
         <p className={styles.modalSub}>
@@ -1044,7 +1044,7 @@ function DisqualifyModal({
 
   const live = (participants || []).filter(p => p.status !== 'disqualified');
 
-  return <div className={styles.modalOverlay} onPointerDown={markScrimDown} onClick={(e) => isScrimClick(e) && onCancel(e)}>
+  return <div className={styles.modalOverlay} onPointerDown={markScrimDown} data-scrim="" onClick={(e) => isScrimClick(e) && onCancel(e)}>
       <div className={styles.modal} onClick={e => e.stopPropagation()}>
         <p className={styles.modalTitle}>{tt("admin.dqTitle", "Disqualify")}</p>
         <p className={styles.modalSub}>

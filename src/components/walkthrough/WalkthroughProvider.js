@@ -144,15 +144,14 @@ export const WalkthroughProvider = ({ children }) => {
   // anywhere, because that path sets `running` itself rather than going through
   // this effect - somebody who asked for the tour has consented to being walked
   // around.
+  //
+  // Apple review S23 (inbox 569): it no longer starts by itself. Opening over
+  // /home for every new member dimmed the page they had just arrived on and
+  // chose their first minute for them. /home now offers it (TourOffer) and it
+  // runs only when somebody presses "Take the tour"; "Not now" is recorded the
+  // way closing it was, so the offer does not come back.
   const onHome = homeRoute(pathname);
-  useEffect(() => {
-    if (status !== 'authenticated' || blocked || running) return;
-    if (!onHome) return;
-    if (state === null) return;            // still waiting on the account
-    if (seen) return;
-    setStartChapter(null);
-    setRunning(true);
-  }, [status, blocked, running, state, seen, onHome]);
+  const offered = status === 'authenticated' && !blocked && !running && state !== null && !seen && onHome;
 
   const finish = useCallback(() => {
     setRunning(false);
@@ -182,7 +181,7 @@ export const WalkthroughProvider = ({ children }) => {
     setRunning(true);
   }, []);
 
-  const value = useMemo(() => ({ start, available: true, seen }), [start, seen]);
+  const value = useMemo(() => ({ start, skip, offered, available: true, seen }), [start, skip, offered, seen]);
 
   return (
     <WalkthroughContext.Provider value={value}>

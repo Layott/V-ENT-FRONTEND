@@ -69,7 +69,7 @@ export default function GamePay({ game, name, ticket, path, token, onPaid, onClo
   return (
     <div className={styles.scrim} role="dialog" aria-modal="true"
          aria-label={tt('games.pay.title', 'Play {name}').replace('{name}', name)}
-         onPointerDown={markScrimDown} onClick={(e) => { if (isScrimClick(e)) onClose(); }}>
+         onPointerDown={markScrimDown} data-scrim="" onClick={(e) => { if (isScrimClick(e)) onClose(); }}>
       <div className={styles.sheet}>
         <div className={styles.head}>
           <div>
