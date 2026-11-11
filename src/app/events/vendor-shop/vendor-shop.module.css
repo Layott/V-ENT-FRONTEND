@@ -65,7 +65,7 @@
 .cartBadge {
   background-color: var(--v-ent-red);
   color: #fff;
-  font-size: 0.65rem;
+  font-size: 0.6875rem;
   font-weight: var(--fw-bold);
   border-radius: 999px;
   padding: 1px 7px;
@@ -115,7 +115,7 @@
 .eventLabel {
   font-size: 0.7rem;
   text-transform: uppercase;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.08em;
   color: rgba(255, 255, 255, 0.5);
   font-weight: var(--fw-medium);
 }
@@ -241,12 +241,12 @@
   right: 0.35rem;
   background-color: rgba(0, 0, 0, 0.75);
   color: #fff;
-  font-size: 0.62rem;
+  font-size: 0.6875rem;
   font-weight: var(--fw-semi-bold);
   padding: 2px 7px;
   border-radius: 8px;
   text-transform: uppercase;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.08em;
 }
 
 .featuredName {
@@ -408,12 +408,12 @@
   position: absolute;
   top: 0.55rem;
   right: 0.55rem;
-  font-size: 0.64rem;
+  font-size: 0.6875rem;
   font-weight: var(--fw-bold);
   padding: 3px 8px;
   border-radius: 999px;
   text-transform: uppercase;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.08em;
 }
 
 .status_active {
@@ -624,7 +624,7 @@
   color: rgba(255, 255, 255, 0.45);
   margin: 0;
   text-transform: uppercase;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.08em;
 }
 
 .productModalName {

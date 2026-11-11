@@ -204,7 +204,7 @@
 }
 
 .statusBadge {
-  font-size: 0.6rem;
+  font-size: 0.6875rem;
   font-weight: var(--fw-bold);
   letter-spacing: 0.06em;
   padding: 3px 7px;
@@ -363,7 +363,7 @@
   display: inline-flex;
   align-items: center;
   gap: 0.3rem;
-  font-size: 0.68rem;
+  font-size: 0.6875rem;
   font-weight: var(--fw-semi-bold);
   padding: 2px 7px;
   border-radius: 8px;

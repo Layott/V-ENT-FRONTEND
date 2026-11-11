@@ -29,7 +29,7 @@
 .eyebrow {
   margin: 0;
   font-size: 0.8125rem;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
   color: var(--v-ent-gold);
 }

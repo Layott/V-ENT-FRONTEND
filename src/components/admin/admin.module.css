@@ -68,7 +68,7 @@
   font-family: "ClashGrotesk-Variable", sans-serif;
   font-size: 0.72rem;
   text-transform: uppercase;
-  letter-spacing: 0.07em;
+  letter-spacing: 0.08em;
   color: rgba(255, 255, 255, 0.4);
   margin-bottom: 0.5rem;
 }
@@ -149,7 +149,7 @@
   font-family: "ClashGrotesk-Variable", sans-serif;
   font-size: 0.72rem;
   text-transform: uppercase;
-  letter-spacing: 0.07em;
+  letter-spacing: 0.08em;
   color: rgba(255, 255, 255, 0.4);
   padding: 0.7rem 1rem;
   white-space: nowrap;
@@ -191,10 +191,10 @@
 /* Badges */
 .badge {
   display: inline-block;
-  font-size: 0.62rem;
+  font-size: 0.6875rem;
   font-weight: 600;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.08em;
   padding: 2px 8px;
   border-radius: 20px;
   white-space: nowrap;
@@ -244,7 +244,7 @@
   border-radius: 50%;
   background-color: #303136;
   display: flex; align-items: center; justify-content: center;
-  font-size: 0.65rem; font-weight: 700;
+  font-size: 0.6875rem; font-weight: 700;
   color: rgba(255, 255, 255, 0.55);
   flex-shrink: 0;
 }

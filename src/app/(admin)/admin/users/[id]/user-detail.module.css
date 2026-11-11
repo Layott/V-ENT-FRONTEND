@@ -42,9 +42,9 @@
 
 .label {
   font-family: "ClashGrotesk-Variable", sans-serif;
-  font-size: 0.65rem;
+  font-size: 0.6875rem;
   text-transform: uppercase;
-  letter-spacing: 0.07em;
+  letter-spacing: 0.08em;
   color: rgba(255, 255, 255, 0.35);
   margin-bottom: 0.3rem;
 }

@@ -40,7 +40,7 @@
 }
 
 .successTitle {
-  font-size: 32px;
+  font-size: 2rem;
   font-weight: 700;
   color: #D4AF37;
   margin: 0 0 16px 0;
@@ -48,7 +48,7 @@
 }
 
 .successMessage {
-  font-size: 18px;
+  font-size: 1.125rem;
   color: #d1d5db;
   margin: 0 0 32px 0;
   line-height: 1.6;
@@ -77,7 +77,7 @@
 }
 
 .detailsTitle {
-  font-size: 20px;
+  font-size: 1.25rem;
   font-weight: 600;
   color: white;
   margin: 0 0 20px 0;
@@ -97,13 +97,13 @@
 }
 
 .detailLabel {
-  font-size: 14px;
+  font-size: 0.875rem;
   color: #9ca3af;
   font-weight: 500;
 }
 
 .detailValue {
-  font-size: 14px;
+  font-size: 0.875rem;
   color: white;
   font-weight: 600;
   text-align: right;
@@ -122,7 +122,7 @@
 }
 
 .nextStepsTitle {
-  font-size: 18px;
+  font-size: 1.125rem;
   font-weight: 600;
   color: white;
   margin: 0 0 16px 0;
@@ -137,7 +137,7 @@
 }
 
 .nextStepsList li {
-  font-size: 14px;
+  font-size: 0.875rem;
   color: #C8C8CE;
   margin-bottom: 8px;
   padding-left: 20px;
@@ -171,7 +171,7 @@
   color: #9ca3af;
   padding: 12px 24px;
   border-radius: 8px;
-  font-size: 16px;
+  font-size: 1rem;
   font-weight: 500;
   cursor: pointer;
   transition: all 0.2s ease;
@@ -189,7 +189,7 @@
   color: white;
   padding: 12px 24px;
   border-radius: 8px;
-  font-size: 16px;
+  font-size: 1rem;
   font-weight: 500;
   cursor: pointer;
   transition: all 0.2s ease;
@@ -224,11 +224,11 @@
   }
   
   .successTitle {
-    font-size: 28px;
+    font-size: 1.75rem;
   }
   
   .successMessage {
-    font-size: 16px;
+    font-size: 1rem;
   }
   
   .detailsCard {
@@ -241,6 +241,6 @@
   
   .detailValue {
     max-width: 50%;
-    font-size: 13px;
+    font-size: 0.8125rem;
   }
 }

@@ -217,7 +217,7 @@
   font-size: 0.72rem;
   color: rgba(255, 255, 255, 0.5);
   text-transform: uppercase;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.08em;
   font-weight: var(--fw-medium);
   margin: 0 0.25rem;
 }
@@ -286,7 +286,7 @@
   font-size: 0.72rem;
   color: rgba(255, 255, 255, 0.5);
   text-transform: uppercase;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.08em;
   font-weight: var(--fw-medium);
 }
 
@@ -458,7 +458,7 @@
   font-size: 0.7rem;
   font-weight: var(--fw-medium);
   text-transform: uppercase;
-  letter-spacing: 0.03em;
+  letter-spacing: 0.08em;
 }
 
 .heartBtn {

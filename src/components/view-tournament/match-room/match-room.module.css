@@ -83,7 +83,7 @@
   margin-top: 0.25rem;
   color: var(--v-ent-light-gold, #E8C760);
   font-size: 0.72rem;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
 }
 
@@ -236,7 +236,7 @@
 .label {
   color: rgba(255, 255, 255, 0.55);
   font-size: 0.76rem;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
   overflow-wrap: anywhere;
 }

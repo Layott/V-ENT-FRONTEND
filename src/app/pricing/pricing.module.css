@@ -53,7 +53,7 @@
   display: inline-block;
   font-size: 0.72rem;
   font-weight: var(--fw-semi-bold);
-  letter-spacing: 0.02em;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--v-ent-gold, #d4af37);
   margin-bottom: 1.1rem;

@@ -37,7 +37,7 @@
   font-size: 0.72rem;
   font-weight: var(--fw-bold);
   text-transform: uppercase;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.08em;
   flex-shrink: 0;
 }
 .liveDot {
@@ -240,10 +240,10 @@
   border-radius: 8px;
   background-color: rgba(251, 198, 75, 0.15);
   color: rgba(251, 198, 75, 0.95);
-  font-size: 0.65rem;
+  font-size: 0.6875rem;
   font-weight: var(--fw-semi-bold);
   text-transform: uppercase;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.08em;
   flex-shrink: 0;
 }
 
@@ -273,7 +273,7 @@
   color: var(--primary-bg);
 }
 .chatTime {
-  font-size: 0.68rem;
+  font-size: 0.6875rem;
   color: rgba(255, 255, 255, 0.4);
 }
 .chatText {

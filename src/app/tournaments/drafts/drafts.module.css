@@ -91,9 +91,9 @@
 .gameTag {
   background-color: rgba(237,28,36,0.15);
   color: var(--v-ent-red);
-  font-size: 0.65rem;
+  font-size: 0.6875rem;
   font-weight: var(--fw-semi-bold);
-  letter-spacing: 0.05em;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
   padding: 3px 8px;
   border-radius: 8px;
@@ -102,7 +102,7 @@
 .draftBadge {
   background-color: rgba(245,158,11,0.15);
   color: #f59e0b;
-  font-size: 0.6rem;
+  font-size: 0.6875rem;
   font-weight: var(--fw-bold);
   letter-spacing: 0.08em;
   padding: 3px 7px;

@@ -42,7 +42,7 @@
   color: rgba(255, 255, 255, 0.45);
   margin-bottom: 0.45rem;
   text-transform: uppercase;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.08em;
 }
 .rejectSelect {
   width: 100%;
@@ -64,7 +64,7 @@
 
 /* The fee under the naira an admin sends, when there is one. */
 .feeNote {
-  font-size: 12px;
+  font-size: 0.75rem;
   color: rgba(255, 255, 255, 0.55);
   margin-top: 2px;
 }

@@ -220,7 +220,7 @@
   padding: 3px 8px;
   border-radius: 8px;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.08em;
   z-index: 2;
 }
 
@@ -317,7 +317,7 @@
 }
 
 .dotIcon {
-  font-size: 0.35rem;
+  font-size: 0.6875rem;
   color: rgba(255, 255, 255, 0.35);
 }
 
@@ -351,7 +351,7 @@
   font-size: 0.7rem;
   color: rgba(255, 255, 255, 0.45);
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.08em;
 }
 
 .trophyIcon {
@@ -531,9 +531,9 @@
 }
 
 .inviteMain { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
-.inviteTeam { font-size: 16px; font-weight: 700; color: var(--text-primary, #f2f2f2); }
-.inviteMeta { font-size: 13px; color: var(--text-secondary, #b6b6b6); text-transform: capitalize; }
-.inviteMessage { font-size: 13px; color: var(--text-secondary, #b6b6b6); }
+.inviteTeam { font-size: 1rem; font-weight: 700; color: var(--text-primary, #f2f2f2); }
+.inviteMeta { font-size: 0.8125rem; color: var(--text-secondary, #b6b6b6); text-transform: capitalize; }
+.inviteMessage { font-size: 0.8125rem; color: var(--text-secondary, #b6b6b6); }
 
 .inviteActions { display: flex; gap: 10px; flex-wrap: wrap; }
 
@@ -542,7 +542,7 @@
   padding: 0 18px;
   border-radius: 10px;
   font-weight: 600;
-  font-size: 14px;
+  font-size: 0.875rem;
   cursor: pointer;
 }
 .inviteAccept { background: var(--v-ent-red, #ED1C24); color: #fff; }

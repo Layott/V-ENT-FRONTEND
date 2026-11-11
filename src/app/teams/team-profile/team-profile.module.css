@@ -71,7 +71,7 @@
 .tabBadge {
   background-color: var(--v-ent-red);
   color: var(--primary-bg);
-  font-size: 0.65rem;
+  font-size: 0.6875rem;
   font-weight: var(--fw-bold);
   padding: 1px 6px;
   border-radius: 10px;

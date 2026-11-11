@@ -97,11 +97,11 @@
   padding: 0.18rem 0.55rem;
   background-color: rgba(237, 28, 36, 0.85);
   color: #fff;
-  font-size: 0.66rem;
+  font-size: 0.6875rem;
   border-radius: 8px;
   font-family: "ClashGrotesk-Variable", sans-serif;
   text-transform: uppercase;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.08em;
 }
 
 .tileTagEv { background-color: rgba(212, 175, 55, 0.85); }

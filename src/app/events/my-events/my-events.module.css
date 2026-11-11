@@ -100,7 +100,7 @@
 .org {
   background-color: rgba(255, 255, 255, 0.09);
   color: rgba(255, 255, 255, 0.65);
-  font-size: 0.68rem;
+  font-size: 0.6875rem;
   letter-spacing: 0.03em;
   padding: 3px 8px;
   border-radius: 8px;

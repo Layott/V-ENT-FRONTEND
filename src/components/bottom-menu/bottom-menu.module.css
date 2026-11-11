@@ -189,7 +189,7 @@
   /* The label sits under the icon and is the part that has to give. It stays
      on one line and is centred; the size below is what makes "Tournaments"
      fit a 68px column without being cut. */
-  font-size: 0.62rem;
+  font-size: 0.6875rem;
   line-height: 1.15;
   text-align: center;
   white-space: nowrap;
@@ -240,7 +240,7 @@
    "Tournaments" fit its column never applied and the label was cut at 390px
    (audit 557). Same element, more specific selector. */
 .sidebarItem a.iconTextLink {
-  font-size: 0.62rem;
+  font-size: 0.6875rem;
 }
 
 .activeLink a {
@@ -262,7 +262,7 @@
 }
 
 .comingSoon {
-  font-size: 0.6rem;
+  font-size: 0.6875rem;
   background-color: rgba(251, 198, 75, 0.24);
   padding: 3px 5px;
   border-radius: 8px;
@@ -308,7 +308,7 @@
 .signInLink:hover { color: #fff; }
 
 .signInLabel {
-  font-size: 0.62rem;
+  font-size: 0.6875rem;
   white-space: nowrap;
 }
 

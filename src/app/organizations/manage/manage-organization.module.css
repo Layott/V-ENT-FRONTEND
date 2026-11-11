@@ -139,7 +139,7 @@
 .tabBadge {
   background-color: var(--v-ent-red);
   color: var(--primary-bg);
-  font-size: 0.65rem;
+  font-size: 0.6875rem;
   font-weight: var(--fw-bold);
   padding: 1px 6px;
   border-radius: 10px;
@@ -336,7 +336,7 @@
   padding: 0.85rem 1rem;
   font-size: 0.7rem;
   text-transform: uppercase;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.08em;
   color: rgba(255, 255, 255, 0.55);
 
   background-color: #161618;
@@ -409,7 +409,7 @@
   display: inline-block;
   padding: 3px 8px;
   border-radius: 8px;
-  font-size: 0.68rem;
+  font-size: 0.6875rem;
   font-weight: var(--fw-semi-bold);
   text-transform: capitalize;
   background-color: rgba(255, 255, 255, 0.06);
@@ -839,7 +839,7 @@
 .formLabel {
   color: rgba(255, 255, 255, 0.5);
   font-size: 0.75rem;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
 }
 

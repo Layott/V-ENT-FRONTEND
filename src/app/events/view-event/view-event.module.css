@@ -50,7 +50,7 @@
   width: max-content;
   font-size: 0.7rem;
   text-transform: uppercase;
-  letter-spacing: 0.07em;
+  letter-spacing: 0.08em;
   font-weight: var(--fw-semi-bold);
   padding: 4px 10px;
   border-radius: 8px;
@@ -141,10 +141,10 @@
 }
 
 .countdownUnit {
-  font-size: 0.6rem;
+  font-size: 0.6875rem;
   color: rgba(255, 255, 255, 0.5);
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.08em;
   margin-top: 0.2rem;
 }
 
@@ -359,7 +359,7 @@
 .sideLabel {
   font-size: 0.7rem;
   text-transform: uppercase;
-  letter-spacing: 0.07em;
+  letter-spacing: 0.08em;
   color: rgba(255, 255, 255, 0.5);
   font-weight: var(--fw-medium);
   margin: 0 0 0.55rem;
@@ -525,7 +525,7 @@ a.sponsorLink:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
 }
 
 .tierBadge {
-  font-size: 0.65rem;
+  font-size: 0.6875rem;
   font-weight: var(--fw-bold);
   padding: 3px 8px;
   border-radius: 8px;
@@ -836,7 +836,7 @@ a.sponsorLink:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
 .tournamentGame {
   font-size: 0.72rem;
   text-transform: uppercase;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.08em;
   color: var(--v-ent-red);
   font-weight: var(--fw-semi-bold);
   margin: 0;
@@ -933,7 +933,7 @@ a.sponsorLink:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
 }
 
 .boothLabel {
-  font-size: 2.2px;
+  font-size: 0.6875rem;
   fill: #fff;
   font-weight: 600;
   pointer-events: none;
@@ -1327,6 +1327,7 @@ a.sponsorLink:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
   color: #fff;
   font-size: 1rem;
   text-transform: uppercase;
+  letter-spacing: 0.04em;
 }
 .modalInput::placeholder { text-transform: none; color: rgba(255, 255, 255, 0.35); }
 .modalInput:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }

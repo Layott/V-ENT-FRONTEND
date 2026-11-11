@@ -135,7 +135,7 @@
   border-radius: 999px;
   background-color: rgba(0, 0, 0, 0.25);
   color: inherit;
-  font-size: 0.65rem;
+  font-size: 0.6875rem;
   font-weight: var(--fw-semi-bold);
 }
 
@@ -233,12 +233,12 @@
 }
 
 .tierBadge {
-  font-size: 0.65rem;
+  font-size: 0.6875rem;
   padding: 3px 9px;
   border-radius: 8px;
   font-weight: var(--fw-bold);
   text-transform: uppercase;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.08em;
 }
 
 .tier_general {

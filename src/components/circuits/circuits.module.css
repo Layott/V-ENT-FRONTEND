@@ -82,13 +82,13 @@
   display: grid; grid-template-columns: 64px minmax(0, 1fr) 96px 72px 80px 44px;
   align-items: center; gap: 0.5rem; padding: 0 1rem;
 }
-.thead { min-height: 44px; color: rgba(255, 255, 255, 0.42); font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.06em; }
+.thead { min-height: 44px; color: rgba(255, 255, 255, 0.42); font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.08em; }
 .right { text-align: right; }
 .trow { min-height: 60px; }
 .zebra { background-color: rgba(255, 255, 255, 0.025); }
 .rank { font-weight: var(--fw-semi-bold); font-size: 1.05rem; color: var(--primary-bg); }
 .rankFirst { color: var(--v-ent-light-gold, #E8C760); }
-.rankShared { display: block; font-size: 0.68rem; color: rgba(255, 255, 255, 0.42); font-weight: var(--fw-medium); }
+.rankShared { display: block; font-size: 0.6875rem; color: rgba(255, 255, 255, 0.42); font-weight: var(--fw-medium); }
 .who { display: flex; align-items: center; gap: 0.6rem; min-width: 0; text-decoration: none; color: inherit; }
 .whoText { display: flex; flex-direction: column; min-width: 0; }
 .whoName { font-weight: var(--fw-medium); color: var(--primary-bg); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }

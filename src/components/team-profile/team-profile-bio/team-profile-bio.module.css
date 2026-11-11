@@ -55,7 +55,7 @@
   justify-content: center;
   align-items: center;
   padding: 4px;
-  font-size: 0.65rem;
+  font-size: 0.6875rem;
   background-color: #303136;
   border-radius: 50%;
 }
@@ -89,7 +89,7 @@
 }
 
 .userLocation {
-  font-size: 0.65rem;
+  font-size: 0.6875rem;
   display: flex;
   align-items: center;
   height: auto;

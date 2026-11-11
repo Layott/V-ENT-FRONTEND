@@ -128,12 +128,12 @@
   gap: 0.3rem;
   background-color: rgba(76, 175, 80, 0.14);
   color: var(--v-ent-success);
-  font-size: 0.68rem;
+  font-size: 0.6875rem;
   padding: 3px 8px;
   border-radius: 8px;
   font-weight: var(--fw-semi-bold);
   text-transform: uppercase;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.08em;
 
 }
 
@@ -158,14 +158,14 @@
 }
 
 .focusPill {
-  font-size: 0.68rem;
+  font-size: 0.6875rem;
   font-weight: var(--fw-semi-bold);
   padding: 2px 7px;
   background-color: rgba(212, 175, 55, 0.14);
   color: var(--v-ent-gold);
   border-radius: 10px;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.08em;
 }
 
 .orgBio {
@@ -340,10 +340,10 @@
 
 .statLabel {
   display: block;
-  font-size: 0.66rem;
+  font-size: 0.6875rem;
   color: rgba(255, 255, 255, 0.5);
   text-transform: uppercase;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.08em;
 }
 
 .statNumber {
@@ -538,7 +538,7 @@
   padding: 0.85rem 1rem;
   font-size: 0.7rem;
   text-transform: uppercase;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.08em;
   color: rgba(255, 255, 255, 0.55);
 
   background-color: #1a1a1d;
@@ -569,7 +569,7 @@
   display: inline-block;
   padding: 3px 10px;
   border-radius: 8px;
-  font-size: 0.68rem;
+  font-size: 0.6875rem;
   font-weight: var(--fw-semi-bold);
   text-transform: capitalize;
   background-color: rgba(255, 255, 255, 0.08);
@@ -652,7 +652,7 @@
   display: inline-block;
   padding: 3px 8px;
   border-radius: 8px;
-  font-size: 0.68rem;
+  font-size: 0.6875rem;
   font-weight: var(--fw-semi-bold);
   text-transform: capitalize;
   background-color: rgba(255, 255, 255, 0.06);
@@ -774,7 +774,7 @@
   font-size: 0.72rem;
   color: rgba(255, 255, 255, 0.5);
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.08em;
   display: inline-flex;
   align-items: center;
   gap: 0.4rem;

@@ -91,7 +91,7 @@
 }
 
 .betaChip {
-  font-size: 0.65rem;
+  font-size: 0.6875rem;
   background-color: rgba(212, 175, 55, 0.2);
   color: var(--v-ent-light-gold);
   padding: 3px 7px;
@@ -125,10 +125,10 @@
 }
 
 .balancePillLabel {
-  font-size: 0.65rem;
+  font-size: 0.6875rem;
   color: rgba(255, 255, 255, 0.45);
   text-transform: uppercase;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.08em;
   font-weight: var(--fw-medium);
 }
 
@@ -200,7 +200,7 @@
 .tabPill {
   background-color: var(--v-ent-red);
   color: #fff;
-  font-size: 0.65rem;
+  font-size: 0.6875rem;
   padding: 1px 6px;
   border-radius: 999px;
   font-weight: var(--fw-bold);
@@ -303,12 +303,12 @@
 }
 
 .statusPill {
-  font-size: 0.65rem;
+  font-size: 0.6875rem;
   padding: 0.18rem 0.55rem;
   border-radius: 999px;
   font-weight: var(--fw-semi-bold);
   text-transform: uppercase;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.08em;
 }
 
 .status_live {
@@ -394,10 +394,10 @@
 .poolStat { display: flex; flex-direction: column; gap: 0.15rem; }
 
 .poolStatLabel {
-  font-size: 0.62rem;
+  font-size: 0.6875rem;
   color: rgba(255, 255, 255, 0.45);
   text-transform: uppercase;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.08em;
   margin: 0;
 }
 
@@ -465,10 +465,10 @@
 }
 
 .marketGameTag {
-  font-size: 0.65rem;
+  font-size: 0.6875rem;
   color: rgba(255, 255, 255, 0.55);
   text-transform: uppercase;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.08em;
   font-weight: var(--fw-medium);
 }
 
@@ -560,7 +560,7 @@
   font-weight: var(--fw-semi-bold);
   color: rgba(255, 255, 255, 0.55);
   text-transform: uppercase;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.08em;
 }
 
 .tableRow {

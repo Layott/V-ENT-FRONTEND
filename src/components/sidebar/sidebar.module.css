@@ -160,14 +160,14 @@
 
 .comingSoon {
   margin-left: auto;
-  font-size: 0.6rem;
+  font-size: 0.6875rem;
   background-color: rgba(251, 198, 75, 0.24);
   padding: 3px 5px;
   border-radius: 8px;
 }
 
 .betaPill {
-  font-size: 0.6rem;
+  font-size: 0.6875rem;
   background-color: rgba(212, 175, 55, 0.24);
   color: var(--v-ent-light-gold);
   padding: 3px 5px;
@@ -237,9 +237,9 @@
 
 .unavailableTag {
   margin-left: 8px;
-  font-size: 0.68rem;
+  font-size: 0.6875rem;
   text-transform: uppercase;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.08em;
   color: #9A9AA3;
 }
 

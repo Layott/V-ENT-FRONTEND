@@ -117,7 +117,7 @@
   color: var(--v-ent-light-gold, #E8C760);
   font-family: 'ClashGrotesk-Variable', sans-serif;
   font-size: 0.76rem;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.06em;
   margin-bottom: 0.7rem;
   padding: 0.3rem 0.6rem;
   text-transform: uppercase;
@@ -175,6 +175,7 @@
   font-size: 0.7rem;
   margin: 0 0.45rem;
   text-transform: uppercase;
+  letter-spacing: 0.08em;
 }
 
 /* The @username beside a person's full name, as on the bracket. */

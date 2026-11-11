@@ -97,6 +97,7 @@
   font-size: 0.7rem;
   font-weight: var(--fw-semi-bold);
   text-transform: uppercase;
+  letter-spacing: 0.08em;
   color: var(--v-ent-gold);
   background-color: rgba(212, 175, 55, 0.15);
 
@@ -357,10 +358,10 @@
 }
 
 .quickStatLabel {
-  font-size: 0.68rem;
+  font-size: 0.6875rem;
   color: rgba(255, 255, 255, 0.5);
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.08em;
 }
 
 /* ───────────────────── MEMBERS TABLE ───────────────────── */
@@ -446,7 +447,7 @@
   background-color: #1a1a1d;
   font-size: 0.7rem;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.08em;
   color: rgba(255, 255, 255, 0.55);
   font-weight: var(--fw-semi-bold);
 }
@@ -721,7 +722,7 @@
   background-color: #1a1a1d;
   font-size: 0.7rem;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.08em;
   color: rgba(255, 255, 255, 0.55);
   font-weight: var(--fw-semi-bold);
 }
@@ -828,8 +829,8 @@
 .activityMobileGrid > div span:first-child {
   color: rgba(255, 255, 255, 0.5);
   text-transform: uppercase;
-  letter-spacing: 0.04em;
-  font-size: 0.66rem;
+  letter-spacing: 0.08em;
+  font-size: 0.6875rem;
 }
 
 /* ───────────────────── STATS ───────────────────── */
@@ -882,7 +883,7 @@
   font-size: 0.7rem;
   color: rgba(255, 255, 255, 0.5);
   text-transform: uppercase;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.08em;
   margin: 0.15rem 0 0;
 }
 

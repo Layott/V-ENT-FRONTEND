@@ -19,7 +19,7 @@
   width: var(--fut-w, 108px);
   height: calc(var(--fut-w, 108px) * 1.4);
   /* Everything inside is em, so this one line scales the whole card. */
-  font-size: calc(var(--fut-w, 108px) / 9);
+  font-size: calc(var(--fut-w, 6.75rem) / 9);
   border: none;
   border-radius: calc(var(--fut-w, 108px) / 9);
   overflow: hidden;
@@ -105,7 +105,7 @@ button.card { cursor: pointer; }
 }
 
 .nation {
-  font-size: 0.6em;
+  font-size: 0.6875rem;
   letter-spacing: 0.08em;
   opacity: 0.78;
   margin-top: 0.25em;
@@ -157,7 +157,7 @@ button.card { cursor: pointer; }
   font-weight: var(--fw-semi-bold, 600);
   line-height: 1.05;
   text-transform: uppercase;
-  letter-spacing: 0.01em;
+  letter-spacing: 0.06em;
   padding: 0.12em 0.1em;
   /* One line: a wrapped name pushes the numbers off the card. */
   white-space: nowrap;
@@ -172,7 +172,7 @@ button.card { cursor: pointer; }
   right: 0.35em;
   bottom: 2.45em;
   text-align: center;
-  font-size: 0.58em;
+  font-size: 0.6875rem;
   opacity: 0.72;
   white-space: nowrap;
   overflow: hidden;
@@ -209,12 +209,12 @@ button.card { cursor: pointer; }
 }
 
 .stat b {
-  font-size: 0.66em;
+  font-size: 0.6875rem;
   font-weight: var(--fw-bold, 700);
 }
 
 .stat i {
-  font-size: 0.5em;
+  font-size: 0.6875rem;
   font-style: normal;
   letter-spacing: 0.02em;
   opacity: 0.72;
@@ -228,7 +228,7 @@ button.card { cursor: pointer; }
   right: 0;
   top: 0.05em;
   text-align: center;
-  font-size: 0.55em;
+  font-size: 0.6875rem;
   letter-spacing: 0.06em;
   opacity: 0.6;
 }

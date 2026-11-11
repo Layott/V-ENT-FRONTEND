@@ -111,7 +111,7 @@
   font-size: 0.7rem;
   font-weight: var(--fw-semi-bold);
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.08em;
 }
 
 .heroStats {
@@ -130,7 +130,7 @@
   font-size: 0.72rem;
   color: rgba(255, 255, 255, 0.55);
   text-transform: uppercase;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.08em;
 }
 
 .heroStatValue {
@@ -314,7 +314,7 @@
   font-size: 0.72rem;
   color: rgba(255, 255, 255, 0.5);
   text-transform: uppercase;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.08em;
   font-weight: var(--fw-medium);
   margin: 0;
 }

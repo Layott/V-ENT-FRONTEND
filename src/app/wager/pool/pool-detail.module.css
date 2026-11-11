@@ -96,12 +96,12 @@
 }
 
 .statusPill {
-  font-size: 0.65rem;
+  font-size: 0.6875rem;
   padding: 0.18rem 0.55rem;
   border-radius: 999px;
   font-weight: var(--fw-semi-bold);
   text-transform: uppercase;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.08em;
 }
 
 .status_live {
@@ -206,10 +206,10 @@
 .heroStat { display: flex; flex-direction: column; gap: 0.2rem; align-items: flex-start; }
 
 .heroStatLabel {
-  font-size: 0.66rem;
+  font-size: 0.6875rem;
   color: rgba(255, 255, 255, 0.45);
   text-transform: uppercase;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.08em;
   margin: 0;
 }
 
@@ -312,11 +312,12 @@
 .winChip {
   background-color: rgba(212, 175, 55, 0.18);
   color: var(--v-ent-gold);
-  font-size: 0.65rem;
+  font-size: 0.6875rem;
   padding: 1px 6px;
   border-radius: 8px;
   font-weight: var(--fw-bold);
   text-transform: uppercase;
+  letter-spacing: 0.08em;
 }
 
 .outcomeMeta {
@@ -375,7 +376,7 @@
   font-size: 0.7rem;
   color: rgba(255, 255, 255, 0.55);
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.08em;
   font-weight: var(--fw-medium);
   margin-top: 0.25rem;
 }

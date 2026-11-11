@@ -34,7 +34,7 @@
   padding: 0.25rem 0.6rem;
   font-size: 0.8rem;
   text-transform: uppercase;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.06em;
 }
 .statusDone { background-color: var(--v-ent-success, #2e7d32); color: #fff; }
 

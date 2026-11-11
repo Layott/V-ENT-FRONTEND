@@ -90,7 +90,7 @@
   font-family: "ClashGrotesk-Variable", sans-serif;
   font-size: 0.72rem;
   text-transform: uppercase;
-  letter-spacing: 0.07em;
+  letter-spacing: 0.08em;
   color: rgba(255, 255, 255, 0.45);
   white-space: nowrap;
 }
@@ -141,7 +141,7 @@
   align-items: center;
   justify-content: center;
   font-family: "Fraunces", sans-serif;
-  font-size: 0.6rem;
+  font-size: 0.6875rem;
   color: rgba(255, 255, 255, 0.6);
   letter-spacing: 0.05em;
   overflow: hidden;

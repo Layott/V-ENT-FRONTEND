@@ -108,9 +108,9 @@
 .gameTag {
   background-color: rgba(237,28,36,0.15);
   color: var(--v-ent-red);
-  font-size: 0.65rem;
+  font-size: 0.6875rem;
   font-weight: var(--fw-semi-bold);
-  letter-spacing: 0.05em;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
   padding: 3px 8px;
   border-radius: 8px;
@@ -119,7 +119,7 @@
 .statusBadge {
   background-color: rgba(0,255,8,0.12);
   color: var(--v-ent-light-gold);
-  font-size: 0.65rem;
+  font-size: 0.6875rem;
   font-weight: var(--fw-bold);
   letter-spacing: 0.06em;
   padding: 3px 8px;
@@ -254,16 +254,16 @@
 }
 
 .matchRound {
-  font-size: 0.65rem;
+  font-size: 0.6875rem;
   color: rgba(255,255,255,0.5);
   font-weight: var(--fw-bold);
   letter-spacing: 0.05em;
 }
 
 .matchStatusBadge {
-  font-size: 0.6rem;
+  font-size: 0.6875rem;
   font-weight: var(--fw-bold);
-  letter-spacing: 0.05em;
+  letter-spacing: 0.08em;
   padding: 2px 6px;
   border-radius: 8px;
   text-transform: uppercase;
@@ -312,11 +312,12 @@
 .sbRound { font-weight: var(--fw-medium); }
 
 .sbStatusPill {
-  font-size: 0.65rem;
+  font-size: 0.6875rem;
   font-weight: var(--fw-bold);
   padding: 3px 7px;
   border-radius: 8px;
   text-transform: uppercase;
+  letter-spacing: 0.08em;
 }
 
 .sbScoreRow {
@@ -417,7 +418,7 @@
   color: rgba(255,255,255,0.55);
   margin: 0 0 0.75rem;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.06em;
   font-weight: var(--fw-semi-bold);
 }
 
@@ -452,7 +453,7 @@
 }
 
 .overlayDot {
-  font-size: 0.6rem;
+  font-size: 0.6875rem;
   color: var(--v-ent-red);
 
 }
@@ -484,7 +485,7 @@
   background-color: #28292d;
   font-size: 0.7rem;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.08em;
   color: rgba(255,255,255,0.55);
   font-weight: var(--fw-semi-bold);
 }
@@ -501,9 +502,9 @@
 .partCaptain { color: rgba(255,255,255,0.6); font-size: 0.78rem; }
 
 .partStatusBadge {
-  font-size: 0.65rem;
+  font-size: 0.6875rem;
   font-weight: var(--fw-bold);
-  letter-spacing: 0.05em;
+  letter-spacing: 0.08em;
   padding: 3px 7px;
   border-radius: 8px;
   text-transform: uppercase;

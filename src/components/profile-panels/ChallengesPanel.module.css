@@ -49,7 +49,7 @@
 .statLabel {
   font-size: 0.72rem;
   text-transform: uppercase;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.08em;
   color: rgba(255, 255, 255, 0.45);
 }
 
@@ -68,7 +68,7 @@
   font-family: "ClashGrotesk-Variable", sans-serif;
   font-size: 0.72rem;
   text-transform: uppercase;
-  letter-spacing: 0.07em;
+  letter-spacing: 0.08em;
   color: rgba(255, 255, 255, 0.45);
   white-space: nowrap;
 }
@@ -99,7 +99,7 @@
   font-size: 0.72rem;
   font-weight: var(--fw-semi-bold);
   text-transform: uppercase;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.08em;
   background-color: rgba(255, 255, 255, 0.08);
   color: rgba(255, 255, 255, 0.7);
 }

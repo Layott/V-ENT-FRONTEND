@@ -296,7 +296,7 @@
 .modeBlurb {
   display: block;
   margin-top: 8px;
-  font-size: 13px;
+  font-size: 0.8125rem;
   line-height: 1.45;
   color: var(--text-secondary, #b6b6b6);
 }

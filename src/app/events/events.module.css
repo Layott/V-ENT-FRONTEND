@@ -342,7 +342,7 @@
 .filterLabel {
   font-size: 0.72rem;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.08em;
   color: rgba(255, 255, 255, 0.5);
   font-weight: var(--fw-medium);
 }

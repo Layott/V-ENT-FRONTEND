@@ -182,7 +182,7 @@
 .fieldLabel {
   color: rgba(255, 255, 255, 0.55);
   font-size: 0.78rem;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
 }
 
@@ -635,7 +635,7 @@
   font-weight: var(--fw-medium, 500);
   color: rgba(255, 255, 255, 0.5);
   font-size: 0.76rem;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
   padding: 0.5rem 0.6rem;
 }

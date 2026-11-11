@@ -183,7 +183,7 @@
   font-size: 0.72rem;
   color: #A7A6A6;
   text-transform: uppercase;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.08em;
   font-weight: var(--fw-medium);
 }
 
@@ -274,7 +274,7 @@
   font-size: 0.75rem;
   color: rgba(255, 255, 255, 0.5);
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.06em;
   font-weight: var(--fw-medium);
 }
 
@@ -345,12 +345,12 @@
 .matchGameChip {
   background-color: rgba(255, 255, 255, 0.08);
   color: var(--primary-bg);
-  font-size: 0.65rem;
+  font-size: 0.6875rem;
   font-weight: var(--fw-semi-bold);
   padding: 3px 7px;
   border-radius: 8px;
   text-transform: uppercase;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.08em;
 }
 
 .liveBadge {
@@ -359,7 +359,7 @@
   gap: 0.3rem;
   background-color: rgba(237, 28, 36, 0.18);
   color: var(--v-ent-red);
-  font-size: 0.65rem;
+  font-size: 0.6875rem;
   font-weight: var(--fw-bold);
   padding: 3px 8px;
   border-radius: 8px;
@@ -367,7 +367,7 @@
 }
 
 .liveDot {
-  font-size: 0.45rem;
+  font-size: 0.6875rem;
 
 }
 
@@ -382,7 +382,7 @@
   color: rgba(255, 255, 255, 0.45);
   margin: 0;
   text-transform: uppercase;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.08em;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -406,7 +406,7 @@
 
 .matchTeamTag {
   font-family: "Fraunces", sans-serif;
-  font-size: 0.68rem;
+  font-size: 0.6875rem;
   background-color: var(--v-ent-red);
   color: var(--primary-bg);
   padding: 3px 6px;
@@ -439,7 +439,7 @@
   right: 0.7rem;
   top: 50%;
   transform: translateY(-50%);
-  font-size: 0.65rem;
+  font-size: 0.6875rem;
   color: rgba(255, 255, 255, 0.3);
   text-transform: uppercase;
   letter-spacing: 0.08em;
@@ -507,12 +507,12 @@
 .gameChip {
   background-color: rgba(0, 0, 0, 0.72);
   color: var(--primary-bg);
-  font-size: 0.65rem;
+  font-size: 0.6875rem;
   font-weight: var(--fw-semi-bold);
   padding: 3px 8px;
   border-radius: 8px;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.08em;
   white-space: nowrap;
 }
 
@@ -675,7 +675,7 @@
   font-size: 0.72rem;
   color: rgba(255, 255, 255, 0.55);
   text-transform: uppercase;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.08em;
   font-weight: var(--fw-medium);
   margin: 0;
 }
@@ -748,7 +748,7 @@
   font-size: 0.72rem;
   color: rgba(255, 255, 255, 0.55);
   text-transform: uppercase;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.08em;
   font-weight: var(--fw-medium);
   margin: 0 0 0.3rem;
 }
@@ -782,12 +782,12 @@
 }
 
 .txTypeBadge {
-  font-size: 0.64rem;
+  font-size: 0.6875rem;
   font-weight: var(--fw-semi-bold);
   padding: 3px 7px;
   border-radius: 8px;
   text-transform: uppercase;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.08em;
   white-space: nowrap;
 }
 
@@ -817,7 +817,7 @@
 }
 
 .txDate {
-  font-size: 0.68rem;
+  font-size: 0.6875rem;
   color: rgba(255, 255, 255, 0.4);
   margin: 0;
 }
@@ -956,12 +956,12 @@
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
   color: var(--v-ent-light-gold);
-  font-size: 0.65rem;
+  font-size: 0.6875rem;
   font-weight: var(--fw-semi-bold);
   padding: 4px 9px;
   border-radius: 8px;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.08em;
 }
 
 .recoBody {

@@ -183,10 +183,10 @@
   background-color: rgba(212, 175, 55, 0.16);
   color: #a5d6a7;
   font-family: "ClashGrotesk-Variable", sans-serif;
-  font-size: 0.65rem;
+  font-size: 0.6875rem;
   padding: 0.18rem 0.55rem;
   border-radius: 20px;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
 }
 
@@ -383,7 +383,7 @@
 
 .tabCount {
   margin-left: 0.4rem;
-  font-size: 0.68rem;
+  font-size: 0.6875rem;
   background-color: #303136;
   color: rgba(255, 255, 255, 0.45);
   padding: 0.12rem 0.5rem;

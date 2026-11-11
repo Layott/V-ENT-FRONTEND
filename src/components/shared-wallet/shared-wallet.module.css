@@ -21,7 +21,7 @@
 .balanceLabel {
   font-family: 'ClashGrotesk-Variable', sans-serif;
   font-size: 0.76rem;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
   color: rgba(255, 255, 255, 0.5);
 }
@@ -48,7 +48,7 @@
 .panelTitle {
   font-family: 'ClashGrotesk-Variable', sans-serif;
   font-size: 0.78rem;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
   color: rgba(255, 255, 255, 0.55);
   margin: 0 0 0.75rem;

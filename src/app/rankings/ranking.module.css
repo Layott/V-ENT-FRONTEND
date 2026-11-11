@@ -361,9 +361,9 @@
 }
 
 .podiumStatLabel {
-  font-size: 0.65rem;
+  font-size: 0.6875rem;
   text-transform: uppercase;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.08em;
   color: rgba(255, 255, 255, 0.45);
 }
 
@@ -765,9 +765,9 @@
 }
 
 .mobileDetailLabel {
-  font-size: 0.68rem;
+  font-size: 0.6875rem;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.08em;
   color: rgba(255, 255, 255, 0.4);
 }
 
@@ -802,7 +802,7 @@
 
     font-size: 0.72rem;
     text-transform: uppercase;
-    letter-spacing: 0.06em;
+    letter-spacing: 0.08em;
     color: rgba(255, 255, 255, 0.5);
     font-weight: var(--fw-semi-bold);
   }
@@ -972,9 +972,9 @@
 }
 
 .yourRankLabel {
-  font-size: 0.65rem;
+  font-size: 0.6875rem;
   text-transform: uppercase;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.08em;
   color: var(--v-ent-gold);
   font-weight: var(--fw-bold);
 }
@@ -1008,9 +1008,9 @@
 }
 
 .yourRankStatLabel {
-  font-size: 0.65rem;
+  font-size: 0.6875rem;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.08em;
   color: rgba(255, 255, 255, 0.45);
 }
 
@@ -1019,7 +1019,7 @@
 }
 
 .yourRankDot {
-  font-size: 0.3rem;
+  font-size: 0.6875rem;
   color: rgba(255, 255, 255, 0.3);
 }
 

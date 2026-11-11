@@ -107,13 +107,13 @@
   align-items: flex-end;
 }
 .adminName { font-size: 0.8rem; font-weight: 600; color: #fff; }
-.adminRole { font-size: 0.65rem; color: rgba(255, 255, 255, 0.4); }
+.adminRole { font-size: 0.6875rem; color: rgba(255, 255, 255, 0.4); }
 .avatar {
   width: 30px; height: 30px;
   border-radius: 50%;
   background-color: var(--v-ent-red);
   display: flex; align-items: center; justify-content: center;
-  font-size: 0.6rem; font-weight: 700;
+  font-size: 0.6875rem; font-weight: 700;
   color: #fff;
   flex-shrink: 0;
 }
@@ -179,7 +179,7 @@
   padding: 0.6rem 0.85rem 0.4rem;
   font-size: 0.72rem;
   font-weight: 600;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
   color: rgba(255, 255, 255, 0.45);
 }

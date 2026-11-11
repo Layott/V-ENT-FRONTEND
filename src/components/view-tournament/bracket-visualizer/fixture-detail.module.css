@@ -86,7 +86,7 @@
   color: var(--bv-muted, rgba(255, 255, 255, 0.55));
   font-family: 'ClashGrotesk-Variable', sans-serif;
   font-size: 0.8rem;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
 }
 
@@ -113,8 +113,8 @@
   background-color: var(--bv-gold-tint, rgba(212, 175, 55, 0.14));
   border-radius: 8px;
   color: var(--v-ent-light-gold, #E8C760);
-  font-size: 0.68rem;
-  letter-spacing: 0.05em;
+  font-size: 0.6875rem;
+  letter-spacing: 0.08em;
   padding: 0.2rem 0.4rem;
   text-transform: uppercase;
   white-space: nowrap;

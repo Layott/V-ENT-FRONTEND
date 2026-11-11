@@ -154,7 +154,7 @@
 .offBadge {
   background-color: rgba(237, 28, 36, 0.18);
   color: #ff8b90;
-  font-size: 0.68rem;
+  font-size: 0.6875rem;
   padding: 3px 8px;
   border-radius: 8px;
 }
@@ -324,7 +324,7 @@
   color: rgba(255, 255, 255, 0.55);
   font-family: 'ClashGrotesk-Variable', sans-serif;
   font-size: 0.78rem;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
   margin: 1rem 0 0.4rem;
 }
@@ -498,7 +498,7 @@
 
 .shareLink {
   font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
-  font-size: 12px;
+  font-size: 0.75rem;
   color: var(--text-secondary, #b6b6b6);
   overflow-wrap: anywhere;
   flex: 1 1 240px;
@@ -507,7 +507,7 @@
 
 @media (max-width: 768px) {
   .shareRow { gap: 8px; }
-  .shareLink { font-size: 11px; }
+  .shareLink { font-size: 0.6875rem; }
 }
 
 /* When people actually walked through the door. Bars are filled surfaces with
@@ -544,7 +544,7 @@
 }
 
 .hourCount {
-  font-size: 11px;
+  font-size: 0.6875rem;
   font-weight: 600;
   color: var(--text-primary, #f2f2f2);
 }
@@ -557,7 +557,7 @@
 }
 
 .hourLabel {
-  font-size: 10px;
+  font-size: 0.6875rem;
   color: var(--text-secondary, #b6b6b6);
   white-space: nowrap;
 }
@@ -626,7 +626,7 @@
   color: rgba(255, 255, 255, 0.55);
   font-family: 'ClashGrotesk-Variable', sans-serif;
   font-size: 0.78rem;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.06em;
   margin: 1rem 0 0.4rem;
   text-transform: uppercase;
 }
@@ -968,7 +968,7 @@
 .shopBadge {
   background-color: #2a2b30;
   color: var(--v-ent-gold);
-  font-size: 0.68rem;
+  font-size: 0.6875rem;
   padding: 3px 8px;
   border-radius: 8px;
 }

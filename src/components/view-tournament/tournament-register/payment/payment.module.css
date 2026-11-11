@@ -70,7 +70,7 @@
 }
 
 .modalTitle {
-  font-size: 24px;
+  font-size: 1.5rem;
   font-weight: 600;
   margin: 0;
   color: white;
@@ -80,7 +80,7 @@
   background: none;
   border: none;
   color: #9ca3af;
-  font-size: 32px;
+  font-size: 2rem;
   cursor: pointer;
   padding: 0;
   line-height: 1;
@@ -96,7 +96,7 @@
 }
 
 .subtitle {
-  font-size: 16px;
+  font-size: 1rem;
   color: #9ca3af;
   margin: 0 0 32px 0;
 }
@@ -121,7 +121,7 @@
 }
 
 .entryFeeLabel {
-  font-size: 16px;
+  font-size: 1rem;
   font-weight: 500;
   color: white;
 }
@@ -134,7 +134,7 @@
 }
 
 .entryFeeAmount {
-  font-size: 24px;
+  font-size: 1.5rem;
   font-weight: 700;
   color: white;
   display: flex;
@@ -147,7 +147,7 @@
 }
 
 .entryFeeConversion {
-  font-size: 14px;
+  font-size: 0.875rem;
   color: #9ca3af;
 }
 
@@ -182,7 +182,7 @@
 }
 
 .insufficientFunds {
-  font-size: 12px;
+  font-size: 0.75rem;
   color: #ef4444;
   margin-top: 4px;
   font-weight: 500;
@@ -205,7 +205,7 @@
 }
 
 .paymentMethodTitle {
-  font-size: 18px;
+  font-size: 1.125rem;
   font-weight: 600;
   color: white;
   display: block;
@@ -216,7 +216,7 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  font-size: 24px;
+  font-size: 1.5rem;
   font-weight: 700;
   color: white;
 }
@@ -240,7 +240,7 @@
 }
 
 .paystackDescription {
-  font-size: 14px;
+  font-size: 0.875rem;
   color: #9ca3af;
   margin: 0 0 16px 0;
   line-height: 1.4;
@@ -264,7 +264,7 @@
 }
 
 .visaLogo {
-  font-size: 16px;
+  font-size: 1rem;
   font-weight: 700;
   color: #1a73e8;
   letter-spacing: 2px;
@@ -312,7 +312,7 @@
   color: #9ca3af;
   padding: 12px 24px;
   border-radius: 8px;
-  font-size: 16px;
+  font-size: 1rem;
   font-weight: 500;
   cursor: pointer;
   transition: all 0.2s ease;
@@ -329,7 +329,7 @@
   color: var(--primary-bg);
   padding: 12px 24px;
   border-radius: 8px;
-  font-size: 16px;
+  font-size: 1rem;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s ease;
@@ -399,14 +399,14 @@
 }
 
 .kycTitle {
-  font-size: 18px;
+  font-size: 1.125rem;
   font-weight: 600;
   color: white;
   margin: 0;
 }
 
 .kycText {
-  font-size: 14px;
+  font-size: 0.875rem;
   color: #9ca3af;
   margin: 0;
   line-height: 1.5;
@@ -445,7 +445,7 @@
   width: 52px;
   height: 60px;
   text-align: center;
-  font-size: 24px;
+  font-size: 1.5rem;
   font-weight: 700;
   color: white;
   background-color: #1f1f1f;
@@ -467,7 +467,7 @@
   color: var(--v-ent-gold);
   border-radius: 8px;
   padding: 12px 16px;
-  font-size: 14px;
+  font-size: 0.875rem;
   margin-bottom: 16px;
 }
 
@@ -476,7 +476,7 @@
 
   border-radius: 8px;
   color: #fca5a5;
-  font-size: 14px;
+  font-size: 0.875rem;
   padding: 12px 16px;
   margin-bottom: 16px;
 }
@@ -496,7 +496,7 @@
   }
   
   .modalTitle {
-    font-size: 20px;
+    font-size: 1.25rem;
   }
   
   .paymentMethod {
@@ -504,11 +504,11 @@
   }
   
   .entryFeeAmount {
-    font-size: 20px;
+    font-size: 1.25rem;
   }
   
   .walletBalance {
-    font-size: 20px;
+    font-size: 1.25rem;
   }
   
   .modalFooter {
@@ -524,7 +524,7 @@
   .pinDigit {
     width: 44px;
     height: 52px;
-    font-size: 20px;
+    font-size: 1.25rem;
   }
 }
 /* Two classes the component referenced and this file never defined.

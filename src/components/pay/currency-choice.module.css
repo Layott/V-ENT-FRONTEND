@@ -11,7 +11,7 @@
   font-weight: var(--fw-semi-bold);
   color: rgba(255, 255, 255, 0.6);
   text-transform: uppercase;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.06em;
 }
 
 .chips {

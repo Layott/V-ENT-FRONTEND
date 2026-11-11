@@ -143,12 +143,12 @@
 }
 
 .statusPill {
-  font-size: 0.65rem;
+  font-size: 0.6875rem;
   font-weight: var(--fw-bold);
   padding: 3px 8px;
   border-radius: 999px;
   text-transform: uppercase;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.08em;
 }
 
 .status_active {
@@ -293,12 +293,12 @@
   right: 0.4rem;
   background-color: rgba(0, 0, 0, 0.75);
   color: #fff;
-  font-size: 0.62rem;
+  font-size: 0.6875rem;
   font-weight: var(--fw-semi-bold);
   padding: 2px 7px;
   border-radius: 8px;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.08em;
 }
 
 .inCartBadge {
@@ -310,7 +310,7 @@
   gap: 0.25rem;
   background-color: rgba(212, 175, 55, 0.85);
   color: #fff;
-  font-size: 0.62rem;
+  font-size: 0.6875rem;
   font-weight: var(--fw-semi-bold);
   padding: 2px 7px;
   border-radius: 8px;
@@ -424,7 +424,7 @@
   color: rgba(255, 255, 255, 0.45);
   margin: 0;
   text-transform: uppercase;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.08em;
 }
 
 .productModalName {

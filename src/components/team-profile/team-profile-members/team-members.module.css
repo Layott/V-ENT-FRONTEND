@@ -16,7 +16,7 @@
 .requestNumberParagraph {
   background-color: var(--v-ent-red);
   display: flex;
-  font-size: 0.6rem;
+  font-size: 0.6875rem;
   font-weight: 600;
   align-items: center;
   justify-content: center;
@@ -26,7 +26,7 @@
 }
 
 .requestNumberSpan {
-  font-size: 0.6rem;
+  font-size: 0.6875rem;
   display: flex;
   align-items: center;
   justify-content: center;

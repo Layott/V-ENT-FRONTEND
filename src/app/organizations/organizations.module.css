@@ -286,7 +286,7 @@
   display: inline-flex;
   align-items: center;
   gap: 0.3rem;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.08em;
   z-index: 2;
   text-transform: uppercase;
 }
@@ -401,14 +401,14 @@
 .metaIcon { font-size: 0.95rem; color: rgba(255, 255, 255, 0.55); }
 
 .focusPill {
-  font-size: 0.68rem;
+  font-size: 0.6875rem;
   font-weight: var(--fw-semi-bold);
   padding: 2px 7px;
   background-color: rgba(212, 175, 55, 0.14);
   color: var(--v-ent-gold);
   border-radius: 10px;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.08em;
 }
 
 .statsRow {
@@ -446,7 +446,7 @@
   font-size: 0.7rem;
   color: rgba(255, 255, 255, 0.45);
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.08em;
 }
 
 .cardActions {
@@ -685,7 +685,7 @@
   flex: 0 0 auto;
   font-size: 0.72rem;
   font-weight: 650;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.08em;
   padding: 0.16rem 0.45rem;
   text-transform: uppercase;
 }

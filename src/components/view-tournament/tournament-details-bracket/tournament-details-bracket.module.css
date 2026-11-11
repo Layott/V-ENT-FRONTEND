@@ -79,7 +79,7 @@
   background: rgba(23, 140, 78, 0.2);
   color: #34d399;
   border-radius: 8px;
-  font-size: 10px;
+  font-size: 0.6875rem;
   font-weight: var(--fw-semi-bold);
   white-space: nowrap;
 }
@@ -142,7 +142,7 @@
 }
 
 .matchLabel {
-  font-size: 10px;
+  font-size: 0.6875rem;
   font-weight: var(--fw-medium);
   color: rgba(255, 255, 255, 0.4);
   white-space: nowrap;
@@ -151,7 +151,7 @@
 .statusBadge {
   padding: 1px 5px;
   border-radius: 8px;
-  font-size: 9px;
+  font-size: 0.6875rem;
   font-weight: var(--fw-semi-bold);
   letter-spacing: 0.3px;
   white-space: nowrap;
@@ -163,7 +163,7 @@
 
 .cardDate {
   margin-left: auto;
-  font-size: 8px;
+  font-size: 0.6875rem;
   color: rgba(255, 255, 255, 0.3);
   white-space: nowrap;
 }
@@ -202,7 +202,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 7px;
+  font-size: 0.6875rem;
   font-weight: var(--fw-bold);
   color: rgba(255, 255, 255, 0.5);
   flex-shrink: 0;
@@ -210,7 +210,7 @@
 }
 
 .teamName {
-  font-size: 11px;
+  font-size: 0.6875rem;
   font-weight: var(--fw-regular);
   color: var(--primary-bg);
   flex: 1;
@@ -232,7 +232,7 @@
 }
 
 .score {
-  font-size: 12px;
+  font-size: 0.75rem;
   font-weight: var(--fw-semi-bold);
   color: rgba(255, 255, 255, 0.7);
   min-width: 18px;
@@ -242,7 +242,7 @@
 
 .scoreWinner { color: var(--v-ent-light-gold); }
 .scoreLoser  { color: rgba(255, 255, 255, 0.25); }
-.scoreNA     { color: rgba(255, 255, 255, 0.2); font-size: 10px; }
+.scoreNA     { color: rgba(255, 255, 255, 0.2); font-size: 0.6875rem; }
 
 /* Thin divider between the two team rows */
 .teamDivider {
