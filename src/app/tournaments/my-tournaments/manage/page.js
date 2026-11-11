@@ -279,7 +279,7 @@ const ManageContent = ({
                     <button className={styles.outlineBtn}><LuEye /> {tt("ui.view.public.page.13b1", "View Public Page")}</button>
                   </Link>
                   <Link href={`/tournaments/create-tournament?draft_id=${tournament.slug || tournament.id}`}>
-                    <button className={`${styles.btn} goldBTN`}><LuPencil /> {tt("ui.edit.5301", "Edit")}</button>
+                    <button className={`${styles.btn} quietBTN`}><LuPencil /> {tt("ui.edit.5301", "Edit")}</button>
                   </Link>
                 </div>}
             </div>
@@ -302,7 +302,7 @@ const ManageContent = ({
               <LuTriangleAlert className={styles.inlineErrorIcon} />
               <p className={styles.inlineErrorTitle}>{tt("ui.couldn't.load.this.tournament.207c", "Couldn't load this tournament")}</p>
               <p className={styles.inlineErrorSub}>{tx("We could not load this tournament just now.")}</p>
-              <button className={`${styles.btn} goldBTN`} onClick={handleRetry}>{tt("ui.retry.9f5c", "Retry")}</button>
+              <button className={`${styles.btn} quietBTN`} onClick={handleRetry}>{tt("ui.retry.9f5c", "Retry")}</button>
             </div> : <>
 
               {/* Summary card */}
@@ -399,14 +399,14 @@ const ManageContent = ({
                       {tt('actions.bracketDrawn', 'The bracket is drawn. Results go in under Match Control and Brackets.')}
                     </p>
                   ) : !confirmDraw ? (
-                    <button className={`${styles.btn} goldBTN`} onClick={() => setConfirmDraw(true)} disabled={!!busyAction}>
+                    <button className={`${styles.btn} redBTN`} onClick={() => setConfirmDraw(true)} disabled={!!busyAction}>
                       <LuShuffle /> {tx("Close Registration & Generate Bracket")}
                     </button>
                   ) : <>
                     <p className={styles.seedHint}>
                       {tt('actions.drawAsk', 'Nobody else can register once the bracket is drawn, and it cannot be drawn again.')}
                     </p>
-                    <button className={`${styles.btn} goldBTN`} disabled={!!busyAction}
+                    <button className={`${styles.btn} redBTN`} disabled={!!busyAction}
                             onClick={() => { setConfirmDraw(false); handleGenerateBracket(); }}>
                       <LuShuffle /> {busyAction === 'bracket' ? tx("Generating…") : tt('actions.drawYes', 'Yes, close registration and draw')}
                     </button>
@@ -415,7 +415,7 @@ const ManageContent = ({
                       {tt('slots.keep', 'Keep it')}
                     </button>
                   </>}
-                  {status === 'completed' && <button className={`${styles.btn} goldBTN`} onClick={handleDistributePrizes} disabled={!!busyAction}>
+                  {status === 'completed' && <button className={`${styles.btn} quietBTN`} onClick={handleDistributePrizes} disabled={!!busyAction}>
                       <LuTrophy /> {tt("prizes.open", "Prizes")}
                     </button>}
                   <button className={`${styles.btn} ${styles.dangerBtn}`} onClick={openCancelModal} disabled={!!busyAction}>

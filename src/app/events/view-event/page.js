@@ -1143,7 +1143,7 @@ export const ViewEventContent = ({
   if (error || !event) return renderPage(<div className={styles.errorState}>
         <h2 className={styles.errorTitle}>{tt("ui.couldn't.load.event.e418", "Couldn't load event")}</h2>
         <p className={styles.errorSub}>{error || tx("Event not found.")}</p>
-        <Link href="/events" className={`${styles.errorBtn} goldBTN`}>
+        <Link href="/events" className={`${styles.errorBtn} quietBTN`}>
           {tt("ui.back.events.bd9a", "Back to events")}
         </Link>
       </div>);
@@ -2152,7 +2152,7 @@ export const ViewEventContent = ({
                   closeBuy();
                   openTab('games');
                 }} />
-                <Link href="/events/my-tickets" className={`${styles.modalPrimaryBtn} goldBTN`} style={{
+                <Link href="/events/my-tickets" className={`${styles.modalPrimaryBtn} redBTN`} style={{
             display: 'inline-flex',
             justifyContent: 'center',
             textDecoration: 'none'

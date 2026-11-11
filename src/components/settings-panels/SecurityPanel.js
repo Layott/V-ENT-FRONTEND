@@ -281,7 +281,7 @@ const SecurityPanel = ({
           </div>
 
           <div className={shared.formFooter}>
-            <button type="submit" className={`${shared.btn} ${shared.goldBTN}`} disabled={submitting}>
+            <button type="submit" className={`${shared.btn} ${'redBTN'}`} disabled={submitting}>
               {submitting ? tx("Updating…") : tx("Update password")}
             </button>
           </div>
@@ -418,7 +418,7 @@ const SecurityPanel = ({
               </button>
               {/* Disabled until six digits are in, because a button that can
                   only fail is a button that should not be pressable. */}
-              <button type="button" className={`${shared.btn} ${shared.goldBTN}`}
+              <button type="button" className={`${shared.btn} ${'redBTN'}`}
                       onClick={confirm2FA} disabled={busy2FA || code.length !== 6}>
                 {busy2FA ? tt('ui.checking', 'Checking...') : tt("ui.enable.fa.5f22", "Enable 2FA")}
               </button>

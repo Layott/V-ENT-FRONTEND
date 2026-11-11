@@ -536,7 +536,7 @@ const CreateEventPage = () => {
               <p className={styles.successSub}>
                 <strong>{formData.name}</strong> {tt("ui.live.redirecting.events.listing.b101", "is live. Redirecting to events listing…")}
               </p>
-              <Link href="/events" className={`${styles.successBtn} goldBTN`}>
+              <Link href="/events" className={`${styles.successBtn} redBTN`}>
                 {tt("ui.go.events.now.2642", "Go to events now")}
               </Link>
             </div>
@@ -1055,7 +1055,7 @@ const CreateEventPage = () => {
               </span>
               {step < 5 ? <button className={`${styles.primaryBtn} redBTN`} onClick={goNext} type="button">
                   {tt("ui.next.2f04", "Next →")}
-                </button> : <button className={`${styles.primaryBtn} goldBTN`} onClick={submit} disabled={submitting} type="button">
+                </button> : <button className={`${styles.primaryBtn} redBTN`} onClick={submit} disabled={submitting} type="button">
                   {submitting ? tx("Publishing…") : tx("Publish event")}
                 </button>}
             </div>

@@ -355,12 +355,12 @@ const TournamentsContent = () => {
               <LuTriangleAlert className={styles.inlineErrorIcon} />
               <p className={styles.inlineErrorTitle}>{tt("ui.couldn't.load.tournaments.fd5f", "Couldn't load tournaments")}</p>
               <p className={styles.inlineErrorSub}>{tx("We could not load the tournaments just now.")}</p>
-              <button className={`${styles.primaryBtn} goldBTN`} onClick={handleRetry}>{tt("ui.retry.9f5c", "Retry")}</button>
+              <button className={`${styles.primaryBtn} quietBTN`} onClick={handleRetry}>{tt("ui.retry.9f5c", "Retry")}</button>
             </div> : filtered.length === 0 ? <div className={styles.emptyState}>
               <LuTrophy className={styles.emptyIcon} />
               <p className={styles.emptyTitle}>{tt("ui.no.tournaments.match.filters.b99b", "No tournaments match your filters")}</p>
               <p className={styles.emptySub}>{tt("ui.try.clearing.some.filters.833a", "Try clearing some filters or check back later.")}</p>
-              <button className={`${styles.primaryBtn} goldBTN`} onClick={clearFilters}>{tt("ui.clear.filters.381c", "Clear Filters")}</button>
+              <button className={`${styles.primaryBtn} quietBTN`} onClick={clearFilters}>{tt("ui.clear.filters.381c", "Clear Filters")}</button>
             </div> : tab === 'by_game' && grouped ? Object.entries(grouped).map(([gameName, list]) => <div key={gameName} className={styles.gameGroup}>
                 <h2 className={styles.gameGroupTitle}>{gameName}<span className={styles.gameGroupCount}>{list.length}</span></h2>
                 <div className={styles.cardGrid}>

@@ -6,11 +6,15 @@
  * error and should not announce itself.
  *
  * The page's own class supplies size and radius, so this only supplies the
- * fill and the centring for an optional label. */
+ * fill and the centring for an optional label. Since the Apple review (S18)
+ * the V-ENT mark sits in it, muted, so an empty picture says whose it is.
+ * */
 
 .empty {
   background-color: #26272b;
   display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
   align-items: center;
   justify-content: center;
   overflow: hidden;
@@ -29,4 +33,12 @@
   text-overflow: ellipsis;
   white-space: nowrap;
   max-width: 100%;
+}
+
+.mark {
+  width: 28%;
+  max-width: 56px;
+  min-width: 20px;
+  height: auto;
+  opacity: 0.35;
 }

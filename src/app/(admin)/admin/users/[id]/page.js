@@ -19,6 +19,7 @@ import { mediaUrl } from '@/lib/mediaUrl';
 import { adminToken } from '@/lib/adminToken'
 import BackLink from '@/components/back-link/BackLink';
 import { markScrimDown, isScrimClick } from '@/lib/scrim';
+import RowMenu from '@/components/admin/RowMenu';
 const TABS = [{
   key: 'logins',
   label: 'Logins'
@@ -247,11 +248,8 @@ function UserDetailInner() {
               <button className={`${shared.actBtn} ${shared.actView}`} onClick={() => setResetOpen(true)}>
                 {tt('adminUser.reset', 'Send a password reset')}
               </button>
-              {u?.status === 'banned' ? <button className={`${shared.actBtn} ${shared.actApprove}`} onClick={() => action('unban')}>
+              {u?.status === 'banned' && <button className={`${shared.actBtn} ${shared.actApprove}`} onClick={() => action('unban')}>
                   {tt("ui.unban.d267", "Unban")}
-                </button> : <button className={`${shared.actBtn} ${shared.actBan}`}
-                  onClick={() => { setBanOpen(true); setBanReason(''); }}>
-                  {tt("ui.ban.bfa1", "Ban")}
                 </button>}
               {/* Only to somebody who may actually do it. A control that is
                   rendered and then refused is the fault this project bans by
@@ -266,10 +264,18 @@ function UserDetailInner() {
                           onClick={() => { setPremiumOpen(true); setPremiumNote(''); }}>
                     {tt('adminUser.givePremium', 'Give premium')}
                   </button>)}
-              <button className={`${shared.actBtn} ${shared.actReject}`}
-                      onClick={() => { setDeleteOpen(true); setDeleteTyped(''); }}>
-                {tt('adminUser.delete', 'Delete account')}
-              </button>
+              {/* Ban and Delete last, behind a menu (Apple review S12): they came
+                  before the details and one press from anything else. */}
+              <RowMenu label={tt('adminUser.accountActions', 'Account actions')}>
+                {u?.status !== 'banned' && <button type="button" role="menuitem" data-danger=""
+                  onClick={() => { setBanOpen(true); setBanReason(''); }}>
+                  {tt("ui.ban.bfa1", "Ban")}
+                </button>}
+                <button type="button" role="menuitem" data-danger=""
+                        onClick={() => { setDeleteOpen(true); setDeleteTyped(''); }}>
+                  {tt('adminUser.delete', 'Delete account')}
+                </button>
+              </RowMenu>
             </div>}
           </div>
 

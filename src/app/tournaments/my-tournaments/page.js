@@ -227,7 +227,7 @@ const MyTournaments = () => {
               <p className={styles.pageSub}>{tt("ui.tournaments.organize.b1ff", "Tournaments you organize.")}</p>
             </div>
             <Link href="/tournaments/create-tournament">
-              <button className={`${styles.btn} goldBTN`}><LuPlus /> {tt("ui.create.tournament.4440", "Create Tournament")}</button>
+              <button className={`${styles.btn} redBTN`}><LuPlus /> {tt("ui.create.tournament.4440", "Create Tournament")}</button>
             </Link>
           </div>
 
@@ -268,11 +268,11 @@ const MyTournaments = () => {
               <LuTriangleAlert className={styles.inlineErrorIcon} />
               <p className={styles.inlineErrorTitle}>{tt("ui.couldn't.load.tournaments.78d7", "Couldn't load your tournaments")}</p>
               <p className={styles.inlineErrorSub}>{tx("We could not load your tournaments just now.")}</p>
-              <button className={`${styles.btn} goldBTN`} onClick={handleRetry}><LuRotateCw aria-hidden="true" /> {tt("ui.retry.9f5c", "Retry")}</button>
+              <button className={`${styles.btn} quietBTN`} onClick={handleRetry}><LuRotateCw aria-hidden="true" /> {tt("ui.retry.9f5c", "Retry")}</button>
             </div> : tab === 'drafts' ? drafts.length === 0 ? <div className={styles.emptyState}>
                 <LuTrophy className={styles.emptyIcon} />
                 <p className={styles.emptyTitle}>{tt("ui.no.drafts.d770", "No drafts")}</p>
-                <Link href="/tournaments/create-tournament" className={`${styles.btn} goldBTN`}>
+                <Link href="/tournaments/create-tournament" className={`${styles.btn} redBTN`}>
                   <LuPlus aria-hidden="true" /> {tt("ui.create.tournament.4440", "Create Tournament")}
                 </Link>
               </div> : <div className={styles.tournamentList}>
@@ -320,7 +320,7 @@ const MyTournaments = () => {
               <LuTrophy className={styles.emptyIcon} />
               <p className={styles.emptyTitle}>{tab === 'active' && tournaments.length === 0 ? tx("You haven't created any tournaments yet") : tx("Nothing here yet")}</p>
               <p className={styles.emptySub}>{tab === 'active' ? tx("Create your first tournament to get started.") : tx("Nothing finished yet. Tournaments you complete or cancel show up here.")}</p>
-              <Link href="/tournaments/create-tournament" className={`${styles.btn} goldBTN`}>
+              <Link href="/tournaments/create-tournament" className={`${styles.btn} redBTN`}>
                 <LuPlus aria-hidden="true" /> {tt("ui.create.tournament.4440", "Create Tournament")}
               </Link>
             </div> : <div className={styles.tournamentList}>

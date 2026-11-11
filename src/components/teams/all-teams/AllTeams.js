@@ -424,7 +424,7 @@ const AllTeams = () => {
                         {tx("Manage")}
                       </Link> : reqState === 'pending' ? <button type="button" className={`${styles.actionBtn} ${styles.actionDisabled}`} disabled>
                         {tx("Pending request")}
-                      </button> : open && viewer.signedIn ? <button type="button" className={`${styles.actionBtn} ${styles.actionPrimary}`} disabled={reqState === 'loading'} onClick={() => requestJoin(teamId)}>
+                      </button> : open && viewer.signedIn ? <button type="button" className={`${styles.actionBtn} ${styles.actionSecondary}`} disabled={reqState === 'loading'} onClick={() => requestJoin(teamId)}>
                         {reqState === 'loading' ? tx("Requesting…") : tx("Request to join")}
                       </button> : open ? <Link href={signInHref(teamHref)} className={`${styles.actionBtn} ${styles.actionPrimary}`}>
                         {tt('team.signInToJoin', 'Sign in to join')}

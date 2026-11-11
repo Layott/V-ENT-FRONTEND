@@ -142,7 +142,7 @@ const EventDetailsBanner = ({
           <button className={bannerDetailsStyles.shareBTN}>
             <RiShare2Fill className={bannerDetailsStyles.shareIcon} /> {tt("ui.share.09ca", "Share")}
           </button>
-          {onBookNow && <button onClick={onBookNow} className={`${bannerDetailsStyles.joinTournamentBTN} goldBTN`} style={{
+          {onBookNow && <button onClick={onBookNow} className={`${bannerDetailsStyles.joinTournamentBTN} redBTN`} style={{
           border: 'none',
           cursor: 'pointer'
         }} type="button">

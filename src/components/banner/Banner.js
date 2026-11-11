@@ -28,6 +28,7 @@
 
 import { useState } from 'react';
 import styles from './banner.module.css';
+import logoMark from '@/images/logo_mark_red.svg';
 
 /**
  * @param src       a URL, or null when there is nothing to show
@@ -60,6 +61,11 @@ export default function Banner({ src, alt = '', className = '', label = '' }) {
       role={alt ? 'img' : undefined}
       aria-label={alt || undefined}
     >
+      {/* The V-ENT mark, the one picture fallback across the site (Apple
+          review S18): an empty grey block read as something that failed.
+          The tournament cards and /home draw the same mark. */}
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img src={logoMark.src || logoMark} alt="" aria-hidden="true" className={styles.mark} />
       {label ? <span className={styles.label}>{label}</span> : null}
     </div>
   );

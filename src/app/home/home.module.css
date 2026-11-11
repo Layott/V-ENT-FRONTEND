@@ -492,6 +492,16 @@
 }
 
 
+/* The V-ENT mark on a card with no picture (Apple review S18). */
+.gridNoBanner {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  translate: -50% -50%;
+  opacity: 0.35;
+  pointer-events: none;
+}
+
 .gridBanner {
   height: 100px;
   position: relative;

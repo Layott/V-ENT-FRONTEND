@@ -30,6 +30,7 @@ import shared from '@/components/admin/admin.module.css';
 import styles from './community-detail.module.css';
 import { adminToken } from '@/lib/adminToken'
 import { markScrimDown, isScrimClick } from '@/lib/scrim';
+import RowMenu from '@/components/admin/RowMenu';
 
 const API = process.env.NEXT_PUBLIC_API_URL;
 
@@ -236,10 +237,14 @@ function CommunityDetailInner() {
                           <span className={styles.messageWhen}>{formatDateTime(row.created_at)}</span>
                         </div>
                         <p className={styles.messageBody}>{row.body}</p>
-                        <button type="button" className={`${shared.actBtn} ${shared.actReject}`}
-                                onClick={() => { setRemoving(row); setReason(''); }}>
-                          {tt('adminContent.remove', 'Remove')}
-                        </button>
+                        {/* Remove behind a menu, last (Apple review S12): a red Remove
+                            under every message was the loudest thing in the thread. */}
+                        <RowMenu>
+                          <button type="button" role="menuitem" data-danger=""
+                                  onClick={() => { setRemoving(row); setReason(''); }}>
+                            {tt('adminContent.removeMessage', 'Remove message')}
+                          </button>
+                        </RowMenu>
                       </li>)}
                     </ul>}
               </div>

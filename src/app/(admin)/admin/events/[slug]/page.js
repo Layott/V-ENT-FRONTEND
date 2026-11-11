@@ -36,6 +36,7 @@ import { adminToken } from '@/lib/adminToken'
 import PagerArrow from '@/components/pager-arrow/PagerArrow';
 import { formatNgn } from '@/lib/currency';
 import { markScrimDown, isScrimClick } from '@/lib/scrim';
+import RowMenu from '@/components/admin/RowMenu';
 
 const TABS = ['overview', 'tickets', 'sent'];
 const PAGE_SIZE = 25;
@@ -281,9 +282,13 @@ function AdminEventDetailInner() {
               </div>
               <div className={styles.headerActions}>
                 {mayAct && (event.is_active
-                  ? <button className={styles.dangerBtn} onClick={() => ask('cancelEvent', null, tt('admin.whyCancelEvent', 'Why is this event being cancelled?'))} disabled={busy === 'state'}>
-                      {tt('admin.cancelEvent', 'Cancel event')}
-                    </button>
+                  ? <RowMenu label={tt('admin.eventActions', 'Event actions')}>
+                      {/* Cancelling refunds everybody: behind a menu, never the
+                          first thing under the title (Apple review S12). */}
+                      <button type="button" role="menuitem" data-danger="" onClick={() => ask('cancelEvent', null, tt('admin.whyCancelEvent', 'Why is this event being cancelled?'))} disabled={busy === 'state'}>
+                        {tt('admin.cancelEvent', 'Cancel event')}
+                      </button>
+                    </RowMenu>
                   : <button className={`${shared.actBtn} ${shared.actView}`} onClick={() => setEventState('restore')} disabled={busy === 'state'}>
                       {tt('admin.restoreEvent', 'Restore event')}
                     </button>)}

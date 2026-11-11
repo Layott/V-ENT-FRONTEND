@@ -20,6 +20,7 @@ import BottomMenu from '@/components/bottom-menu/BottomMenu';
 import Sidebar from '@/components/sidebar/Sidebar';
 import TourOffer from '@/components/walkthrough/TourOffer';
 import styles from './home.module.css';
+import logoMark from '@/images/logo_mark_red.svg';
 import { useT } from '@/i18n/LanguageProvider';
 import { useTx } from '@/i18n/LanguageProvider';
 import { formatNumber } from '@/lib/datetime';
@@ -520,6 +521,9 @@ const HomePage = () => {
                     <div className={styles.gridBanner} style={t.banner ? {
                 backgroundImage: `url(${t.banner})`
               } : undefined}>
+                      {/* No picture: the V-ENT mark, as the tournament cards
+                          draw it, never an empty grey block (Apple review S18). */}
+                      {!t.banner && <Image src={logoMark} alt="" width={36} height={36} className={styles.gridNoBanner} />}
                       <span className={styles.gameChip}>{t.game}</span>
                     </div>
                     <div className={styles.gridBody}>
@@ -532,7 +536,7 @@ const HomePage = () => {
                         <LuTrophy className={styles.metaIcon} />
                         {prizeText(t)}
                       </p>
-                      <button type="button" className={`btn goldBTN ${styles.gridCta}`} onClick={() => router.push(`/tournaments/${t.slug || t.id}`)}>
+                      <button type="button" className={`btn quietBTN ${styles.gridCta}`} onClick={() => router.push(`/tournaments/${t.slug || t.id}`)}>
                         {tt("ui.view.tournament.c54b", "View tournament")}
                       </button>
                     </div>
@@ -558,8 +562,9 @@ const HomePage = () => {
                     <div className={styles.gridBanner} style={e.banner ? {
                 backgroundImage: `url(${e.banner})`
               } : undefined}>
+                      {!e.banner && <Image src={logoMark} alt="" width={36} height={36} className={styles.gridNoBanner} />}
                       <span className={styles.gameChip}>
-                        {e.event_type ? e.event_type.charAt(0).toUpperCase() + e.event_type.slice(1) : 'Event'}
+                        {e.event_type ? tt(`events.type.${e.event_type}`, e.event_type.charAt(0).toUpperCase() + e.event_type.slice(1)) : tt('ui.event', 'Event')}
                       </span>
                     </div>
                     <div className={styles.gridBody}>
@@ -572,7 +577,7 @@ const HomePage = () => {
                         <LuCalendar className={styles.metaIcon} />
                         {formatDate(e.start_date)}
                       </p>
-                      <button type="button" className={`btn redBTN ${styles.gridCta}`} onClick={() => router.push(`/events/${e.slug || e.id}`)}>
+                      <button type="button" className={`btn quietBTN ${styles.gridCta}`} onClick={() => router.push(`/events/${e.slug || e.id}`)}>
                         {tt("ui.view.event.7c27", "View event")}
                       </button>
                     </div>
@@ -748,7 +753,7 @@ const HomePage = () => {
                           {prizeText(t)}
                         </p>
                       </div>
-                      <button type="button" className={`btn goldBTN ${styles.recoCta}`} onClick={() => router.push(`/tournaments/${t.slug || t.id}`)}>
+                      <button type="button" className={`btn quietBTN ${styles.recoCta}`} onClick={() => router.push(`/tournaments/${t.slug || t.id}`)}>
                         {tt("ui.register.now.0483", "Register now")}
                       </button>
                     </div>

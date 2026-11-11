@@ -145,7 +145,7 @@ const Drafts = () => {
               <p className={styles.pageSub}>{tt("ui.pick.up.where.left.d3d8", "Pick up where you left off, or start fresh.")}</p>
             </div>
             <Link href="/tournaments/create-tournament">
-              <button className={`${styles.btn} goldBTN`}><LuPlus /> {tt("ui.create.new.4260", "Create New")}</button>
+              <button className={`${styles.btn} quietBTN`}><LuPlus /> {tt("ui.create.new.4260", "Create New")}</button>
             </Link>
           </div>
 
@@ -174,14 +174,14 @@ const Drafts = () => {
               <LuTriangleAlert className={styles.inlineErrorIcon} />
               <p className={styles.inlineErrorTitle}>{tt("ui.couldn't.load.drafts.e0e5", "Couldn't load drafts")}</p>
               <p className={styles.inlineErrorSub}>{tx("We could not load your drafts just now.")}</p>
-              <button className={`${styles.btn} goldBTN`} onClick={handleRetry}>{tt("ui.retry.9f5c", "Retry")}</button>
+              <button className={`${styles.btn} quietBTN`} onClick={handleRetry}>{tt("ui.retry.9f5c", "Retry")}</button>
             </div> : drafts.length === 0 ? <div className={styles.emptyState}>
               {/* The product's own mark, muted, in place of a stock trophy (audit L44). */}
               <Image src={logoMark} alt="" width={40} height={40} className={styles.emptyMark} />
               <p className={styles.emptyTitle}>{tt("ui.no.drafts.yet.3f32", "No drafts yet")}</p>
               <p className={styles.emptySub}>{tt("ui.start.tournament.save.before.db05", "Start a tournament and save before you finish.")}</p>
               <Link href="/tournaments/create-tournament">
-                <button className={`${styles.btn} goldBTN`}><LuPlus /> {tt("ui.start.tournament.723f", "Start a Tournament")}</button>
+                <button className={`${styles.btn} redBTN`}><LuPlus /> {tt("ui.start.tournament.723f", "Start a Tournament")}</button>
               </Link>
             </div> : <div className={styles.draftGrid}>
               {drafts.map(draft => {

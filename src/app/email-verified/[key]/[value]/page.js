@@ -127,10 +127,10 @@ const EmailVerified = () => {
             <p>{tt("ui.email.has.been.successfully.23f3", "Your email has been successfully verified.")}</p>
             <p>{tt("ui.can.now.proceed.2c08", "You can now proceed.")}</p>
 
-            <button className={`btn goldBTN ${styles.resendBTN}`} onClick={handleAction} disabled={resendLoading}>
+            <button className={`btn redBTN ${styles.resendBTN}`} onClick={handleAction} disabled={resendLoading}>
               {resendLoading ? <CircularProgress size={20} sx={{
             color: 'green'
-          }} /> : 'Continue'}
+          }} /> : tt('ui.continue.2e02', 'Continue')}
             </button>
           </>}
 

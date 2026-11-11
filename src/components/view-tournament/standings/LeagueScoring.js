@@ -219,7 +219,7 @@ export default function LeagueScoring({ tournamentId, token, entrants = [] }) {
                value={draft.reason}
                onChange={e => setDraft(d => ({ ...d, reason: e.target.value }))} />
 
-        <button type="button" className={`${styles.primary} goldBTN`}
+        <button type="button" className={`${styles.primary} redBTN`}
                 disabled={adding || !draft.player.trim() || !draft.reason.trim()
                           || !draft.value}
                 onClick={addAdjustment}>

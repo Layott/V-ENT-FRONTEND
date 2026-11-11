@@ -679,25 +679,25 @@
   color: var(--primary-bg);
 }
 
+/* Follow is a per-row action, so it is quiet (Apple review S9: a filled red
+   Follow on every row was the loudest thing on the page). Following is a
+   state, said in words on a neutral fill; gold is for money (S10). */
 .actionFollow {
-  background-color: var(--v-ent-red);
-
+  background-color: #303136;
   color: var(--primary-bg);
 }
 
 .actionFollow:hover {
-  background-color: var(--v-ent-light-red);
-
+  background-color: #3a3b41;
 }
 
 .actionFollowing {
-  background-color: rgba(212, 175, 55, 0.18);
-
-  color: var(--v-ent-gold);
+  background-color: rgba(255, 255, 255, 0.06);
+  color: var(--ink-70, rgba(255, 255, 255, 0.7));
 }
 
 .actionFollowing:hover {
-  background-color: rgba(212, 175, 55, 0.25);
+  background-color: rgba(255, 255, 255, 0.1);
 }
 
 .actionPrimary {

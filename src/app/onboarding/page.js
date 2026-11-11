@@ -107,7 +107,7 @@ const OnboardingContent = () => {
                   {avatarPreview ? <img src={avatarPreview} alt={tt("ui.avatar.preview.9d0a", "Avatar preview")} /> : <span>{initials}</span>}
                 </div>
                 <div>
-                  <button type="button" className={`btn goldBTN ${styles.smallBtn}`} onClick={() => avatarInputRef.current?.click()}>
+                  <button type="button" className={`btn quietBTN ${styles.smallBtn}`} onClick={() => avatarInputRef.current?.click()}>
                     {tt("ui.upload.photo.69ab", "Upload photo")}
                   </button>
                   <p className={styles.hint}>{uploadHint(tt, 'avatar')}</p>

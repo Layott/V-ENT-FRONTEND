@@ -630,7 +630,7 @@ export const EditTournamentContent = ({ slug: slugFromPath }) => {
               {notice && <p className={styles.notice}>{notice}</p>}
 
               <div className={styles.actions}>
-                <button type="button" className={`${styles.primaryBtn} goldBTN`}
+                <button type="button" className={`${styles.primaryBtn} redBTN`}
                         onClick={save} disabled={saving || !dirty}>
                   {saving ? tt('ui.saving', 'Saving...') : tt('ui.save', 'Save')}
                 </button>

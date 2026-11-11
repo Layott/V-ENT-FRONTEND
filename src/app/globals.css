@@ -221,6 +221,25 @@ a {
   text-decoration: none;
 }
 
+/* The quiet button (Apple review S9): one filled main action per screen, and
+   every other action beside it on a quiet fill one step above the panel.
+   Per-row actions in a list are quiet too. Never a ring. Element-qualified so
+   a module class that brings its own faint fill does not win over it. */
+.quietBTN,
+a.quietBTN,
+button.quietBTN {
+  color: var(--primary-bg);
+  background-color: #303136;
+  transition: background-color 150ms ease-out;
+  cursor: pointer;
+}
+
+.quietBTN:hover,
+a.quietBTN:hover,
+button.quietBTN:hover {
+  background-color: #3a3b41;
+}
+
 .goldBTN {
   color: var(--primary-bg);
   background-color: var(--v-ent-gold);

@@ -351,7 +351,7 @@ export const VendorStallContent = ({ eventSlug = '', stallSlug = '' } = {}) => {
   if (error || !vendor) return renderShell(<div className={styles.errorState}>
         <h1 className={styles.errorTitle}>{tt("ui.couldn't.load.vendor.0e61", "Couldn't load vendor")}</h1>
         <p className={styles.errorSub}>{error || tx("Vendor not found.")}</p>
-        <Link href={eventId ? `/events/${eventId}/vendor-shop` : '/events'} className={`${styles.errorBtn} goldBTN`}>
+        <Link href={eventId ? `/events/${eventId}/vendor-shop` : '/events'} className={`${styles.errorBtn} quietBTN`}>
           {tt("ui.back.vendor.shop.9b5d", "Back to vendor shop")}
         </Link>
       </div>);
@@ -417,7 +417,7 @@ export const VendorStallContent = ({ eventSlug = '', stallSlug = '' } = {}) => {
               <button className={styles.contactBtn} onClick={() => setContactOpen(true)} type="button">
                 <IoChatbubblesOutline /> {tt("ui.contact.b374", "Contact")}
               </button>
-              <Link href={`/events/${eventId}?tab=map`} className={`${styles.mapBtn} goldBTN`}>
+              <Link href={`/events/${eventId}?tab=map`} className={`${styles.mapBtn} quietBTN`}>
                 <FaMapPin /> {tt("ui.visit.booth.venue.68db", "Visit booth at venue")}
               </Link>
             </div>
@@ -534,7 +534,7 @@ export const VendorStallContent = ({ eventSlug = '', stallSlug = '' } = {}) => {
                   <p className={styles.successSub}>
                     {tt('stall.contactSentHow', '{name} has it as a notification with your username.').replace('{name}', vendor.name)}
                   </p>
-                  <button className={`${styles.contactSendBtn} goldBTN`} onClick={closeContact} type="button">
+                  <button className={`${styles.contactSendBtn} quietBTN`} onClick={closeContact} type="button">
                     {tt("ui.done.e9b4", "Done")}
                   </button>
                 </div>}

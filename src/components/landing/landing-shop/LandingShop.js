@@ -39,7 +39,7 @@ const LandingShop = ({ scrollToForm }) => {
 
                     <Link
                         href={'/signup'}
-                        className={`${profileStyles.waitlistBTN} ${profileStyles.loginBTN}`}
+                        className={`${profileStyles.waitlistBTN} quietBTN`}
                         >
                         {tt("landing.signup", "Sign up")}
                     </Link>

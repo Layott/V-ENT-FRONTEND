@@ -158,11 +158,11 @@ function PushDevice({ push, token, tt, onChanged }) {
         {note && <p className={styles.deviceNote} role="status">{note}</p>}
       </div>
       <div className={styles.deviceActions}>
-        {state === 'off' && <button type="button" className={`${shared.btn} ${shared.btnSm} ${shared.goldBTN}`} onClick={turnOn}>
+        {state === 'off' && <button type="button" className={`${shared.btn} ${shared.btnSm} ${'redBTN'}`} onClick={turnOn}>
           {tt('notif.push.turnOn', 'Turn on push')}
         </button>}
         {state === 'on' && <>
-          <button type="button" className={`${shared.btn} ${shared.btnSm} ${shared.goldBTN}`} onClick={test}>
+          <button type="button" className={`${shared.btn} ${shared.btnSm} ${'quietBTN'}`} onClick={test}>
             {tt('notif.push.sendTest', 'Send a test')}
           </button>
           <button type="button" className={`${shared.btn} ${shared.btnSm} ${styles.quietBtn}`} onClick={turnOff}>

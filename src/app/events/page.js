@@ -429,7 +429,7 @@ const EventsListingContent = () => {
                 <MdOutlineEvent className={styles.emptyIcon} />
                 <p className={styles.emptyTitle}>{tt("ui.no.events.match.these.5242", "No events match these filters.")}</p>
                 <p className={styles.emptySub}>{tt("ui.try.clearing.filters.pick.db0d", "Try clearing filters or pick a different tab.")}</p>
-                {hasActiveFilters && <button className={`${styles.emptyBtn} goldBTN`} onClick={clearFilters} type="button">
+                {hasActiveFilters && <button className={`${styles.emptyBtn} quietBTN`} onClick={clearFilters} type="button">
                     {tt("ui.clear.filters.4122", "Clear filters")}
                   </button>}
               </div> : <div className={styles.cardGrid}>
