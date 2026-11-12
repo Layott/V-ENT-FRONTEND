@@ -358,7 +358,7 @@
   display: inline-flex;
   align-items: center;
   gap: 0.4rem;
-  background-color: var(--v-ent-red);
+  background-color: #303136;
   color: var(--primary-bg);
   padding: 0.55rem 1rem;
   font-size: var(--fs-p-size-mobile);
@@ -370,7 +370,7 @@
   cursor: pointer;
 }
 
-.lockedBtn:hover { background-color: var(--v-ent-light-red); }
+.lockedBtn:hover { background-color: #3a3b41; }
 
 .inlineLink { color: var(--v-ent-red); text-decoration: none; }
 .inlineLink:hover { color: var(--v-ent-light-red); text-decoration: underline; }

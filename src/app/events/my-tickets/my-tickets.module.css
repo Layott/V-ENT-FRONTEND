@@ -119,8 +119,8 @@
 }
 
 .filterBtnActive {
-  background-color: var(--v-ent-red);
-  color: #fff;
+  background-color: #4a4c54;
+  color: var(--primary-bg);
 
   font-weight: var(--fw-semi-bold);
 }
@@ -191,9 +191,11 @@
 
 }
 
-.leftTier_general { background-color: rgba(212, 175, 55, 0.15); }
-.leftTier_vip { background-color: rgba(251, 198, 75, 0.18); }
-.leftTier_backstage { background-color: rgba(237, 28, 36, 0.18); }
+/* One neutral band behind every QR: the tier is written on the ticket, and a
+   gold or red tint here read as money or an alert (Apple review P076-5). */
+.leftTier_general,
+.leftTier_vip,
+.leftTier_backstage { background-color: #2a2b30; }
 
 .qrThumb {
   width: 92px;
@@ -315,7 +317,7 @@
 .viewHint {
   margin-top: auto;
   font-size: 0.72rem;
-  color: var(--v-ent-red);
+  color: var(--ink-70, rgba(255, 255, 255, 0.7));
   font-weight: var(--fw-medium);
 }
 

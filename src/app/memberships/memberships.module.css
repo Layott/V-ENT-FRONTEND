@@ -70,14 +70,15 @@
 }
 
 .sourceLink {
-  color: var(--v-ent-success-light);
+  color: var(--primary-bg);
   font-size: var(--fs-p-size-sm-mobile);
-  text-decoration: none;
+  text-decoration: underline;
   font-weight: var(--fw-semi-bold);
   align-self: center;
   min-height: 44px;
   display: inline-flex;
   align-items: center;
+  text-underline-offset: 2px;
 }
 
 /* ── Tabs ── */

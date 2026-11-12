@@ -171,7 +171,7 @@ const OverviewPanel = ({
           <div className={styles.statCard}>
             <div className={styles.statCardHead}>{tt("ui.penalty.points.bb82", "Penalty Points")}</div>
             <div className={styles.statAmountRow}>
-              <svg className={styles.statIconFlag} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <svg className={styles.statIconFlag} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
                 <path d="M4 22V4M4 4h12l-2 4 2 4H4" />
               </svg>
               <span className={styles.statAmount}>{penaltyPoints}</span>

@@ -194,7 +194,11 @@ export default async function middleware(req) {
   if (isProtectedRoute && !nextAuthToken && !sessionCookie) {
     // Localised, so somebody reading in French is not dropped onto an English
     // sign-in page halfway through what they were doing.
-    return redirectTo(localePath('/login', locale), req);
+    // Carrying where they were going, so the sign-in page can say why they
+    // are there and send them back afterwards (Apple review P089-4). A path
+    // on this site only; the login page checks it again with safeNext.
+    const wanted = encodeURIComponent(path + (req.nextUrl.search || ''));
+    return redirectTo(localePath('/login', locale) + '?next=' + wanted, req);
   }
 
   if (isPublicRoute && (nextAuthToken || sessionCookie)) {

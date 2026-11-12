@@ -66,7 +66,8 @@ const RoadmapMap = ({ focus = null }) => {
                       aria-expanded={isOpen} aria-controls={`roadmap-step-${s.id}`}
                       onClick={() => setOpen(isOpen && !focus ? null : s.id)}>
                 <span className={styles.nodeTop}>
-                  {!focus && <span className={styles.phase}>{phase}</span>}
+                  {/* Only "Now": a visitor cannot read the team's phase order (Apple review P123-2). */}
+                  {!focus && !s.phase && <span className={styles.phase}>{phase}</span>}
                   <span className={`${styles.badge} ${s.status === 'live' ? styles.badgeLive : ''}`}>{status}</span>
                 </span>
                 <span className={styles.name}>{tt(s.title[0], s.title[1])}</span>
@@ -77,7 +78,8 @@ const RoadmapMap = ({ focus = null }) => {
                        aria-label={tt(s.title[0], s.title[1])}>
                 {s.id !== focus && <>
                   <div className={styles.detailTop}>
-                    {!focus && <span className={styles.phase}>{phase}</span>}
+                    {/* Only "Now": a visitor cannot read the team's phase order (Apple review P123-2). */}
+                  {!focus && !s.phase && <span className={styles.phase}>{phase}</span>}
                     <span className={`${styles.badge} ${s.status === 'live' ? styles.badgeLive : ''}`}>{status}</span>
                   </div>
                   <h2 className={styles.detailTitle}>{tt(s.title[0], s.title[1])}</h2>

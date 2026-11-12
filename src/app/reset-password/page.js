@@ -114,7 +114,7 @@ const ResetPassword = () => {
             <main className={generalStyles.mainContainer}>
                 <div className={generalStyles.formContainer}>
                     <section className={generalStyles.formHeader}>
-                        <h1 className={generalStyles.formHeading}>{tt("ui.reset.password.2a11", "Reset password?")}</h1>
+                        <h1 className={generalStyles.formHeading}>{tt('reset.heading', 'Reset your password')}</h1>
                         <p>{tt("ui.enter.new.password.7bec", "Enter your new password")}</p>
                     </section>
             {/* method="post" is not there to be used - onSubmit handles the

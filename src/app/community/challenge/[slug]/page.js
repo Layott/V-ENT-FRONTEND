@@ -214,7 +214,9 @@ const ChallengePage = () => {
     return <Shell>
       <div className={styles.lockedCard}>
         <h1 className={styles.lockedTitle}>{tt('community.challengeMissingTitle', 'Challenge not found')}</h1>
-        <p className={styles.lockedSub}>{error || tt('msg.couldNotReachServer', 'Could not reach the server. Try again.')}</p>
+        <p className={styles.lockedSub}>{error && !/not found/i.test(error) ? error : error
+          ? tt('community.challengeMissingSub', 'The link may be wrong, or the challenge was taken down.')
+          : tt('msg.couldNotReachServer', 'Could not reach the server. Try again.')}</p>
         <Link href="/community" className={styles.lockedBtn}>
           <FiArrowLeft /> {tt('community.backToCommunity', 'Back to community')}
         </Link>

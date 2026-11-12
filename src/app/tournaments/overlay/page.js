@@ -11,7 +11,7 @@ const Page = () => {
   const tt = useT();
   const back = { href: '/tournaments', label: tt('back.toTournaments', 'Back to tournaments') };
 
-  return <ComingSoon back={back} phase="Live now" title="Stream overlay" blurb="An overlay is driven by one tournament's or one event's live data, so it is uploaded on that console under Production. You get back a URL to paste into an OBS browser source, and the page fills itself from the standings, the rosters and the scores as they change. The production page lists everything you run." alternatives={[{
+  return <ComingSoon back={back} phase="Live now" title="Stream overlay" blurb="An overlay belongs to one tournament or event, so it is uploaded on that console under Production. Paste the address it gives you into OBS as a browser source; it shows the standings, rosters and scores as they change." alternatives={[{
     href: "/production",
     label: "Production"
   }, {

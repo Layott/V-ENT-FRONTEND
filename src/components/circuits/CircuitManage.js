@@ -270,7 +270,7 @@ function TiersPanel({ circuit, tiers, token, onChanged, tt }) {
   return (
     <div className={styles.panel}>
       <h2 className={styles.sectionTitle}>{tt('circuit.panel.tiers', 'Tiers')}</h2>
-      <p className={styles.muted}>{tt('circuit.tiersHelp', "A bigger event is worth more. Type each tier's table the way you would say it.")}</p>
+      <p className={styles.muted}>{tt('circuit.tiersHelp2', 'A bigger event is worth more. For example "1:100, 2:60, default 5" gives the winner 100 points, second place 60 and everybody else 5.')}</p>
       {tiers.map((tier) => <TierRow key={tier.id} circuit={circuit} tier={tier} token={token} onChanged={onChanged} tt={tt} />)}
       <form className={styles.tierRow} onSubmit={add}>
         <input id="tier-new-name" className={styles.input} value={name} maxLength={60} disabled={save.busy}

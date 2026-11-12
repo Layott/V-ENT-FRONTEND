@@ -83,8 +83,29 @@ const noteStyle = {
 };
 
 const linkStyle = {
-  color: '#D4AF37',
+  color: 'inherit',
   textDecoration: 'underline',
+  textUnderlineOffset: '2px',
+};
+
+// The contents: one jump per section, so a reader looking for one answer
+// (refunds, age, closing an account) goes straight to it (Apple review).
+const tocStyle = {
+  display: 'flex',
+  flexWrap: 'wrap',
+  gap: '0.4rem 1rem',
+  margin: '0 0 2rem',
+  padding: 0,
+  listStyle: 'none',
+};
+
+const tocLinkStyle = {
+  color: 'inherit',
+  textDecoration: 'underline',
+  textUnderlineOffset: '2px',
+  fontSize: '0.875rem',
+  display: 'inline-block',
+  padding: '0.35rem 0',
 };
 
 // A link on its own line, pressed like a button: 44px tall (it measured 16px on
@@ -124,8 +145,18 @@ export default async function PrivacyPolicy() {
         <h1 style={headingStyle}>{k('title')}</h1>
         <p style={subStyle}>{keepBrandTogether(k('updated'))}</p>
 
+        <nav aria-label={t('policy.contents', 'Contents')}>
+          <ul style={tocStyle}>
+            {SECTIONS.map((section) => (
+              <li key={section.id}>
+                <a href={`#${section.id}`} style={tocLinkStyle}>{t(`policy.${section.id}.heading`, section.heading)}</a>
+              </li>
+            ))}
+          </ul>
+        </nav>
+
         {SECTIONS.map((section) => (
-          <section key={section.id} id={section.id} style={sectionStyle}>
+          <section key={section.id} id={section.id} style={{ ...sectionStyle, scrollMarginTop: '1rem' }}>
             <h2 style={sectionTitleStyle}>
               {t(`policy.${section.id}.heading`, section.heading)}
             </h2>

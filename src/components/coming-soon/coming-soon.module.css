@@ -49,7 +49,8 @@
   font-size: 0.75rem;
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: var(--v-ent-red);
+  /* A label, not a live signal: red "LIVE NOW" read as a match on air. */
+  color: var(--ink-55, rgba(255, 255, 255, 0.55));
   font-weight: var(--fw-semi-bold);
   margin: 0 0 0.75rem;
 }
@@ -194,4 +195,11 @@
     width: calc(100% - 250px);
     padding: 2rem 2rem 2rem;
   }
+}
+
+/* What the pills below are (Apple review P128-2). */
+.linksLabel {
+  margin: 0 0 0.5rem;
+  font-size: 0.875rem;
+  color: var(--ink-70, rgba(255, 255, 255, 0.7));
 }

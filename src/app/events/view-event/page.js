@@ -490,6 +490,8 @@ export const ViewEventContent = ({
   // The API separates them, because the page shows two headings and should not
   // have to filter a mixed list itself.
   const eventPartners = Array.isArray(event?.partners) ? event.partners : [];
+  // The names beside the icons (Apple review P061-5): a lone bird was a guess.
+  const SOCIAL_NAMES = { twitter: 'X', x: 'X', instagram: 'Instagram', youtube: 'YouTube', facebook: 'Facebook', tiktok: 'TikTok', twitch: 'Twitch', discord: 'Discord', kick: 'Kick' };
   const eventSocials = Object.entries(event?.social_links || {}).filter(([platform, url]) => url && SOCIAL_ICONS[String(platform).toLowerCase()]).map(([platform, url]) => ({
     platform,
     url,
@@ -1389,8 +1391,9 @@ export const ViewEventContent = ({
                     platform,
                     url,
                     Icon
-                  }) => <a key={platform} href={url} target="_blank" rel="noopener noreferrer" className={styles.socialBtn} aria-label={platform}>
-                            <Icon />
+                  }) => <a key={platform} href={url} target="_blank" rel="noopener noreferrer" className={styles.socialBtn}>
+                            <Icon aria-hidden="true" />
+                            <span>{SOCIAL_NAMES[String(platform).toLowerCase()] || platform}</span>
                           </a>)}
                       </div>
                     </>}
@@ -1706,7 +1709,7 @@ export const ViewEventContent = ({
                           ? tt('tier.remaining', '{n} remaining').replace('{n}', formatNumber(t.available))
                           : tx("Sold out")}
                       </p>
-                      <button className={`${styles.tierBuyBtn} ${t.tier === 'general' ? 'goldBTN' : 'redBTN'}`} disabled={t.available === 0 || countdown?.ended || sessionStatus === 'loading'} onClick={() => {
+                      <button className={`${styles.tierBuyBtn} goldBTN`} disabled={t.available === 0 || countdown?.ended || sessionStatus === 'loading'} onClick={() => {
                   // Which checkout somebody gets must not depend on a race.
                   // While the session is still resolving there is no token
                   // yet, and deciding on that would send a signed-in member to

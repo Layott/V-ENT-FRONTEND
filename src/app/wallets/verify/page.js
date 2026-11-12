@@ -372,7 +372,7 @@ const VerifyPage = () => {
           <Link href="/wallets" className={`${styles.btn} ${styles.btnGhost}`}>
             {tt("ui.back.wallet.0358", "Back to wallet")}
           </Link>
-          <button type="submit" className={`${styles.btn} ${styles.btnGrn}`} disabled={!docType || !file || submitting}>
+          <button type="submit" className={`${styles.btn} ${styles.btnRed}`} disabled={!docType || !file || submitting}>
             {submitting ? tx("Submitting…") : tx("Submit for review")}
           </button>
         </div>

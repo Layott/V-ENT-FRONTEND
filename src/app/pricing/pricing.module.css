@@ -55,7 +55,7 @@
   font-weight: var(--fw-semi-bold);
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: var(--v-ent-gold, #d4af37);
+  color: var(--ink-70, rgba(255, 255, 255, 0.7));
   margin-bottom: 1.1rem;
 }
 
@@ -188,6 +188,14 @@
   flex-wrap: wrap;
   gap: 0.5rem;
   margin-top: 0.25rem;
+}
+
+/* Two columns on a phone, not one statement per row (Apple review P117-5). */
+@media (max-width: 720px) {
+  .freeRow {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }
 
 .freeChip {

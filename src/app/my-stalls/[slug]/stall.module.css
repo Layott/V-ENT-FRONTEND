@@ -287,11 +287,11 @@
 /* The chosen chip stays the strong fill while it is disabled: the choice that
    cannot be pressed again is the one that is on. */
 .chipOn {
-  background-color: var(--v-ent-gold, #e0a526);
-  color: #1a1400;
+  background-color: #4a4c54;
+  color: var(--primary-bg);
   font-weight: var(--fw-semi-bold);
 }
-.chipOn:disabled { background-color: var(--v-ent-gold, #e0a526); color: #1a1400; opacity: 1; cursor: default; }
+.chipOn:disabled { background-color: #4a4c54; color: var(--primary-bg); opacity: 1; cursor: default; }
 
 /* Choices in a form, as filled chips in a row. Never a ring. */
 .chipRow { display: flex; gap: 0.5rem; flex-wrap: wrap; }

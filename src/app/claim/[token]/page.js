@@ -139,7 +139,7 @@ const ClaimAccount = () => {
         <AuthHeader />
         <main className={styles.mainContainer}>
           <BackLink href="/">{tt('back.toHome', 'Back to home')}</BackLink>
-          <h1>{tt("ui.link.has.expired.a6b1", "This link has expired")}</h1>
+          <h1>{tt('claim.cannotUse', 'This link cannot be used')}</h1>
           <p className={styles.muted}>{loadError}</p>
           <p className={styles.muted}>
             {tt("ui.if.already.claimed.account.940f", "If you already claimed your account, log in instead. Otherwise sign up and your\n            waitlist place still counts.")}

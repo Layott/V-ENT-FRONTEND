@@ -346,7 +346,7 @@
 }
 
 .statValue.statRed {
-  color: var(--v-ent-red);
+  color: var(--primary-bg);
 }
 
 .statValue.statWarn {
@@ -651,7 +651,7 @@
 }
 
 .badgeFee {
-  background: rgba(237, 28, 36, 0.12);
+  background: rgba(255, 255, 255, 0.08);
   color: #ef9a9a;
 }
 
@@ -661,7 +661,7 @@
 }
 
 .badgeSend {
-  background: rgba(237, 28, 36, 0.10);
+  background: rgba(255, 255, 255, 0.08);
   color: #ff8a80;
 }
 
@@ -725,7 +725,7 @@
 }
 
 .amtDebit {
-  color: var(--v-ent-red);
+  color: var(--primary-bg);
   font-weight: var(--fw-semi-bold);
 }
 
@@ -869,7 +869,7 @@
 }
 
 .pagBtnActive {
-  background-color: var(--v-ent-red) !important;
+  background-color: #4a4c54 !important;
 
 }
 
@@ -1126,9 +1126,9 @@
 }
 
 .noticeInfo {
-  background: rgba(212, 175, 55, 0.08);
+  background: rgba(255, 255, 255, 0.06);
 
-  color: rgba(212, 175, 55, 0.95);
+  color: var(--ink-80, rgba(255, 255, 255, 0.8));
 }
 
 .noticeWarn {
@@ -1174,7 +1174,7 @@
 }
 
 .summaryVal.summaryRed {
-  color: var(--v-ent-red);
+  color: var(--primary-bg);
 }
 
 .summaryVal.summaryRef {
@@ -1391,8 +1391,7 @@
 
 .btnGrn {
   background-color: var(--v-ent-gold);
-
-  color: #fff;
+  color: #131316;
 }
 
 .btnGrn:hover:not(:disabled) {
@@ -1412,7 +1411,8 @@
 }
 
 .btn:disabled {
-  opacity: 0.5;
+  background-color: #303136;
+  color: var(--ink-55, rgba(255, 255, 255, 0.55));
   cursor: not-allowed;
 }
 

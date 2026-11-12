@@ -132,7 +132,7 @@ const CreateTeam = () => {
           <div className={styles.headerRow}>
             <div>
               <h1 className={styles.pageTitle}>{tt("ui.create.new.team.f67f", "Create a new team")}</h1>
-              <p className={styles.pageSub}>{tt("ui.pick.name.upload.assets.7914", "Pick a name, upload assets and define your squad - you can edit everything later.")}</p>
+              <p className={styles.pageSub}>{tt('team.createSub2', 'Pick a name, add pictures and choose your squad. You can change all of it later.')}</p>
             </div>
           </div>
 

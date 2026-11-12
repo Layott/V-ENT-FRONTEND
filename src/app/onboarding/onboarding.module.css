@@ -352,7 +352,7 @@
   /* Gold, not green. Green carries success meaning across the app - verified,
      completed, live - and a "Continue" button is a brand action, not a
      confirmation. Matches .goldBTN in globals.css. */
-  background-color: var(--v-ent-gold);
+  background-color: var(--v-ent-red);
   color: var(--primary-bg);
 
   border-radius: 8px;
@@ -361,7 +361,7 @@
 }
 
 .primaryBtn:hover {
-  background-color: var(--v-ent-light-gold);
+  background-color: var(--v-ent-light-red);
 }
 
 .primaryBtn:active {

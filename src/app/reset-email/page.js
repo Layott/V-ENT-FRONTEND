@@ -9,6 +9,7 @@ import AuthHeader from '@/components/auth-header/AuthHeader';
 import MessageSnackbar from '../../components/Snackbar/MessageSnackbar';
 import generalStyles from "@/styles/auth/auth.module.css";
 import styles from './reset-email.module.css';
+import useCooldown, { maskEmail } from '@/lib/useCooldown';
 import { useT } from '@/i18n/LanguageProvider';
 const ResetEmail = () => {
   const tt = useT();
@@ -39,6 +40,13 @@ const ResetEmail = () => {
   // written and no screen called it, so somebody whose code never arrived, or
   // who let it expire, had to start the whole flow again from the beginning.
   const [resending, setResending] = useState(false);
+  const cooldown = useCooldown(30);
+  // The address the code went to, masked, so a typo can be spotted before
+  // waiting for a code that is never coming (Apple review P121-5).
+  const [sentTo, setSentTo] = useState('');
+  useEffect(() => {
+    try { setSentTo(maskEmail(localStorage.getItem('forgotPasswordEmail'))); } catch { /* storage refused */ }
+  }, []);
   const handleResend = async () => {
     const email = typeof window !== 'undefined'
       ? localStorage.getItem('forgotPasswordEmail') : '';
@@ -59,6 +67,7 @@ const ResetEmail = () => {
       const data = await res.json().catch(() => ({}));
       if (res.ok) {
         setSnackbarMessage(tt('reset.codeResent', 'A new code is on its way to your email.'));
+        cooldown.start();
         setSnackbarType('success');
       } else {
         setSnackbarMessage(apiMessage(tt, data, 'api.couldNotResendCode',
@@ -146,7 +155,9 @@ const ResetEmail = () => {
           <div className={generalStyles.formContainer}>
             <section className={generalStyles.formHeader}>
             <h1 className={generalStyles.formHeading}>{tt("ui.check.email.fab9", "Check your email")}</h1>
-            <p>{tt("reset.codeSent", "We just sent a 6-digit code to your email address.")}</p>
+            <p>{sentTo
+              ? tt('reset.codeSentTo', 'We just sent a 6-digit code to {email}.').replace('{email}', sentTo)
+              : tt("reset.codeSent", "We just sent a 6-digit code to your email address.")}</p>
             <p>{tt("ui.enter.digit.code.reset.f571", "Enter the 6-digit code to reset your password")}</p>
             </section>
             {/* method="post" is not there to be used - onSubmit handles the
@@ -166,10 +177,12 @@ const ResetEmail = () => {
           </button>
 
           <button type="button" className={generalStyles.resendBtn}
-            onClick={handleResend} disabled={resending}>
+            onClick={handleResend} disabled={resending || cooldown.waiting}>
             {resending
               ? tt('reset.resending', 'Sending...')
-              : tt('reset.resendCode', 'Send the code again')}
+              : cooldown.waiting
+                ? tt('reset.resendIn', 'You can send a new code in {n} seconds').replace('{n}', String(cooldown.left))
+                : tt('reset.resendCode', 'Send the code again')}
           </button>
 
           </form>

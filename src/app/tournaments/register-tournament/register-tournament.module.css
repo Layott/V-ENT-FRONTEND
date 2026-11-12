@@ -140,12 +140,12 @@
 .stepDotActive .stepLabel { color: var(--primary-bg); }
 
 .stepDotDone .stepCircle {
-  background-color: var(--v-ent-gold);
+  background-color: var(--v-ent-success);
 
   color: #fff;
 }
 
-.stepDotDone .stepLabel { color: var(--v-ent-gold); }
+.stepDotDone .stepLabel { color: var(--v-ent-success); }
 
 /* ── Reg card ── */
 .regCard {
@@ -198,7 +198,7 @@
 .modeCard:disabled { opacity: 0.4; cursor: not-allowed; }
 
 .modeCardActive {
-  background-color: rgba(212, 175, 55,0.08);
+  background-color: #3a3b41;
 
 }
 
@@ -208,7 +208,7 @@
   margin-bottom: 0.3rem;
 }
 
-.modeCardActive .modeIcon { color: var(--v-ent-gold); }
+.modeCardActive .modeIcon { color: var(--primary-bg); }
 
 .modeTitle {
   font-size: var(--fs-p-size-desktop);
@@ -250,7 +250,7 @@
 }
 
 .teamItemActive {
-  background-color: rgba(212, 175, 55,0.08);
+  background-color: #3a3b41;
 
 }
 
@@ -283,7 +283,7 @@
   margin: 0;
 }
 
-.teamCheck { color: var(--v-ent-gold); font-size: 1.2rem; flex-shrink: 0; }
+.teamCheck { color: var(--v-ent-success); font-size: 1.2rem; flex-shrink: 0; }
 
 /* ── Roster ── */
 .rosterList {

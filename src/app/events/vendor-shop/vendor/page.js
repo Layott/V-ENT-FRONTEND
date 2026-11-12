@@ -95,7 +95,7 @@ export const VendorStallContent = ({ eventSlug = '', stallSlug = '' } = {}) => {
 
   useEffect(() => {
     if (!vendorId) {
-      setError(tt("msg.vendorIdMissing", "This link does not say which stall to open."));
+      setError(tt('msg.vendorIdMissing2', 'This stall link is missing the stall name. Open the stall from the shop.'));
       setLoading(false);
       return;
     }
@@ -349,7 +349,7 @@ export const VendorStallContent = ({ eventSlug = '', stallSlug = '' } = {}) => {
     </div>;
   if (loading) return renderShell(<p className={styles.stateText}>{tt("ui.loading.vendor.stall.0650", "Loading vendor stall…")}</p>);
   if (error || !vendor) return renderShell(<div className={styles.errorState}>
-        <h1 className={styles.errorTitle}>{tt("ui.couldn't.load.vendor.0e61", "Couldn't load vendor")}</h1>
+        <h1 className={styles.errorTitle}>{tt('stall.couldNotOpen', 'That stall could not be opened')}</h1>
         <p className={styles.errorSub}>{error || tx("Vendor not found.")}</p>
         <Link href={eventId ? `/events/${eventId}/vendor-shop` : '/events'} className={`${styles.errorBtn} quietBTN`}>
           {tt("ui.back.vendor.shop.9b5d", "Back to vendor shop")}
@@ -404,7 +404,7 @@ export const VendorStallContent = ({ eventSlug = '', stallSlug = '' } = {}) => {
                 </div>
                 <div className={styles.metaRow}>
                   <span className={styles.metaItem}>
-                    <IoLocationOutline /> {tt("ui.booth.8ca3", "Booth")} {vendor.booth_number || vendor.booth}
+                    <IoLocationOutline /> {tt('stall.boothAtVenue', 'Booth {n} at the venue').replace('{n}', vendor.booth_number || vendor.booth)}
                   </span>
                   {vendor.category && <span className={styles.category}>{vendor.category}</span>}
                   {typeof vendor.rating === 'number' && <span className={styles.metaItem}>

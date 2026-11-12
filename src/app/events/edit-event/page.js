@@ -542,12 +542,10 @@ export const EditEventContent = ({ slug: slugFromPath }) => {
               <div className={styles.actions}>
                 <button type="button" className={styles.primaryBtn}
                         onClick={save} disabled={saving || nothingToSend}>
-                  {saving
-                    ? tt('ui.saving.8f2a', 'Saving…')
-                    : nothingToSend
-                      ? tt('eventEdit.noChanges', 'Nothing changed yet')
-                      : tt('eventEdit.save', 'Save changes')}
+                  {saving ? tt('ui.saving.8f2a', 'Saving…') : tt('eventEdit.save', 'Save changes')}
                 </button>
+                {/* The state beside the control, not as its label (Apple review P063-7). */}
+                {nothingToSend && !saving && <span className={styles.hint}>{tt('eventEdit.noChanges', 'Nothing changed yet')}</span>}
 
               </div>
             </div>

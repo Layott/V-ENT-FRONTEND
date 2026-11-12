@@ -87,7 +87,7 @@ export function todoText(tt, item) {
       return tt('todo.pull', '{stage} has finished and a pull is waiting for you.')
         .replace('{stage}', stage);
     case 'close_check_in':
-      return tt('todo.close_check_in', 'Check-in time has ended. Close it to take out whoever has not checked in.');
+      return tt('todo.close_check_in2', 'Check-in time has ended. Close check-in to remove anyone who has not checked in.');
     default:
       return '';
   }

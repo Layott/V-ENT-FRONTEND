@@ -190,7 +190,7 @@ const CheckInStrip = ({
               // organiser still has to close it. "Closed" beside a "Close"
               // button read as a contradiction.
               : isOrganizer
-                ? tt('checkin.timeUp', 'Check-in time ended at {time}. Close it to take out whoever has not checked in.')
+                ? tt('checkin.timeUp2', 'Check-in time ended at {time}. Close check-in to remove anyone who has not checked in.')
                 : tt('checkin.closedAt', 'Check-in closed at {time}')
             ).replace('{time}', formatClock(state.closes_at))}
           </p> : <p className={styles.headline}>

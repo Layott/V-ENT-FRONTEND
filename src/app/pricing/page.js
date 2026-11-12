@@ -167,7 +167,7 @@ export default function Pricing() {
                   a free account, and the page that says what they cost is the
                   one somebody who just hit one of them needs. Named here so
                   this page does not read as though nothing is gated yet. */}
-              <Link href="/premium" className={`${styles.ctaBtn} grnBTN`}>
+              <Link href="/premium" className={`${styles.ctaBtn} redBTN`}>
                 {tt('premium.seeWhatItCosts', 'See what premium costs')}
               </Link>
               <Link href="/feedback" className={styles.ctaQuiet}>

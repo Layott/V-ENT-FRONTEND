@@ -157,8 +157,8 @@
   font-weight: var(--fw-semi-bold);
   font-size: var(--fs-p-size-mobile);
   cursor: pointer;
-  background-color: var(--v-ent-success);
-  color: #fff;
+  background-color: var(--v-ent-gold);
+  color: #131316;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -167,7 +167,7 @@
 }
 
 .action:hover {
-  background-color: var(--v-ent-success-light);
+  background-color: var(--v-ent-light-gold);
 }
 
 .action:disabled {

@@ -438,7 +438,7 @@ const HomePage = () => {
                 <StatCard label={tt("ui.wallet.balance.3b5c", "Wallet Balance")} icon={<IoWalletOutline />} value={wallet.balance_vc} decimals={Number.isInteger(wallet.balance_vc) ? 0 : 2} suffix=" VC" sub={tt('home.sub.walletNaira', '{amount} in naira').replace('{amount}', `₦${formatNumber(wallet.balance_ngn)}`)} animated={animateStats} accent="green" href="/wallets" />
                 <StatCard label={tt("ui.open.tournaments.22a9", "Open Tournaments")} icon={<LuGamepad2 />} value={counts.openTournaments} sub={tt('home.sub.openTournaments', 'Open to join now')} animated={animateStats} href="/tournaments" />
                 <StatCard label={tt("ui.upcoming.events.1d66", "Upcoming Events")} icon={<MdOutlineEvent />} value={counts.upcomingEvents} sub={tt('home.sub.upcomingEvents', 'Happening soon')} animated={animateStats} href="/events" />
-                <StatCard label={tt("ui.my.teams.ac1e", "My Teams")} icon={<FaUsers />} value={counts.myTeams} sub={tt('home.sub.myTeams', 'Squads you own')} animated={animateStats} accent="red" href="/teams" />
+                <StatCard label={tt("ui.my.teams.ac1e", "My Teams")} icon={<FaUsers />} value={counts.myTeams} sub={tt('home.sub.myTeams', 'Squads you own')} animated={animateStats} href="/teams" />
               </>}
           </section>
 

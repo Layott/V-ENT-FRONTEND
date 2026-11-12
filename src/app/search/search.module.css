@@ -220,15 +220,15 @@
 }
 
 .tabBtnActive {
-  background-color: var(--v-ent-red);
+  background-color: #4a4c54;
 
-  color: var(--white);
+  color: var(--primary-bg);
 }
 
 .tabBtnActive:hover {
-  background-color: var(--v-ent-light-red);
+  background-color: #55575f;
 
-  color: var(--white);
+  color: var(--primary-bg);
 }
 
 .tabIcon {

@@ -244,7 +244,7 @@ const VendorShopContent = ({
                 <FaStore className={styles.titleIcon} /> {tt("ui.vendor.shop.5290", "Vendor Shop")}
               </h1>
               <p className={styles.pageSub}>
-                {tt("ui.temporary.marketplace.event.site.6415", "Temporary marketplace for the event. On-site pickup or VIP delivery.")}
+                {tt('vendorShop.sub2', 'Food, merch and gear from the stalls at this event. Collect it there, or have it brought to you with a VIP ticket.')}
               </p>
             </div>
 

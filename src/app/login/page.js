@@ -10,6 +10,7 @@ import { getSession, signIn } from "next-auth/react";
 import CircularProgress from "@mui/material/CircularProgress";
 import { useRouter } from "next/navigation";
 import { safeNext, takeNext } from "@/lib/safeNext";
+import { signInReason } from "@/lib/signInReason";
 import MessageSnackbar from "../../components/Snackbar/MessageSnackbar";
 import AuthHeader from "@/components/auth-header/AuthHeader";
 import generalStyles from "@/styles/auth/auth.module.css";
@@ -31,6 +32,12 @@ const Login = () => {
   const [snackbarType, setSnackbarType] = useState("success");
   const [errors, setErrors] = useState({});
   const [expired, setExpired] = useState(false);
+  // Why they are here, from where they were going (Apple review P089-4).
+  // Read after mount: the address is only known in the browser.
+  const [reason, setReason] = useState(null);
+  useEffect(() => {
+    setReason(signInReason(tt, safeNext(new URLSearchParams(window.location.search).get("next"))));
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
   // Outside sign-ins appear only when their keys exist. A button that leads to
   // a 503 is worse than no button.
   const router = useRouter();
@@ -227,7 +234,7 @@ const Login = () => {
         <div className={generalStyles.formContainer}>
           <section className={generalStyles.formHeader}>
             <h1 className={generalStyles.formHeading}>{tt("ui.welcome.back.1c90", "Welcome Back")}</h1>
-            <p>{tt("ui.please.sign.into.account.51de", "Please sign into your account")}</p>
+            <p>{reason || tt("ui.please.sign.into.account.51de", "Please sign into your account")}</p>
           </section>
 
           {challenge && <section className={styles.codeStep}>

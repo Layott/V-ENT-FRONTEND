@@ -1480,7 +1480,7 @@ export const ManageEventContent = ({
                     {tt('manage.limitsTitle', 'Tickets per email address')}
                   </h3>
                   <p className={styles.cardHint}>
-                    {tt('manage.limitsHint', 'Leave a box empty and that rule is off. Rules add up rather than replace each other: set one VIP each and four per day and both are checked, so somebody who already holds a VIP is refused a second whatever the day allows. Counted against what an address already holds, so retyping it after a refresh does not get round it.')}
+                    {tt('manage.limitsHint2', 'Leave a box empty for no limit. Limits add up: one VIP each and four per day are both checked, so somebody holding a VIP is refused a second whatever the day allows. Retyping an address after a refresh does not get round them.')}
                   </p>
 
                   <div className={styles.limitRows}>

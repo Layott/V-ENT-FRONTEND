@@ -116,6 +116,9 @@ const SellerPage = props => {
               {listings.length === 0 ? (
                 <p className={styles.stateText}>
                   {tt('mk.nothingLive', 'Nothing live right now.')}
+                  {sameUser(viewer.username, seller.username) && <>
+                    {' '}<Link href="/marketplace/create">{tt('mk.listSomething', 'List something')}</Link>
+                  </>}
                 </p>
               ) : (
                 <div className={styles.listingsGrid}>

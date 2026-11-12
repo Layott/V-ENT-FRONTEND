@@ -1058,7 +1058,7 @@ function ScanContent() {
           the list and the record all live on the phone (public/door-sw.js
           and localStorage) and the door keeps working with no signal at all. */}
       <p className={styles.note}>
-        {tt('scan.beforeDoors', 'Before the doors open: open this page with signal so the list downloads, then add it to your home screen (Share, or the browser menu, then Add to Home Screen). It keeps working with no signal, and sends the check-ins when signal returns.')}
+        {tt('scan.beforeDoors2', 'Open this page once with signal before the doors open; after that it works with no signal and sends the check-ins when signal returns.')}
       </p>
 
       <div className={styles.footer}>

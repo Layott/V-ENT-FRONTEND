@@ -33,14 +33,14 @@
 }
 
 .tabOn {
-  background: #d6a94a;
-  color: #16160f;
+  background: #4a4c54;
+  color: var(--primary-bg);
   font-weight: 600;
 }
 
 .tabOn:hover {
-  background: #e0b559;
-  color: #16160f;
+  background: #55575f;
+  color: var(--primary-bg);
 }
 
 /* On a phone the strip WRAPS. It used to scroll sideways with the scrollbar

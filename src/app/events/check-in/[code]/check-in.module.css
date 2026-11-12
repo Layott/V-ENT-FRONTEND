@@ -131,8 +131,9 @@
   display: inline-flex;
   align-items: center;
   min-height: 44px;
-  color: var(--v-ent-success);
-  text-decoration: none;
+  color: var(--primary-bg);
+  text-decoration: underline;
+  text-underline-offset: 2px;
 }
 
 .link:hover { text-decoration: underline; }

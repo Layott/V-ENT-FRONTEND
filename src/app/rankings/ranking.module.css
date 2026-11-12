@@ -357,7 +357,7 @@
 .podiumStatValue {
   font-size: var(--fs-p-size-desktop);
   font-weight: var(--fw-bold);
-  color: var(--v-ent-gold);
+  color: var(--primary-bg);
 }
 
 .podiumStatLabel {
@@ -574,7 +574,7 @@
 .pointsValue {
   font-size: var(--fs-p-size-desktop);
   font-weight: var(--fw-bold);
-  color: var(--v-ent-gold);
+  color: var(--primary-bg);
 }
 
 .wlValue {
@@ -586,7 +586,7 @@
 }
 
 .wins {
-  color: var(--v-ent-gold);
+  color: var(--v-ent-success);
 }
 
 .losses {
@@ -621,7 +621,7 @@
 
 .winRateFill {
   height: 100%;
-  background-color: var(--v-ent-gold);
+  background-color: var(--v-ent-success);
   border-radius: 2px;
   transition: width 0.4s ease;
 }
@@ -637,8 +637,8 @@
 }
 
 .trendUp {
-  background-color: rgba(212, 175, 55, 0.15);
-  color: var(--v-ent-gold);
+  background-color: rgba(76, 175, 80, 0.15);
+  color: var(--v-ent-success);
 }
 
 .trendDown {
@@ -975,7 +975,7 @@
   font-size: 0.6875rem;
   text-transform: uppercase;
   letter-spacing: 0.08em;
-  color: var(--v-ent-gold);
+  color: var(--ink-70, rgba(255, 255, 255, 0.7));
   font-weight: var(--fw-bold);
 }
 

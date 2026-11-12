@@ -128,7 +128,7 @@
 }
 
 .open { background-color: #33343a; color: var(--ink-80, rgba(255, 255, 255, 0.8)); }
-.primary { background-color: var(--v-ent-success); color: #fff; }
+.primary { background-color: var(--v-ent-red); color: var(--primary-bg); }
 
 @media (max-width: 720px) {
   /* Padding is the shell's job now. Only what is genuinely about a narrow
@@ -148,5 +148,5 @@
   font-size: 0.72rem;
   font-weight: var(--fw-semi-bold);
   background-color: #2a2b30;
-  color: var(--v-ent-gold);
+  color: var(--ink-70, rgba(255, 255, 255, 0.7));
 }

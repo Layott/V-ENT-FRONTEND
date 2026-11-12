@@ -83,9 +83,11 @@
   white-space: nowrap;
 }
 
+/* The strongest neutral, not red: the reference page draws one of these per
+   format, and twenty-one red buttons drowned the reading (Apple review P084-3). */
 .primaryBtn {
-  background: var(--v-ent-red);
-  color: rgba(255, 255, 255, 0.98);
+  background: #4a4c54;
+  color: var(--primary-bg);
 }
 
 .primaryBtn:hover {
