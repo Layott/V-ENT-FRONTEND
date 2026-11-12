@@ -235,6 +235,8 @@ const PremiumClient = () => {
                 + 'tell you the day it goes on sale.')}
             </p>
             {!viewer.signedIn ? (
+              <>
+              <p className={styles.priceBody}>{tt('premium.whyAccount', 'Premium belongs to an account, so you need one to get it.')}</p>
               <div className={styles.actions}>
                 <Link href={signUpHref('/premium')} className={styles.action}>
                   {tt('needsAccount.create', 'Create an account')}
@@ -244,6 +246,7 @@ const PremiumClient = () => {
                   {tt('needsAccount.signIn', 'Log in')}
                 </Link>
               </div>
+              </>
             ) : (
               <div className={styles.actions}>
                 <button type="button" className={styles.action}
@@ -269,6 +272,8 @@ const PremiumClient = () => {
             ) : null}
 
             {!viewer.signedIn ? (
+              <>
+              <p className={styles.priceBody}>{tt('premium.whyAccount', 'Premium belongs to an account, so you need one to get it.')}</p>
               <div className={styles.actions}>
                 <Link href={signUpHref('/premium')} className={styles.action}>
                   {tt('needsAccount.create', 'Create an account')}
@@ -278,6 +283,7 @@ const PremiumClient = () => {
                   {tt('needsAccount.signIn', 'Log in')}
                 </Link>
               </div>
+              </>
             ) : (
               <>
                 {/* Who it is for. Somebody who runs an organisation is usually

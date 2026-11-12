@@ -117,7 +117,8 @@ const OnboardingContent = () => {
 
               <div className={styles.field}>
                 <label className={styles.label} htmlFor="handle">{tt("ui.handle.56b7", "Your handle")}</label>
-                <input id="handle" className={styles.input} type="text" placeholder={tt("ui.yourhandle.2b7f", "@yourhandle")} value={handle} onChange={e => setHandle(e.target.value)} />
+                <input id="handle" className={styles.input} type="text" value={handle} onChange={e => setHandle(e.target.value)} aria-describedby="handle-help" />
+                <span id="handle-help" className={styles.hint}>{tt('onboarding.handleHelp', 'The name people see, for example ada_plays.')}</span>
               </div>
             </section>}
 

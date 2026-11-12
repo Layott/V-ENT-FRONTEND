@@ -64,9 +64,11 @@
 }
 
 /* ── KPI grid ── */
+/* Two across on a phone: four tall cards of one number each filled a
+   screen (Apple review P093-3). */
 .statsGrid {
   display: grid;
-  grid-template-columns: 1fr;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 0.85rem;
 }
 

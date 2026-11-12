@@ -66,6 +66,7 @@ const ComingSoon = ({
           </>}
 
           {alternatives.length > 0 && <div className={styles.links}>
+              <p className={styles.linksLabel}>{tt('comingSoon.meanwhile', 'Open these in the meantime:')}</p>
               <div className={styles.linkRow}>
                 {alternatives.map(a => <Link key={a.href} href={a.href} className={styles.linkPill}>
                     {tx(a.label)}

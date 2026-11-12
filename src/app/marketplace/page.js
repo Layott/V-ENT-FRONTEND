@@ -327,7 +327,7 @@ const MarketplaceInner = () => {
                 </div>
 
                 <button type="button" className={styles.pageBtn} onClick={watchThisSearch}>
-                  {tt('mk.tellMe', 'Tell me when one appears')}
+                  {tt('mk.tellMe2', 'Tell me about new listings like these')}
                 </button>
 
                 <span className={styles.resultsCount}>

@@ -196,3 +196,10 @@
     padding: 2rem 2rem 2rem;
   }
 }
+
+/* What the pills below are (Apple review P128-2). */
+.linksLabel {
+  margin: 0 0 0.5rem;
+  font-size: 0.875rem;
+  color: var(--ink-70, rgba(255, 255, 255, 0.7));
+}

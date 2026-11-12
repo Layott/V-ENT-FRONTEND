@@ -190,6 +190,14 @@
   margin-top: 0.25rem;
 }
 
+/* Two columns on a phone, not one statement per row (Apple review P117-5). */
+@media (max-width: 720px) {
+  .freeRow {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
 .freeChip {
   background-color: #2a2b30;
   color: rgba(255, 255, 255, 0.82);

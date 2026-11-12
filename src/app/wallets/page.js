@@ -330,7 +330,7 @@ const WalletsContent = () => {
                   </span>
                   <span className={styles.actionLabel}>{tt("ui.withdraw.47e5", "Withdraw")}</span>
                 </Link>
-                <button type="button" className={styles.actionBtn} onClick={() => setConvertOpen(true)} aria-label={tt("ui.convert.3f15", "Convert")}>
+                <button type="button" className={styles.actionBtn} onClick={() => setConvertOpen(true)} aria-label={tt('wallet.convertLabel', 'Coins to naira')}>
                   <span className={styles.actionIcon}>
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                       <polyline points="17 1 21 5 17 9" />
@@ -339,7 +339,7 @@ const WalletsContent = () => {
                       <path d="M21 13v2a4 4 0 0 1-4 4H3" />
                     </svg>
                   </span>
-                  <span className={styles.actionLabel}>{tt("ui.convert.3f15", "Convert")}</span>
+                  <span className={styles.actionLabel}>{tt('wallet.convertLabel', 'Coins to naira')}</span>
                 </button>
               </div>
             </div>
@@ -367,9 +367,9 @@ const WalletsContent = () => {
                 'wallet.pendingRequestOne', '{n} request', 'wallet.pendingRequests', '{n} requests')}</p>
             </div>
             <div className={styles.statTile}>
-              <p className={styles.statLabel}>{tt("ui.lifetime.vc.earned.40e8", "Lifetime VC earned")}</p>
+              <p className={styles.statLabel}>{tt('wallet.totalReceived', 'Total you have received')}</p>
               <p className={styles.statValue}>{formatNumber(stats.lifetimeEarned)} VC</p>
-              <p className={styles.statSub}>{tt("ui.top.ups.prizes.receives.ba1d", "Top-ups + prizes + receives")}</p>
+              <p className={styles.statSub}>{tt('wallet.totalReceivedSub', 'Top ups, prizes and coins sent to you')}</p>
             </div>
           </div>
 

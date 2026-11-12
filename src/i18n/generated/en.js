@@ -13346,6 +13346,17 @@ const table = {
  "manage.limitsHint2": "Leave a box empty for no limit. Limits add up: one VIP each and four per day are both checked, so somebody holding a VIP is refused a second whatever the day allows. Retyping an address after a refresh does not get round them.",
  "stall.boothAtVenue": "Booth {n} at the venue",
  "scan.beforeDoors2": "Open this page once with signal before the doors open; after that it works with no signal and sends the check-ins when signal returns.",
- "ros.editIt": "Edit the run of show"
+ "ros.editIt": "Edit the run of show",
+ "circuit.tiersHelp2": "A bigger event is worth more. For example \"1:100, 2:60, default 5\" gives the winner 100 points, second place 60 and everybody else 5.",
+ "team.createSub2": "Pick a name, add pictures and choose your squad. You can change all of it later.",
+ "wallet.convertLabel": "Coins to naira",
+ "wallet.totalReceived": "Total you have received",
+ "wallet.totalReceivedSub": "Top ups, prizes and coins sent to you",
+ "onboarding.handleHelp": "The name people see, for example ada_plays.",
+ "reset.heading": "Reset your password",
+ "premium.whyAccount": "Premium belongs to an account, so you need one to get it.",
+ "comingSoon.meanwhile": "Open these in the meantime:",
+ "mk.tellMe2": "Tell me about new listings like these",
+ "stall.couldNotOpen": "That stall could not be opened"
 };
 export default table;

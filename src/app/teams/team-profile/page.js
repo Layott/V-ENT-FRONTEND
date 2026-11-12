@@ -44,7 +44,10 @@ const ALL_TABS = [{
   // whose members cannot see that is worse than no wallet - and the API
   // decides who may SEND, so this tab is not owner-only.
   id: 'wallet',
-  label: 'Wallet'
+  label: 'Wallet',
+  // Members only: a stranger was shown a tab whose money they may not see
+  // (Apple review P132-4, owner rule R26).
+  memberOnly: true
 }, {
   id: 'requests',
   label: 'Requests',
@@ -185,7 +188,8 @@ export const TeamProfileContent = ({
       showToast(tt("msg.networkError", "Network error"));
     }
   };
-  const visibleTabs = ALL_TABS.filter(t => !t.ownerOnly || isOwner);
+  const isTeamMember = isOwner || Boolean(team?.viewer_is_member);
+  const visibleTabs = ALL_TABS.filter(t => (!t.ownerOnly || isOwner) && (!t.memberOnly || isTeamMember));
   return <div className={styles.pageContainer}>
       <Header />
       <MobileHeader />
