@@ -118,7 +118,7 @@ export default function ConvertPanel({ open, onClose, balance = 0 }) {
               value={ngn}
               onChange={(e) => onNgn(e.target.value)}
             />
-            <span className={styles.unit}>NGN</span>
+            <span className={styles.unit}>₦</span>
           </div>
         </label>
 

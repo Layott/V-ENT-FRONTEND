@@ -11,10 +11,17 @@
 // removing a row would take the tournaments played on it too. Retiring takes a
 // game or an edition out of every picker and leaves the history standing, which
 // is why the control says "Retire" and not "Delete".
+//
+// A list first (CEO, 12 November 2026, inbox 594-1 and 594-2). The page used to
+// draw every game fully open, every edition and mode with its own Retire and
+// six add fields under each: 7,429px at 1440 and 13,414px on a phone, with
+// "Add a game" after all of it. Now each game is one row with its counts, one
+// game opens at a time, and every add form waits behind its own button.
 
 import { apiMessage } from '@/lib/apiMessage';
 import { useAutoRefresh } from '@/lib/useLiveData';
 import { useState, useEffect, useCallback } from 'react';
+import { IoChevronDown } from 'react-icons/io5';
 import AdminNav from '@/components/admin/AdminNav';
 import AdminHeader from '@/components/admin/AdminHeader';
 import { useAdminAuth } from '@/components/admin/useAdminAuth';
@@ -26,6 +33,10 @@ import { mediaUrl, hideBroken } from '@/lib/mediaUrl';
 import { useT } from '@/i18n/LanguageProvider';
 import { adminToken } from '@/lib/adminToken'
 import { markScrimDown, isScrimClick } from '@/lib/scrim';
+
+const count = (tt, n, oneKey, one, manyKey, many) =>
+  (n === 1 ? tt(oneKey, one) : tt(manyKey, many)).replace('{n}', n);
+
 function GamesInner() {
   const tt = useT();
   const {
@@ -48,6 +59,11 @@ function GamesInner() {
   const [logoOpen, setLogoOpen] = useState(null);
   const [newSeries, setNewSeries] = useState({});
   const [newMode, setNewMode] = useState({});
+  // Which game is open, whether the add-a-game form is showing, and which add
+  // form inside the open game is showing ('edition' or 'mode').
+  const [openId, setOpenId] = useState(null);
+  const [addingGame, setAddingGame] = useState(false);
+  const [adding, setAdding] = useState(null);
   // A request that never arrives has to end somewhere. Without the catch, a
   // dropped connection or a refused preflight rejects here, `load` unwinds
   // before it can clear its own flag, and the page sits on "Loading..." for
@@ -137,6 +153,7 @@ function GamesInner() {
     if (done) {
       setNewGame('');
       setNewLogo(null);
+      setAddingGame(false);
     }
   };
 
@@ -164,13 +181,10 @@ function GamesInner() {
         release_year: year || null
       })
     }), tt('admin.editionAdded', 'Edition added.'));
-    if (done) setNewSeries(p => ({
-      ...p,
-      [game.id]: {
-        name: '',
-        year: ''
-      }
-    }));
+    if (done) {
+      setNewSeries(p => ({ ...p, [game.id]: { name: '', year: '' } }));
+      setAdding(null);
+    }
   };
   const patchSeries = (series, patch) => run(() => call(`/series/${series.id}/`, {
     method: 'PATCH',
@@ -192,13 +206,106 @@ function GamesInner() {
         series: newMode[game.id]?.series || null,
       }),
     }), tt('admin.modeAdded', 'Mode added.'));
-    if (done) setNewMode(p => ({ ...p, [game.id]: { name: '', size: '', series: '' } }));
+    if (done) {
+      setNewMode(p => ({ ...p, [game.id]: { name: '', size: '', series: '' } }));
+      setAdding(null);
+    }
   };
 
   const patchMode = (mode, patch) => run(() => call(`/modes/${mode.id}/`, {
     method: 'PATCH',
     body: JSON.stringify(patch),
   }), tt('admin.modeUpdated', 'Mode updated.'));
+
+  const toggleGame = id => {
+    setOpenId(openId === id ? null : id);
+    setAdding(null);
+    setLogoOpen(null);
+  };
+  const setField = (setter, game, field) => e => setter(p => ({
+    ...p,
+    [game.id]: { ...(p[game.id] || {}), [field]: e.target.value }
+  }));
+
+  const renderOpen = game => <div className={styles.gameBody} id={`game-${game.id}`}>
+      <div className={styles.sectionHead}>
+        <h2 className={styles.sectionTitle}>{tt('admin.gameEditions', 'Editions')}</h2>
+        {mayEdit && adding !== 'edition' && <button type="button" className={styles.addQuiet} disabled={busy} onClick={() => setAdding('edition')}>
+            {tt('admin.addAnEdition', 'Add an edition')}
+          </button>}
+      </div>
+      {mayEdit && adding === 'edition' && <div className={styles.addSeriesRow}>
+          <input className={styles.input} autoFocus aria-label={tt('admin.editionName', 'Edition name, e.g. EA FC 26')} placeholder={tt('admin.editionName', 'Edition name, e.g. EA FC 26')} value={newSeries[game.id]?.name || ''} onChange={setField(setNewSeries, game, 'name')} />
+          <input className={styles.inputSmall} type="number" aria-label={tt('admin.releaseYear', 'Year')} placeholder={tt('admin.releaseYear', 'Year')} value={newSeries[game.id]?.year || ''} onChange={setField(setNewSeries, game, 'year')} />
+          <button type="button" className={styles.addBtn} disabled={busy || !(newSeries[game.id]?.name || '').trim()} onClick={() => addSeries(game)}>
+            {tt('admin.addEdition', 'Add edition')}
+          </button>
+          <button type="button" className={styles.ghostBtn} onClick={() => setAdding(null)}>{tt('common.cancel', 'Cancel')}</button>
+        </div>}
+      {game.series.length > 0 ? <div className={styles.seriesList}>
+          {game.series.map(s => <div key={s.id} className={`${styles.seriesRow} ${s.is_active ? '' : styles.retired}`}>
+              <span className={styles.seriesName}>{s.name}</span>
+              {s.release_year && <span className={styles.year}>{s.release_year}</span>}
+              <span className={styles.used}>
+                {count(tt, s.tournaments, 'admin.usedByOne', 'used by {n} tournament', 'admin.usedByMany', 'used by {n} tournaments')}
+              </span>
+              {!s.is_active && <span className={styles.retiredBadge}>{tt('admin.retired', 'Retired')}</span>}
+              {mayEdit && <button type="button" className={styles.ghostBtn} disabled={busy} onClick={() => patchSeries(s, { is_active: !s.is_active })}>
+                  {s.is_active ? tt('admin.retire', 'Retire') : tt('admin.restore', 'Bring back')}
+                </button>}
+            </div>)}
+        </div> : <p className={styles.emptyLine}>{tt('admin.noEditions', 'No editions. A game played the same way every year does not need one.')}</p>}
+
+      {/* How this game is played. The wizard reads exactly this list, so a
+          game with none here offers its organiser nothing to pick. */}
+      <div className={styles.sectionHead}>
+        <h2 className={styles.sectionTitle}>{tt('admin.gameModes', 'Modes')}</h2>
+        {mayEdit && adding !== 'mode' && <button type="button" className={styles.addQuiet} disabled={busy} onClick={() => setAdding('mode')}>
+            {tt('admin.addAMode', 'Add a mode')}
+          </button>}
+      </div>
+      {mayEdit && adding === 'mode' && <div className={styles.addSeriesRow}>
+          <input className={styles.input} autoFocus aria-label={tt('admin.modeName', 'Mode name, e.g. Clash Squad')} placeholder={tt('admin.modeName', 'Mode name, e.g. Clash Squad')} value={newMode[game.id]?.name || ''} onChange={setField(setNewMode, game, 'name')} />
+          <input className={styles.inputSmall} type="number" min="0" max="100" aria-label={tt('admin.modeSize', 'A side')} placeholder={tt('admin.modeSize', 'A side')} value={newMode[game.id]?.size || ''} onChange={setField(setNewMode, game, 'size')} />
+          {game.series.length > 0 && <select className={styles.inputSmall} aria-label={tt('admin.gameEditions', 'Editions')} value={newMode[game.id]?.series || ''} onChange={setField(setNewMode, game, 'series')}>
+              <option value="">{tt('admin.modeEveryEdition', 'Every edition')}</option>
+              {game.series.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
+            </select>}
+          <button type="button" className={styles.addBtn} disabled={busy || !(newMode[game.id]?.name || '').trim()} onClick={() => addMode(game)}>
+            {tt('admin.addMode', 'Add mode')}
+          </button>
+          <button type="button" className={styles.ghostBtn} onClick={() => setAdding(null)}>{tt('common.cancel', 'Cancel')}</button>
+        </div>}
+      {(game.modes || []).length > 0 ? <div className={styles.seriesList}>
+          {game.modes.map(m => <div key={m.id} className={`${styles.seriesRow} ${m.is_active ? '' : styles.retired}`}>
+              <span className={styles.seriesName}>{m.name}</span>
+              {m.series_name && <span className={styles.year}>{m.series_name}</span>}
+              {m.team_size > 0 && <span className={styles.used}>
+                {tt('admin.modeTeamSize', '{n} a side').replace('{n}', m.team_size)}
+              </span>}
+              {!m.is_active && <span className={styles.retiredBadge}>{tt('admin.retired', 'Retired')}</span>}
+              {mayEdit && <button type="button" className={styles.ghostBtn} disabled={busy} onClick={() => patchMode(m, { is_active: !m.is_active })}>
+                  {m.is_active ? tt('admin.retire', 'Retire') : tt('admin.restore', 'Bring back')}
+                </button>}
+            </div>)}
+        </div> : <p className={styles.emptyLine}>{tt('admin.noModes', 'No modes yet, so organisers have nothing to pick for this game. Add one.')}</p>}
+
+      {mayEdit && <div className={styles.gameActions}>
+          <button type="button" className={styles.ghostBtn} disabled={busy} onClick={() => setLogoOpen(logoOpen === game.id ? null : game.id)}>
+            {game.logo ? tt('admin.replaceLogo', 'Replace the logo') : tt('admin.addLogo', 'Add a logo')}
+          </button>
+          <button type="button" className={styles.ghostBtn} disabled={busy} onClick={() => patchGame(game, { is_active: !game.is_active })}>
+            {game.is_active ? tt('admin.retireGame', 'Retire this game') : tt('admin.restoreGame', 'Bring this game back')}
+          </button>
+        </div>}
+      {mayEdit && logoOpen === game.id && <div className={styles.logoRow}>
+          <ImageUpload kind="logo" compact value={null} existing={game.logo} onChange={file => {
+          setLogo(game, file);
+          setLogoOpen(null);
+        }} label={tt('admin.gameLogo', 'Game logo')} />
+        </div>}
+    </div>;
+
   if (authLoading) return null;
   return <div className={shared.pageContainer}>
       <div className={`${shared.sidebarOverlay} ${sidebarOpen ? shared.open : ''}`} onPointerDown={markScrimDown} data-scrim="" onClick={(e) => isScrimClick(e) && (setSidebarOpen(false))} />
@@ -213,9 +320,26 @@ function GamesInner() {
                 {tt('admin.gamesSubtitle', 'The titles organisers can run, and the editions under each one.')}
               </p>
             </div>
+            {mayEdit && !addingGame && <button type="button" className={styles.addBtn} onClick={() => setAddingGame(true)}>
+                {tt('admin.addAGame', 'Add a game')}
+              </button>}
           </div>
 
-          {error && <p className={shared.errorText}>{error}</p>}
+          {mayEdit && addingGame && <div className={`${shared.card} ${styles.addGameBlock}`}>
+              <h2 className={styles.sectionTitle}>{tt('admin.addAGame', 'Add a game')}</h2>
+              <div className={styles.addGameRow}>
+                <input className={styles.input} autoFocus aria-label={tt('admin.newGameName', 'New game, e.g. Street Fighter')} placeholder={tt('admin.newGameName', 'New game, e.g. Street Fighter')} value={newGame} onChange={e => setNewGame(e.target.value)} />
+              </div>
+              <ImageUpload kind="logo" compact value={newLogo} onChange={setNewLogo} label={tt('admin.gameLogo', 'Game logo')} />
+              <div className={styles.addGameRow}>
+                <button type="button" className={styles.addBtn} disabled={busy || !newGame.trim()} onClick={addGame}>
+                  {tt('admin.addGame', 'Add game')}
+                </button>
+                <button type="button" className={styles.ghostBtn} onClick={() => { setAddingGame(false); setNewGame(''); setNewLogo(null); }}>
+                  {tt('common.cancel', 'Cancel')}
+                </button>
+              </div>
+            </div>}
 
           <div className={shared.card}>
             <p className={styles.hint}>
@@ -224,131 +348,28 @@ function GamesInner() {
 
             {dataLoading ? <p className={shared.stateText}>{tt('ui.loading.33ce', 'Loading…')}</p> : error ? <div className={styles.failed}>
                   <p className={shared.stateText}>{error}</p>
-                  <button type="button" className={styles.addBtn} onClick={load}>{tt('admin.retry', 'Try again')}</button>
-                </div> : games.length === 0 ? <p className={shared.stateText}>{tt('admin.noGames', 'No games yet.')}</p> : <div className={styles.gameList}>
-                  {games.map(game => <div key={game.id} className={`${styles.gameCard} ${game.is_active ? '' : styles.retired}`}>
-                      <div className={styles.gameHead}>
+                  <button type="button" className={styles.addQuiet} onClick={load}>{tt('admin.retry', 'Try again')}</button>
+                </div> : games.length === 0 ? <p className={shared.stateText}>{tt('admin.noGames', 'No games yet.')}</p> : <ul className={styles.gameList}>
+                  {games.map(game => {
+                const open = openId === game.id;
+                return <li key={game.id} className={`${styles.gameCard} ${open ? styles.gameCardOpen : ''} ${game.is_active ? '' : styles.retired}`}>
+                      <button type="button" className={styles.gameHead} aria-expanded={open} aria-controls={`game-${game.id}`} onClick={() => toggleGame(game.id)}>
                         {game.logo
                           ? <img className={styles.gameLogo} src={mediaUrl(game.logo)} onError={hideBroken} alt={tt('admin.gameLogoAlt', 'The {game} logo').replace('{game}', game.name)} />
                           : <span className={styles.gameLogoBlank} aria-hidden="true">{game.name.slice(0, 1)}</span>}
-                        <strong className={styles.gameName}>{game.name}</strong>
+                        <span className={styles.gameName}>{game.name}</span>
                         {!game.is_active && <span className={styles.retiredBadge}>{tt('admin.retired', 'Retired')}</span>}
                         <span className={styles.count}>
-                          {(game.series.length === 1 ? tt('admin.editionCountOne', '{n} edition') : tt('admin.editionCountMany', '{n} editions')).replace('{n}', game.series.length)}
+                          {count(tt, game.series.length, 'admin.editionCountOne', '{n} edition', 'admin.editionCountMany', '{n} editions')}
+                          {' · '}
+                          {count(tt, (game.modes || []).length, 'admin.modeCountOne', '{n} mode', 'admin.modeCountMany', '{n} modes')}
                         </span>
-                        {mayEdit && <button type="button" className={styles.ghostBtn} disabled={busy} onClick={() => setLogoOpen(logoOpen === game.id ? null : game.id)}>
-                            {game.logo ? tt('admin.replaceLogo', 'Replace the logo') : tt('admin.addLogo', 'Add a logo')}
-                          </button>}
-                        {mayEdit && <button type="button" className={styles.ghostBtn} disabled={busy} onClick={() => patchGame(game, {
-                    is_active: !game.is_active
-                  })}>
-                            {game.is_active ? tt('admin.retire', 'Retire') : tt('admin.restore', 'Bring back')}
-                          </button>}
-                      </div>
-
-                      {game.series.length > 0 && <div className={styles.seriesList}>
-                          {game.series.map(s => <div key={s.id} className={`${styles.seriesRow} ${s.is_active ? '' : styles.retired}`}>
-                              <span className={styles.seriesName}>{s.name}</span>
-                              {s.release_year && <span className={styles.year}>{s.release_year}</span>}
-                              <span className={styles.used}>
-                                {(s.tournaments === 1 ? tt('admin.usedByOne', 'used by {n} tournament') : tt('admin.usedByMany', 'used by {n} tournaments')).replace('{n}', s.tournaments)}
-                              </span>
-                              {!s.is_active && <span className={styles.retiredBadge}>{tt('admin.retired', 'Retired')}</span>}
-                              {mayEdit && <button type="button" className={styles.ghostBtn} disabled={busy} onClick={() => patchSeries(s, {
-                      is_active: !s.is_active
-                    })}>
-                                  {s.is_active ? tt('admin.retire', 'Retire') : tt('admin.restore', 'Bring back')}
-                                </button>}
-                            </div>)}
-                        </div>}
-
-                      {/* How this game is played. The wizard reads exactly
-                          this list, so a game with none here offers its
-                          organiser nothing to pick. */}
-                      {(game.modes || []).length > 0 && <div className={styles.seriesList}>
-                          {game.modes.map(m => <div key={m.id} className={`${styles.seriesRow} ${m.is_active ? '' : styles.retired}`}>
-                              <span className={styles.seriesName}>{m.name}</span>
-                              {m.series_name && <span className={styles.year}>{m.series_name}</span>}
-                              {m.team_size > 0 && <span className={styles.used}>
-                                {tt('admin.modeTeamSize', '{n} a side').replace('{n}', m.team_size)}
-                              </span>}
-                              {!m.is_active && <span className={styles.retiredBadge}>{tt('admin.retired', 'Retired')}</span>}
-                              {mayEdit && <button type="button" className={styles.ghostBtn} disabled={busy} onClick={() => patchMode(m, {
-                      is_active: !m.is_active
-                    })}>
-                                  {m.is_active ? tt('admin.retire', 'Retire') : tt('admin.restore', 'Bring back')}
-                                </button>}
-                            </div>)}
-                        </div>}
-
-                      {mayEdit && <div className={styles.addSeriesRow}>
-                          <input className={styles.input} placeholder={tt('admin.modeName', 'Mode name, e.g. Clash Squad')} value={newMode[game.id]?.name || ''} onChange={e => setNewMode(p => ({
-                    ...p,
-                    [game.id]: {
-                      ...(p[game.id] || {}),
-                      name: e.target.value
-                    }
-                  }))} />
-                          <input className={styles.inputSmall} type="number" min="0" max="100" placeholder={tt('admin.modeSize', 'A side')} value={newMode[game.id]?.size || ''} onChange={e => setNewMode(p => ({
-                    ...p,
-                    [game.id]: {
-                      ...(p[game.id] || {}),
-                      size: e.target.value
-                    }
-                  }))} />
-                          {game.series.length > 0 && <select className={styles.inputSmall} value={newMode[game.id]?.series || ''} onChange={e => setNewMode(p => ({
-                    ...p,
-                    [game.id]: {
-                      ...(p[game.id] || {}),
-                      series: e.target.value
-                    }
-                  }))}>
-                              <option value="">{tt('admin.modeEveryEdition', 'Every edition')}</option>
-                              {game.series.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
-                            </select>}
-                          <button type="button" className={styles.addQuiet} disabled={busy || !(newMode[game.id]?.name || '').trim()} onClick={() => addMode(game)}>
-                            {tt('admin.addMode', 'Add mode')}
-                          </button>
-                        </div>}
-
-                      {mayEdit && logoOpen === game.id && <div className={styles.logoRow}>
-                          <ImageUpload kind="logo" compact value={null} existing={game.logo} onChange={file => {
-                    setLogo(game, file);
-                    setLogoOpen(null);
-                  }} label={tt('admin.gameLogo', 'Game logo')} />
-                        </div>}
-
-                      {mayEdit && <div className={styles.addSeriesRow}>
-                          <input className={styles.input} placeholder={tt('admin.editionName', 'Edition name, e.g. EA FC 26')} value={newSeries[game.id]?.name || ''} onChange={e => setNewSeries(p => ({
-                    ...p,
-                    [game.id]: {
-                      ...(p[game.id] || {}),
-                      name: e.target.value
-                    }
-                  }))} />
-                          <input className={styles.inputSmall} type="number" placeholder={tt('admin.releaseYear', 'Year')} value={newSeries[game.id]?.year || ''} onChange={e => setNewSeries(p => ({
-                    ...p,
-                    [game.id]: {
-                      ...(p[game.id] || {}),
-                      year: e.target.value
-                    }
-                  }))} />
-                          <button type="button" className={styles.addQuiet} disabled={busy || !(newSeries[game.id]?.name || '').trim()} onClick={() => addSeries(game)}>
-                            {tt('admin.addEdition', 'Add edition')}
-                          </button>
-                        </div>}
-                    </div>)}
-                </div>}
-
-            {mayEdit && <div className={styles.addGameBlock}>
-                <div className={styles.addGameRow}>
-                  <input className={styles.input} placeholder={tt('admin.newGameName', 'New game, e.g. Street Fighter')} value={newGame} onChange={e => setNewGame(e.target.value)} />
-                  <button type="button" className={styles.addBtn} disabled={busy || !newGame.trim()} onClick={addGame}>
-                    {tt('admin.addGame', 'Add game')}
-                  </button>
-                </div>
-                <ImageUpload kind="logo" compact value={newLogo} onChange={setNewLogo} label={tt('admin.gameLogo', 'Game logo')} />
-              </div>}
+                        <IoChevronDown className={`${styles.chevron} ${open ? styles.chevronOpen : ''}`} aria-hidden="true" />
+                      </button>
+                      {open && renderOpen(game)}
+                    </li>;
+              })}
+                </ul>}
           </div>
         </main>
       </div>

@@ -1140,3 +1140,27 @@
     min-height: 44px;
   }
 }
+
+/* Show more under the table (inbox 594-12). */
+.moreRow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 0.75rem 1rem;
+  padding: 1.25rem 0 0.5rem;
+}
+
+.moreCount {
+  font-size: 0.82rem;
+  color: var(--ink-50, rgba(255, 255, 255, 0.5));
+}
+
+.moreBtn {
+  min-height: 44px;
+  padding: 0 1.25rem;
+  border-radius: 10px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+}

@@ -365,6 +365,13 @@ const MembershipsContent = () => {
               : tt('billing.emptyPastBody',
                 'Memberships you have left will be listed here.')}
           </p>
+          {/* The empty line said where memberships come from and gave no way
+              there (CEO, 12 November 2026, inbox 594-8). */}
+          {tab === 'live' && (
+            <Link href="/organizations" className={`${styles.emptyLink} quietBTN`}>
+              {tt('billing.openAnOrganisation', 'Open an organisation')}
+            </Link>
+          )}
         </div>
       ) : (
         <div className={styles.list}>

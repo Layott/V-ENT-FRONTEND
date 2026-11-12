@@ -270,6 +270,22 @@ const EventsListingContent = () => {
     return out;
   }, [events, activeTab, typeFilter, locationFilter, priceFilter, dateFrom, dateTo, searchQuery]);
   const featured = useMemo(() => events.slice(0, 3), [events]);
+  // A short list first, then "Show more" (CEO, 12 November 2026, inbox 594-6):
+  // on a phone the whole list ran to 3,021px on a first visit. Any change of
+  // tab, filter or search starts the count again.
+  const PAGE = 8;
+  const [shown, setShown] = useState(PAGE);
+  useEffect(() => {
+    setShown(PAGE);
+  }, [activeTab, typeFilter, searchQuery, locationFilter, priceFilter, dateFrom, dateTo]);
+  const visible = useMemo(() => filtered.slice(0, shown), [filtered, shown]);
+  // A picture, or nothing: a card for an event with no banner leads with its
+  // type and name instead of drawing an empty dark block (inbox 594-5). A
+  // banner whose file does not load is treated the same: the first walk found
+  // four stored paths with nothing behind them, each still a dark block.
+  const [failedPics, setFailedPics] = useState({});
+  const pictureOf = e => failedPics[e.id] ? null : e.banner_image || e.banner || null;
+  const pictureFailed = e => () => setFailedPics(f => ({ ...f, [e.id]: true }));
   const clearFilters = () => {
     setTypeFilter('');
     setLocationFilter('');
@@ -329,15 +345,17 @@ const EventsListingContent = () => {
               <div className={styles.featuredGrid}>
                 {featured.map((e, i) => {
               const tier = priceTier(e);
-              return <Link key={e.id} href={`/events/${e.slug || e.id}`} className={`${styles.featuredCard} ${i === 0 ? styles.featuredCardLarge : ''}`}>
-                      <div className={styles.featuredImgWrap}>
-                        {e.banner_image || e.banner ? <Image src={mediaUrl(e.banner_image || e.banner)} alt={e.name} fill sizes="(min-width: 1024px) 33vw, 100vw" style={{
+              const picture = pictureOf(e);
+              return <Link key={e.id} href={`/events/${e.slug || e.id}`} className={`${styles.featuredCard} ${i === 0 ? styles.featuredCardLarge : ''} ${picture ? '' : styles.featuredCardText}`}>
+                      {picture ? <div className={styles.featuredImgWrap}>
+                        <Image src={mediaUrl(picture)} alt={e.name} fill sizes="(min-width: 1024px) 33vw, 100vw" style={{
                     objectFit: 'cover'
-                  }} unoptimized /> : null}
+                  }} unoptimized onError={pictureFailed(e)} />
                         <div className={styles.featuredOverlay} />
                         <Tag className={styles.typeTag} on="card">{eventTypeLabel(tt, e.event_type)}</Tag>
-                      </div>
+                      </div> : null}
                       <div className={styles.featuredBody}>
+                        {!picture && <Tag className={styles.typeTagInline} on="card">{eventTypeLabel(tt, e.event_type)}</Tag>}
                         <h2 className={styles.featuredTitle}>{e.name}</h2>
                         <div className={styles.featuredMeta}>
                           <span className={styles.metaItem}>
@@ -445,17 +463,20 @@ const EventsListingContent = () => {
                 {hasActiveFilters && <button className={`${styles.emptyBtn} quietBTN`} onClick={clearFilters} type="button">
                     {tt("ui.clear.filters.4122", "Clear filters")}
                   </button>}
-              </div> : <div className={styles.cardGrid}>
-                {filtered.map(e => {
+              </div> : <>
+              <div className={styles.cardGrid}>
+                {visible.map(e => {
               const tier = priceTier(e);
-              return <Link key={e.id} href={`/events/${e.slug || e.id}`} className={styles.eventCard}>
-                      <div className={styles.cardImgWrap}>
-                        {e.banner_image || e.banner ? <Image src={mediaUrl(e.banner_image || e.banner)} alt={e.name} fill sizes="(min-width: 1440px) 25vw, (min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw" style={{
+              const picture = pictureOf(e);
+              return <Link key={e.id} href={`/events/${e.slug || e.id}`} className={`${styles.eventCard} ${picture ? '' : styles.eventCardText}`}>
+                      {picture ? <div className={styles.cardImgWrap}>
+                        <Image src={mediaUrl(picture)} alt={e.name} fill sizes="(min-width: 1440px) 25vw, (min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw" style={{
                     objectFit: 'cover'
-                  }} unoptimized /> : null}
+                  }} unoptimized onError={pictureFailed(e)} />
                         <Tag className={styles.typeTag} on="card">{eventTypeLabel(tt, e.event_type)}</Tag>
-                      </div>
+                      </div> : null}
                       <div className={styles.cardBody}>
+                        {!picture && <Tag className={styles.typeTagInline} on="card">{eventTypeLabel(tt, e.event_type)}</Tag>}
                         <h2 className={styles.cardTitle}>{e.name}</h2>
                         <div className={styles.cardMetaRow}>
                           <span className={styles.metaItem}>
@@ -477,7 +498,16 @@ const EventsListingContent = () => {
                       </div>
                     </Link>;
             })}
-              </div>}
+              </div>
+              {filtered.length > visible.length && <div className={styles.moreRow}>
+                  <span className={styles.resultCount}>
+                    {tt('events.showingOf', 'Showing {n} of {total}').replace('{n}', visible.length).replace('{total}', filtered.length)}
+                  </span>
+                  <button type="button" className={`${styles.moreBtn} quietBTN`} onClick={() => setShown(n => n + PAGE)}>
+                    {tt('events.showMore', 'Show more')}
+                  </button>
+                </div>}
+              </>}
           </div>
         </div>
       </main>

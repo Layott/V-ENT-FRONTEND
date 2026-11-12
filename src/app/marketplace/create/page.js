@@ -173,7 +173,14 @@ const CreateListing = () => {
                 </p>
               </div>
 
+              {/* One line on a phone, the current step named (CEO,
+                  12 November 2026, inbox 594-23): the three labels wrapped
+                  onto two rows. */}
               <div className={styles.stepper}>
+                <span className={styles.stepNow}>
+                  {tt('mk.stepOf', 'Step {n} of 3: {name}').replace('{n}', step).replace('{name}',
+                    [tt('mk.step1', 'What it is'), tt('mk.step2', 'What it costs'), tt('mk.step3', 'A look at it')][step - 1])}
+                </span>
                 {[1, 2, 3].map(n => (
                   <div key={n} className={styles.stepDot}>
                     <span className={`${styles.dotNum} ${step === n ? styles.dotActive : ''} ${step > n ? styles.dotDone : ''}`}>

@@ -479,6 +479,16 @@
   color: var(--primary-bg);
 }
 
+/* "Following", a state rather than an action (inbox 594-20). */
+.followingTag {
+  background-color: #2a2b30;
+  color: var(--ink-70, rgba(255, 255, 255, 0.7));
+  font-size: 0.72rem;
+  font-weight: 600;
+  padding: 3px 9px;
+  border-radius: 8px;
+}
+
 /* Repeated on every card, so quiet: one filled main button per view. */
 .actionQuiet {
   background-color: #2a2b30;

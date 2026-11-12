@@ -5,13 +5,14 @@ import { apiMessage } from '@/lib/apiMessage';
 import { useState, useEffect, useMemo } from 'react';
 import Link from 'next/link';
 import { useSession } from 'next-auth/react';
-import { LuPlus, LuSettings, LuRadio, LuTrophy, LuCalendar, LuUsers, LuPencil, LuTriangleAlert, LuTrash2, LuEye, LuCopy, LuX, LuRotateCw, LuPlay } from 'react-icons/lu';
+import { LuPlus, LuSettings, LuRadio, LuTrophy, LuCalendar, LuUsers, LuPencil, LuTriangleAlert, LuTrash2, LuEye, LuX, LuRotateCw, LuPlay } from 'react-icons/lu';
 import { useRouter } from 'next/navigation';
 import Header from '@/components/header/Header';
 import MobileHeader from '@/components/mobile-header/MobileHeader';
 import Sidebar from '@/components/sidebar/Sidebar';
 import BottomMenu from '@/components/bottom-menu/BottomMenu';
 import DeleteControl from '@/components/delete-control/DeleteControl';
+import RowMenu from '@/components/admin/RowMenu';
 import { ventFetch, API, tokenFrom, toTournamentArray, tournamentStatus, ApiError } from '@/components/tournament-lib/tournamentApi';
 import styles from './my-tournaments.module.css';
 import { useT } from '@/i18n/LanguageProvider';
@@ -125,6 +126,8 @@ const MyTournaments = () => {
   const router = useRouter();
   // Duplicate (inbox 446): the copy is a new draft, opened straight away.
   const [copyingId, setCopyingId] = useState(null);
+  // The row whose Delete question is open, opened from its row menu.
+  const [askDelete, setAskDelete] = useState(null);
   const duplicate = async (t) => {
     const ref = t?.slug || t?.id;
     if (!ref || !token) return;
@@ -355,44 +358,59 @@ const MyTournaments = () => {
                         <span><LuTrophy /> {prizeText(t)}</span>
                       </p>
                     </div>
+                    {/* View and Manage on the row; Edit, Duplicate and Delete in
+                        its menu (CEO, 12 November 2026, inbox 594-11). Five
+                        actions made every row busy and put Delete one press
+                        away. A finished tournament has no console to manage,
+                        so its second button is Edit. */}
                     <div className={styles.rowActions}>
                       <Link href={`/tournaments/${t?.slug || t?.id || ''}`} className={styles.actionBtn}>
-                        <LuEye aria-hidden="true" /> {tt('myTournaments.open', 'Open the tournament')}
+                        <LuEye aria-hidden="true" /> {tt('myTournaments.view', 'View')}
                       </Link>
-                      {/* Edit was reachable from nowhere at all, which is the
-                          same as a tournament being uneditable. It is first
-                          because correcting the name, game or artwork is the
-                          commonest reason to come back to one. */}
-                      <Link href={`/tournaments/${t?.slug || t?.id || ''}/edit`} className={styles.actionBtn}>
-                        <LuPencil aria-hidden="true" /> {tt('tEdit.edit', 'Edit')}
-                      </Link>
-                      {/* A new draft set up the same way (inbox 446). */}
-                      <button type="button" className={styles.actionBtn}
-                              disabled={copyingId === (t?.id ?? (t?.slug || t?.id))}
-                              onClick={() => duplicate(t)}>
-                        <LuCopy aria-hidden="true" /> {copyingId === (t?.id ?? (t?.slug || t?.id))
-                          ? tt('dup.working', 'Copying...') : tt('dup.button', 'Duplicate')}
-                      </button>
                       {/* By slug, not by id: a number in an address somebody
                           can see is the one thing the slug rule forbids. */}
-                      {status !== 'completed' && <Link href={`/tournaments/${t?.slug || t?.id || ''}/manage`} className={styles.actionBtn}>
-                          <LuSettings aria-hidden="true" /> {tt("ui.manage.bf58", "Manage")}
-                        </Link>}
-                      {/* Deleting a published tournament, which nothing on the
-                          platform could do: the only path was the draft one,
-                          which refuses anything published. Soft, so an admin
-                          can still see it and put it back. */}
-                      <DeleteControl kind="tournament"
-                                     reference={t?.slug || t?.id}
-                                     name={name} token={token}
-                                     className={`${styles.actionBtn} ${styles.dangerText}`}
-                                     onDeleted={() => {
-                                       setTournaments(all => all.filter(
-                                         x => (x?.id ?? x?.slug) !== (t?.id ?? t?.slug)));
-                                       setNote(tt('del.tournamentGone', 'Deleted. An admin can restore it.'));
-                                       setTimeout(() => setNote(''), 4000);
-                                     }} />
+                      {status !== 'completed'
+                        ? <Link href={`/tournaments/${t?.slug || t?.id || ''}/manage`} className={styles.actionBtn}>
+                            <LuSettings aria-hidden="true" /> {tt("ui.manage.bf58", "Manage")}
+                          </Link>
+                        : <Link href={`/tournaments/${t?.slug || t?.id || ''}/edit`} className={styles.actionBtn}>
+                            <LuPencil aria-hidden="true" /> {tt('tEdit.edit', 'Edit')}
+                          </Link>}
+                      <RowMenu label={tt('myTournaments.moreFor', 'More for {name}').replace('{name}', name)}>
+                        {/* Edit was reachable from nowhere at all once, which is
+                            the same as a tournament being uneditable. */}
+                        {status !== 'completed' && <button type="button" role="menuitem" onClick={() => router.push(`/tournaments/${t?.slug || t?.id || ''}/edit`)}>
+                            {tt('tEdit.edit', 'Edit')}
+                          </button>}
+                        {/* A new draft set up the same way (inbox 446). */}
+                        <button type="button" role="menuitem"
+                                disabled={copyingId === (t?.id ?? (t?.slug || t?.id))}
+                                onClick={() => duplicate(t)}>
+                          {copyingId === (t?.id ?? (t?.slug || t?.id))
+                            ? tt('dup.working', 'Copying...') : tt('dup.button', 'Duplicate')}
+                        </button>
+                        <button type="button" role="menuitem" data-danger="" onClick={() => setAskDelete(t?.id ?? t?.slug)}>
+                          {tt('del.delete', 'Delete')}
+                        </button>
+                      </RowMenu>
                     </div>
+                    {/* Deleting a published tournament, which nothing on the
+                        platform could do: the only path was the draft one,
+                        which refuses anything published. Soft, so an admin
+                        can still see it and put it back. */}
+                    {askDelete === (t?.id ?? t?.slug) && <div className={styles.confirmRow}>
+                        <DeleteControl kind="tournament" startAsking
+                                       reference={t?.slug || t?.id}
+                                       name={name} token={token}
+                                       onClose={() => setAskDelete(null)}
+                                       onDeleted={() => {
+                                         setAskDelete(null);
+                                         setTournaments(all => all.filter(
+                                           x => (x?.id ?? x?.slug) !== (t?.id ?? t?.slug)));
+                                         setNote(tt('del.tournamentGone', 'Deleted. An admin can restore it.'));
+                                         setTimeout(() => setNote(''), 4000);
+                                       }} />
+                      </div>}
                   </div>;
           })}
             </div>}

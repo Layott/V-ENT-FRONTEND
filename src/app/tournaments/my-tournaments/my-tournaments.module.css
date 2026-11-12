@@ -155,6 +155,11 @@
 
 .tournamentRow:hover { background-color: rgba(255, 255, 255, 0.05); }
 
+/* Delete, opened from the row menu, takes the row's full width (inbox 594-11). */
+.confirmRow {
+  flex-basis: 100%;
+}
+
 .bannerThumb {
   width: 60px;
   height: 60px;

@@ -331,7 +331,7 @@ export default function GuestCheckout({ eventRef, tier, code, onDone, onClose, o
       </label>
       {priced?.promo?.applied && <div className={styles.totalRow}>
         <span className={styles.label}>{priced.promo.code}</span>
-        <span className={styles.totalValue}>-{formatNumber(priced.promo.saving_ngn)} NGN</span>
+        <span className={styles.totalValue}>-₦{formatNumber(priced.promo.saving_ngn)}</span>
       </div>}
       {/* Which ticket, how many, and what they come to, before the fee and
           the total. The form showed a fee and a total and never named the
@@ -347,7 +347,7 @@ export default function GuestCheckout({ eventRef, tier, code, onDone, onClose, o
         </span>
         <span className={styles.totalValue}>
           {priced.tickets_ngn > 0
-            ? `${formatNumber(priced.tickets_ngn)} NGN`
+            ? `₦${formatNumber(priced.tickets_ngn)}`
             : tt('guest.free', 'Free')}
         </span>
       </div>}
@@ -360,13 +360,13 @@ export default function GuestCheckout({ eventRef, tier, code, onDone, onClose, o
             .replace('{pct}', String(priced.fee_pct))
             .replace('{flat}', formatNumber(priced.fee_flat_ngn))}
         </span>
-        <span className={styles.totalValue}>{formatNumber(priced.fee_ngn)} NGN</span>
+        <span className={styles.totalValue}>₦{formatNumber(priced.fee_ngn)}</span>
       </div>}
       {priced && <div className={styles.totalRow}>
         <span className={styles.label}>{tt('ui.total.b259', 'Total')}</span>
         <strong className={styles.totalValue}>
           {priced.total_ngn > 0
-            ? `${formatNumber(priced.total_ngn)} NGN`
+            ? `₦${formatNumber(priced.total_ngn)}`
             : `${formatNumber(priced.total_vc)} VC`}
         </strong>
       </div>}

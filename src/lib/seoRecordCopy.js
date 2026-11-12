@@ -35,7 +35,7 @@ const COPY = {
     'event.kind.virtual': 'Online event',
     'event.on': '{kind} on {date}.',
     'event.plain': '{kind}.',
-    'event.from': 'Tickets from {price} NGN.',
+    'event.from': 'Tickets from ₦{price}.',
     'event.free': 'Free to attend.',
 
     'notFound.tournament.title': 'Tournament not found',
@@ -128,8 +128,8 @@ const COPY = {
     'notFound.stall.title': 'Stall not found',
     'notFound.stall.description': 'This stall does not exist, or it has closed.',
     'stall.at': '{stall} at {event}',
-    'stall.sellsAt': '{stall} sells {items} at {event}. Order before you arrive and collect at the booth.',
-    'stall.sells': '{stall} sells {items}. Order before you arrive and collect at the booth.',
+    'stall.sellsAt': '{stall} sells {items} at {event}. Order before you arrive and collect at the stall.',
+    'stall.sells': '{stall} sells {items}. Order before you arrive and collect at the stall.',
     'stall.plainAt': '{stall} at {event}. What they sell and how to order.',
     'stall.plain': '{stall}. What they sell and how to order.',
 
@@ -138,8 +138,8 @@ const COPY = {
     'membership.title': '{plan}, a membership from {seller}',
     'membership.default': 'A membership from {seller} on V-ENT.',
     'membership.free': 'Free to join.',
-    'membership.month': '{vc} VENT COINS a month, which is {ngn} NGN.',
-    'membership.year': '{vc} VENT COINS a year, which is {ngn} NGN.',
+    'membership.month': '{vc} VENT COINS a month, which is ₦{ngn}.',
+    'membership.year': '{vc} VENT COINS a year, which is ₦{ngn}.',
 
     'market.title': 'Vermillion City',
     'market.description': 'Listings between people on V-ENT.',
@@ -165,7 +165,7 @@ const COPY = {
     'premium.what': 'What a V-ENT premium subscription switches on for an organiser.',
     'premium.includes': 'Includes {features}.',
     'premium.notOnSale': 'Premium is not on sale yet. Tell us you want it and we will say when it is.',
-    'premium.price': '{vc} VENT COINS a month, which is {ngn} NGN.',
+    'premium.price': '{vc} VENT COINS a month, which is ₦{ngn}.',
 
     'docs.title': 'V-ENT API and Sign in with V-ENT',
     'docs.description': 'Build on V-ENT: read tournaments, events, teams, players and rankings through the partner API, and let people sign in to your site with their V-ENT account.',

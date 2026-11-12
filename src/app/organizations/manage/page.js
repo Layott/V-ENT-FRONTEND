@@ -104,6 +104,9 @@ const ManageOrgContent = ({
   const [teams, setTeams] = useState([]);
   const [allTeams, setAllTeams] = useState([]);
   const [activeTab, setActiveTab] = useState(searchParams.get('tab') || 'members');
+  // Which manager's permission chips are open (CEO, 12 November 2026, inbox
+  // 594-21): the row says "3 of 5 permissions", and the chips open on a tap.
+  const [openScopes, setOpenScopes] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   // The invitation whose Cancel has been pressed once. Cancelling an
@@ -768,7 +771,14 @@ const ManageOrgContent = ({
                                 <span className={`${styles.rolePill} ${styles[`role_${role}`] || ''}`}>
                                   {m.role}
                                 </span>
-                                {role === 'manager' && <div className={styles.scopeRow}>
+                                {role === 'manager' && <button type="button" className={styles.scopeCount}
+                                    aria-expanded={openScopes === m.id} aria-controls={`scopes-${m.id}`}
+                                    onClick={() => setOpenScopes(openScopes === m.id ? null : m.id)}>
+                                    {tt('org.scopeCount', '{n} of {total} permissions')
+                                      .replace('{n}', SCOPES.filter(sc => (m.scopes || []).includes(sc)).length)
+                                      .replace('{total}', SCOPES.length)}
+                                  </button>}
+                                {role === 'manager' && openScopes === m.id && <div className={styles.scopeRow} id={`scopes-${m.id}`}>
                                   {SCOPES.map(sc => {
                                     const on = (m.scopes || []).includes(sc);
                                     return <button key={sc} type="button" disabled={!me?.can_manage_roles}

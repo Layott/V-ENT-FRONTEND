@@ -81,7 +81,9 @@ const PurchasePage = props => {
       const data = await call('/purchases/', { token });
       const found = [...(data.bought || []), ...(data.sold || [])]
         .find(p => p.token === token_);
-      if (!found) setProblem(tt('mk.orderGone', 'That order is not one of yours.'));
+      // Said plainly, with where to go next (CEO, 12 November 2026, inbox
+      // 594-24): "not one of yours" read as an accusation and gave no step.
+      if (!found) setProblem(tt('mk.orderGone2', 'We cannot find that order in your account. Check the link, or open your orders.'));
       setPurchase(found || null);
     } catch (err) {
       setProblem(apiMessage(tt, err, 'mk.orderFailed', 'That order could not be loaded.'));
@@ -157,7 +159,13 @@ const PurchasePage = props => {
           </Link>
 
           {loading && <p className={styles.stateText}>{tt('ui.loading.33ce', 'Loading…')}</p>}
-          {problem && <p className={styles.stateText} role="alert">{problem}</p>}
+          {problem && <div className={styles.problemCard} role="alert">
+              {!purchase && <h1 className={styles.title}>{tt('mk.orderNotFound', 'Order not found')}</h1>}
+              <p className={styles.problemText}>{problem}</p>
+              <Link href="/marketplace/dashboard" className={`${styles.problemBtn} quietBTN`}>
+                {tt('mk.backToOrders', 'Back to your orders')}
+              </Link>
+            </div>}
 
           {purchase && (
             <>

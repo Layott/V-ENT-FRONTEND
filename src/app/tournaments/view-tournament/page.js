@@ -1066,7 +1066,7 @@ const PrizePanel = ({
             <p className={styles.prizeFiat}>{coinText(total)}</p>
           </> : <>
             <p className={styles.prizeAmount}>{formatNumber(total)} <span className={styles.vcUnit}>VC</span></p>
-            <p className={styles.prizeFiat}>≈ {coinsAsNgn(total)} NGN</p>
+            <p className={styles.prizeFiat}>≈ ₦{coinsAsNgn(total)}</p>
           </>}
       </div>
 

@@ -4,7 +4,7 @@
 //
 // This replaces a function that invented a two-day schedule from the event's
 // start date, so every event on the platform showed the same "Doors open +
-// Vendor zone activation" and "Cosplay parade". An empty tab says nothing has
+// stalls open" and "Cosplay parade". An empty tab says nothing has
 // been published; an invented one says the organiser published THIS, and
 // somebody turns up at 8pm for a DJ set that was never going to happen.
 //

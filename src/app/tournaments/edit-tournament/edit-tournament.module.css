@@ -356,6 +356,16 @@
   grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr));
 }
 
+/* "More links" under the first three (inbox 594-10). */
+.moreLinks {
+  align-self: flex-start;
+  min-height: 44px;
+  padding: 0 1.1rem;
+  border-radius: 10px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
 .socialGrid {
   display: grid;
   gap: 0.85rem;

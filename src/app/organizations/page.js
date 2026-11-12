@@ -395,6 +395,12 @@ const OrganizationsContent = () => {
                       <div className={styles.cardHeader}>
                         <h2 className={styles.orgName}>{org.name}</h2>
                         <span className={styles.orgTag}>{org.tag}</span>
+                        {/* Following is a state, said quietly (CEO, 12 November
+                            2026, inbox 594-20); the button beside it is for
+                            the one thing left to do, joining. */}
+                        {followingIds.has(String(org.org_id ?? org.id)) && <span className={styles.followingTag}>
+                            {tt('org.followingState', 'Following')}
+                          </span>}
                       </div>
 
                       <p className={styles.orgBio}>{org.bio}</p>
@@ -422,7 +428,7 @@ const OrganizationsContent = () => {
                       </div>
 
                       <div className={styles.cardActions}>
-                        <Link href={`/organizations/${orgId}`} className={`${styles.actionBtn} ${styles.actionSecondary}`}>
+                        <Link href={`/organizations/${orgId}`} className={`${styles.actionBtn} ${styles.actionQuiet}`}>
                           {tt('orgs.openOrg', 'Open organisation')}
                         </Link>
                         {owned ? <Link href={`/organizations/${orgId}/manage`} className={`${styles.actionBtn} ${styles.actionQuiet}`}>
@@ -431,7 +437,7 @@ const OrganizationsContent = () => {
                             {tt("ui.member.6853", "Member")}
                           </span> : reqState === 'pending' ? <button type="button" className={`${styles.actionBtn} ${styles.actionDisabled}`} disabled>
                             {tt("ui.pending.96f6", "Pending")}
-                          </button> : viewer.signedIn ? <button type="button" className={`${styles.actionBtn} ${styles.actionQuiet}`} disabled={reqState === 'loading'} onClick={() => handleApply(orgId)}>
+                          </button> : viewer.signedIn ? <button type="button" className={`${styles.actionBtn} ${styles.actionPrimary}`} disabled={reqState === 'loading'} onClick={() => handleApply(orgId)}>
                             {reqState === 'loading' ? tx("Sending...") : tt('org.join', 'Join')}
                           </button> : <Link href={signInHref(`/organizations/${orgId}`)} className={`${styles.actionBtn} ${styles.actionQuiet}`}>
                             {tt('org.signInToJoin', 'Sign in to join')}

@@ -262,7 +262,7 @@ const TransactionTable = ({
                                   <span className={styles.txDetailValue}>{formatNumber(tx.balance_after)} VC</span>
                                 </div>}
                               {tx.amount_ngn != null && <div className={styles.txDetailItem}>
-                                  <span className={styles.txDetailLabel}>{tt("ui.ngn.equivalent.739a", "NGN equivalent")}</span>
+                                  <span className={styles.txDetailLabel}>{tt("ui.ngn.equivalent.739a", "Value in naira")}</span>
                                   <span className={styles.txDetailValue}>₦{formatNumber(tx.amount_ngn)}</span>
                                 </div>}
                             </div>
@@ -313,7 +313,7 @@ const TransactionTable = ({
                             <span className={styles.txCardDetailVal}>{formatNumber(tx.balance_after)} VC</span>
                           </div>}
                         {tx.amount_ngn != null && <div className={styles.txCardDetailRow}>
-                            <span className={styles.txCardDetailKey}>{tt("ui.ngn.equivalent.739a", "NGN equivalent")}</span>
+                            <span className={styles.txCardDetailKey}>{tt("ui.ngn.equivalent.739a", "Value in naira")}</span>
                             <span className={styles.txCardDetailVal}>₦{formatNumber(tx.amount_ngn)}</span>
                           </div>}
                       </div>}

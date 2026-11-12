@@ -20,6 +20,53 @@
   padding: 1.25rem;
 }
 
+/* An empty section: one muted line, and "Add one" on your own profile
+   (inbox 594-15, 594-16). On a phone the whole card is one row. */
+.emptyLine {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.35rem 0.75rem;
+  margin: 0;
+  color: var(--ink-45, rgba(255, 255, 255, 0.45));
+  font-size: 0.82rem;
+  font-family: 'ClashGrotesk-Variable', sans-serif;
+}
+
+.addOne {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0 0.85rem;
+  border-radius: 8px;
+  background-color: #2a2b30;
+  color: #fff;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.addOne:hover {
+  background-color: #33343a;
+}
+
+@media (max-width: 720px) {
+  .cardEmpty {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.4rem 0.9rem;
+    padding: 0.75rem 1rem;
+  }
+
+  .cardEmpty .cardHead {
+    margin-bottom: 0;
+  }
+
+  .cardEmpty .emptyLine {
+    flex: 1 1 auto;
+  }
+}
+
 .cardHead {
   display: flex;
   align-items: center;

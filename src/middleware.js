@@ -224,7 +224,10 @@ export default async function middleware(req) {
       return NextResponse.next();
     }
 
-    return redirectTo(localePath('/home', locale), req);
+    // Saying why (CEO, 12 November 2026, inbox 594-18): a signed-in person
+    // who opens a page meant for signed-out visitors lands on Home, and Home
+    // now says in one line that they are already signed in.
+    return redirectTo(localePath('/home', locale) + '?already=' + encodeURIComponent(path.slice(1)), req);
   }
 
   return withLocale(req, locale, hasPrefix);

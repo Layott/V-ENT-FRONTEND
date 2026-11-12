@@ -23,9 +23,13 @@ export default function CancelControl({
   token,
   onCancelled,      // (data) after the server says yes
   className = '',
+  // Opened from a row menu (inbox 594): the question shows at once, and
+  // stepping back hands control to the row again.
+  startAsking = false,
+  onClose,
 }) {
   const tt = useT();
-  const [asking, setAsking] = useState(false);
+  const [asking, setAsking] = useState(!!startAsking);
   const [reason, setReason] = useState('');
   const [busy, setBusy] = useState(false);
   const [problem, setProblem] = useState('');
@@ -56,7 +60,7 @@ export default function CancelControl({
     }
   };
 
-  const stop = () => { setAsking(false); setProblem(''); setReason(''); };
+  const stop = () => { setAsking(false); setProblem(''); setReason(''); if (onClose) onClose(); };
 
   if (done) {
     const failed = (done.failed || []).length;

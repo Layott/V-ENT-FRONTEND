@@ -438,3 +438,33 @@
   gap: 0.35rem;
   margin-bottom: 0.9rem;
 }
+
+/* "Step 1 of 3: What it is" on a phone; the dots stay on one line and the
+   other labels give way (inbox 594-23). */
+.stepNow {
+  display: none;
+}
+
+@media (max-width: 720px) {
+  .stepper {
+    flex-wrap: nowrap;
+  }
+
+  .stepNow {
+    display: block;
+    flex: 1 1 auto;
+    min-width: 0;
+    order: 2;
+    color: var(--primary-bg);
+    font-weight: var(--fw-semi-bold);
+    font-size: var(--fs-p-size-mobile);
+  }
+
+  .dotLabel {
+    display: none;
+  }
+
+  .stepConnector {
+    min-width: 8px;
+  }
+}

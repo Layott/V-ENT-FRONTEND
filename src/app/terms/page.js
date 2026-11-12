@@ -92,13 +92,16 @@ const tocStyle = {
   listStyle: 'none',
 };
 
+// 44px tall: the re-crawl of 12 November 2026 measured these at 30px, the
+// one new small-target fault it found (gates/93 W6).
 const tocLinkStyle = {
   color: 'inherit',
   textDecoration: 'underline',
   textUnderlineOffset: '2px',
   fontSize: '0.875rem',
-  display: 'inline-block',
-  padding: '0.35rem 0',
+  display: 'inline-flex',
+  alignItems: 'center',
+  minHeight: '44px',
 };
 
 // A link on its own line, pressed like a button: 44px tall (it measured 16px on

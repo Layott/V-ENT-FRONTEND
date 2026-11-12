@@ -261,3 +261,9 @@
     min-height: 44px;
   }
 }
+
+/* Cancel or Delete, opened from the row menu (inbox 594-4), takes the full
+   width under the row rather than squeezing in beside View and Edit. */
+.confirmRow {
+  flex-basis: 100%;
+}

@@ -125,7 +125,7 @@ export default function MoneyPanel({ tournamentRef, token, showToast }) {
     }
   };
 
-  const money = (ngn, vc) => `${formatNumber(Number(ngn || 0))} NGN (${formatNumber(Number(vc || 0))} VC)`;
+  const money = (ngn, vc) => `₦${formatNumber(Number(ngn || 0))} (${formatNumber(Number(vc || 0))} VC)`;
 
   if (loading) return <div className={styles.panel}><p className={styles.state}>{tt('ui.loading.33ce', 'Loading…')}</p></div>;
   if (!earnings) return <div className={styles.panel}><p className={styles.problem} role="alert">{problem || tt('money.loadFailed', 'Could not load the money on this tournament.')}</p></div>;
@@ -209,7 +209,7 @@ export default function MoneyPanel({ tournamentRef, token, showToast }) {
             <strong className={styles.rowName}>{tt('money.refunded', 'Refunded')}</strong>
             <span className={styles.muted}>{tt('money.refundedCount', '{n} entries').replace('{n}', earnings.refunded_entries)}</span>
           </div>
-          <span className={styles.figure}>{formatNumber(earnings.refunded_ngn)} NGN</span>
+          <span className={styles.figure}>₦{formatNumber(earnings.refunded_ngn)}</span>
         </div>}
         <div className={styles.row}>
           <div className={styles.rowMain}>
@@ -220,7 +220,7 @@ export default function MoneyPanel({ tournamentRef, token, showToast }) {
                 .replace('{yours}', formatNumber(earnings.fee_ngn))}
             </span>}
           </div>
-          <span className={styles.figure}>{formatNumber(earnings.platform_fee_ngn)} NGN</span>
+          <span className={styles.figure}>₦{formatNumber(earnings.platform_fee_ngn)}</span>
         </div>
         <div className={styles.row}>
           <div className={styles.rowMain}>

@@ -7,14 +7,17 @@
 // only way back was to search the public listing for the name - and a retired
 // event is not in that listing at all, which made it unreachable.
 //
-// Every row carries the three things an organiser actually wants: open it, edit
-// it, and run the commercial side of it.
+// Every row carries the two things an organiser does most, View and Edit; the
+// door list, the commercial side, Cancel and Delete wait in the row menu
+// (CEO, 12 November 2026, inbox 594-4). Five or six buttons on a row wrapped
+// raggedly on a phone and put Delete one stray press away.
 
 import { apiMessage } from '@/lib/apiMessage';
 import { formatDate, formatNumber } from '@/lib/datetime';
 import { useAutoRefresh } from '@/lib/useLiveData';
 import { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 import { LuCalendar, LuTicket, LuMapPin } from 'react-icons/lu';
 import Header from '@/components/header/Header';
@@ -27,8 +30,12 @@ import styles from './my-events.module.css';
 import { useT } from '@/i18n/LanguageProvider';
 import { plural } from '@/lib/plural';
 import BackLink from '@/components/back-link/BackLink';
+import RowMenu from '@/components/admin/RowMenu';
 const MyEventsPage = () => {
   const tt = useT();
+  const router = useRouter();
+  // The row whose Cancel or Delete question is open: { id, kind }.
+  const [confirming, setConfirming] = useState(null);
   const {
     data: session,
     status
@@ -156,7 +163,7 @@ const MyEventsPage = () => {
 
                       <div className={styles.actions}>
                         <Link href={`/events/${ref}`} className={styles.ghostBtn}>
-                          {tt('myEvents.openEvent', 'Open the event')}
+                          {tt('myEvents.view', 'View')}
                         </Link>
                         {/* The one action that was missing entirely. The edit
                             endpoint has existed for weeks with nothing calling
@@ -165,44 +172,57 @@ const MyEventsPage = () => {
                         {/* A door steward admits people and does nothing else
                             (permissions.may_work_the_door). Offering them Edit
                             and the console, both of which refuse them, is a
-                            control somebody cannot use. */}
-                        {row.role !== 'door' && <Link href={`/events/${ref}/edit`} className={styles.primaryBtn}>
-                          {tt('myEvents.edit', 'Edit')}
-                        </Link>}
-                        <Link href={`/events/${ref}/attendees`} className={row.role === 'door' ? styles.primaryBtn : styles.ghostBtn}>
-                          {tt('myEvents.doorList', 'Door list')}
-                        </Link>
-                        {row.role === 'door' && <Link href={`/events/scan?event=${ref}`} className={styles.ghostBtn}>
-                          {tt('myEvents.scanner', 'Open the scanner')}
-                        </Link>}
-                        {row.role !== 'door' && <Link href={`/events/${ref}/manage`} className={styles.ghostBtn}>
-                          {tt('myEvents.manage', 'Influencers & promos')}
-                        </Link>}
-                        {/* Only the person who made it, or the owner of the
-                            organisation it belongs to. Somebody added to run
-                            the door for one day is not somebody who removes
-                            the event, which is what permissions.py has said
-                            since it was written. */}
-                        {/* Cancelling refunds everybody who paid (CEO,
-                            18 September 2026); only the owner may, and only
-                            while the event is live. */}
-                        {row.role === 'owner' && row.is_active && (
-                          <CancelControl reference={ref} name={row.name} token={token}
-                                         className={styles.dangerText}
+                            control somebody cannot use. Their row's second
+                            button is the door list. */}
+                        {row.role !== 'door'
+                          ? <Link href={`/events/${ref}/edit`} className={styles.primaryBtn}>
+                              {tt('myEvents.edit', 'Edit')}
+                            </Link>
+                          : <Link href={`/events/${ref}/attendees`} className={styles.primaryBtn}>
+                              {tt('myEvents.doorList', 'Door list')}
+                            </Link>}
+                        <RowMenu label={tt('myEvents.moreFor', 'More for {name}').replace('{name}', row.name)}>
+                          {row.role !== 'door' && <button type="button" role="menuitem" onClick={() => router.push(`/events/${ref}/attendees`)}>
+                              {tt('myEvents.doorList', 'Door list')}
+                            </button>}
+                          {row.role === 'door' && <button type="button" role="menuitem" onClick={() => router.push(`/events/scan?event=${ref}`)}>
+                              {tt('myEvents.scanner', 'Open the scanner')}
+                            </button>}
+                          {row.role !== 'door' && <button type="button" role="menuitem" onClick={() => router.push(`/events/${ref}/manage`)}>
+                              {tt('myEvents.manage', 'Influencers & promos')}
+                            </button>}
+                          {/* Only the person who made it, or the owner of the
+                              organisation it belongs to. Somebody added to run
+                              the door for one day is not somebody who removes
+                              the event, which is what permissions.py has said
+                              since it was written. Cancelling refunds
+                              everybody who paid (CEO, 18 September 2026); only
+                              the owner may, and only while the event is live. */}
+                          {row.role === 'owner' && row.is_active && <button type="button" role="menuitem" data-danger="" onClick={() => setConfirming({ id: row.id, kind: 'cancel' })}>
+                              {tt('cancelEvent.cancel', 'Cancel the event')}
+                            </button>}
+                          {row.role === 'owner' && <button type="button" role="menuitem" data-danger="" onClick={() => setConfirming({ id: row.id, kind: 'delete' })}>
+                              {tt('del.delete', 'Delete')}
+                            </button>}
+                        </RowMenu>
+                      </div>
+                      {confirming?.id === row.id && confirming.kind === 'cancel' && <div className={styles.confirmRow}>
+                          <CancelControl reference={ref} name={row.name} token={token} startAsking
+                                         onClose={() => setConfirming(null)}
                                          onCancelled={(data) => {
                                            setCancelled(all => ({ ...all, [row.id]: data?.refunds || {} }));
                                            setRows(all => all.map(x => x.id === row.id ? { ...x, is_active: false } : x));
+                                           setConfirming(null);
                                          }} />
-                        )}
-                        {row.role === 'owner' && (
-                          <DeleteControl kind="event" reference={ref}
-                                         name={row.name} token={token}
-                                         className={styles.dangerText}
+                        </div>}
+                      {confirming?.id === row.id && confirming.kind === 'delete' && <div className={styles.confirmRow}>
+                          <DeleteControl kind="event" reference={ref} name={row.name} token={token} startAsking
+                                         onClose={() => setConfirming(null)}
                                          onDeleted={() => {
                                            setRows(all => all.filter(x => x.id !== row.id));
+                                           setConfirming(null);
                                          }} />
-                        )}
-                      </div>
+                        </div>}
                     </div>;
           })}
               </div>}

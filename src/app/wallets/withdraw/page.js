@@ -406,7 +406,7 @@ const WithdrawPage = () => {
 
                 {rail === 'bank' && numericVc > 0 && <div className={styles.summaryList}>
                     <div className={styles.summaryRow}>
-                      <span className={styles.summaryKey}>{tt("ui.ngn.value.fcb0", "NGN value")}</span>
+                      <span className={styles.summaryKey}>{tt("ui.ngn.value.fcb0", "Value in naira")}</span>
                       <span className={styles.summaryVal}>₦{formatNumber(grossNgn)}</span>
                     </div>
                     {fee > 0 && <div className={styles.summaryRow}>
@@ -545,7 +545,7 @@ const WithdrawPage = () => {
                     <span className={styles.summaryVal}>{tt('wallet.setAtApproval', 'Set when the payout is approved')}</span>
                   </div> : <>
                   <div className={styles.summaryRow}>
-                    <span className={styles.summaryKey}>{tt("ui.ngn.value.fcb0", "NGN value")}</span>
+                    <span className={styles.summaryKey}>{tt("ui.ngn.value.fcb0", "Value in naira")}</span>
                     <span className={styles.summaryVal}>₦{formatNumber(grossNgn)}</span>
                   </div>
                   {fee > 0 && <div className={styles.summaryRow}>

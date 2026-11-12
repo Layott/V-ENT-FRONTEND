@@ -682,3 +682,64 @@
     min-height: 44px;
   }
 }
+
+/* An event with no picture (CEO, 12 November 2026, inbox 594-5): a text card.
+   No empty image area; the type, the name and the facts carry it, on a
+   surface one step up so it still reads as a card beside the pictured ones. */
+.typeTagInline {
+  align-self: flex-start;
+}
+
+.eventCardText {
+  background-color: #212225;
+}
+
+.eventCardText .cardBody {
+  padding: 1rem 1.1rem 1.1rem;
+  gap: 0.6rem;
+}
+
+.eventCardText .cardTitle {
+  font-size: 1.15rem;
+  -webkit-line-clamp: 3;
+}
+
+.featuredCardText {
+  background-color: #212225;
+}
+
+.featuredCardText .featuredBody {
+  padding: 1.25rem;
+  gap: 0.75rem;
+}
+
+.featuredCardText .featuredTitle {
+  font-size: var(--desktop-h5-size, 1.75rem);
+  line-height: 1.15;
+  -webkit-line-clamp: 3;
+}
+
+@media (max-width: 720px) {
+  .featuredCardText .featuredTitle {
+    font-size: 1.35rem;
+  }
+}
+
+/* Show more under the grid (inbox 594-6). */
+.moreRow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 0.75rem 1rem;
+  margin-top: 1.25rem;
+}
+
+.moreBtn {
+  min-height: 44px;
+  padding: 0 1.25rem;
+  border-radius: 10px;
+  font-size: 0.9rem;
+  font-weight: var(--fw-semi-bold);
+  cursor: pointer;
+}

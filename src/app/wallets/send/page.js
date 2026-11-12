@@ -567,7 +567,7 @@ const SendPage = () => {
                       <span className={`${styles.summaryVal} ${styles.summaryRed}`}>-{formatNumber(total)} VC</span>
                     </div>}
                   <div className={styles.summaryRow}>
-                    <span className={styles.summaryKey}>{tt("ui.ngn.value.bb32", "≈ NGN value")}</span>
+                    <span className={styles.summaryKey}>{tt("ui.ngn.value.bb32", "≈ Value in naira")}</span>
                     <span className={styles.summaryVal}>₦{formatNumber(ngnFromVc(total))}</span>
                   </div>
                   {memo && <div className={styles.summaryRow}>

@@ -39,7 +39,7 @@ const STEPS = [{
   label: 'Tickets / tiers'
 }, {
   id: 4,
-  label: 'Sponsors & vendors'
+  label: 'Sponsors & stalls'
 }, {
   id: 5,
   label: 'Review'
@@ -87,7 +87,7 @@ const emptyForm = {
     // noticed it (inbox 588: options that do not belong to the event).
     perks: ''
   }],
-  // Step 4 - Sponsors & vendors
+  // Step 4 - Sponsors & stalls
   series_id: '',
   currency: 'NGN',
   sponsors: [],
@@ -570,7 +570,7 @@ const CreateEventPage = () => {
             <div>
               <h1 className={styles.pageTitle}>{tt("ui.create.event.b8d8", "Create event")}</h1>
               <p className={styles.pageSub}>
-                {tt("ui.set.up.tickets.schedule.eb89", "Set up tickets, schedule, sponsors and vendors. Save as draft anytime.")}
+                {tt("ui.set.up.tickets.schedule.eb89", "Set up tickets, schedule, sponsors and stalls. Save as draft anytime.")}
               </p>
             </div>
             <div className={styles.draftActions}>
@@ -860,10 +860,10 @@ const CreateEventPage = () => {
 
             {/* STEP 4 */}
             {step === 4 && <div className={styles.formStep}>
-                <h2 className={styles.stepTitle}>{tt("createEvent.supportersTitle", "Sponsors, partners & vendors")}<InfoTip id="sponsorName" /></h2>
+                <h2 className={styles.stepTitle}>{tt("createEvent.supportersTitle", "Sponsors, partners & stalls")}<InfoTip id="sponsorName" /></h2>
                 <p className={styles.stepSub}>
                   {asks.vendors
-                    ? tt("createEvent.supportersSub", "Add the logos behind the event, with links so people can find them, and invite vendors to the on-site marketplace.")
+                    ? tt("createEvent.supportersSub", "Add the logos behind the event, with links so people can find them, and invite stalls to sell at the event.")
                     : tt("createEvent.supportersSubOnline", "Add the logos behind the event, with links so people can find them.")}
                 </p>
 
@@ -914,17 +914,17 @@ const CreateEventPage = () => {
                   </div>)}
 
                 {asks.vendors && <div className={styles.subsection}>
-                  <h3 className={styles.subTitle}>{tt("ui.vendor.invites.8649", "Vendor invites")}</h3>
-                  {formData.vendor_invites.length === 0 ? <p className={styles.muted}>{tt("ui.no.vendors.invited.yet.f401", "No vendors invited yet.")}</p> : <div className={styles.itemList}>
+                  <h3 className={styles.subTitle}>{tt("ui.vendor.invites.8649", "Stall invites")}</h3>
+                  {formData.vendor_invites.length === 0 ? <p className={styles.muted}>{tt("ui.no.vendors.invited.yet.f401", "No stalls invited yet.")}</p> : <div className={styles.itemList}>
                       {formData.vendor_invites.map((v, i) => <div key={i} className={styles.vendorInviteRow}>
-                          <input type="text" className={styles.input} value={v.name} onChange={e => updateVendor(i, 'name', e.target.value)} placeholder={tt("ui.vendor.name.a558", "Vendor name")} />
+                          <input type="text" className={styles.input} value={v.name} onChange={e => updateVendor(i, 'name', e.target.value)} placeholder={tt("ui.vendor.name.a558", "Stall name")} />
                           <input type="email" className={styles.input} value={v.email} onChange={e => updateVendor(i, 'email', e.target.value)} placeholder={tt("ui.email.84ad", "Email")} />
                           <input type="text" className={styles.input} value={v.booth} onChange={e => updateVendor(i, 'booth', e.target.value)} placeholder={tt("ui.booth.e.g.b.d8a4", "Booth (e.g. B-14)")} />
-                          <button className={styles.iconRemove} onClick={() => removeVendor(i)} type="button" aria-label={tt("ui.remove.vendor.d65d", "Remove vendor")}><FaTrash /></button>
+                          <button className={styles.iconRemove} onClick={() => removeVendor(i)} type="button" aria-label={tt("ui.remove.vendor.d65d", "Remove stall")}><FaTrash /></button>
                         </div>)}
                     </div>}
                   <button className={styles.addRowBtn} onClick={addVendor} type="button">
-                    <FaPlus /> {tt("ui.invite.vendor.1982", "Invite vendor")}
+                    <FaPlus /> {tt("ui.invite.vendor.1982", "Invite a stall")}
                   </button>
                 </div>}
 
@@ -1049,7 +1049,7 @@ const CreateEventPage = () => {
                     </div>}
 
                   {asks.vendors && formData.vendor_invites.length > 0 && <div className={`${styles.reviewCard} ${styles.reviewCardWide}`}>
-                      <p className={styles.reviewLabel}>{tt("ui.vendor.invites.8649", "Vendor invites")}</p>
+                      <p className={styles.reviewLabel}>{tt("ui.vendor.invites.8649", "Stall invites")}</p>
                       <ul className={styles.reviewList}>
                         {formData.vendor_invites.map((v, i) => <li key={i}>
                             <span>{v.name || 'Unnamed'}</span>

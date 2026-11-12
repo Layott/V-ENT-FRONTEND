@@ -150,7 +150,7 @@ const VendorShopContent = ({
   // slug rule bans that shape) and mounted the page a second time.
   const changeEvent = ref => {
     setEventId(ref);
-    router.replace(`/events/${encodeURIComponent(ref)}/vendor-shop`, { scroll: false });
+    router.replace(`/events/${encodeURIComponent(ref)}/stalls`, { scroll: false });
   };
   const allProducts = useMemo(() => {
     const items = [];
@@ -241,7 +241,7 @@ const VendorShopContent = ({
           <div className={styles.headerRow}>
             <div>
               <h1 className={styles.pageTitle}>
-                <FaStore className={styles.titleIcon} /> {tt("ui.vendor.shop.5290", "Vendor Shop")}
+                <FaStore className={styles.titleIcon} /> {tt("ui.vendor.shop.5290", "Stalls")}
               </h1>
               <p className={styles.pageSub}>
                 {tt('vendorShop.sub2', 'Food, merch and gear from the stalls at this event. Collect it there, or have it brought to you with a VIP ticket.')}
@@ -294,7 +294,7 @@ const VendorShopContent = ({
           <div className={styles.controlsRow}>
             <div className={styles.searchBar}>
               <FiSearch className={styles.searchIcon} />
-              <input type="text" placeholder={tt("ui.search.vendors.2237", "Search vendors…")} value={search} onChange={e => setSearch(e.target.value)} className={styles.searchInput} />
+              <input type="text" placeholder={tt("ui.search.vendors.2237", "Search stalls…")} value={search} onChange={e => setSearch(e.target.value)} className={styles.searchInput} />
             </div>
             <div className={styles.categoryRow}>
               {categories.map(c => <button key={c || 'all'} className={`${styles.categoryBtn} ${category === c ? styles.categoryBtnActive : ''}`} onClick={() => setCategory(c)} type="button">
@@ -306,20 +306,20 @@ const VendorShopContent = ({
           {/* Vendor grid */}
           <div className={styles.gridSection}>
             <div className={styles.gridHeader}>
-              <h2 className={styles.sectionTitle}>{tt("ui.vendors.event.e1c0", "Vendors at this event")}</h2>
+              <h2 className={styles.sectionTitle}>{tt("ui.vendors.event.e1c0", "Stalls at this event")}</h2>
               <span className={styles.resultCount}>
-                {loading ? tx("Loading…") : filteredVendors.length === 1 ? tt('vendorShop.countOne', '1 vendor') : tt('vendorShop.countMany', '{n} vendors').replace('{n}', filteredVendors.length)}
+                {loading ? tx("Loading…") : filteredVendors.length === 1 ? tt('vendorShop.countOne', '1 stall') : tt('vendorShop.countMany', '{n} stalls').replace('{n}', filteredVendors.length)}
               </span>
             </div>
 
-            {loading ? <p className={styles.stateText}>{tt("ui.loading.vendors.f958", "Loading vendors…")}</p> : loadError && vendors.length === 0 ? <ErrorState message={loadError} onRetry={() => fetchVendors()} /> : filteredVendors.length === 0 ? (vendors.length === 0 ? <div className={styles.emptyState}>
+            {loading ? <p className={styles.stateText}>{tt("ui.loading.vendors.f958", "Loading the stalls…")}</p> : loadError && vendors.length === 0 ? <ErrorState message={loadError} onRetry={() => fetchVendors()} /> : filteredVendors.length === 0 ? (vendors.length === 0 ? <div className={styles.emptyState}>
                 <FaStore className={styles.emptyIcon} />
-                <p className={styles.emptyTitle}>{tt('vendorShop.noneOpenTitle', 'No vendors are open yet')}</p>
+                <p className={styles.emptyTitle}>{tt('vendorShop.noneOpenTitle', 'No stalls are open yet')}</p>
                 <p className={styles.emptySub}>{tt('vendorShop.noneOpenSub', 'Each stall appears here once the organiser approves it, with its products and prices. Check back closer to the event, or browse other events in the meantime.')}</p>
                 <Link href="/events" className={styles.emptyLink}>{tt('vendorShop.browseEvents', 'Browse events')}</Link>
               </div> : <div className={styles.emptyState}>
                 <FaStore className={styles.emptyIcon} />
-                <p className={styles.emptyTitle}>{tt("ui.no.vendors.match.d26c", "No vendors match.")}</p>
+                <p className={styles.emptyTitle}>{tt("ui.no.vendors.match.d26c", "No stalls match.")}</p>
                 <p className={styles.emptySub}>{tt("ui.try.different.category.clear.1b19", "Try a different category or clear the search.")}</p>
               </div>) : <div className={styles.vendorGrid}>
                 {filteredVendors.map(v => <Link key={v.id} href={`/events/${eventId}/stall/${v.slug || v.id}`} className={styles.vendorCard}>
@@ -337,7 +337,7 @@ const VendorShopContent = ({
                         <div>
                           <p className={styles.vendorName}>{v.name}</p>
                           <p className={styles.vendorMeta}>
-                            {v.category} {tt("ui.booth.9c19", "• Booth")} {v.booth || v.booth_number}
+                            {v.category} {tt("ui.booth.9c19", "• Stall")} {v.booth || v.booth_number}
                           </p>
                         </div>
                       </div>
@@ -378,7 +378,7 @@ const VendorShopContent = ({
                 {Number(activeProduct.price || 0).toLocaleString()} VC
               </p>
               <p className={styles.productModalDesc}>
-                {activeProduct.description || tx("Vendor-exclusive item, on-site only.")}
+                {activeProduct.description || tx("Sold only at this stall, at the event.")}
               </p>
               <div className={styles.productModalActions}>
                 <button className={`${styles.addToCartBtn} goldBTN`} onClick={() => addToCart(activeProduct)} disabled={!activeProduct.in_stock} type="button">
@@ -408,7 +408,7 @@ const VendorShopContent = ({
 
             <div className={styles.cartBody}>
               {cart.length === 0 ? <p className={styles.cartEmpty}>
-                  {tt("ui.cart.empty.add.product.e7ac", "Your cart is empty. Add a product from any vendor stall.")}
+                  {tt("ui.cart.empty.add.product.e7ac", "Your cart is empty. Add a product from any stall.")}
                 </p> : <ul className={styles.cartList}>
                   {cart.map(item => <li key={item.id} className={styles.cartRow}>
                       <div className={styles.cartImgWrap}>
@@ -470,7 +470,7 @@ const VendorShop = () => {
         <main className={styles.mainContainer}>
           <Sidebar />
           <div className={styles.rightPaneContainer}>
-            <p className={styles.stateText}>{tt("ui.loading.vendor.shop.8ec2", "Loading vendor shop…")}</p>
+            <p className={styles.stateText}>{tt("ui.loading.vendor.shop.8ec2", "Loading the stalls…")}</p>
           </div>
         </main>
         <BottomMenu />

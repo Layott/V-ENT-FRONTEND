@@ -8,7 +8,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 import { getJson } from '@/lib/apiCache';
-import { LuGamepad2, LuPlus, LuCalendar, LuMapPin, LuTrophy, LuUsers, LuBell, LuEye } from 'react-icons/lu';
+import { LuGamepad2, LuPlus, LuCalendar, LuMapPin, LuTrophy, LuUsers, LuBell, LuEye, LuX } from 'react-icons/lu';
 import { MdOutlineEvent } from 'react-icons/md';
 import { IoWalletOutline } from 'react-icons/io5';
 import { FiArrowUpRight, FiArrowDownLeft, FiZap } from 'react-icons/fi';
@@ -332,10 +332,13 @@ const HomePage = () => {
       const tUpcoming = upcomingSlice(allTournaments, 3);
       const eUpcoming = upcomingSlice(allEvents, 3);
 
-      // Recommendations: the next couple of future tournaments after the strip
-      // shown above (falls back to the soonest two when the list is short).
+      // Recommendations: the next couple of tournaments NOT already shown
+      // above. The old fallback took the soonest two again when the list was
+      // short, so the same tournaments sat under two headings (CEO, 12
+      // November 2026, inbox 594-13); with nothing left, the section goes.
+      const shownAbove = new Set(tUpcoming.slice.map(t => t.id));
       const recPool = tUpcoming.future.length ? tUpcoming.future : allTournaments;
-      const recommendations = recPool.slice(3, 5).length ? recPool.slice(3, 5) : recPool.slice(0, 2);
+      const recommendations = recPool.filter(t => !shownAbove.has(t.id)).slice(0, 2);
       setSnapshot({
         wallet,
         user: {
@@ -392,6 +395,20 @@ const HomePage = () => {
   const activityFeed = snapshot?.activity_feed || [];
   const recommendations = snapshot?.recommendations || [];
   const animateStats = !loading && !!snapshot;
+
+  // Sent here from a page for signed-out visitors (inbox 594-18). Read once
+  // from the address, then the address is cleaned so a reload does not say it
+  // again. Read from window rather than useSearchParams, which would need a
+  // Suspense boundary around the whole dashboard.
+  const [already, setAlready] = useState('');
+  useEffect(() => {
+    const from = new URLSearchParams(window.location.search).get('already');
+    if (!from) return;
+    setAlready(from);
+    router.replace('/home', { scroll: false });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+  const aboutPassword = already === 'forgot-password' || already === 'reset-password';
   return <div className={styles.pageContainer}>
       <Header />
       <MobileHeader />
@@ -401,6 +418,19 @@ const HomePage = () => {
 
         <div className={styles.rightPaneContainer}>
           <TourOffer />
+          {already && <div className={styles.alreadyNotice} role="status">
+              <p className={styles.alreadyText}>
+                {aboutPassword
+                  ? tt('home.alreadyPassword', 'You are signed in, so there is no password to reset. To change it, open Settings.')
+                  : tt('home.alreadySignedIn', 'You are already signed in, so we brought you home.')}
+              </p>
+              {aboutPassword && <Link href="/settings?panel=security" className={`${styles.alreadyLink} quietBTN`}>
+                  {tt('home.openSettings', 'Open Settings')}
+                </Link>}
+              <button type="button" className={styles.alreadyClose} aria-label={tt('ui.dismiss', 'Dismiss')} onClick={() => setAlready('')}>
+                <LuX aria-hidden="true" />
+              </button>
+            </div>}
           {/* ═════════════ 1. GREETING HERO ═════════════ */}
           <section className={styles.heroSection}>
             <div className={styles.heroContent}>
@@ -516,7 +546,10 @@ const HomePage = () => {
                 {Array.from({
               length: 3
             }).map((_, i) => <div key={i} className={`${styles.gridCard} ${styles.skeletonCard}`} aria-hidden />)}
-              </div> : tournamentsUpcoming.length === 0 ? <p className={styles.emptyState}>{tt("ui.no.upcoming.tournaments.check.5d01", "No upcoming tournaments. Check back soon.")}</p> : <div className={styles.cardGrid}>
+              </div> : tournamentsUpcoming.length === 0 ? <p className={styles.emptyState}>{tt("ui.no.upcoming.tournaments.check.5d01", "No upcoming tournaments. Check back soon.")}</p> : <>
+              {/* One tournament on a phone, then See all (inbox 594-14): three
+                  tall cards each with a button ran to most of a screen each. */}
+              <div className={`${styles.cardGrid} ${styles.onePhone}`}>
                 {tournamentsUpcoming.map((t, i) => <article key={t.id} className={styles.gridCard}>
                     <div className={styles.gridBanner} style={t.banner ? {
                 backgroundImage: `url(${t.banner})`
@@ -541,7 +574,11 @@ const HomePage = () => {
                       </button>
                     </div>
                   </article>)}
-              </div>}
+              </div>
+              {tournamentsUpcoming.length > 1 && <Link href="/tournaments" className={`${styles.seeAllPhone} quietBTN`}>
+                  {tt('home.seeAllTournaments', 'See all tournaments')}
+                </Link>}
+              </>}
           </section>
 
           {/* ═════════════ 5. UPCOMING EVENTS ═════════════ */}
@@ -713,7 +750,8 @@ const HomePage = () => {
           </section>
 
           {/* ═════════════ 9. RECOMMENDATIONS ═════════════ */}
-          <section className={styles.section}>
+          {/* Only tournaments not already shown above; none left, no section. */}
+          {(loading || recommendations.length > 0) && <section className={styles.section}>
             <div className={styles.sectionHeader}>
               <h2 className={styles.sectionTitle}>
                 <FiZap className={styles.titleIcon} /> {tt("ui.tournaments.a694", "Tournaments for you")}
@@ -727,9 +765,7 @@ const HomePage = () => {
                 {Array.from({
               length: 2
             }).map((_, i) => <div key={i} className={`${styles.recoCard} ${styles.skeletonCard}`} aria-hidden />)}
-              </div> : recommendations.length === 0 ? <p className={styles.emptyState}>
-                {tt("ui.no.recommendations.yet.check.1d01", "No recommendations yet - check back once more tournaments open.")}
-              </p> : <div className={styles.recoGrid}>
+              </div> : <div className={`${styles.recoGrid} ${styles.onePhone}`}>
                 {recommendations.map((t, i) => <article key={t.id} className={styles.recoCard}>
                     <div className={styles.recoBanner} style={t.banner ? {
                 backgroundImage: `url(${t.banner})`
@@ -759,7 +795,7 @@ const HomePage = () => {
                     </div>
                   </article>)}
               </div>}
-          </section>
+          </section>}
         </div>
       </main>
 

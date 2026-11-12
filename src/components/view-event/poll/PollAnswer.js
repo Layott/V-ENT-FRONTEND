@@ -241,7 +241,11 @@ export default function PollAnswer({ poll, canAnswer, busy, onAnswer }) {
       <strong className={styles.question}>{poll.question}</strong>
       {poll.help_text && <p className={styles.help}>{poll.help_text}</p>}
       {!poll.is_open && (
-        <span className={styles.note}>{tt('event.pollClosedNote', 'This poll has closed.')}</span>
+        <span className={styles.note}>
+          {poll.closed_reason === 'event_ended'
+            ? tt('event.pollEndedNote', 'The event has ended and its organisers stopped taking answers.')
+            : tt('event.pollClosedNote', 'This poll has closed.')}
+        </span>
       )}
 
       {body()}

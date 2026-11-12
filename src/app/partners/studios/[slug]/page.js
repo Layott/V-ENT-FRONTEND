@@ -326,6 +326,16 @@ export default function StudioGamePage(props) {
           {viewer.signedIn && !loading && !loadError && missing && (
             <div className={styles.panel}>
               <p className={styles.muted}>{tt('partners.studios.notFound', 'There is no game at this address, or it belongs to another studio.')}</p>
+              {/* A real way on, not only the small back link above (CEO,
+                  12 November 2026, inbox 594-28). */}
+              <div className={styles.notFoundActions}>
+                <Link href="/partners/studios" className={styles.ghostBtn}>
+                  {tt('partners.studios.openList', 'See your games')}
+                </Link>
+                <Link href="/partners/docs/studios" className={styles.ghostBtn}>
+                  {tt('partners.studios.openDocs', 'Read the studio docs')}
+                </Link>
+              </div>
             </div>
           )}
 

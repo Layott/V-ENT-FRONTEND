@@ -886,6 +886,18 @@
   }
 }
 
+/* Stacked: the list alone; a conversation opens on its own screen
+   (inbox 594-22). */
+@media only screen and (max-width: 1023px) {
+  .dmLayout {
+    min-height: 0;
+  }
+
+  .dmLayout .dmThreadPane {
+    display: none;
+  }
+}
+
 .dmConvoListWrap {
   background-color: var(--overlay-gray);
 

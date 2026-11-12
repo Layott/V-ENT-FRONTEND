@@ -42,6 +42,19 @@ const detectSocialKind = (title = '') => {
   if (t.includes('twitch')) return 'twitch';
   return 'twitter';
 };
+// An empty section is one line (CEO, 12 November 2026, inbox 594-15): on a
+// phone a card with nothing in it took most of a screen. On your own profile
+// the line carries "Add one", the next step (594-16); a visitor sees the line
+// alone.
+const EmptyLine = ({
+  text,
+  addHref,
+  isOwner,
+  addLabel
+}) => <p className={styles.emptyLine}>
+    <span>{text}</span>
+    {isOwner && addHref ? <Link href={addHref} className={styles.addOne}>{addLabel}</Link> : null}
+  </p>;
 const OverviewPanel = ({
   interests = [],
   gamingAccounts = [],
@@ -67,21 +80,18 @@ const OverviewPanel = ({
   const visibleInterests = allInterests ? interests : interests.slice(0, 9);
   const remainingInterests = Math.max(0, interests.length - visibleInterests.length);
   const visibleGames = favoriteGames.slice(0, isOwner ? 5 : 6);
+  const addOne = tt('profile.addOne', 'Add one');
+  const cardFor = empty => empty ? `${styles.card} ${styles.cardEmpty}` : styles.card;
   return <div className={styles.overviewGrid}>
       {/* LEFT COLUMN */}
       <div className={styles.leftCol}>
         {/* Interests */}
-        <div className={styles.card}>
+        <div className={cardFor(interests.length === 0)}>
           <div className={styles.cardHead}>
             <h3 className={styles.cardTitle}>{tt("ui.interests.3fc5", "Interests")}</h3>
           </div>
-          {interests.length === 0 ? <p style={{
-          color: 'rgba(255,255,255,0.45)',
-          fontSize: '0.82rem',
-          fontFamily: 'ClashGrotesk-Variable, sans-serif'
-        }}>
-              {tt("ui.no.interests.added.yet.2b2d", "No interests added yet.")}
-            </p> : <div className={styles.chipRow}>
+          {interests.length === 0 ? <EmptyLine isOwner={isOwner} addHref="/edit-user-profile?panel=info" addLabel={addOne}
+              text={tt("ui.no.interests.added.yet.2b2d", "No interests added yet.")} /> : <div className={styles.chipRow}>
               {visibleInterests.map((it, idx) => <span key={idx} className={styles.chip}>{it}</span>)}
               {remainingInterests > 0 && <button type="button" className={styles.chipMore}
                 onClick={() => setAllInterests(true)}>{tt("ui.see.more.2acf", "See more · +")}{remainingInterests}</button>}
@@ -89,17 +99,12 @@ const OverviewPanel = ({
         </div>
 
         {/* Gaming Accounts */}
-        <div className={styles.card}>
+        <div className={cardFor(gamingAccounts.length === 0)}>
           <div className={styles.cardHead}>
             <h3 className={styles.cardTitle}>{tt("ui.gaming.accounts.d1e0", "Gaming Accounts")}</h3>
           </div>
-          {gamingAccounts.length === 0 ? <p style={{
-          color: 'rgba(255,255,255,0.45)',
-          fontSize: '0.82rem',
-          fontFamily: 'ClashGrotesk-Variable, sans-serif'
-        }}>
-              {tt("ui.no.gaming.accounts.linked.0ee8", "No gaming accounts linked.")}
-            </p> : <div className={styles.acctList}>
+          {gamingAccounts.length === 0 ? <EmptyLine isOwner={isOwner} addHref="/edit-user-profile?panel=accounts" addLabel={addOne}
+              text={tt("ui.no.gaming.accounts.linked.0ee8", "No gaming accounts linked.")} /> : <div className={styles.acctList}>
               {(allAccounts ? gamingAccounts : gamingAccounts.slice(0, 4)).map(a => {
             // Proven by signing in to the platform (inbox 417): the picture and
             // name are the ones Discord or Steam gave, never typed.
@@ -125,17 +130,12 @@ const OverviewPanel = ({
         </div>
 
         {/* Social Links */}
-        <div className={styles.card}>
+        <div className={cardFor(socialLinks.length === 0)}>
           <div className={styles.cardHead}>
             <h3 className={styles.cardTitle}>{tt("ui.social.links.339c", "Social Links")}</h3>
           </div>
-          {socialLinks.length === 0 ? <p style={{
-          color: 'rgba(255,255,255,0.45)',
-          fontSize: '0.82rem',
-          fontFamily: 'ClashGrotesk-Variable, sans-serif'
-        }}>
-              {tt("ui.no.social.links.added.0edb", "No social links added.")}
-            </p> : <div className={styles.socialGrid}>
+          {socialLinks.length === 0 ? <EmptyLine isOwner={isOwner} addHref="/edit-user-profile?panel=social" addLabel={addOne}
+              text={tt("ui.no.social.links.added.0edb", "No social links added.")} /> : <div className={styles.socialGrid}>
               {socialLinks.slice(0, 6).map((s, idx) => {
             const kind = detectSocialKind(s.title);
             return <a className={styles.socialPill} key={idx} href={s.url} target="_blank" rel="noreferrer noopener">
@@ -217,7 +217,7 @@ const OverviewPanel = ({
         </div>
 
         {/* Favorite games */}
-        <div className={styles.card}>
+        <div className={cardFor(favoriteGames.length === 0)}>
           <div className={styles.cardHead}>
             <h3 className={styles.cardTitle}>
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="2" y="6" width="20" height="12" rx="4" /><path d="M6 12h4m-2-2v4M15 13h.01M17 11h.01" /></svg>
@@ -228,7 +228,8 @@ const OverviewPanel = ({
                 <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="9 18 15 12 9 6" /></svg>
               </button>}
           </div>
-          <div className={styles.gamesGrid}>
+          {favoriteGames.length === 0 ? <EmptyLine isOwner={isOwner} addHref="/edit-user-profile?panel=games" addLabel={addOne}
+              text={tt('profile.noFavouriteGames', 'No favourite games yet.')} /> : <div className={styles.gamesGrid}>
             {isOwner && <div className={styles.gameTile} onClick={onAddGame} role="button" tabIndex={0}>
                 <div className={`${styles.gameImg} ${styles.gameImgAdd}`}>
                   <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -244,11 +245,11 @@ const OverviewPanel = ({
                 </div>
                 <span className={styles.gameName}>{g.name || g.title || g}</span>
               </div>)}
-          </div>
+          </div>}
         </div>
 
         {/* Achievements */}
-        <div className={styles.card}>
+        <div className={cardFor(achievements.length === 0)}>
           <div className={styles.cardHead}>
             <h3 className={styles.cardTitle}>
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0V4z" /><path d="M21 5h-3v3a3 3 0 0 0 3-3zM3 5h3v3a3 3 0 0 1-3-3z" /></svg>
@@ -260,15 +261,8 @@ const OverviewPanel = ({
                 <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="9 18 15 12 9 6" /></svg>
               </button>}
           </div>
-          {achievements.length === 0 ? <p style={{
-          color: 'rgba(255,255,255,0.45)',
-          fontSize: '0.82rem',
-          fontFamily: 'ClashGrotesk-Variable, sans-serif',
-          textAlign: 'center',
-          padding: '1.5rem 0'
-        }}>
-              {tt("ui.no.achievements.yet.c8a8", "No achievements yet.")}
-            </p> : <div className={styles.achvGrid}>
+          {achievements.length === 0 ? <EmptyLine isOwner={false}
+              text={tt("ui.no.achievements.yet.c8a8", "No achievements yet.")} /> : <div className={styles.achvGrid}>
               {achievements.slice(0, 6).map((a, idx) => <div className={styles.achvTile} key={a.id || idx}>
                   <div className={styles.achvMedal}>
                     {a.icon ? <img src={a.icon} alt={a.title || ''} style={{

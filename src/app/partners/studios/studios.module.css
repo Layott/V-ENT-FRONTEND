@@ -348,3 +348,11 @@
 .spaced {
   margin-top: 16px;
 }
+
+/* Two ways on from a game that is not here (inbox 594-28). */
+.notFoundActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  margin-top: 1rem;
+}

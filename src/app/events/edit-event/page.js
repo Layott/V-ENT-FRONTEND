@@ -35,6 +35,7 @@ import DoorScannerLink from '@/components/door-scanner-link/DoorScannerLink';
 import BackLink from '@/components/back-link/BackLink';
 import useGames from '@/hooks/useGames';
 import { eventAsks } from '@/lib/eventAsks';
+import { useCurrency } from '@/lib/money';
 
 const API = process.env.NEXT_PUBLIC_API_URL;
 
@@ -76,6 +77,10 @@ const FIELDS = [
   'name', 'desc', 'event_type', 'category', 'location', 'event_link',
   'capacity', 'start_date', 'end_date', 'is_listed',
   'max_tickets_per_email', 'min_age', 'game', 'series', 'social',
+  // Editable after creation (CEO, 12 November 2026: "yes the entire site is
+  // meant to be very flexible", inbox 591), and whether polls keep taking
+  // answers once it ends, the organisers' own call (inbox 590).
+  'currency', 'polls_after_end',
 ];
 const SOCIAL = [
   ['twitter', 'ui.twitter.x.a0b4', 'Twitter / X', 'https://x.com/...'],
@@ -92,6 +97,7 @@ export const EditEventContent = ({ slug: slugFromPath }) => {
   const token = session?.user?.sessionToken;
   const ref = slugFromPath || searchParams.get('id');
   const { games: gameRows, gameTitles } = useGames();
+  const { rates } = useCurrency();
 
   const [original, setOriginal] = useState(null);
   const [form, setForm] = useState(null);
@@ -165,6 +171,8 @@ export const EditEventContent = ({ slug: slugFromPath }) => {
           game: e.game || '',
           series: e.series_id != null ? String(e.series_id) : '',
           social: Object.fromEntries(SOCIAL.map(([k]) => [k, e.social_links?.[k] || ''])),
+          currency: e.currency || 'NGN',
+          polls_after_end: e.polls_after_end !== false,
         };
         // Asked before the form is drawn (Apple review P063-8): door staff and
         // strangers saw every field and were refused only on save.
@@ -489,6 +497,34 @@ export const EditEventContent = ({ slug: slugFromPath }) => {
                        onChange={e => set('max_tickets_per_email',
                          e.target.value.replace(/[^0-9]/g, ''))} />
               </label>}
+
+              {/* The currency the ticket prices are shown in. Prices are
+                  settled in naira either way; changing it changes how they are
+                  shown, not what anybody pays (inbox 591). */}
+              {rates && rates.length > 0 && <label className={styles.field}>
+                <span className={styles.label}>{tt('createEvent.currency', 'Currency')}</span>
+                <select className={styles.input} value={form.currency}
+                        onChange={e => set('currency', e.target.value)}>
+                  {!rates.some(c => c.code === form.currency) && <option value={form.currency}>{form.currency}</option>}
+                  {rates.map(c => <option key={c.code} value={c.code}>{c.code} · {c.name}</option>)}
+                </select>
+                <span className={styles.hint}>
+                  {original && form.currency !== original.currency
+                    ? tt('eventEdit.currencyChangeNote2', 'Ticket prices stay as they are, in naira, so nobody pays a different amount, and tickets already bought are not changed. The currency records which money the event is priced for.')
+                    : tt('createEvent.currencyNote', 'Prices are settled in naira. Another currency is shown to buyers as a guide, at the rate the platform holds.')}
+                </span>
+              </label>}
+
+              <label className={styles.checkRow}>
+                <input type="checkbox" checked={form.polls_after_end}
+                       onChange={e => set('polls_after_end', e.target.checked)} />
+                <span>
+                  {tt('eventEdit.pollsAfterEnd', 'Polls keep taking answers after the event ends')}
+                  <span className={styles.hint}>
+                    {tt('eventEdit.pollsAfterEndHint', 'Off: once the event is over, its polls stop taking answers and say so. The answers already given stay.')}
+                  </span>
+                </span>
+              </label>
 
               <label className={styles.checkRow}>
                 <input type="checkbox" checked={form.is_listed}
