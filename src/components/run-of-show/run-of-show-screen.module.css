@@ -81,3 +81,17 @@
     padding: 1rem 1rem 5rem;
   }
 }
+
+/* The organiser's way to the plan from the public view (Apple review P065-7). */
+.editRow {
+  margin: 0.5rem 0 1rem;
+}
+
+.editRow a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0 1rem;
+  border-radius: 10px;
+  font-weight: 600;
+}

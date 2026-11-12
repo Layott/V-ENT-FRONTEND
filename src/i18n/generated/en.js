@@ -13338,6 +13338,14 @@ const table = {
  "reset.resendIn": "You can send a new code in {n} seconds",
  "verify.sentTo": "We sent a link to {email}. Open it to verify your account.",
  "verify.resentLine": "A new link is on its way. It can take a minute; check your spam folder too.",
- "verify.resendIn": "Send again in {n} seconds"
+ "verify.resendIn": "Send again in {n} seconds",
+ "claim.cannotUse": "This link cannot be used",
+ "disputes.emptyHow": "To raise one, open the match in its tournament and choose Raise a dispute. It then appears here so you can follow it.",
+ "msg.missingTeamId2": "We could not tell which team to edit. Pick a team from Teams to edit it.",
+ "embed.ended": "This event has ended.",
+ "manage.limitsHint2": "Leave a box empty for no limit. Limits add up: one VIP each and four per day are both checked, so somebody holding a VIP is refused a second whatever the day allows. Retyping an address after a refresh does not get round them.",
+ "stall.boothAtVenue": "Booth {n} at the venue",
+ "scan.beforeDoors2": "Open this page once with signal before the doors open; after that it works with no signal and sends the check-ins when signal returns.",
+ "ros.editIt": "Edit the run of show"
 };
 export default table;

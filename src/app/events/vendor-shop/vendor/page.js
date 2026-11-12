@@ -404,7 +404,7 @@ export const VendorStallContent = ({ eventSlug = '', stallSlug = '' } = {}) => {
                 </div>
                 <div className={styles.metaRow}>
                   <span className={styles.metaItem}>
-                    <IoLocationOutline /> {tt("ui.booth.8ca3", "Booth")} {vendor.booth_number || vendor.booth}
+                    <IoLocationOutline /> {tt('stall.boothAtVenue', 'Booth {n} at the venue').replace('{n}', vendor.booth_number || vendor.booth)}
                   </span>
                   {vendor.category && <span className={styles.category}>{vendor.category}</span>}
                   {typeof vendor.rating === 'number' && <span className={styles.metaItem}>

@@ -89,8 +89,8 @@
 }
 
 .gameTag {
-  background-color: rgba(237,28,36,0.15);
-  color: var(--v-ent-red);
+  background-color: rgba(255, 255, 255, 0.07);
+  color: var(--ink-80, rgba(255, 255, 255, 0.8));
   font-size: 0.6875rem;
   font-weight: var(--fw-semi-bold);
   letter-spacing: 0.08em;
@@ -136,7 +136,7 @@
   margin-bottom: 0.4rem;
 }
 
-.progressPercent { color: var(--v-ent-gold); font-weight: var(--fw-bold); }
+.progressPercent { color: var(--primary-bg); font-weight: var(--fw-bold); }
 
 .progressBar {
   height: 6px;
@@ -147,7 +147,7 @@
 
 .progressFill {
   height: 100%;
-  background-color: var(--v-ent-gold);
+  background-color: var(--v-ent-success);
   border-radius: 8px;
   transition: width 0.4s ease;
 }
@@ -187,13 +187,13 @@
 }
 
 .publishBtn {
-  background-color: rgba(212, 175, 55,0.1);
+  background-color: var(--v-ent-red);
 
-  color: var(--v-ent-gold);
+  color: var(--primary-bg);
 }
 
 .publishBtn:hover:not(:disabled) {
-  background-color: var(--v-ent-gold);
+  background-color: var(--v-ent-light-red);
   color: #fff;
 }
 
@@ -247,8 +247,8 @@
   bottom: 90px;
   left: 50%;
   transform: translateX(-50%);
-  background-color: var(--v-ent-gold);
-  color: #fff;
+  background-color: #303136;
+  color: var(--primary-bg);
   padding: 0.7rem 1.25rem;
   border-radius: 8px;
   font-size: var(--fs-p-size-mobile);

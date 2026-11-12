@@ -72,9 +72,21 @@ export default function EventTickets({ slug, ended = false, newTab = false, orig
     return <p className={styles.note}>{tt('embed.noTickets', 'No tickets are on sale for this event yet.')}</p>;
   }
 
+  // In the order the days run, then by price, so a list never reads Day 2
+  // before Day 1 (Apple review P057-5). A pass for every day comes first.
+  const ordered = [...state.tiers].sort((a, b) => {
+    const da = a.day || '';
+    const db = b.day || '';
+    if (da !== db) return da < db ? -1 : 1;
+    return Number(a.price_ngn ?? a.price ?? 0) - Number(b.price_ngn ?? b.price ?? 0);
+  });
+
   return (
+    <>
+    {/* Said once at the top, not only on every row (Apple review P057-4). */}
+    {ended && <p className={styles.note}>{tt('embed.ended', 'This event has ended.')}</p>}
     <ul className={styles.list}>
-      {state.tiers.map((tier, index) => {
+      {ordered.map((tier, index) => {
         const vc = Number(tier.price_now_vc ?? tier.price_vc ?? tier.price ?? 0);
         const ngn = Number(tier.price_ngn ?? 0);
         const soldOut = !!tier.sold_out || Number(tier.remaining ?? 0) <= 0;
@@ -109,5 +121,6 @@ export default function EventTickets({ slug, ended = false, newTab = false, orig
         );
       })}
     </ul>
+    </>
   );
 }

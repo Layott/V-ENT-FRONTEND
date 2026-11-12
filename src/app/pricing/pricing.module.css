@@ -55,7 +55,7 @@
   font-weight: var(--fw-semi-bold);
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: var(--v-ent-gold, #d4af37);
+  color: var(--ink-70, rgba(255, 255, 255, 0.7));
   margin-bottom: 1.1rem;
 }
 

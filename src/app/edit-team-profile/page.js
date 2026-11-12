@@ -60,7 +60,7 @@ const EditTeamProfileContent = ({
     if (sessionStatus === 'loading') return;
     if (!teamId) {
       setLoading(false);
-      setError(tt("msg.missingTeamId", "This link does not say which team to open."));
+      setError(tt('msg.missingTeamId2', 'We could not tell which team to edit. Pick a team from Teams to edit it.'));
       return;
     }
     try {

@@ -117,7 +117,7 @@ const Disputes = () => {
               </div>
               <p className={styles.emptyTitle}>{tt("ui.haven.t.filed.any.b971", "You haven’t filed any disputes")}</p>
               <p className={styles.emptySub}>
-                {tt("ui.disputes.raise.match.will.d50b", "Disputes you raise on a match will appear here so you can follow their status.")}
+                {tt('disputes.emptyHow', 'To raise one, open the match in its tournament and choose Raise a dispute. It then appears here so you can follow it.')}
               </p>
             </div> : <div className={styles.list}>
               {disputes.map(d => {

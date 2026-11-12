@@ -490,6 +490,8 @@ export const ViewEventContent = ({
   // The API separates them, because the page shows two headings and should not
   // have to filter a mixed list itself.
   const eventPartners = Array.isArray(event?.partners) ? event.partners : [];
+  // The names beside the icons (Apple review P061-5): a lone bird was a guess.
+  const SOCIAL_NAMES = { twitter: 'X', x: 'X', instagram: 'Instagram', youtube: 'YouTube', facebook: 'Facebook', tiktok: 'TikTok', twitch: 'Twitch', discord: 'Discord', kick: 'Kick' };
   const eventSocials = Object.entries(event?.social_links || {}).filter(([platform, url]) => url && SOCIAL_ICONS[String(platform).toLowerCase()]).map(([platform, url]) => ({
     platform,
     url,
@@ -1389,8 +1391,9 @@ export const ViewEventContent = ({
                     platform,
                     url,
                     Icon
-                  }) => <a key={platform} href={url} target="_blank" rel="noopener noreferrer" className={styles.socialBtn} aria-label={platform}>
-                            <Icon />
+                  }) => <a key={platform} href={url} target="_blank" rel="noopener noreferrer" className={styles.socialBtn}>
+                            <Icon aria-hidden="true" />
+                            <span>{SOCIAL_NAMES[String(platform).toLowerCase()] || platform}</span>
                           </a>)}
                       </div>
                     </>}

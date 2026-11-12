@@ -45,7 +45,7 @@
 .heroBg {
   position: absolute;
   inset: 0;
-  background-color: rgba(237, 28, 36, 0.18);
+  background-color: #2a2b30;
   pointer-events: none;
 }
 
@@ -85,7 +85,7 @@
   flex-wrap: wrap;
 }
 
-.heroVerified { color: var(--v-ent-gold); font-size: 1rem; }
+.heroVerified { color: var(--v-ent-success); font-size: 1rem; }
 
 .heroSub {
   font-size: var(--fs-p-size-mobile);
@@ -106,8 +106,8 @@
 .heroBadge {
   padding: 2px 8px;
   border-radius: 8px;
-  background: rgba(212, 175, 55, 0.18);
-  color: var(--v-ent-gold);
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--primary-bg);
   font-size: 0.7rem;
   font-weight: var(--fw-semi-bold);
   text-transform: uppercase;

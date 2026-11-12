@@ -20,6 +20,7 @@ import BottomMenu from '@/components/bottom-menu/BottomMenu';
 import ShareCard from '@/components/share/ShareCard';
 import { useT } from '@/i18n/LanguageProvider';
 import { useViewer } from '@/lib/gating';
+import { useEffect, useState } from 'react';
 import RunOfShow, { RunOfShowLoader } from './RunOfShow';
 import styles from './run-of-show-screen.module.css';
 import BackLink from '@/components/back-link/BackLink';
@@ -27,6 +28,23 @@ import BackLink from '@/components/back-link/BackLink';
 export default function RunOfShowScreen({ sheet, kind, ownerRef, token, sharePath }) {
   const tt = useT();
   const viewer = useViewer();
+  // Whether this viewer runs the event, by the event's own can_edit, so the
+  // organiser can see where to change the plan from here (Apple review
+  // P065-7). Asked only once the session has answered, never for a stranger.
+  const [canEdit, setCanEdit] = useState(false);
+  useEffect(() => {
+    if (kind !== 'event' || !ownerRef || viewer.loading || !viewer.signedIn) return undefined;
+    let gone = false;
+    const ask = (ref) => fetch(`${process.env.NEXT_PUBLIC_API_URL}/event/view-event/${encodeURIComponent(ref)}/`, {
+      headers: { Authorization: `Bearer ${viewer.token}` },
+    }).then((r) => r.json());
+    ask(ownerRef)
+      // Renamed since the link was made: ask again at the new address.
+      .then((b) => (b?.status === 'moved' && b?.data?.slug ? ask(b.data.slug) : b))
+      .then((b) => { if (!gone) setCanEdit((b?.data?.event || b?.data)?.can_edit === true); })
+      .catch(() => {});
+    return () => { gone = true; };
+  }, [kind, ownerRef, viewer.loading, viewer.signedIn, viewer.token]);
 
   const backHref = kind === 'event' ? `/events/${encodeURIComponent(ownerRef)}` : kind === 'tournament' ? `/tournaments/${encodeURIComponent(ownerRef)}` : '/';
   const backWords = kind === 'event' ? tt('back.toEvent', 'Back to event') : kind === 'tournament' ? tt('back.toTournament', 'Back to tournament') : tt('back.toHome', 'Back to home');
@@ -41,13 +59,20 @@ export default function RunOfShowScreen({ sheet, kind, ownerRef, token, sharePat
 
         <div className={styles.pane}>
           <BackLink href={backHref}>{backWords}</BackLink>
+          {canEdit && (
+            <p className={styles.editRow}>
+              <Link href={`/events/${encodeURIComponent(ownerRef)}/manage?tab=run-of-show`} className="quietBTN">
+                {tt('ros.editIt', 'Edit the run of show')}
+              </Link>
+            </p>
+          )}
           {sheet ? (
             <>
               <RunOfShow sheet={sheet} />
               {sharePath ? (
                 <div className={styles.shareRow}>
+                  {/* With its words, not an icon alone (Apple review P065-5). */}
                   <ShareCard
-                    compact
                     url={sharePath}
                     title={sheet.owner?.name || sheet.name || ''}
                     text={tt('ros.shareText', 'The run of show')}

@@ -205,7 +205,7 @@ const PinPage = () => {
           <Link href="/wallets" className={`${styles.btn} ${styles.btnGhost}`}>
             {tt("ui.cancel.77df", "Cancel")}
           </Link>
-          <button type="button" className={`${styles.btn} ${styles.btnGrn}`} onClick={handleSubmit} disabled={submitting}>
+          <button type="button" className={`${styles.btn} ${styles.btnRed}`} onClick={handleSubmit} disabled={submitting}>
             {submitting ? tx("Saving…") : changing ? tx("Update PIN") : tx("Set PIN")}
           </button>
         </div>

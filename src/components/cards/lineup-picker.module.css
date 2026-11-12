@@ -94,8 +94,8 @@
 .chip:disabled { color: var(--ink-35, rgba(255, 255, 255, 0.35)); cursor: default; }
 
 .chipOn {
-  background-color: var(--v-ent-gold, #D4AF37);
-  color: #131316;
+  background-color: #4a4c54;
+  color: var(--primary-bg);
   font-weight: var(--fw-semi-bold, 600);
 }
 

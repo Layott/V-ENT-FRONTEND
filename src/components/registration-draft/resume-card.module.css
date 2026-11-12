@@ -65,11 +65,13 @@
 
 .goldBtn {
   background: var(--v-ent-gold);
-  color: #17140a;
+  color: var(--primary-bg);
+  background-color: var(--v-ent-red);
 }
 
 .goldBtn:hover {
   background: var(--v-ent-light-gold);
+  background-color: var(--v-ent-light-red);
 }
 
 .quiet {
