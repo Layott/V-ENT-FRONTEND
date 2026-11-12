@@ -33,6 +33,8 @@ import EventConsoleTabs from '@/components/event-console-tabs/EventConsoleTabs';
 import LegacyIdRoute from '@/components/legacy-id-route/LegacyIdRoute';
 import DoorScannerLink from '@/components/door-scanner-link/DoorScannerLink';
 import BackLink from '@/components/back-link/BackLink';
+import useGames from '@/hooks/useGames';
+import { eventAsks } from '@/lib/eventAsks';
 
 const API = process.env.NEXT_PUBLIC_API_URL;
 
@@ -65,11 +67,22 @@ const forInput = value => {
     + `T${pad(d.getHours())}:${pad(d.getMinutes())}`;
 };
 
+// `entry_fee` is not here any more: an event is priced per ticket type on
+// the Tickets tab, and a second price on this page changed only an old
+// "Fee:" line on some cards while the checkout charged the tiers (inbox 588).
+// The game, its edition and the event's own links were set in the wizard and
+// then frozen; they are editable here since 12 November 2026.
 const FIELDS = [
   'name', 'desc', 'event_type', 'category', 'location', 'event_link',
-  'entry_fee', 'capacity', 'start_date', 'end_date', 'is_listed',
-  'max_tickets_per_email', 'min_age',
+  'capacity', 'start_date', 'end_date', 'is_listed',
+  'max_tickets_per_email', 'min_age', 'game', 'series', 'social',
 ];
+const SOCIAL = [
+  ['twitter', 'ui.twitter.x.a0b4', 'Twitter / X', 'https://x.com/...'],
+  ['instagram', 'ui.instagram.5721', 'Instagram', 'https://instagram.com/...'],
+  ['youtube', 'ui.youtube.5588', 'YouTube', 'https://youtube.com/...'],
+];
+const same = (a, b) => JSON.stringify(a) === JSON.stringify(b);
 
 export const EditEventContent = ({ slug: slugFromPath }) => {
   const tt = useT();
@@ -78,6 +91,7 @@ export const EditEventContent = ({ slug: slugFromPath }) => {
   const { data: session, status } = useSession();
   const token = session?.user?.sessionToken;
   const ref = slugFromPath || searchParams.get('id');
+  const { games: gameRows, gameTitles } = useGames();
 
   const [original, setOriginal] = useState(null);
   const [form, setForm] = useState(null);
@@ -148,6 +162,9 @@ export const EditEventContent = ({ slug: slugFromPath }) => {
             ? String(e.max_tickets_per_email) : '',
           // 18 for adults only, 0 for everybody (inbox 305).
           min_age: Number(e.min_age) >= 18 ? 18 : 0,
+          game: e.game || '',
+          series: e.series_id != null ? String(e.series_id) : '',
+          social: Object.fromEntries(SOCIAL.map(([k]) => [k, e.social_links?.[k] || ''])),
         };
         // Asked before the form is drawn (Apple review P063-8): door staff and
         // strangers saw every field and were refused only on save.
@@ -170,13 +187,31 @@ export const EditEventContent = ({ slug: slugFromPath }) => {
 
   useEffect(() => { if (status !== 'loading') load(); }, [status, load]);
 
-  const set = (key, value) => setForm(f => ({ ...f, [key]: value }));
+  // Any edit clears a refusal about the last attempt; the live check below
+  // says straight away if the new value still does not fit.
+  const set = (key, value) => { setForm(f => ({ ...f, [key]: value })); setError(''); };
 
-  const changed = FIELDS.filter(k => original && form && form[k] !== original[k]);
+  const changed = FIELDS.filter(k => original && form && !same(form[k], original[k]));
   const nothingToSend = changed.length === 0 && !logo && !banner;
+  // Which options this kind of event has (inbox 588): the same rule the
+  // creation wizard draws from, so a field hidden there is hidden here.
+  const asks = form ? eventAsks(form, 0) : null;
+  const chosenGame = form ? gameRows.find(g => (g.game_title || g.name) === form.game) : null;
+  const editions = chosenGame?.series || [];
+  // Said beside the form before anything is sent, the same rules the server
+  // holds, so the answer is not a refusal after pressing Save.
+  const problem = !form ? '' : (
+    asks.venue && !form.location.trim()
+      ? tt('eventEdit.venueNeeded', 'An event people turn up to needs a venue.')
+      : asks.linkRequired && !form.event_link.trim()
+        ? tt('eventEdit.linkNeeded', 'An event people watch online needs its link.')
+        : form.start_date && form.end_date && new Date(form.end_date) < new Date(form.start_date)
+          ? tt('api.END_BEFORE_START', 'The event cannot end before it starts.')
+          : '');
 
   const save = async () => {
     if (nothingToSend) return;
+    if (problem) { setError(problem); return; }
     setSaving(true);
     setError('');
     setNotice('');
@@ -184,7 +219,10 @@ export const EditEventContent = ({ slug: slugFromPath }) => {
       // Only what changed, because the endpoint is partial and the form does
       // not hold every field the event has.
       const payload = new FormData();
-      changed.forEach(key => payload.append(key, String(form[key])));
+      changed.forEach(key => {
+        if (key === 'social') payload.append('social_links', JSON.stringify(form.social));
+        else payload.append(key, String(form[key]));
+      });
       if (logo) payload.append('logo', logo);
       if (banner) payload.append('banner', banner);
 
@@ -236,7 +274,8 @@ export const EditEventContent = ({ slug: slugFromPath }) => {
             {/* Both, because an organiser on this page on the day of the
                 event is one tap from the gate. Row 168. */}
             {ref && !refused && <div className={styles.headActions}>
-              <DoorScannerLink eventRef={ref} />
+              {/* A door scanner is for a door; an online event has none. */}
+              {form?.event_type !== 'virtual' && <DoorScannerLink eventRef={ref} />}
               <Link href={`/events/${ref}/attendees`} className={styles.ghostBtn}>
                 {tt('eventEdit.doorList', 'Door list')}
               </Link>
@@ -250,7 +289,7 @@ export const EditEventContent = ({ slug: slugFromPath }) => {
               the twelve-card grid: cards that jumped to a differently shaped
               page are exactly what made this feel like two places, and the
               strip is still on screen after you press one. */}
-          {!refused && <EventConsoleTabs eventRef={ref} active="details" />}
+          {!refused && <EventConsoleTabs eventRef={ref} active="details" eventType={original?.event_type} />}
 
           {loading ? (
             <p className={styles.muted}>{tt('ui.loading.33ce', 'Loading…')}</p>
@@ -298,7 +337,10 @@ export const EditEventContent = ({ slug: slugFromPath }) => {
                 <label className={styles.field}>
                   <span className={styles.label}>{tt('eventEdit.category', 'Category')}</span>
                   <select className={styles.input} value={form.category}
-                          onChange={e => set('category', e.target.value)}>
+                          onChange={e => {
+                            set('category', e.target.value);
+                            if (e.target.value === 'concert') { set('game', ''); set('series', ''); }
+                          }}>
                     <option value="">{tt('eventEdit.catNone', 'Not set')}</option>
                     {CATEGORIES.map(([value, key, fallback]) => (
                       <option key={value} value={value}>{tt(key, fallback)}</option>
@@ -312,6 +354,29 @@ export const EditEventContent = ({ slug: slugFromPath }) => {
                   </select>
                 </label>
               </div>
+
+              {asks.game && <div className={styles.row}>
+                <label className={styles.field}>
+                  <span className={styles.label}>{tt('eventEdit.game', 'Game')}</span>
+                  <select className={styles.input} value={form.game}
+                          onChange={e => { set('game', e.target.value); set('series', ''); }}>
+                    <option value="">{tt('eventEdit.noGame', 'No particular game')}</option>
+                    {gameTitles.map(g => <option key={g} value={g}>{g}</option>)}
+                    {form.game && !gameTitles.includes(form.game)
+                      && <option value={form.game}>{form.game}</option>}
+                  </select>
+                </label>
+                {editions.length > 0 && <label className={styles.field}>
+                  <span className={styles.label}>{tt('createEvent.edition', 'Edition')}</span>
+                  <select className={styles.input} value={form.series}
+                          onChange={e => set('series', e.target.value)}>
+                    <option value="">{tt('createEvent.anyEdition', 'Any edition')}</option>
+                    {editions.map(sr => <option key={sr.id} value={String(sr.id)}>
+                      {sr.name}{sr.release_year ? ` (${sr.release_year})` : ''}
+                    </option>)}
+                  </select>
+                </label>}
+              </div>}
 
               <div className={styles.row}>
                 <label className={styles.field}>
@@ -331,33 +396,30 @@ export const EditEventContent = ({ slug: slugFromPath }) => {
                 </label>
               </div>
 
-              <label className={styles.field}>
+              {asks.venue && <label className={styles.field}>
                 <span className={styles.label}>{tt('eventEdit.location', 'Location')}</span>
                 <input className={styles.input} value={form.location}
                        onChange={e => set('location', e.target.value)} />
-              </label>
+              </label>}
+
+              {asks.link && <label className={styles.field}>
+                <span className={styles.label}>{tt('eventEdit.link', 'Link for people joining online')}</span>
+                <input className={styles.input} type="url" value={form.event_link}
+                       onChange={e => set('event_link', e.target.value)} />
+              </label>}
 
               <label className={styles.field}>
-                <span className={styles.label}>{tt('eventEdit.link', 'Link for people joining online')}</span>
-                <input className={styles.input} value={form.event_link}
-                       onChange={e => set('event_link', e.target.value)} />
+                <span className={styles.label}>{tt('eventEdit.capacity', 'Capacity')}</span>
+                <input className={styles.input} type="number" min="0" step="1"
+                       value={form.capacity}
+                       onChange={e => set('capacity', e.target.value)} />
+                <span className={styles.hint}>
+                  {tt('eventEdit.pricesInTickets', 'Prices are set per ticket type.')}{' '}
+                  <Link href={`/events/${ref}/manage?tab=tickets`}>
+                    {tt('eventEdit.openTickets', 'Open Tickets')}
+                  </Link>
+                </span>
               </label>
-
-              <div className={styles.row}>
-                <label className={styles.field}>
-                  <span className={styles.label}>{tt('eventEdit.fee', 'Entry fee')}</span>
-                  <input className={styles.input} type="number" min="0" step="1"
-                         value={form.entry_fee}
-                         onChange={e => set('entry_fee', e.target.value)} />
-                </label>
-
-                <label className={styles.field}>
-                  <span className={styles.label}>{tt('eventEdit.capacity', 'Capacity')}</span>
-                  <input className={styles.input} type="number" min="0" step="1"
-                         value={form.capacity}
-                         onChange={e => set('capacity', e.target.value)} />
-                </label>
-              </div>
 
               {/* The artwork the event currently has, shown rather than
                   implied. The form only ever offered "Replace the logo" with
@@ -445,7 +507,9 @@ export const EditEventContent = ({ slug: slugFromPath }) => {
                 <span>
                   {tt('createEvent.adultsOnly', '18+ event')}
                   <span className={styles.hint}>
-                    {tt('createEvent.adultsOnlyHint', 'Only for people aged 18 and over. The event page says so, and going together is closed to anybody younger.')}
+                    {asks.goingTogether
+                      ? tt('createEvent.adultsOnlyHint', 'Only for people aged 18 and over. The event page says so, and going together is closed to anybody younger.')
+                      : tt('createEvent.adultsOnlyHintOnline', 'Only for people aged 18 and over. The event page says so.')}
                   </span>
                 </span>
               </label>
@@ -455,9 +519,24 @@ export const EditEventContent = ({ slug: slugFromPath }) => {
                   not be added and one who pulled out could not be removed.
                   Saves on its own, because a logo upload is not part of the
                   partial field save above. */}
+              <div className={styles.field}>
+                <span className={styles.label}>{tt('ui.social.links.52e0', 'Social links')}</span>
+                <div className={styles.row}>
+                  {SOCIAL.map(([k, key, label, ph]) => (
+                    <label key={k} className={styles.field}>
+                      <span className={styles.hint}>{tt(key, label)}</span>
+                      <input className={styles.input} type="url" value={form.social[k]}
+                             placeholder={ph}
+                             onChange={e => set('social', { ...form.social, [k]: e.target.value })} />
+                    </label>
+                  ))}
+                </div>
+              </div>
+
               {ref && token && <SponsorEditor eventRef={ref} token={token} />}
 
-              {error && <p className={styles.error}>{error}</p>}
+              {(error || (!nothingToSend && problem))
+                && <p className={styles.error} role="alert">{error || problem}</p>}
               {notice && <p className={styles.notice}>{notice}</p>}
 
               <div className={styles.actions}>

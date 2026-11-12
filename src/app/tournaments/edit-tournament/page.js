@@ -484,11 +484,12 @@ export const EditTournamentContent = ({ slug: slugFromPath }) => {
               </div>
 
               <div className={styles.pair}>
-                <label className={styles.field}>
+                {/* A team size only where teams enter (inbox 588). */}
+                {form.tournament_access !== 'individual' && <label className={styles.field}>
                   <span className={styles.label}>{tt('tEdit.teamSize', 'Players per team')}</span>
                   <input className={styles.input} type="number" min="1" value={form.team_size}
                          onChange={(e) => set('team_size', e.target.value)} />
-                </label>
+                </label>}
                 <label className={styles.field}>
                   <span className={styles.label}>{tt('tEdit.playerSize', 'Total places')}</span>
                   <input className={styles.input} type="number" min="1" value={form.player_size}
@@ -612,7 +613,15 @@ export const EditTournamentContent = ({ slug: slugFromPath }) => {
                 )}
               </div>
 
-              <TournamentOptions formData={{ options: options || {} }} live
+              {/* The format, who enters and the fee go in too: without them the
+                  format's own settings (every place, the streak, home and away)
+                  could be set in the wizard and never changed (inbox 588). */}
+              <TournamentOptions formData={{
+                options: options || {},
+                bracket_type: form.bracket_type,
+                tournament_access: form.tournament_access,
+                entry_fee: form.entry_fee === 'Paid' ? Number(form.entry_fee_price) || 0 : 0,
+              }} live
                                  updateFormData={(key, value) => { if (key === 'options') setOptions(value); }} />
 
               <p className={styles.sectionHead}>{tt('tEdit.secLinks', 'Where people can follow it')}</p>

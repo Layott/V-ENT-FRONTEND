@@ -383,6 +383,8 @@ export const ManageEventContent = ({
         }
         const ev = body?.data?.event || body?.data || {};
         setVenueLoaded({
+          // The kind decides whether there is a venue at all (inbox 588).
+          kind: ev.event_type || '',
           latitude: ev.latitude ?? null,
           longitude: ev.longitude ?? null,
           location: ev.location || '',
@@ -1104,7 +1106,8 @@ export const ManageEventContent = ({
             {/* Not beside a refusal: a signed-in stranger was handed the
                 scanner on the page that told them they may not be here. Door
                 staff reach it from their invitation and from My events. */}
-            {!refused && <DoorScannerLink eventRef={eventRef} />}
+            {/* A door scanner is for a door; an online event has none (inbox 588). */}
+            {!refused && venueLoaded?.kind !== 'virtual' && <DoorScannerLink eventRef={eventRef} />}
           </div>
           <p className={styles.pageSub}>
             {tt('manage.sub', 'What you sell, the people selling it for you, the codes they hand out, and who else can help.')}
@@ -1116,7 +1119,8 @@ export const ManageEventContent = ({
           {/* Not to somebody the console refuses: fifteen tabs above a
               sentence saying they may not open any of them is fifteen
               controls they cannot use. */}
-          {!refused && <EventConsoleTabs eventRef={eventRef} active={tab} onSelect={openTab} />}
+          {!refused && <EventConsoleTabs eventRef={eventRef} active={tab} onSelect={openTab}
+                                         eventType={venueLoaded?.kind} />}
 
           {error && <p className={styles.error} role="alert" data-console-error>{error}</p>}
           {notice && <p className={styles.notice}>{notice}</p>}
@@ -1152,7 +1156,7 @@ export const ManageEventContent = ({
                   {/* Where it is, and the pin the public map needs.
                       CEO, 4 September 2026: "what does it also mean by
                       organizer has not pinned?" */}
-                  {venueLoaded && <div className={styles.capacityBox}>
+                  {venueLoaded && venueLoaded.kind !== 'virtual' && <div className={styles.capacityBox}>
                     <p className={styles.capacityTitle}>
                       {tt('manage.venueTitle', 'Where it is')}
                     </p>
@@ -1192,7 +1196,8 @@ export const ManageEventContent = ({
                       "it shold not e like the main oe, the organizer oe
                       wherethey still have to scanned forthe perso to be
                       checked in shouldbe there". */}
-                  {selfCheckIn && <div className={styles.capacityBox}>
+                  {/* Checking yourself in at the door: an online event has no door. */}
+                  {selfCheckIn && venueLoaded?.kind !== 'virtual' && <div className={styles.capacityBox}>
                     <p className={styles.capacityTitle}>
                       {tt('manage.selfCheckInTitle', 'Letting people check themselves in')}
                     </p>
@@ -1240,27 +1245,33 @@ export const ManageEventContent = ({
                   {capacity && <div className={capacity.over_capacity
                       ? styles.capacityWarn : styles.capacityBox}>
                     <p className={styles.capacityTitle}>
-                      {tt('manage.capacityTitle', 'How many the venue will take')}
+                      {venueLoaded?.kind === 'virtual'
+                        ? tt('manage.capacityTitleOnline', 'How many places there are')
+                        : tt('manage.capacityTitle', 'How many the venue will take')}
                     </p>
                     <p className={styles.cardHint}>
                       {tt('manage.capacityHint', 'How many people the room holds. It is a second limit on top of each ticket type, and the smaller of the two is what somebody can actually buy.')}
                     </p>
                     <div className={styles.capacityRow}>
                       <label className={styles.capacityField}>
-                        <span>{tt('manage.capacityField', 'Venue capacity')}</span>
+                        <span>{venueLoaded?.kind === 'virtual'
+                          ? tt('manage.capacityFieldOnline', 'Places')
+                          : tt('manage.capacityField', 'Venue capacity')}</span>
                         <input className={styles.input} type="number" min="0"
                                value={capacityDraft}
                                placeholder={tt('manage.capacityNone', 'No limit')}
                                onChange={e => setCapacityDraft(e.target.value)} />
                       </label>
-                      <label className={styles.capacityField}>
+                      {/* Each day or the whole event only means something
+                          over two days or more (inbox 588). */}
+                      {(capacity.day_count || 0) > 1 && <label className={styles.capacityField}>
                         <span>{tt('manage.capacityMode', 'And that number is')}</span>
                         <select className={styles.input} value={capacityModeDraft}
                                 onChange={e => setCapacityModeDraft(e.target.value)}>
                           <option value="per_day">{tt('manage.capacityPerDay', 'How many each day holds')}</option>
                           <option value="total">{tt('manage.capacityTotal', 'How many the whole event holds')}</option>
                         </select>
-                      </label>
+                      </label>}
                       <button type="button" className={styles.primaryBtn}
                               disabled={savingCapacity}
                               onClick={saveCapacity}>

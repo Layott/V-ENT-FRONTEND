@@ -45,6 +45,9 @@ export default function EventSitePanel({ eventRef, token, showToast }) {
   const [error, setError] = useState('');
   const [origin, setOrigin] = useState('');
   const [attempt, setAttempt] = useState(0);
+  // Sections that have nothing to show on this event yet, so the list can
+  // say so rather than offer a Shown switch that changes nothing (inbox 588).
+  const [empty, setEmpty] = useState({});
 
   useEffect(() => { setOrigin(window.location.origin); }, []);
 
@@ -74,6 +77,10 @@ export default function EventSitePanel({ eventRef, token, showToast }) {
         const e = b?.data?.event || b?.data;
         if (b?.status !== 'success' || !e?.site) throw new Error('site');
         setSlug(e.slug || eventRef);
+        setEmpty({
+          tournaments: !(e.linked_tournaments || []).length,
+          sponsors: !([...(e.sponsors || []), ...(e.partners || [])]).length,
+        });
         setSaved(e.site);
         setForm(e.site);
         setStatus('ready');
@@ -239,7 +246,14 @@ export default function EventSitePanel({ eventRef, token, showToast }) {
               const [k, en] = SECTION_LABELS[s.key] || [s.key, s.key];
               return (
                 <li key={s.key} className={s.visible ? styles.sectionRow : `${styles.sectionRow} ${styles.sectionOff}`}>
-                  <span className={styles.sectionName}>{tt(k, en)}</span>
+                  <span className={styles.sectionName}>
+                    {tt(k, en)}
+                    {empty[s.key] && <span className={styles.sectionEmpty}>
+                      {s.key === 'tournaments'
+                        ? tt('siteConsole.emptyTournaments', 'Appears once a tournament is linked to this event.')
+                        : tt('siteConsole.emptySponsors', 'Appears once the event has a sponsor or partner.')}
+                    </span>}
+                  </span>
                   <div className={styles.sectionActions}>
                     <button type="button" className={styles.iconBtn} disabled={i === 0}
                             aria-label={tt('siteConsole.up', 'Move {name} up').replace('{name}', tt(k, en))}

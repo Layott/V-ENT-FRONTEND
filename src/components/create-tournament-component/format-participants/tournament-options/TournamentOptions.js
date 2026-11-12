@@ -237,26 +237,28 @@ const TournamentOptions = ({
         <div className={styles.group}>
           <h4 className={styles.groupTitle}>{tt("ui.matches.ee2d", "Matches")}<InfoTip id="bestOfMode" /></h4>
 
-          <div className={styles.choiceRow}>
+          {/* A battle royale is lobbies scored by placement, not a series of
+              games between two sides, so it has no "best of" (inbox 588). */}
+          {formatKey(formData.bracket_type) !== 'battle_royale' && <div className={styles.choiceRow}>
             <button type="button" className={`${styles.chip} ${options.best_of_mode === 'fixed' ? styles.chipOn : ''}`} onClick={() => set('best_of_mode', 'fixed')}>
               {tt("ui.same.length.every.round.62d4", "Same length every round")}
             </button>
             <button type="button" className={`${styles.chip} ${options.best_of_mode === 'escalating' ? styles.chipOn : ''}`} onClick={() => set('best_of_mode', 'escalating')}>
               {tt("ui.longer.as.progresses.f82f", "Longer as it progresses")}
             </button>
-          </div>
+          </div>}
 
           <div className={styles.fieldRow}>
-            <label className={styles.field} htmlFor="best_of">
+            {formatKey(formData.bracket_type) !== 'battle_royale' && <label className={styles.field} htmlFor="best_of">
               <span className={styles.fieldLabel}>
                 {options.best_of_mode === 'escalating' ? tx("First round is best of") : tx("Best of")}
               </span>
               <select id="best_of" className={`${createTournamentStyles.inputText} ${createTournamentStyles.inputWithDropdown} ${styles.select}`} value={options.best_of} onChange={e => number('best_of', e.target.value, 1)}>
                 {[1, 3, 5, 7, 9].map(n => <option key={n} value={n}>{n}</option>)}
               </select>
-            </label>
+            </label>}
 
-            {options.best_of_mode === 'escalating' && <label className={styles.field} htmlFor="best_of_final">
+            {formatKey(formData.bracket_type) !== 'battle_royale' && options.best_of_mode === 'escalating' && <label className={styles.field} htmlFor="best_of_final">
                 <span className={styles.fieldLabel}>{tt("ui.final.best.ca0a", "Final is best of")}</span>
                 <select id="best_of_final" className={`${createTournamentStyles.inputText} ${createTournamentStyles.inputWithDropdown} ${styles.select}`} value={options.best_of_final} onChange={e => number('best_of_final', e.target.value, 3)}>
                   {[1, 3, 5, 7, 9].map(n => <option key={n} value={n}>{n}</option>)}
@@ -299,7 +301,10 @@ const TournamentOptions = ({
         </div>
 
         {/* ------------------------------------------------------ rosters */}
-        <div className={styles.group}>
+        {/* Line-ups and substitutes are about teams; a tournament players
+            enter on their own has neither (inbox 588). */}
+        {/* The wizard says 'individuals', the edit page 'individual'. */}
+        {!['individual', 'individuals'].includes(formData.tournament_access) && <div className={styles.group}>
           <h4 className={styles.groupTitle}>{tt("ui.rosters.bdba", "Rosters")}<InfoTip id="rosterLock" /></h4>
 
           <div className={styles.fieldRow}>
@@ -315,7 +320,7 @@ const TournamentOptions = ({
               <input id="max_substitutes" type="number" min="0" max="10" className={`${createTournamentStyles.inputNumber} ${styles.select}`} value={options.max_substitutes} onChange={e => number('max_substitutes', e.target.value, 0)} />
             </label>
           </div>
-        </div>
+        </div>}
 
         {/* --------------------------------------------------- who enters */}
         <div className={styles.group}>

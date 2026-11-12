@@ -13284,6 +13284,25 @@ const table = {
  "keys.modelLabel": "Model (optional)",
  "keys.modelHint": "Leave it empty to use {model}.",
  "keys.withModel": "{label} ({model})",
- "keys.whichReads": "With more than one key, the one connected last reads the screenshots."
+ "keys.whichReads": "With more than one key, the one connected last reads the screenshots.",
+ "api.INVALID_EVENT_TYPE": "An event happens in person, online, or both.",
+ "api.INVALID_CATEGORY": "That is not one of the event categories.",
+ "api.SERIES_NOT_OF_GAME": "That edition is not one of this game.",
+ "api.INVALID_LINK": "A link has to start with https://.",
+ "api.LOCATION_REQUIRED": "An event people turn up to needs a venue.",
+ "api.LINK_REQUIRED": "An event people watch online needs its link.",
+ "createEvent.adultsOnlyHintOnline": "Only for people aged 18 and over. The event page says so.",
+ "createEvent.supportersSubOnline": "Add the logos behind the event, with links so people can find them.",
+ "eventEdit.venueNeeded": "An event people turn up to needs a venue.",
+ "eventEdit.linkNeeded": "An event people watch online needs its link.",
+ "eventEdit.game": "Game",
+ "eventEdit.noGame": "No particular game",
+ "eventEdit.pricesInTickets": "Prices are set per ticket type.",
+ "eventEdit.openTickets": "Open Tickets",
+ "createEvent.stepSponsors": "Sponsors & links",
+ "manage.capacityTitleOnline": "How many places there are",
+ "manage.capacityFieldOnline": "Places",
+ "siteConsole.emptyTournaments": "Appears once a tournament is linked to this event.",
+ "siteConsole.emptySponsors": "Appears once the event has a sponsor or partner."
 };
 export default table;

@@ -27,6 +27,7 @@ import { useTx } from '@/i18n/LanguageProvider';
 import DateField from '@/components/date-field/DateField';
 import { eventTypeLabel } from '@/lib/labels';
 import { plural } from '@/lib/plural';
+import { eventAsks, trimToAsks } from '@/lib/eventAsks';
 const STEPS = [{
   id: 1,
   label: 'Basic info'
@@ -81,7 +82,10 @@ const emptyForm = {
     // Starts equal to the capacity and follows it until somebody types a
     // number of their own (inbox 562: capacity 10,000 beside a tier of 2,000).
     quantity: 500,
-    perks: 'All-day entry • Standing area'
+    // Empty. It was "All-day entry • Standing area", which an online event
+    // and a seated concert carried onto their tickets unless somebody
+    // noticed it (inbox 588: options that do not belong to the event).
+    perks: ''
   }],
   // Step 4 - Sponsors & vendors
   series_id: '',
@@ -337,6 +341,8 @@ const CreateEventPage = () => {
     }
     return days;
   })();
+  // Which options this kind of event is asked for (inbox 588).
+  const asks = eventAsks(formData, eventDays.length);
   // What the tiers add up to, said against the capacity. Capacity 10,000 with
   // one tier of 2,000 sells 2,000, and nothing on the screen said so (inbox 562).
   const ticketTotal = formData.ticket_types.reduce((n, t) => n + (Number(t.quantity) || 0), 0);
@@ -378,10 +384,10 @@ const CreateEventPage = () => {
       if (formData.start_date && formData.end_date && new Date(formData.end_date) < new Date(formData.start_date)) {
         e.end_date = tt('msg.endAfterStart', 'End date must be after start date.');
       }
-      if (formData.event_type !== 'virtual' && !formData.location.trim()) {
+      if (asks.venue && !formData.location.trim()) {
         e.location = tt('msg.locationNeeded', 'Location is required for physical / hybrid events.');
       }
-      if (formData.event_type === 'virtual' && !formData.virtual_link.trim()) {
+      if (asks.linkRequired && !formData.virtual_link.trim()) {
         e.virtual_link = tt('msg.virtualLinkNeeded', 'Virtual link is required.');
       }
       if (!formData.capacity || formData.capacity < 1) {
@@ -470,10 +476,13 @@ const CreateEventPage = () => {
       // A free event sends no tiers, whatever was typed before the box was
       // ticked. Sending a stray half-filled tier would create a ticket type
       // nobody meant to sell.
+      // Only what this kind of event uses: a venue typed before switching
+      // to Virtual is not published as the place to go (inbox 588).
+      const trimmed = trimToAsks(formData, asks);
       const payload = withLocalDatesAsISO(freeEntry ? {
-        ...formData,
+        ...trimmed,
         ticket_types: []
-      } : formData, ['start_date', 'end_date']);
+      } : trimmed, ['start_date', 'end_date']);
 
       const files = [['banner', bannerFile]].filter(([, f]) => f);
       const sponsorFiles = Object.entries(supporterLogos).filter(([, f]) => f);
@@ -588,7 +597,9 @@ const CreateEventPage = () => {
                 <span className={styles.stepBadge}>
                   {step > s.id ? <FaCheckCircle /> : s.id}
                 </span>
-                <span className={styles.stepLabel}>{tx(s.label)}</span>
+                <span className={styles.stepLabel}>
+                  {s.id === 4 && !asks.vendors ? tt('createEvent.stepSponsors', 'Sponsors & links') : tx(s.label)}
+                </span>
               </button>)}
           </div>
 
@@ -613,6 +624,23 @@ const CreateEventPage = () => {
                 </label>
 
                 <label className={styles.label}>
+                  <span className="fieldLabelRow">{tt("ui.category.a3c6", "Category")} <InfoTip id="eventCategory" /></span>
+                  <select className={styles.input} value={formData.category} onChange={e => {
+                  update('category', e.target.value);
+                  // A concert has no game; a game picked first is not kept.
+                  if (e.target.value === 'concert') {
+                    update('game_title', '');
+                    update('series_id', '');
+                  }
+                }}>
+                    <option value="esports">{tt("ui.esports.5874", "Esports")}</option>
+                    <option value="anime">{tt("ui.anime.f1b3", "Anime")}</option>
+                    <option value="concert">{tt("ui.concert.live.music.02c4", "Concert / live music")}</option>
+                    <option value="convention">{tt("ui.convention.fa84", "Convention")}</option>
+                    <option value="other">{tt("ui.other.6e6a", "Other")}</option>
+                  </select>
+                </label>
+                {asks.game && <label className={styles.label}>
                   <span className="fieldLabelRow">{tt("ui.game.e3e8", "Game")} <span className={styles.optional}>{tt("ui.optional.b16c", "(optional)")}</span> <InfoTip id="eventGame" /></span>
                   {games.length > 0 ? <select className={styles.input} value={formData.game_title} onChange={e => {
                   update('game_title', e.target.value);
@@ -623,11 +651,11 @@ const CreateEventPage = () => {
                       <option value="">{tt("ui.select.game.a65d", "Select a game…")}</option>
                       {games.map(g => <option key={g} value={g}>{g}</option>)}
                     </select> : <input type="text" className={styles.input} value={formData.game_title} onChange={e => update('game_title', e.target.value)} placeholder={tt("createEvent.gamePlaceholder", "e.g. EA FC 25")} />}
-                </label>
+                </label>}
 
                 {/* Only annual titles have editions, so this appears only when
                     the chosen game actually has some. */}
-                {gameSeries.length > 0 && <label className={styles.label}>
+                {asks.game && gameSeries.length > 0 && <label className={styles.label}>
                     <span className="fieldLabelRow">{tt("createEvent.edition", "Edition")} <span className={styles.optional}>{tt("ui.optional.b16c", "(optional)")}</span></span>
                     <select className={styles.input} value={formData.series_id || ''} onChange={e => update('series_id', e.target.value)}>
                       <option value="">{tt("createEvent.anyEdition", "Any edition")}</option>
@@ -637,25 +665,12 @@ const CreateEventPage = () => {
                     </select>
                   </label>}
 
-                <div className={styles.formRow}>
-                  <div className={styles.label}>
-                    <span className="fieldLabelRow">{tt("createEvent.bannerLabel", "Event banner")} <span className={styles.optional}>{tt("ui.optional.b16c", "(optional)")}</span> <InfoTip id="eventBanner" /></span>
-                    <ImageUpload kind="banner" value={bannerFile} onChange={setBannerFile} />
-                    {picturesLost && !bannerFile && <span className={styles.errorMsg}>
-                      <FaExclamationCircle /> {tt('createEvent.picturesNotKept', 'A draft does not keep pictures. Choose the banner and any logos again before publishing.')}
-                    </span>}
-                  </div>
-
-                  <label className={styles.label}>
-                    <span className="fieldLabelRow">{tt("ui.category.a3c6", "Category")} <InfoTip id="eventCategory" /></span>
-                    <select className={styles.input} value={formData.category} onChange={e => update('category', e.target.value)}>
-                      <option value="esports">{tt("ui.esports.5874", "Esports")}</option>
-                      <option value="anime">{tt("ui.anime.f1b3", "Anime")}</option>
-                      <option value="concert">{tt("ui.concert.live.music.02c4", "Concert / live music")}</option>
-                      <option value="convention">{tt("ui.convention.fa84", "Convention")}</option>
-                      <option value="other">{tt("ui.other.6e6a", "Other")}</option>
-                    </select>
-                  </label>
+                <div className={styles.label}>
+                  <span className="fieldLabelRow">{tt("createEvent.bannerLabel", "Event banner")} <span className={styles.optional}>{tt("ui.optional.b16c", "(optional)")}</span> <InfoTip id="eventBanner" /></span>
+                  <ImageUpload kind="banner" value={bannerFile} onChange={setBannerFile} />
+                  {picturesLost && !bannerFile && <span className={styles.errorMsg}>
+                    <FaExclamationCircle /> {tt('createEvent.picturesNotKept', 'A draft does not keep pictures. Choose the banner and any logos again before publishing.')}
+                  </span>}
                 </div>
               {/* Whose name it runs in. Draws nothing for somebody who runs no
                   organisation, which is almost everybody. */}
@@ -713,14 +728,14 @@ const CreateEventPage = () => {
                   </label>
                 </div>
 
-                {formData.event_type !== 'virtual' && <label className={styles.label}>
+                {asks.venue && <label className={styles.label}>
                     <span className="fieldLabelRow">{tt("ui.venue.location.5ef5", "Venue / location")} <InfoTip id="eventVenue" /></span>
                     <input type="text" className={styles.input} value={formData.location} onChange={e => update('location', e.target.value)} placeholder={tt("ui.e.g.landmark.centre.5124", "e.g. Landmark Centre, Lagos")} />
                     {errors.location && <span className={styles.errorMsg}><FaExclamationCircle /> {errors.location}</span>}
                   </label>}
 
-                {formData.event_type !== 'physical' && <label className={styles.label}>
-                    <span className="fieldLabelRow">{tt("ui.virtual.link.7e99", "Virtual link")} {formData.event_type === 'virtual' && '(required)'} <InfoTip id="eventVirtualLink" /></span>
+                {asks.link && <label className={styles.label}>
+                    <span className="fieldLabelRow">{tt("ui.virtual.link.7e99", "Virtual link")} {asks.linkRequired && <span className={styles.optional}>{tt('ui.requiredParen', '(required)')}</span>} <InfoTip id="eventVirtualLink" /></span>
                     <input type="url" className={styles.input} value={formData.virtual_link} onChange={e => update('virtual_link', e.target.value)} placeholder={tt("ui.https.twitch.tv.v.1328", "https://twitch.tv/v-ent")} />
                     {errors.virtual_link && <span className={styles.errorMsg}><FaExclamationCircle /> {errors.virtual_link}</span>}
                   </label>}
@@ -730,7 +745,7 @@ const CreateEventPage = () => {
                   <input type="number" className={styles.input} value={formData.capacity} onChange={e => updateCapacity(Number(e.target.value))} min={1} />
                   {errors.capacity && <span className={styles.errorMsg}><FaExclamationCircle /> {errors.capacity}</span>}
                 </label>
-                <label className={styles.label}>
+                {asks.capacityMode && <label className={styles.label}>
                   <span className="fieldLabelRow">{tt('createEvent.capacityMode', 'And that number is')}</span>
                   <select className={styles.input} value={formData.capacity_mode}
                           onChange={e => update('capacity_mode', e.target.value)}>
@@ -740,14 +755,16 @@ const CreateEventPage = () => {
                   <span className={styles.freeEntryHint}>
                     {tt('createEvent.capacityModeHint', 'On a two-day event, "each day" means the number starts again on day two. "The whole event" means the two days share it.')}
                   </span>
-                </label>
+                </label>}
                 <label className={styles.freeEntryRow}>
                   <input type="checkbox" checked={Number(formData.min_age) >= 18}
                          onChange={e => update('min_age', e.target.checked ? 18 : 0)} />
                   <span>
                     <strong>{tt('createEvent.adultsOnly', '18+ event')}</strong>
                     <span className={styles.freeEntryHint}>
-                      {tt('createEvent.adultsOnlyHint', 'Only for people aged 18 and over. The event page says so, and going together is closed to anybody younger.')}
+                      {asks.goingTogether
+                        ? tt('createEvent.adultsOnlyHint', 'Only for people aged 18 and over. The event page says so, and going together is closed to anybody younger.')
+                        : tt('createEvent.adultsOnlyHintOnline', 'Only for people aged 18 and over. The event page says so.')}
                     </span>
                   </span>
                 </label>
@@ -845,7 +862,9 @@ const CreateEventPage = () => {
             {step === 4 && <div className={styles.formStep}>
                 <h2 className={styles.stepTitle}>{tt("createEvent.supportersTitle", "Sponsors, partners & vendors")}<InfoTip id="sponsorName" /></h2>
                 <p className={styles.stepSub}>
-                  {tt("createEvent.supportersSub", "Add the logos behind the event, with links so people can find them, and invite vendors to the on-site marketplace.")}
+                  {asks.vendors
+                    ? tt("createEvent.supportersSub", "Add the logos behind the event, with links so people can find them, and invite vendors to the on-site marketplace.")
+                    : tt("createEvent.supportersSubOnline", "Add the logos behind the event, with links so people can find them.")}
                 </p>
 
                 {[{
@@ -894,7 +913,7 @@ const CreateEventPage = () => {
                     </button>
                   </div>)}
 
-                <div className={styles.subsection}>
+                {asks.vendors && <div className={styles.subsection}>
                   <h3 className={styles.subTitle}>{tt("ui.vendor.invites.8649", "Vendor invites")}</h3>
                   {formData.vendor_invites.length === 0 ? <p className={styles.muted}>{tt("ui.no.vendors.invited.yet.f401", "No vendors invited yet.")}</p> : <div className={styles.itemList}>
                       {formData.vendor_invites.map((v, i) => <div key={i} className={styles.vendorInviteRow}>
@@ -907,7 +926,7 @@ const CreateEventPage = () => {
                   <button className={styles.addRowBtn} onClick={addVendor} type="button">
                     <FaPlus /> {tt("ui.invite.vendor.1982", "Invite vendor")}
                   </button>
-                </div>
+                </div>}
 
                 <div className={styles.subsection}>
                   <h3 className={styles.subTitle}>{tt("ui.social.links.52e0", "Social links")}</h3>
@@ -1029,7 +1048,7 @@ const CreateEventPage = () => {
                       </p>
                     </div>}
 
-                  {formData.vendor_invites.length > 0 && <div className={`${styles.reviewCard} ${styles.reviewCardWide}`}>
+                  {asks.vendors && formData.vendor_invites.length > 0 && <div className={`${styles.reviewCard} ${styles.reviewCardWide}`}>
                       <p className={styles.reviewLabel}>{tt("ui.vendor.invites.8649", "Vendor invites")}</p>
                       <ul className={styles.reviewList}>
                         {formData.vendor_invites.map((v, i) => <li key={i}>
