@@ -121,6 +121,7 @@
    warning (Apple review P143-4). */
 .optionInput:checked {
   background-color: var(--primary-bg);
+  /* design-allow glow: an inset spread with no blur is the radio's solid well around its dot, a fill and not light */
   box-shadow: inset 0 0 0 5px #4a4c54;
 }
 

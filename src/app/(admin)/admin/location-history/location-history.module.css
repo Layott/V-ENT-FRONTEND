@@ -1,4 +1,34 @@
-/* Admin location history (inbox 305c). Filled fields, no outlines. */
+/* Admin location history (inbox 305b, 305c, 596). Filled surfaces, no outlines,
+   44px on everything pressable. Tabs as on the reports page. */
+.tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 1.25rem;
+}
+
+.tab {
+  background-color: var(--overlay-gray);
+  border: 0;
+  border-radius: 8px;
+  padding: 0.55rem 1rem;
+  min-height: 44px;
+  color: var(--ink-60, rgba(255, 255, 255, 0.6));
+  font-family: "ClashGrotesk-Variable", sans-serif;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+
+@media (hover: hover) {
+  .tab:hover { color: #fff; }
+}
+
+.tabOn {
+  background-color: #3a3b42;
+  color: #fff;
+  font-weight: var(--fw-bold);
+}
+
 .form {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
@@ -10,8 +40,14 @@
   display: flex;
   flex-direction: column;
   gap: 0.35rem;
+  min-width: 0;
   font-size: 0.82rem;
   color: var(--ink-70, rgba(255, 255, 255, 0.7));
+}
+
+/* Space between the form, the history and the results: surfaces, not lines. */
+.block {
+  margin-bottom: 1rem;
 }
 
 .wide {
@@ -26,9 +62,157 @@
   color: #fff;
   padding: 0 0.85rem;
   font-size: 0.9rem;
+  width: 100%;
+  box-sizing: border-box;
 }
 
+.submitRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+/* Its own whole style: the console's .actBtn is a 26px row control and,
+   loading after this file, would win any property both set. */
 .submit {
   min-height: 44px;
-  justify-self: start;
+  padding: 0 1.4rem;
+  border: 0;
+  border-radius: 10px;
+  background: var(--v-ent-red);
+  color: #fff;
+  font-family: "ClashGrotesk-Variable", sans-serif;
+  font-size: 0.85rem;
+  font-weight: var(--fw-semi-bold);
+  cursor: pointer;
+}
+
+/* Only where a pointer hovers: a tap on a phone leaves :hover stuck on. */
+@media (hover: hover) {
+  .submit:not(:disabled):hover {
+    background: var(--v-ent-light-red);
+  }
+}
+
+.submit:disabled {
+  background: #2a2b30;
+  color: var(--ink-50, rgba(255, 255, 255, 0.5));
+  cursor: not-allowed;
+}
+
+.muted {
+  color: var(--ink-50, rgba(255, 255, 255, 0.5));
+}
+
+.stack {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.lead,
+.note {
+  margin: 0 0 1rem;
+  font-size: 0.85rem;
+  line-height: 1.5;
+  color: var(--ink-70, rgba(255, 255, 255, 0.7));
+}
+
+.doorIn {
+  color: var(--v-ent-success);
+}
+
+.personCell {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.rowBtn,
+.more,
+.personPick {
+  border: 0;
+  border-radius: 10px;
+  background: #2a2b30;
+  color: #fff;
+  min-height: 44px;
+  padding: 0 0.85rem;
+  font-family: "ClashGrotesk-Variable", sans-serif;
+  font-size: 0.8rem;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+@media (hover: hover) {
+  .more:hover,
+  .personPick:hover {
+    background: #33343a;
+  }
+}
+
+/* A row turns into its own filled card on a phone, the same fill as these
+   buttons, so the row's button steps one surface up to stay a button. */
+.rowBtn {
+  background: #33343a;
+}
+
+@media (hover: hover) {
+  .rowBtn:hover {
+    background: #3a3b42;
+  }
+}
+
+.more {
+  margin-top: 1rem;
+  font-weight: var(--fw-semi-bold);
+}
+
+.more:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.people {
+  margin-bottom: 1.25rem;
+}
+
+.peopleLabel {
+  margin: 0 0 0.6rem;
+  font-size: 0.82rem;
+  color: var(--ink-70, rgba(255, 255, 255, 0.7));
+}
+
+.peopleRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.personPick {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.panelHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
+}
+
+.panelTitle {
+  margin: 0;
+  font-size: 1.05rem;
+  font-weight: var(--fw-semi-bold);
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 720px) {
+  .form {
+    grid-template-columns: 1fr;
+  }
 }

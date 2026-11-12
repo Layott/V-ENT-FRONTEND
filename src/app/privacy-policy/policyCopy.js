@@ -13,7 +13,7 @@
 export const POLICY_KEYS = {
   back: ['back', 'Back to V-ENT'],
   title: ['title', 'Privacy policy'],
-  updated: ['updated', 'Last updated: September 2026 · Vermillion Encore (V-ENT)'],
+  updated: ['updated', 'Last updated: November 2026 · Vermillion Encore (V-ENT)'],
   authoritative: [
     'authoritative',
     'This policy is written in English. The French and Portuguese versions are '
@@ -104,7 +104,7 @@ export const SECTIONS = [
     paragraphs: [
       'If you hold a ticket to an event, you may choose to show that you are going, the area you are leaving from, and whether other people at the event may ping you to meet up. All of it is off until you switch it on, and you choose who sees each part: nobody, your mutual follows, people you approve, or everyone at the event.',
       'What you can share depends on the date of birth on your profile. Under 13, none of it is available. From 13 to 17 the choices are narrower, pings are only between people of the same age group, and an adult never sees a minor’s area. Events marked 18+ close it to anybody younger.',
-      'Once the event ends, the area you left from is hidden from everybody, including you. V-ENT keeps a record of every area you set, for safety, and only staff with a separate permission can search it; each search must give a reason and is written to our audit log. The record is included when you download your data from Settings.',
+      'Once the event ends, the area you left from is hidden from everybody, including you. V-ENT keeps a record of every area you set, for safety, with no time limit for as long as your account exists, and deletes it with your account. Only staff with a separate permission can search it, by person, event, area or date, and the record shows whether your ticket was checked in at that event. Every search and every history they open must give a reason and is written to our audit log. The record is included when you download your data from Settings.',
     ],
   },
   {
