@@ -535,8 +535,11 @@ export const GUIDES = {
   },
   '/admin/location-history': {
     title: 'Location history',
-    what: 'The areas people said they were leaving from for an event, kept for safety after the event hides them.',
-    does: ['Search by an event, a person, or both', 'Give a reason: every search is written to the audit log'],
+    what: 'The areas people said they were leaving from for an event, kept with no time limit for safety after the event hides them, and whether each person was checked in at the door.',
+    does: ['Search by a person (name, username or email), an event, an area, and the days it was set',
+      'Open one person’s whole history from the people matched or from any row',
+      'Give a reason: every search and every history opened is written to the audit log',
+      'Who has looked: every lookup and its reason (a super admin sees everybody’s)'],
   },
   '/admin/audit-log': {
     title: 'Audit log',

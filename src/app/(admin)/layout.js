@@ -32,9 +32,12 @@ export default function AdminLayout({
 }) {
   const tt = useT();
   const title = tt("ui.v.ent.admin.1b2e", "V-ENT Admin");
+  // Again on every route: moving between sections renders the root metadata
+  // again, whose site title replaced this one after the first page (inbox 598).
+  const routePath = useRoutePath();
   useEffect(() => {
     document.title = title;
-  }, [title]);
+  }, [title, routePath]);
 
   // Whether this person may be on this section at all.
   //
@@ -48,7 +51,7 @@ export default function AdminLayout({
   // built next week is covered on the day it is written, and the permission it
   // needs is read from the same map the nav reads.
   const { loading, allowed } = useAdminAuth();
-  const section = itemForPath(useRoutePath());
+  const section = itemForPath(routePath);
   // Column names onto every console table cell, for the stacked phone rows.
   useTableLabels();
 
