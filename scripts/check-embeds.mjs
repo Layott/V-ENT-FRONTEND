@@ -163,11 +163,15 @@ for (const route of ROUTES) {
     // fetched" for weeks and the ledger held a number nobody could act
     // on. The image is fetched from the server under test instead: same
     // path, same query, this origin. On production the two are the same.
+    // That holds for every first-party path, not only /api/og: the default
+    // card (/images/og-default.png) is served by the same Next server, and
+    // asking production for it made the count read 9 on 12 November 2026
+    // only because production was down.
     let target = image;
     try {
       const u = new URL(image);
       const base = new URL(BASE);
-      if (u.origin !== base.origin && u.pathname.startsWith('/api/og')) {
+      if (u.origin !== base.origin && u.origin === 'https://v-ent.co') {
         target = `${base.origin}${u.pathname}${u.search}`;
       }
     } catch {
