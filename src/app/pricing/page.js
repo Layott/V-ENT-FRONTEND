@@ -96,7 +96,13 @@ export default function Pricing() {
           <header className={styles.hero}>
             <span className={styles.eyebrow}>{tt('pricing.tag', 'Free while we build')}</span>
             <h1 className={styles.headline}>
-              {tt('pricing.headA', 'Everything on V-ENT is')}{' '}
+              {/* The brand never breaks at its hyphen (Apple review P117-2: the phone read
+                  "Everything on V-" then "ENT is free"). */}
+              {(() => {
+                const line = tt('pricing.headA', 'Everything on V-ENT is');
+                const [before, after] = line.split('V-ENT');
+                return after === undefined ? line : <>{before}<span className={styles.nowrap}>V-ENT</span>{after}</>;
+              })()}{' '}
               <span className={styles.headlineFree}>{tt('pricing.headB', 'free right now')}</span>.
             </h1>
             <p className={styles.lede}>

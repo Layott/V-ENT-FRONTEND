@@ -198,7 +198,7 @@ const AccountPanel = ({
           </p>
           <div className={styles.founderRow}>
             <FounderBadge size="lg" />
-            <button type="button" className={`${shared.btn} ${shared.btnSm} ${account.founder_badge ? shared.ghostBTN : shared.goldBTN}`} onClick={() => toggleFounderBadge(!account.founder_badge)} disabled={savingField === 'founder'}>
+            <button type="button" className={`${shared.btn} ${shared.btnSm} ${account.founder_badge ? shared.ghostBTN : 'redBTN'}`} onClick={() => toggleFounderBadge(!account.founder_badge)} disabled={savingField === 'founder'}>
               {savingField === 'founder' ? tx("Saving...") : account.founder_badge ? tx("Hide my badge") : tx("Show my badge")}
             </button>
           </div>
@@ -218,7 +218,7 @@ const AccountPanel = ({
           </div>
           <div className={shared.inputWithAction}>
             <input id="acc-email" type="email" className={shared.formInput} value={email} onChange={e => setEmail(e.target.value)} placeholder={tt("ui.example.com.50e2", "you@example.com")} />
-            <button type="button" className={`${shared.btn} ${shared.btnSm} ${shared.goldBTN}`} onClick={() => startEmailChange(email)} disabled={savingField === 'email' || !email || email === (account?.email || user.email || '')}>
+            <button type="button" className={`${shared.btn} ${shared.btnSm} ${'redBTN'}`} onClick={() => startEmailChange(email)} disabled={savingField === 'email' || !email || email === (account?.email || user.email || '')}>
               {savingField === 'email' ? tx("Sending…") : tx("Send code")}
             </button>
           </div>
@@ -229,7 +229,7 @@ const AccountPanel = ({
               read. */}
           {pendingEmail && <div className={shared.inputWithAction}>
               <input type="text" inputMode="numeric" maxLength={6} className={shared.formInput} value={emailCode} onChange={e => setEmailCode(e.target.value.replace(/\D/g, ''))} placeholder={`Six-digit code sent to ${pendingEmail}`} />
-              <button type="button" className={`${shared.btn} ${shared.btnSm} ${shared.goldBTN}`} onClick={confirmEmailChange} disabled={savingField === 'email-code' || emailCode.length !== 6}>
+              <button type="button" className={`${shared.btn} ${shared.btnSm} ${'redBTN'}`} onClick={confirmEmailChange} disabled={savingField === 'email-code' || emailCode.length !== 6}>
                 {savingField === 'email-code' ? tx("Checking…") : 'Confirm'}
               </button>
             </div>}
@@ -239,7 +239,7 @@ const AccountPanel = ({
           <label className={shared.formLabel} htmlFor="acc-fullname"><span className="fieldLabelRow">{tt("ui.full.name.eeb6", "Full name")} <InfoTip id="fullName" /></span></label>
           <div className={shared.inputWithAction}>
             <input id="acc-fullname" type="text" className={shared.formInput} value={fullName} onChange={e => setFullName(e.target.value)} placeholder={tt("ui.full.name.d904", "Your full name")} />
-            <button type="button" className={`${shared.btn} ${shared.btnSm} ${shared.goldBTN}`} onClick={() => saveField('full_name', fullName)} disabled={savingField === 'full_name' || fullName === (user.full_name || user.fullname || '')}>
+            <button type="button" className={`${shared.btn} ${shared.btnSm} ${'redBTN'}`} onClick={() => saveField('full_name', fullName)} disabled={savingField === 'full_name' || fullName === (user.full_name || user.fullname || '')}>
               {savingField === 'full_name' ? tx("Saving…") : tx("Save")}
             </button>
           </div>
@@ -249,7 +249,7 @@ const AccountPanel = ({
           <label className={shared.formLabel} htmlFor="acc-username"><span className="fieldLabelRow">{tt("ui.username.84c2", "Username")} <InfoTip id="username" /></span></label>
           <div className={shared.inputWithAction}>
             <input id="acc-username" type="text" className={shared.formInput} value={username} onChange={e => setUsername(e.target.value.replace(/\s+/g, ''))} placeholder={tt("ui.username.249b", "username")} />
-            <button type="button" className={`${shared.btn} ${shared.btnSm} ${shared.goldBTN}`} onClick={() => saveUsername(username)} disabled={savingField === 'username' || !username || username === (user.username || '')}>
+            <button type="button" className={`${shared.btn} ${shared.btnSm} ${'redBTN'}`} onClick={() => saveUsername(username)} disabled={savingField === 'username' || !username || username === (user.username || '')}>
               {savingField === 'username' ? tx("Saving…") : tx("Save")}
             </button>
           </div>

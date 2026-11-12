@@ -89,7 +89,7 @@
   font-family: "ClashGrotesk-Variable", sans-serif;
   font-size: 0.95rem;
   line-height: 1.55;
-  color: rgba(255, 255, 255, 0.75);
+  color: var(--ink-75, rgba(255, 255, 255, 0.75));
   margin: 0 0 1.5rem;
   max-width: 36ch;
 }
@@ -148,20 +148,20 @@
 .note {
   font-family: "ClashGrotesk-Variable", sans-serif;
   font-size: 0.8rem;
-  color: rgba(255, 255, 255, 0.5);
+  color: var(--ink-50, rgba(255, 255, 255, 0.5));
   margin: 0.9rem 0 0;
 }
 
 .ref {
   font-family: "ClashGrotesk-Variable", sans-serif;
   font-size: 0.75rem;
-  color: rgba(255, 255, 255, 0.4);
+  color: var(--ink-40, rgba(255, 255, 255, 0.4));
   margin: 1.5rem 0 0;
   word-break: break-all;
 }
 
 .ref span {
-  color: rgba(255, 255, 255, 0.6);
+  color: var(--ink-60, rgba(255, 255, 255, 0.6));
 }
 
 @media only screen and (min-width: 560px) {

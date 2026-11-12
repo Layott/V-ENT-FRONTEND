@@ -9,6 +9,7 @@ import shared from './settingsShared.module.css';
 import styles from './PaymentsPanel.module.css';
 import { useT } from '@/i18n/LanguageProvider';
 import { useTx } from '@/i18n/LanguageProvider';
+import { markScrimDown, isScrimClick } from '@/lib/scrim';
 const METHODS = [{
   v: 'wallet',
   label: 'V-ENT Wallet (VC)'
@@ -237,7 +238,7 @@ const PaymentsPanel = ({
                 {tt("ui.complete.identity.verification.add.62de", "Complete identity verification to add bank accounts and withdraw to local banks.")}
               </p>
             </div>
-            <button type="button" className={`${shared.btn} ${shared.btnSm} ${shared.goldBTN}`} onClick={() => showToast?.('KYC flow coming soon')}>
+            <button type="button" className={`${shared.btn} ${shared.btnSm} ${'redBTN'}`} onClick={() => showToast?.('KYC flow coming soon')}>
               {tt("ui.verify.identity.c88b", "Verify identity")}
             </button>
           </div> : savedBanks.length === 0 ? <div className={styles.emptyCard}>{tt("ui.no.bank.accounts.linked.1f77", "No bank accounts linked yet.")}</div> : <div className={styles.bankList}>
@@ -271,14 +272,14 @@ const PaymentsPanel = ({
               {hasPin ? tx("You can change your PIN at any time.") : tx("You will not be able to send or withdraw VC until you set a PIN.")}
             </span>
           </div>
-          <button type="button" className={`${shared.btn} ${shared.btnSm} ${hasPin ? shared.ghostBTN : shared.goldBTN}`} onClick={() => setShowPinModal(true)}>
+          <button type="button" className={`${shared.btn} ${shared.btnSm} ${hasPin ? shared.ghostBTN : 'quietBTN'}`} onClick={() => setShowPinModal(true)}>
             {hasPin ? tx("Change PIN") : tx("Set PIN")}
           </button>
         </div>
       </div>
 
       {/* Add card modal */}
-      {showAddCard && <div className={shared.modalBackdrop} onClick={() => setShowAddCard(false)}>
+      {showAddCard && <div className={shared.modalBackdrop} onPointerDown={markScrimDown} data-scrim="" onClick={(e) => isScrimClick(e) && (setShowAddCard(false))}>
           <div className={shared.modal} onClick={e => e.stopPropagation()}>
             <h3 className={shared.modalTitle}>{tt("ui.add.card.5e8c", "Add a card")}</h3>
             <p className={shared.modalSub}>
@@ -295,7 +296,7 @@ const PaymentsPanel = ({
           </div>
         </div>}
 
-      {showPinModal && <div className={shared.modalBackdrop} onClick={() => setShowPinModal(false)}>
+      {showPinModal && <div className={shared.modalBackdrop} onPointerDown={markScrimDown} data-scrim="" onClick={(e) => isScrimClick(e) && (setShowPinModal(false))}>
           <div className={shared.modal} onClick={e => e.stopPropagation()}>
             <h3 className={shared.modalTitle}>{hasPin ? tx("Change wallet PIN") : tx("Set wallet PIN")}</h3>
             <p className={shared.modalSub}>
@@ -316,7 +317,7 @@ const PaymentsPanel = ({
                 <button type="button" className={`${shared.btn} ${shared.ghostBTN}`} onClick={() => setShowPinModal(false)}>
                   {tt("ui.cancel.77df", "Cancel")}
                 </button>
-                <button type="submit" className={`${shared.btn} ${shared.goldBTN}`}>
+                <button type="submit" className={`${shared.btn} ${'redBTN'}`}>
                   {hasPin ? tx("Update PIN") : tx("Set PIN")}
                 </button>
               </div>

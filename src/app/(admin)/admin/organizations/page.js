@@ -17,6 +17,7 @@
 
 import { useCallback, useEffect, useState } from 'react';
 import Link from 'next/link';
+import { LuChevronRight } from 'react-icons/lu';
 import AdminNav from '@/components/admin/AdminNav';
 import AdminHeader from '@/components/admin/AdminHeader';
 import { useAdminAuth } from '@/components/admin/useAdminAuth';
@@ -28,6 +29,7 @@ import { useT } from '@/i18n/LanguageProvider';
 import shared from '@/components/admin/admin.module.css';
 import { adminToken } from '@/lib/adminToken'
 import NamePicker from '@/components/name-picker/NamePicker';
+import { markScrimDown, isScrimClick } from '@/lib/scrim';
 
 const API = process.env.NEXT_PUBLIC_API_URL;
 
@@ -172,7 +174,7 @@ function OrganizationsInner() {
   if (authLoading) return null;
 
   return <div className={shared.pageContainer}>
-      <div className={`${shared.sidebarOverlay} ${sidebarOpen ? shared.open : ''}`} onClick={() => setSidebarOpen(false)} />
+      <div className={`${shared.sidebarOverlay} ${sidebarOpen ? shared.open : ''}`} onPointerDown={markScrimDown} data-scrim="" onClick={(e) => isScrimClick(e) && (setSidebarOpen(false))} />
       <AdminNav admin={admin} onLogout={logout} sidebarOpen={sidebarOpen} badges={{}} />
       <div className={shared.mainContainer}>
         <AdminHeader admin={admin} onLogout={logout} onMenuOpen={() => setSidebarOpen(true)} searchValue={search} onSearch={setSearch} />
@@ -215,6 +217,7 @@ function OrganizationsInner() {
                           <Link className={shared.sectionLink}
                                 href={`/admin/organizations/${org.slug}`}>
                             <strong>{org.name}</strong>
+                            <LuChevronRight className={shared.rowChevron} aria-hidden="true" />
                           </Link>
                         </td>
                         <td className={shared.hideMobile}>{org.type}</td>
@@ -243,8 +246,8 @@ function OrganizationsInner() {
         </main>
       </div>
 
-      {creating ? <div className={shared.modalOverlay} onClick={(e) => {
-        if (e.target === e.currentTarget) setCreating(false);
+      {creating ? <div className={shared.modalOverlay} onPointerDown={markScrimDown} data-scrim="" onClick={(e) => {
+        if (isScrimClick(e)) setCreating(false);
       }}>
         <div className={shared.modal}>
           <h3 className={shared.modalTitle}>{tt('adminOrgs.createTitle', 'Create an organisation')}</h3>
@@ -288,8 +291,8 @@ function OrganizationsInner() {
           lands on the organisation's OWN statement - which this says out loud,
           because an admin who thinks a transfer is invisible will use it
           differently from one who knows the owner sees it. */}
-      {moving ? <div className={shared.modalOverlay} onClick={(e) => {
-        if (e.target === e.currentTarget) setMoving(null);
+      {moving ? <div className={shared.modalOverlay} onPointerDown={markScrimDown} data-scrim="" onClick={(e) => {
+        if (isScrimClick(e)) setMoving(null);
       }}>
         <div className={shared.modal}>
           <h3 className={shared.modalTitle}>

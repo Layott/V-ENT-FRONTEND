@@ -5,7 +5,7 @@
   display: inline-block;
   margin-bottom: 1rem;
   font-size: 0.85rem;
-  color: rgba(255, 255, 255, 0.55);
+  color: var(--ink-55, rgba(255, 255, 255, 0.55));
   text-decoration: none;
 }
 
@@ -30,7 +30,7 @@
 
 .sub {
   font-size: 0.85rem;
-  color: rgba(255, 255, 255, 0.5);
+  color: var(--ink-50, rgba(255, 255, 255, 0.5));
   margin: 0;
 }
 
@@ -85,7 +85,7 @@
   border: none;
   border-radius: 8px;
   background-color: rgba(255, 255, 255, 0.05);
-  color: rgba(255, 255, 255, 0.6);
+  color: var(--ink-60, rgba(255, 255, 255, 0.6));
   font-family: inherit;
   font-size: 0.85rem;
   font-weight: var(--fw-medium);
@@ -141,8 +141,8 @@
 .statLabel {
   font-size: 0.7rem;
   text-transform: uppercase;
-  letter-spacing: 0.06em;
-  color: rgba(255, 255, 255, 0.45);
+  letter-spacing: 0.08em;
+  color: var(--ink-45, rgba(255, 255, 255, 0.45));
 }
 
 /* --------------------------------------------------------------- the cards */
@@ -158,7 +158,7 @@
 .cardSub {
   font-size: 0.82rem;
   line-height: 1.55;
-  color: rgba(255, 255, 255, 0.5);
+  color: var(--ink-50, rgba(255, 255, 255, 0.5));
   margin: 0 0 1rem;
 }
 
@@ -187,14 +187,14 @@
 
 .attMeta {
   font-size: 0.78rem;
-  color: rgba(255, 255, 255, 0.45);
+  color: var(--ink-45, rgba(255, 255, 255, 0.45));
   word-break: break-word;
 }
 
 .mono {
   font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
   font-size: 0.8rem;
-  color: rgba(255, 255, 255, 0.8);
+  color: var(--ink-80, rgba(255, 255, 255, 0.8));
   white-space: nowrap;
 }
 
@@ -221,7 +221,7 @@
   margin: 0.35rem 0 0;
   font-size: 0.85rem;
   line-height: 1.6;
-  color: rgba(255, 255, 255, 0.75);
+  color: var(--ink-75, rgba(255, 255, 255, 0.75));
   white-space: pre-wrap;
   word-break: break-word;
 }
@@ -246,7 +246,7 @@
   white-space: nowrap;
 }
 
-.s_valid { background-color: rgba(255, 255, 255, 0.09); color: rgba(255, 255, 255, 0.75); }
+.s_valid { background-color: rgba(255, 255, 255, 0.09); color: var(--ink-75, rgba(255, 255, 255, 0.75)); }
 .s_checked_in { background-color: rgba(76, 175, 80, 0.16); color: #7fce82; }
 .s_refunded { background-color: rgba(201, 162, 39, 0.18); color: #e2be44; }
 .s_cancelled { background-color: rgba(237, 28, 36, 0.14); color: #ef9a9a; }
@@ -308,7 +308,7 @@
   resize: vertical;
 }
 
-.composeBody::placeholder { color: rgba(255, 255, 255, 0.35); }
+.composeBody::placeholder { color: var(--ink-35, rgba(255, 255, 255, 0.35)); }
 
 .composeActions {
   display: flex;

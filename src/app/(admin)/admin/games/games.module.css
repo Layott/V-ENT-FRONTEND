@@ -4,7 +4,7 @@
 .hint {
   font-family: 'ClashGrotesk-Variable', sans-serif;
   font-size: 0.82rem;
-  color: rgba(255, 255, 255, 0.45);
+  color: var(--ink-45, rgba(255, 255, 255, 0.45));
   margin-bottom: 1.25rem;
   max-width: 78ch;
 }
@@ -42,14 +42,14 @@
 .used {
   font-family: 'ClashGrotesk-Variable', sans-serif;
   font-size: 0.75rem;
-  color: rgba(255, 255, 255, 0.4);
+  color: var(--ink-40, rgba(255, 255, 255, 0.4));
 }
 
 .retiredBadge {
   background-color: rgba(255, 255, 255, 0.1);
-  color: rgba(255, 255, 255, 0.6);
-  font-size: 0.66rem;
-  letter-spacing: 0.05em;
+  color: var(--ink-60, rgba(255, 255, 255, 0.6));
+  font-size: 0.6875rem;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
   padding: 3px 8px;
   border-radius: 8px;
@@ -79,7 +79,7 @@
 
 .year {
   background-color: rgba(255, 255, 255, 0.08);
-  color: rgba(255, 255, 255, 0.65);
+  color: var(--ink-65, rgba(255, 255, 255, 0.65));
   font-size: 0.7rem;
   padding: 2px 7px;
   border-radius: 8px;
@@ -202,11 +202,12 @@
   flex-shrink: 0;
   background-color: rgba(255, 255, 255, 0.08);
   border-radius: 8px;
-  color: rgba(255, 255, 255, 0.5);
+  color: var(--ink-50, rgba(255, 255, 255, 0.5));
   font-family: 'ClashGrotesk-Variable', sans-serif;
   font-weight: 600;
   font-size: 0.95rem;
   text-transform: uppercase;
+  letter-spacing: 0.04em;
 }
 
 .logoRow {

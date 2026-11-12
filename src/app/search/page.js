@@ -32,6 +32,7 @@ import { eventTypeLabel, seriesStatusLabel } from '@/lib/labels';
 import { fuzzyFilter } from '@/lib/fuzzy';
 import { ORG_REGIONS } from '@/constants/countries';
 import { prizeText } from '@/lib/prize';
+import { scrollBehavior } from '@/lib/scrollMotion';
 
 // Categories whose backend does not exist yet. Their tabs stay visible (so the
 // roadmap is honest) but they report "not available yet" instead of results.
@@ -419,7 +420,7 @@ const SearchPageInner = () => {
     if (typeof window !== 'undefined') {
       window.scrollTo({
         top: 0,
-        behavior: 'smooth'
+        behavior: scrollBehavior()
       });
     }
   };

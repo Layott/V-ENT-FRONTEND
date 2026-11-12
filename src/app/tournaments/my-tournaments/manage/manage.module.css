@@ -21,13 +21,13 @@
 
 .backLink {
   font-size: var(--fs-p-size-mobile);
-  color: rgba(255, 255, 255, 0.45);
+  color: var(--ink-45, rgba(255, 255, 255, 0.45));
   text-decoration: none;
   display: inline-block;
   margin-bottom: 0.4rem;
   transition: color 0.15s;
 }
-.backLink:hover { color: rgba(255,255,255,0.8); }
+.backLink:hover { color: var(--ink-80, rgba(255, 255, 255, 0.8)); }
 
 .pageTitle {
   font-size: var(--desktop-h5-size);
@@ -37,7 +37,7 @@
 }
 
 .stateText {
-  color: rgba(255, 255, 255, 0.4);
+  color: var(--ink-40, rgba(255, 255, 255, 0.4));
   font-size: var(--fs-p-size-desktop);
   margin: 0;
 }
@@ -68,7 +68,7 @@
 .roundLabel {
   font-size: var(--fs-p-size-mobile);
   font-weight: var(--fw-medium);
-  color: rgba(255, 255, 255, 0.5);
+  color: var(--ink-50, rgba(255, 255, 255, 0.5));
   text-transform: uppercase;
   letter-spacing: 0.06em;
   margin: 0 0 0.75rem;
@@ -97,26 +97,26 @@
 .matchNumber {
   font-size: var(--fs-p-size-mobile);
   font-weight: var(--fw-medium);
-  color: rgba(255,255,255,0.55);
+  color: var(--ink-55, rgba(255, 255, 255, 0.55));
 }
 
 .statusBadge {
-  font-size: 0.65rem;
+  font-size: 0.6875rem;
   font-weight: var(--fw-semi-bold);
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.08em;
   padding: 2px 6px;
   border-radius: 8px;
 }
 
-.status_upcoming   { background: rgba(255,255,255,0.07); color: rgba(255,255,255,0.4); }
+.status_upcoming   { background: rgba(255,255,255,0.07); color: var(--ink-40, rgba(255, 255, 255, 0.4)); }
 .status_in_progress { background: rgba(212, 175, 55,0.15);  color: var(--v-ent-light-gold); }
-.status_completed  { background: rgba(255,255,255,0.05); color: rgba(255,255,255,0.3); }
+.status_completed  { background: rgba(255,255,255,0.05); color: var(--ink-30, rgba(255, 255, 255, 0.3)); }
 
 /* Score form */
 .tbdNote {
   font-size: var(--fs-p-size-mobile);
-  color: rgba(255,255,255,0.35);
+  color: var(--ink-35, rgba(255, 255, 255, 0.35));
   margin: 0;
 }
 
@@ -222,7 +222,7 @@
   padding: 0 1.25rem;
   background-color: transparent;
 
-  color: rgba(255,255,255,0.75);
+  color: var(--ink-75, rgba(255, 255, 255, 0.75));
   border-radius: 8px;
   font-family: inherit;
   font-size: var(--fs-p-size-mobile);
@@ -258,9 +258,9 @@
 .gameTag {
   background-color: rgba(237,28,36,0.15);
   color: var(--v-ent-red);
-  font-size: 0.65rem;
+  font-size: 0.6875rem;
   font-weight: var(--fw-semi-bold);
-  letter-spacing: 0.05em;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
   padding: 3px 8px;
   border-radius: 8px;
@@ -305,7 +305,7 @@
   flex-wrap: wrap;
   gap: 1.1rem;
   font-size: var(--fs-p-size-mobile);
-  color: rgba(255,255,255,0.65);
+  color: var(--ink-65, rgba(255, 255, 255, 0.65));
 }
 
 .summaryMeta span {
@@ -342,8 +342,8 @@
   background-color: #28292d;
   font-size: 0.7rem;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
-  color: rgba(255,255,255,0.55);
+  letter-spacing: 0.08em;
+  color: var(--ink-55, rgba(255, 255, 255, 0.55));
   font-weight: var(--fw-semi-bold);
 }
 
@@ -356,15 +356,15 @@
 .partTeamName { color: var(--primary-bg); font-weight: var(--fw-semi-bold); }
 
 .partStatusBadge {
-  font-size: 0.65rem;
+  font-size: 0.6875rem;
   font-weight: var(--fw-bold);
-  letter-spacing: 0.05em;
+  letter-spacing: 0.08em;
   padding: 3px 7px;
   border-radius: 8px;
   text-transform: uppercase;
   width: fit-content;
   background: rgba(255,255,255,0.06);
-  color: rgba(255,255,255,0.6);
+  color: var(--ink-60, rgba(255, 255, 255, 0.6));
 }
 
 /* ── Empty state ── */
@@ -382,7 +382,7 @@
 
 .emptyIcon { font-size: 2.5rem; color: rgba(255,255,255,0.2); margin-bottom: 0.5rem; }
 .emptyTitle { font-size: var(--desktop-h6-size); font-weight: var(--fw-semi-bold); color: var(--primary-bg); margin: 0; }
-.emptySub { font-size: var(--fs-p-size-mobile); color: rgba(255,255,255,0.45); margin: 0; }
+.emptySub { font-size: var(--fs-p-size-mobile); color: var(--ink-45, rgba(255, 255, 255, 0.45)); margin: 0; }
 
 /* ── Toast ── */
 .toast {
@@ -430,11 +430,11 @@
 
 .modalTitle { font-size: var(--fs-p-size-desktop); font-weight: var(--fw-semi-bold); color: var(--primary-bg); margin: 0; }
 
-.modalClose { background: transparent; border: none; color: rgba(255,255,255,0.5); cursor: pointer; font-size: 1.1rem; }
+.modalClose { background: transparent; border: none; color: var(--ink-50, rgba(255, 255, 255, 0.5)); cursor: pointer; font-size: 1.1rem; }
 
 .modalBody { padding: 1.25rem 1.5rem 1.5rem; }
 
-.modalSub { font-size: 0.78rem; color: rgba(255,255,255,0.55); margin: 0 0 0.75rem; line-height: 1.5; }
+.modalSub { font-size: 0.78rem; color: var(--ink-55, rgba(255, 255, 255, 0.55)); margin: 0 0 0.75rem; line-height: 1.5; }
 
 .modalInput {
   width: 100%;
@@ -485,7 +485,7 @@
 
 .inlineErrorIcon { font-size: 2.5rem; color: var(--v-ent-gold); margin-bottom: 0.5rem; }
 .inlineErrorTitle { font-size: var(--desktop-h6-size); font-weight: var(--fw-semi-bold); color: var(--primary-bg); margin: 0; }
-.inlineErrorSub { font-size: var(--fs-p-size-mobile); color: rgba(255, 255, 255, 0.45); margin: 0 0 1rem; }
+.inlineErrorSub { font-size: var(--fs-p-size-mobile); color: var(--ink-45, rgba(255, 255, 255, 0.45)); margin: 0 0 1rem; }
 
 /* ── Responsive: registrations table on small screens ── */
 @media only screen and (max-width: 767px) {
@@ -551,7 +551,7 @@
 
 .seedHint {
   display: block;
-  color: rgba(255, 255, 255, 0.5);
+  color: var(--ink-50, rgba(255, 255, 255, 0.5));
   font-size: 0.78rem;
   line-height: 1.45;
   margin-top: 0.2rem;
@@ -586,7 +586,7 @@
   flex-shrink: 0;
   background-color: rgba(255, 255, 255, 0.1);
   border-radius: 8px;
-  color: rgba(255, 255, 255, 0.75);
+  color: var(--ink-75, rgba(255, 255, 255, 0.75));
   font-size: 0.73rem;
 }
 

@@ -20,10 +20,12 @@ import { useT } from '@/i18n/LanguageProvider';
 import { call, fill, useMarketplaceOpen } from '@/lib/marketplace';
 import styles from '../seller.module.css';
 import { useAutoRefresh } from '@/lib/useLiveData';
+import { sameUser, useViewer } from '@/lib/gating';
 
 const SellerPage = props => {
   const params = use(props.params);
   const tt = useT();
+  const viewer = useViewer();
   const username = decodeURIComponent(params.username);
   const open = useMarketplaceOpen();
 
@@ -86,7 +88,7 @@ const SellerPage = props => {
                   <div className={styles.heroBody}>
                     <p className={styles.heroSub}>
                       <Link href={`/u/${seller.username}`}>
-                        {tt('mk.seeProfile', 'Their V-ENT profile')}
+                        {sameUser(viewer.username, seller.username) ? tt('mk.seeOwnProfile', 'Your V-ENT profile') : tt('mk.seeProfile', 'Their V-ENT profile')}
                       </Link>
                     </p>
                     <div className={styles.heroStats}>

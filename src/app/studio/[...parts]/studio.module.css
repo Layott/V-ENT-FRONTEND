@@ -51,7 +51,7 @@
 .sbLogo { height: 42px; object-fit: contain; width: 42px; }
 
 .sbName {
-  font-size: 27px;
+  font-size: 1.6875rem;
   font-weight: 600;
   letter-spacing: -0.01em;
   white-space: nowrap;
@@ -67,7 +67,7 @@
 }
 
 .sbNum {
-  font-size: 38px;
+  font-size: 2.375rem;
   font-weight: 700;
   line-height: 1;
   min-width: 34px;
@@ -98,8 +98,8 @@
    viewer arriving mid-fixture knows they are watching the second game rather
    than a rerun of the first. */
 .sbSeat {
-  color: rgba(255, 255, 255, 0.55);
-  font-size: 14px;
+  color: var(--ink-55, rgba(255, 255, 255, 0.55));
+  font-size: 0.875rem;
   font-weight: 600;
   letter-spacing: 0.12em;
   text-transform: uppercase;
@@ -136,15 +136,15 @@
 .sbAgg:last-child { border-radius: 0 0 8px 8px; }
 
 .sbAggK {
-  color: rgba(255, 255, 255, 0.5);
-  font-size: 14px;
+  color: var(--ink-50, rgba(255, 255, 255, 0.5));
+  font-size: 0.875rem;
   letter-spacing: 0.14em;
   text-transform: uppercase;
 }
 
 .sbAggSide {
-  color: rgba(255, 255, 255, 0.72);
-  font-size: 18px;
+  color: var(--ink-72, rgba(255, 255, 255, 0.72));
+  font-size: 1.125rem;
   font-weight: 600;
   letter-spacing: 0.04em;
   text-transform: uppercase;
@@ -152,7 +152,7 @@
 
 .sbAggNum {
   color: #fff;
-  font-size: 24px;
+  font-size: 1.5rem;
   font-weight: 700;
   font-variant-numeric: tabular-nums;
   line-height: 1;
@@ -167,8 +167,8 @@
 .sbCaption {
   background: #0e0e10;
   border-radius: 0 0 8px 8px;
-  color: rgba(255, 255, 255, 0.72);
-  font-size: 15px;
+  color: var(--ink-72, rgba(255, 255, 255, 0.72));
+  font-size: 0.9375rem;
   letter-spacing: 0.06em;
   padding: 6px 20px;
   text-transform: uppercase;
@@ -191,16 +191,16 @@
 
 .stTitle {
   background: var(--v-ent-red, #ED1C24);
-  font-size: 19px;
+  font-size: 1.1875rem;
   font-weight: 650;
   letter-spacing: 0.01em;
   padding: 13px 20px;
 }
 
 .stHead {
-  color: rgba(255, 255, 255, 0.5);
+  color: var(--ink-50, rgba(255, 255, 255, 0.5));
   display: flex;
-  font-size: 13px;
+  font-size: 0.8125rem;
   letter-spacing: 0.08em;
   padding: 9px 20px 5px;
   text-transform: uppercase;
@@ -209,7 +209,7 @@
 .stRow {
   align-items: center;
   display: flex;
-  font-size: 19px;
+  font-size: 1.1875rem;
   padding: 9px 20px;
 }
 
@@ -217,9 +217,9 @@
 .stRow:nth-child(odd) { background: rgba(255, 255, 255, 0.045); }
 
 .stPos {
-  color: rgba(255, 255, 255, 0.55);
+  color: var(--ink-55, rgba(255, 255, 255, 0.55));
   flex: 0 0 34px;
-  font-size: 16px;
+  font-size: 1rem;
   font-weight: 600;
 }
 
@@ -266,8 +266,8 @@
 }
 
 .stWhoSub {
-  color: rgba(255, 255, 255, 0.5);
-  font-size: 14px;
+  color: var(--ink-50, rgba(255, 255, 255, 0.5));
+  font-size: 0.875rem;
   font-weight: 500;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -297,7 +297,7 @@
   border-radius: 8px 8px 0 0;
   color: #fff;
   display: inline-block;
-  font-size: 34px;
+  font-size: 2.125rem;
   font-weight: 650;
   letter-spacing: -0.015em;
   padding: 12px 26px;
@@ -308,7 +308,7 @@
   border-radius: 0 8px 8px 8px;
   color: rgba(255, 255, 255, 0.82);
   display: inline-block;
-  font-size: 20px;
+  font-size: 1.25rem;
   padding: 10px 26px;
 }
 
@@ -338,16 +338,16 @@
 .cardBody { display: flex; flex-direction: column; gap: 4px; }
 
 .cardName {
-  font-size: 30px;
+  font-size: 1.875rem;
   font-weight: 650;
   letter-spacing: -0.015em;
 }
 
-.cardTeam { color: var(--v-ent-red, #ED1C24); font-size: 19px; font-weight: 600; }
+.cardTeam { color: var(--v-ent-red, #ED1C24); font-size: 1.1875rem; font-weight: 600; }
 
 .cardStat {
-  color: rgba(255, 255, 255, 0.6);
-  font-size: 16px;
+  color: var(--ink-60, rgba(255, 255, 255, 0.6));
+  font-size: 1rem;
   font-variant-numeric: tabular-nums;
 }
 
@@ -367,7 +367,7 @@
   color: #fff;
   display: flex;
   font-family: 'ClashGrotesk-Variable', system-ui, sans-serif;
-  font-size: 19px;
+  font-size: 1.1875rem;
   gap: 46px;
   padding: 13px 34px;
   white-space: nowrap;
@@ -395,7 +395,7 @@
 
 .titleMain {
   color: #fff;
-  font-size: 74px;
+  font-size: 4.625rem;
   font-weight: 700;
   letter-spacing: -0.03em;
   line-height: 1.05;
@@ -404,7 +404,7 @@
 
 .titleSub {
   color: var(--v-ent-red, #ED1C24);
-  font-size: 27px;
+  font-size: 1.6875rem;
   font-weight: 600;
   letter-spacing: 0.02em;
 }
@@ -425,14 +425,14 @@
 .bracketRow {
   align-items: center;
   display: flex;
-  font-size: 19px;
+  font-size: 1.1875rem;
   gap: 20px;
   padding: 10px 20px;
 }
 
 .bracketRow:nth-child(odd) { background: rgba(255, 255, 255, 0.045); }
 
-.bracketRound { color: rgba(255, 255, 255, 0.55); font-size: 15px; }
+.bracketRound { color: var(--ink-55, rgba(255, 255, 255, 0.55)); font-size: 0.9375rem; }
 
 .bracketScore {
   font-variant-numeric: tabular-nums;
@@ -476,7 +476,7 @@
 
 .treeTitle {
   color: var(--v-ent-red, #ED1C24);
-  font-size: 22px;
+  font-size: 1.375rem;
   font-weight: 650;
   letter-spacing: 0.02em;
 }
@@ -496,8 +496,8 @@
 }
 
 .treeRound {
-  color: rgba(255, 255, 255, 0.55);
-  font-size: 15px;
+  color: var(--ink-55, rgba(255, 255, 255, 0.55));
+  font-size: 0.9375rem;
   font-weight: 550;
 }
 
@@ -518,7 +518,7 @@
 .treeSide {
   align-items: center;
   display: flex;
-  font-size: 17px;
+  font-size: 1.0625rem;
   gap: 12px;
   justify-content: space-between;
   padding: 8px 14px;
@@ -542,7 +542,7 @@
 
 .treeWon { font-weight: 650; }
 
-.treeWaiting { color: rgba(255, 255, 255, 0.5); font-size: 15px; }
+.treeWaiting { color: var(--ink-50, rgba(255, 255, 255, 0.5)); font-size: 0.9375rem; }
 
 /* ---------------------------------------------------------- sponsor wall */
 /* Both kinds. A strip along the bottom, the one place logos are read. */
@@ -562,9 +562,9 @@
 }
 
 .wallK {
-  color: rgba(255, 255, 255, 0.62);
+  color: var(--ink-62, rgba(255, 255, 255, 0.62));
   flex: none;
-  font-size: 20px;
+  font-size: 1.25rem;
   letter-spacing: 0.14em;
   text-transform: uppercase;
 }
@@ -584,7 +584,7 @@
 }
 
 .wallLogo { height: 58px; object-fit: contain; }
-.wallName { font-size: 26px; font-weight: 600; }
+.wallName { font-size: 1.625rem; font-weight: 600; }
 
 /* ---------------------------------------------------------- now and next */
 /* An event. Two stacked lines, top left, where a viewer looks for a caption. */
@@ -612,20 +612,20 @@
 .nnNext { background: #212225; }
 
 .nnLabel {
-  font-size: 18px;
+  font-size: 1.125rem;
   letter-spacing: 0.14em;
   opacity: 0.85;
   text-transform: uppercase;
 }
 
-.nnTitle { font-size: 34px; font-weight: 700; }
-.nnRoom { font-size: 20px; opacity: 0.75; }
+.nnTitle { font-size: 2.125rem; font-weight: 700; }
+.nnRoom { font-size: 1.25rem; opacity: 0.75; }
 
 /* When the cue has a clock time. A run of show has one for every line; an
    event's now-and-next often does not, so this is drawn only when it exists
    rather than leaving a gap where a time would be. */
 .nnTime {
-  font-size: 24px;
+  font-size: 1.5rem;
   font-variant-numeric: tabular-nums;
   font-weight: 600;
   opacity: 0.8;
@@ -646,7 +646,7 @@
 
 .pgTitle {
   background: #ED1C24;
-  font-size: 26px;
+  font-size: 1.625rem;
   font-weight: 700;
   padding: 16px 24px;
 }
@@ -660,21 +660,21 @@
 }
 
 .pgRow:nth-child(odd) { background: #26272b; }
-.pgTime { font-size: 22px; font-weight: 600; opacity: 0.85; }
+.pgTime { font-size: 1.375rem; font-weight: 600; opacity: 0.85; }
 
 /* The day, above the time, on a programme that runs over more than one day.
    Smaller and quieter: the time is what somebody in the hall is reading, the
    day is only there so two days cannot be mistaken for one. */
 .pgDay {
   display: block;
-  font-size: 14px;
+  font-size: 0.875rem;
   font-weight: 500;
   opacity: 0.65;
   text-transform: uppercase;
   letter-spacing: 0.06em;
 }
-.pgName { font-size: 24px; font-weight: 600; }
-.pgRoom { font-size: 18px; opacity: 0.65; }
+.pgName { font-size: 1.5rem; font-weight: 600; }
+.pgRoom { font-size: 1.125rem; opacity: 0.65; }
 
 /* ----------------------------------------------------------------- doors */
 /* One number, bottom right: how many are in. Read from the door. */
@@ -692,8 +692,8 @@
   right: 60px;
 }
 
-.doorsNum { font-size: 54px; font-weight: 800; line-height: 1; }
-.doorsLabel { font-size: 20px; opacity: 0.7; }
+.doorsNum { font-size: 3.375rem; font-weight: 800; line-height: 1; }
+.doorsLabel { font-size: 1.25rem; opacity: 0.7; }
 
 /* ------------------------------------------------- how a graphic arrives */
 /* One pass, never a loop. A graphic that breathes on air is a graphic the
@@ -786,7 +786,7 @@
 
 .sqFormation {
   font-size: 1.3rem;
-  color: rgba(255, 255, 255, 0.6);
+  color: var(--ink-60, rgba(255, 255, 255, 0.6));
   letter-spacing: 0.06em;
 }
 
@@ -899,7 +899,7 @@
   right: 6%;
   bottom: 7%;
   text-align: center;
-  font-size: 0.6rem;
+  font-size: 0.6875rem;
   font-weight: 600;
   line-height: 1.1;
   overflow: hidden;
@@ -972,15 +972,15 @@
 
 .emptyK {
   color: var(--v-ent-red, #ED1C24);
-  font-size: 20px;
+  font-size: 1.25rem;
   font-weight: 600;
   letter-spacing: 0.14em;
   text-transform: uppercase;
 }
 
 .emptyLine {
-  color: rgba(255, 255, 255, 0.78);
-  font-size: 32px;
+  color: var(--ink-78, rgba(255, 255, 255, 0.78));
+  font-size: 2rem;
   font-weight: 500;
   line-height: 1.25;
 }
@@ -1005,7 +1005,7 @@
 .fxK {
   background: var(--v-ent-red, #ED1C24);
   border-radius: 8px;
-  font-size: 22px;
+  font-size: 1.375rem;
   font-weight: 600;
   letter-spacing: 0.12em;
   padding: 10px 24px;
@@ -1033,7 +1033,7 @@
 .fxLogo { height: 124px; object-fit: contain; width: 124px; }
 
 .fxNation {
-  font-size: 66px;
+  font-size: 4.125rem;
   font-weight: 700;
   letter-spacing: -0.025em;
   overflow: hidden;
@@ -1042,10 +1042,11 @@
 }
 
 .fxV {
-  color: rgba(255, 255, 255, 0.45);
-  font-size: 34px;
+  color: var(--ink-45, rgba(255, 255, 255, 0.45));
+  font-size: 2.125rem;
   font-weight: 600;
   text-transform: uppercase;
+  letter-spacing: 0.04em;
 }
 
 /* Narrower than the frame on purpose. The two nations above hug the middle,
@@ -1067,7 +1068,7 @@
 .fxLeg {
   align-items: center;
   display: grid;
-  font-size: 30px;
+  font-size: 1.875rem;
   gap: 20px;
   grid-template-columns: 150px 1fr 56px 1fr 150px;
   padding: 18px 28px;
@@ -1079,11 +1080,11 @@
 .fxLeg:nth-child(odd) { background: rgba(255, 255, 255, 0.045); }
 
 /* Inside a row the versus is a separator rather than a headline. */
-.fxLeg .fxV { font-size: 20px; text-align: center; }
+.fxLeg .fxV { font-size: 1.25rem; text-align: center; }
 
 .fxSeat {
-  color: rgba(255, 255, 255, 0.55);
-  font-size: 18px;
+  color: var(--ink-55, rgba(255, 255, 255, 0.55));
+  font-size: 1.125rem;
   font-weight: 600;
   letter-spacing: 0.12em;
   text-transform: uppercase;
@@ -1100,8 +1101,8 @@
 .fxPlayerAway { text-align: left; }
 
 .fxNote {
-  color: rgba(255, 255, 255, 0.6);
-  font-size: 26px;
+  color: var(--ink-60, rgba(255, 255, 255, 0.6));
+  font-size: 1.625rem;
   padding: 28px;
   text-align: center;
 }
@@ -1125,7 +1126,7 @@
 .frK {
   background: var(--v-ent-red, #ED1C24);
   border-radius: 8px;
-  font-size: 22px;
+  font-size: 1.375rem;
   font-weight: 600;
   letter-spacing: 0.12em;
   padding: 10px 24px;
@@ -1153,7 +1154,7 @@
 .frLogo { height: 92px; object-fit: contain; width: 92px; }
 
 .frNation {
-  font-size: 52px;
+  font-size: 3.25rem;
   font-weight: 700;
   letter-spacing: -0.025em;
   overflow: hidden;
@@ -1171,7 +1172,7 @@
 }
 
 .frNum {
-  font-size: 76px;
+  font-size: 4.75rem;
   font-variant-numeric: tabular-nums;
   font-weight: 800;
   line-height: 1;
@@ -1196,7 +1197,7 @@
 .frLeg {
   align-items: center;
   display: grid;
-  font-size: 26px;
+  font-size: 1.625rem;
   gap: 18px;
   grid-template-columns: 140px 1fr 140px 1fr 140px;
   padding: 16px 28px;
@@ -1209,8 +1210,8 @@
 .frLeg:nth-child(odd) { background: rgba(255, 255, 255, 0.045); }
 
 .frSeat {
-  color: rgba(255, 255, 255, 0.55);
-  font-size: 17px;
+  color: var(--ink-55, rgba(255, 255, 255, 0.55));
+  font-size: 1.0625rem;
   font-weight: 600;
   letter-spacing: 0.12em;
   text-transform: uppercase;
@@ -1227,7 +1228,7 @@
 .frPlayerAway { text-align: left; }
 
 .frLegScore {
-  font-size: 30px;
+  font-size: 1.875rem;
   font-variant-numeric: tabular-nums;
   font-weight: 700;
   text-align: center;
@@ -1249,7 +1250,7 @@
 }
 
 .frPointsN {
-  font-size: 40px;
+  font-size: 2.5rem;
   font-variant-numeric: tabular-nums;
   font-weight: 800;
   text-align: right;
@@ -1258,8 +1259,8 @@
 .frPointsAway { text-align: left; }
 
 .frPointsK {
-  color: rgba(255, 255, 255, 0.55);
-  font-size: 18px;
+  color: var(--ink-55, rgba(255, 255, 255, 0.55));
+  font-size: 1.125rem;
   letter-spacing: 0.14em;
   text-transform: uppercase;
 }
@@ -1284,7 +1285,7 @@
 .mrK {
   background: var(--v-ent-red, #ED1C24);
   border-radius: 8px;
-  font-size: 22px;
+  font-size: 1.375rem;
   font-weight: 600;
   letter-spacing: 0.12em;
   padding: 10px 24px;
@@ -1310,7 +1311,7 @@
 .mrSideAway { align-items: flex-start; }
 
 .mrPlayer {
-  font-size: 54px;
+  font-size: 3.375rem;
   font-weight: 700;
   letter-spacing: -0.025em;
   max-width: 100%;
@@ -1320,8 +1321,8 @@
 }
 
 .mrNation {
-  color: rgba(255, 255, 255, 0.6);
-  font-size: 24px;
+  color: var(--ink-60, rgba(255, 255, 255, 0.6));
+  font-size: 1.5rem;
   font-weight: 600;
   letter-spacing: 0.06em;
   text-transform: uppercase;
@@ -1337,7 +1338,7 @@
 }
 
 .mrNum {
-  font-size: 82px;
+  font-size: 5.125rem;
   font-variant-numeric: tabular-nums;
   font-weight: 800;
   line-height: 1;
@@ -1366,7 +1367,7 @@
 .h2K {
   background: var(--v-ent-red, #ED1C24);
   border-radius: 8px;
-  font-size: 22px;
+  font-size: 1.375rem;
   font-weight: 600;
   letter-spacing: 0.12em;
   padding: 10px 24px;
@@ -1396,7 +1397,7 @@
 .h2Face { border-radius: 12px; height: 176px; object-fit: cover; width: 176px; }
 
 .h2Name {
-  font-size: 44px;
+  font-size: 2.75rem;
   font-weight: 700;
   letter-spacing: -0.025em;
   max-width: 100%;
@@ -1408,7 +1409,7 @@
 
 .h2Under {
   color: var(--v-ent-red, #ED1C24);
-  font-size: 22px;
+  font-size: 1.375rem;
   font-weight: 600;
 }
 
@@ -1426,25 +1427,26 @@
 }
 
 .h2StatN {
-  font-size: 40px;
+  font-size: 2.5rem;
   font-variant-numeric: tabular-nums;
   font-weight: 700;
   line-height: 1;
 }
 
 .h2StatK {
-  color: rgba(255, 255, 255, 0.5);
-  font-size: 16px;
+  color: var(--ink-50, rgba(255, 255, 255, 0.5));
+  font-size: 1rem;
   letter-spacing: 0.1em;
   text-transform: uppercase;
 }
 
 .h2V {
   align-self: center;
-  color: rgba(255, 255, 255, 0.45);
-  font-size: 34px;
+  color: var(--ink-45, rgba(255, 255, 255, 0.45));
+  font-size: 2.125rem;
   font-weight: 600;
   text-transform: uppercase;
+  letter-spacing: 0.04em;
 }
 
 /* ---------------------------------------------------------- break screen */
@@ -1473,15 +1475,15 @@
 }
 
 .brkTitle {
-  font-size: 94px;
+  font-size: 5.875rem;
   font-weight: 700;
   letter-spacing: -0.03em;
   line-height: 1.02;
 }
 
 .brkSub {
-  color: rgba(255, 255, 255, 0.7);
-  font-size: 34px;
+  color: var(--ink-70, rgba(255, 255, 255, 0.7));
+  font-size: 2.125rem;
   font-weight: 500;
   max-width: 1100px;
 }
@@ -1497,14 +1499,14 @@
 }
 
 .brkClockK {
-  color: rgba(255, 255, 255, 0.55);
-  font-size: 22px;
+  color: var(--ink-55, rgba(255, 255, 255, 0.55));
+  font-size: 1.375rem;
   letter-spacing: 0.14em;
   text-transform: uppercase;
 }
 
 .brkClockNum {
-  font-size: 62px;
+  font-size: 3.875rem;
   font-variant-numeric: tabular-nums;
   font-weight: 800;
   line-height: 1;
@@ -1530,7 +1532,7 @@
 .awK {
   background: var(--v-ent-red, #ED1C24);
   border-radius: 8px;
-  font-size: 26px;
+  font-size: 1.625rem;
   font-weight: 600;
   letter-spacing: 0.12em;
   padding: 12px 28px;
@@ -1557,15 +1559,15 @@
 }
 
 .awName {
-  font-size: 62px;
+  font-size: 3.875rem;
   font-weight: 700;
   letter-spacing: -0.028em;
   line-height: 1.05;
 }
 
 .awDetail {
-  color: rgba(255, 255, 255, 0.7);
-  font-size: 28px;
+  color: var(--ink-70, rgba(255, 255, 255, 0.7));
+  font-size: 1.75rem;
   font-weight: 500;
   line-height: 1.25;
 }
@@ -1596,7 +1598,7 @@
 }
 
 .exTitle {
-  font-size: 62px;
+  font-size: 3.875rem;
   font-weight: 700;
   letter-spacing: -0.028em;
 }
@@ -1626,7 +1628,7 @@
   border-radius: 10px;
   display: flex;
   flex: none;
-  font-size: 28px;
+  font-size: 1.75rem;
   font-weight: 700;
   height: 52px;
   justify-content: center;
@@ -1634,7 +1636,7 @@
 }
 
 .exText {
-  font-size: 30px;
+  font-size: 1.875rem;
   font-weight: 500;
   line-height: 1.3;
 }
@@ -1775,7 +1777,7 @@
   color: #fff;
   display: flex;
   font-family: 'ClashGrotesk-Variable', system-ui, sans-serif;
-  font-size: 26px;
+  font-size: 1.625rem;
   font-weight: 700;
   letter-spacing: 0.14em;
   padding: 0 26px;
@@ -1788,7 +1790,7 @@
   color: #fff;
   display: flex;
   font-family: 'ClashGrotesk-Variable', system-ui, sans-serif;
-  font-size: 46px;
+  font-size: 2.875rem;
   font-weight: 700;
   padding: 18px 40px;
 }
@@ -1807,7 +1809,7 @@
 .fpLabel {
   color: var(--v-ent-red, #ED1C24);
   font-family: 'ClashGrotesk-Variable', system-ui, sans-serif;
-  font-size: 24px;
+  font-size: 1.5rem;
   font-weight: 700;
   letter-spacing: 0.16em;
   text-transform: uppercase;
@@ -1816,7 +1818,7 @@
 .fpNote {
   color: #fff;
   font-family: 'ClashGrotesk-Variable', system-ui, sans-serif;
-  font-size: 44px;
+  font-size: 2.75rem;
   font-weight: 700;
   margin-top: 6px;
 }
@@ -1843,16 +1845,16 @@
 }
 
 .mdTitle {
-  font-size: 40px;
+  font-size: 2.5rem;
   font-weight: 800;
-  letter-spacing: 0.02em;
+  letter-spacing: 0.04em;
   text-transform: uppercase;
 }
 
 .mdDay {
   background: var(--v-ent-red, #ED1C24);
   border-radius: 8px;
-  font-size: 22px;
+  font-size: 1.375rem;
   font-weight: 700;
   letter-spacing: 0.12em;
   padding: 6px 14px;
@@ -1877,7 +1879,7 @@
 
 .mdSide {
   color: rgba(255, 255, 255, 0.82);
-  font-size: 30px;
+  font-size: 1.875rem;
   font-weight: 600;
   min-width: 0;
   overflow: hidden;
@@ -1896,19 +1898,19 @@
 
 .mdScore {
   font-feature-settings: 'tnum';
-  font-size: 34px;
+  font-size: 2.125rem;
   font-weight: 800;
 }
 
 .mdScore b {
-  color: rgba(255, 255, 255, 0.45);
+  color: var(--ink-45, rgba(255, 255, 255, 0.45));
   font-weight: 600;
   margin: 0 8px;
 }
 
 .mdVs {
-  color: rgba(255, 255, 255, 0.45);
-  font-size: 22px;
+  color: var(--ink-45, rgba(255, 255, 255, 0.45));
+  font-size: 1.375rem;
   font-weight: 700;
   letter-spacing: 0.14em;
 }

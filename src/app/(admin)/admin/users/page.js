@@ -19,6 +19,8 @@ import { mediaUrl } from '@/lib/mediaUrl';
 import { adminToken } from '@/lib/adminToken'
 import { COUNTRIES } from '@/constants/countries';
 import PagerArrow from '@/components/pager-arrow/PagerArrow';
+import { markScrimDown, isScrimClick } from '@/lib/scrim';
+import RowMenu from '@/components/admin/RowMenu';
 const PAGE_SIZE = 20;
 // The one country list, alphabetical (inbox 443). The filter had eight of its
 // own, in no order, and could not find a member from anywhere else.
@@ -207,7 +209,7 @@ function UsersInner() {
   }
   if (authLoading) return null;
   return <div className={shared.pageContainer}>
-      <div className={`${shared.sidebarOverlay} ${sidebarOpen ? shared.open : ''}`} onClick={() => setSidebarOpen(false)} />
+      <div className={`${shared.sidebarOverlay} ${sidebarOpen ? shared.open : ''}`} onPointerDown={markScrimDown} data-scrim="" onClick={(e) => isScrimClick(e) && (setSidebarOpen(false))} />
       <AdminNav admin={admin} onLogout={logout} sidebarOpen={sidebarOpen} badges={{}} />
       <div className={shared.mainContainer}>
         <AdminHeader admin={admin} onLogout={logout} onMenuOpen={() => setSidebarOpen(true)} searchValue={search} onSearch={setSearch} />
@@ -322,13 +324,16 @@ function UsersInner() {
                         <td>
                           <div className={shared.actGroup}>
                             <Link href={`/admin/users/${encodeURIComponent(u.username)}`} className={`${shared.actBtn} ${shared.actView} ${styles.rowAction}`}>
-                              {tt("ui.view.69bd", "View")}
+                              {tt('admin.openUser', 'Open user')}
                             </Link>
-                            {u.status === 'banned' ? <button className={`${shared.actBtn} ${shared.actApprove} ${styles.rowAction}`} onClick={() => actOnUser(u.id, 'unban')}>
-                                {tt("ui.unban.d267", "Unban")}
-                              </button> : <button className={`${shared.actBtn} ${shared.actBan} ${styles.rowAction}`} onClick={() => setBanTarget(u)}>
-                                {tt("ui.ban.bfa1", "Ban")}
-                              </button>}
+                            {/* Ban behind a menu, last (Apple review S12). */}
+                            <RowMenu>
+                              {u.status === 'banned' ? <button type="button" role="menuitem" onClick={() => actOnUser(u.id, 'unban')}>
+                                  {tt("ui.unban.d267", "Unban")}
+                                </button> : <button type="button" role="menuitem" data-danger="" onClick={() => setBanTarget(u)}>
+                                  {tt("ui.ban.bfa1", "Ban")}
+                                </button>}
+                            </RowMenu>
                           </div>
                         </td>
                       </tr>)}
@@ -356,7 +361,7 @@ function UsersInner() {
         </main>
       </div>
 
-      {banTarget && <div className={shared.modalOverlay} onClick={() => setBanTarget(null)}>
+      {banTarget && <div className={shared.modalOverlay} onPointerDown={markScrimDown} data-scrim="" onClick={(e) => isScrimClick(e) && (setBanTarget(null))}>
           <div className={shared.modal} onClick={e => e.stopPropagation()}>
             <p className={shared.modalTitle}>{tt('admin.banTitle', 'Ban this account?')}</p>
             <p className={shared.modalSub}>

@@ -24,6 +24,7 @@ import { LuX } from 'react-icons/lu';
 import { NGN_PER_VC, formatNumber } from './walletHelpers';
 import { useT } from '@/i18n/LanguageProvider';
 import styles from './convert-panel.module.css';
+import { markScrimDown, isScrimClick } from '@/lib/scrim';
 
 const clean = (raw) => String(raw ?? '').replace(/[^\d.]/g, '');
 
@@ -70,7 +71,7 @@ export default function ConvertPanel({ open, onClose, balance = 0 }) {
       role="dialog"
       aria-modal="true"
       aria-label={tt('wallet.convert.title', 'What is it worth?')}
-      onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}
+      onPointerDown={markScrimDown} data-scrim="" onClick={(e) => { if (isScrimClick(e)) onClose(); }}
     >
       <div className={styles.panel}>
         <div className={styles.head}>

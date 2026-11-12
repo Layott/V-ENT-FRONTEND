@@ -39,7 +39,7 @@
 
 .back {
   display: inline-block;
-  color: rgba(255, 255, 255, 0.5);
+  color: var(--ink-50, rgba(255, 255, 255, 0.5));
   font-size: 0.85rem;
   text-decoration: none;
   margin-bottom: 0.5rem;
@@ -67,7 +67,7 @@
 .pageSub {
   font-family: 'ClashGrotesk-Variable', sans-serif;
   font-size: 0.9rem;
-  color: rgba(255, 255, 255, 0.5);
+  color: var(--ink-50, rgba(255, 255, 255, 0.5));
   max-width: 60ch;
 }
 
@@ -98,13 +98,13 @@
 }
 
 .label {
-  color: rgba(255, 255, 255, 0.65);
+  color: var(--ink-65, rgba(255, 255, 255, 0.65));
   font-family: 'ClashGrotesk-Variable', sans-serif;
   font-size: 0.82rem;
 }
 
 .hint {
-  color: rgba(255, 255, 255, 0.4);
+  color: var(--ink-40, rgba(255, 255, 255, 0.4));
   font-size: 0.76rem;
   line-height: 1.5;
   display: block;
@@ -129,7 +129,7 @@
 }
 
 .file {
-  color: rgba(255, 255, 255, 0.6);
+  color: var(--ink-60, rgba(255, 255, 255, 0.6));
   font-size: 0.82rem;
 }
 
@@ -186,7 +186,7 @@
 
 .primaryBtn:disabled {
   background-color: #33343A;
-  color: rgba(255, 255, 255, 0.45);
+  color: var(--ink-45, rgba(255, 255, 255, 0.45));
   cursor: default;
 }
 
@@ -204,7 +204,7 @@
   padding: 11px 18px;
   /* 44px: measured 39px on the phone with the door list beside the scanner. */
   min-height: 44px;
-  color: rgba(255, 255, 255, 0.8);
+  color: var(--ink-80, rgba(255, 255, 255, 0.8));
   font-family: 'ClashGrotesk-Variable', sans-serif;
   font-size: 0.85rem;
   text-decoration: none;
@@ -217,7 +217,7 @@
 }
 
 .muted {
-  color: rgba(255, 255, 255, 0.5);
+  color: var(--ink-50, rgba(255, 255, 255, 0.5));
   font-size: 0.88rem;
 }
 
@@ -238,7 +238,7 @@
   background-color: #1B1C20;
   border-radius: 14px;
   padding: 1.5rem;
-  color: rgba(255, 255, 255, 0.75);
+  color: var(--ink-75, rgba(255, 255, 255, 0.75));
   font-size: 0.9rem;
 }
 
@@ -285,7 +285,7 @@
 }
 
 .artNone {
-  color: rgba(255, 255, 255, 0.4);
+  color: var(--ink-40, rgba(255, 255, 255, 0.4));
   font-size: 0.8rem;
 }
 

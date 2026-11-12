@@ -42,7 +42,7 @@
 .muted,
 .meta {
   margin: 0;
-  color: rgba(255, 255, 255, 0.5);
+  color: var(--ink-50, rgba(255, 255, 255, 0.5));
   font-size: 0.85rem;
   line-height: 1.5;
 }
@@ -56,10 +56,10 @@
 }
 
 .label {
-  color: rgba(255, 255, 255, 0.55);
+  color: var(--ink-55, rgba(255, 255, 255, 0.55));
   font-size: 0.75rem;
   font-weight: 600;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
   margin-top: 0.4rem;
 }
@@ -75,7 +75,7 @@
   padding: 16px;
   border-radius: 12px;
   background: #232428;
-  color: rgba(255, 255, 255, 0.6);
+  color: var(--ink-60, rgba(255, 255, 255, 0.6));
   font-size: 0.9rem;
   line-height: 1.55;
 }
@@ -154,7 +154,7 @@
 
 .tag {
   background: #33343a;
-  color: rgba(255, 255, 255, 0.62);
+  color: var(--ink-62, rgba(255, 255, 255, 0.62));
 }
 
 .redTag {
@@ -210,7 +210,7 @@
   flex-direction: column;
   gap: 4px;
   min-width: 0;
-  color: rgba(255, 255, 255, 0.55);
+  color: var(--ink-55, rgba(255, 255, 255, 0.55));
   font-size: 0.78rem;
 }
 
@@ -218,7 +218,7 @@
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  color: rgba(255, 255, 255, 0.6);
+  color: var(--ink-60, rgba(255, 255, 255, 0.6));
   font-size: 0.82rem;
 }
 
@@ -298,7 +298,7 @@
 .person em,
 .personLeft em {
   font-style: normal;
-  color: rgba(255, 255, 255, 0.5);
+  color: var(--ink-50, rgba(255, 255, 255, 0.5));
   font-size: 0.75rem;
 }
 
@@ -348,7 +348,7 @@
 
 .quiet {
   background: #2a2b30;
-  color: rgba(255, 255, 255, 0.72);
+  color: var(--ink-72, rgba(255, 255, 255, 0.72));
 }
 
 .quiet:hover {
@@ -384,7 +384,7 @@
   border-radius: 8px;
   padding: 0 12px;
   background: #2a2b30;
-  color: rgba(255, 255, 255, 0.62);
+  color: var(--ink-62, rgba(255, 255, 255, 0.62));
   font-weight: 500;
 }
 

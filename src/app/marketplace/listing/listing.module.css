@@ -18,7 +18,7 @@
 }
 
 .backLink {
-  color: rgba(255, 255, 255, 0.55);
+  color: var(--ink-55, rgba(255, 255, 255, 0.55));
   font-size: var(--fs-p-size-mobile);
   text-decoration: none;
   width: fit-content;
@@ -116,7 +116,7 @@
   padding: 4px 10px;
   border-radius: 8px;
   background-color: rgba(255, 255, 255, 0.08);
-  color: rgba(255, 255, 255, 0.75);
+  color: var(--ink-75, rgba(255, 255, 255, 0.75));
   font-size: 0.75rem;
   font-weight: var(--fw-medium);
   text-transform: capitalize;
@@ -139,9 +139,9 @@
 
 .priceLabel {
   font-size: 0.72rem;
-  color: rgba(255, 255, 255, 0.55);
+  color: var(--ink-55, rgba(255, 255, 255, 0.55));
   text-transform: uppercase;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.08em;
   font-weight: var(--fw-medium);
   margin: 0;
 }
@@ -155,14 +155,14 @@
 
 .priceUnit {
   font-size: 1rem;
-  color: rgba(255, 255, 255, 0.5);
+  color: var(--ink-50, rgba(255, 255, 255, 0.5));
   font-weight: var(--fw-medium);
   margin-left: 0.3rem;
 }
 
 .priceSub {
   font-size: var(--fs-p-size-mobile);
-  color: rgba(255, 255, 255, 0.5);
+  color: var(--ink-50, rgba(255, 255, 255, 0.5));
   margin: 0.25rem 0 0;
 }
 
@@ -206,7 +206,7 @@
 
 .sellerSub {
   font-size: 0.78rem;
-  color: rgba(255, 255, 255, 0.55);
+  color: var(--ink-55, rgba(255, 255, 255, 0.55));
   margin: 0;
   display: flex;
   align-items: center;
@@ -217,12 +217,12 @@
 .sellerBadgeChip {
   padding: 1px 6px;
   border-radius: 8px;
-  font-size: 0.65rem;
+  font-size: 0.6875rem;
   background: rgba(212, 175, 55, 0.18);
   color: var(--v-ent-gold);
   font-weight: var(--fw-semi-bold);
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.08em;
 }
 
 .sellerVisitBtn {
@@ -310,7 +310,7 @@
   border-radius: 8px;
   background-color: transparent;
 
-  color: rgba(255, 255, 255, 0.65);
+  color: var(--ink-65, rgba(255, 255, 255, 0.65));
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -360,7 +360,7 @@
 }
 
 .descText {
-  color: rgba(255, 255, 255, 0.7);
+  color: var(--ink-70, rgba(255, 255, 255, 0.7));
   font-size: var(--fs-p-size-desktop);
   line-height: 1.6;
   margin: 0;
@@ -391,7 +391,7 @@
 
 .specLabel {
   font-size: var(--fs-p-size-mobile);
-  color: rgba(255, 255, 255, 0.55);
+  color: var(--ink-55, rgba(255, 255, 255, 0.55));
   text-transform: capitalize;
 }
 
@@ -410,7 +410,7 @@
 
   border-radius: 8px;
   font-size: var(--fs-p-size-mobile);
-  color: rgba(255, 255, 255, 0.75);
+  color: var(--ink-75, rgba(255, 255, 255, 0.75));
 }
 
 /* ── Reviews ── */
@@ -445,7 +445,7 @@
 }
 
 .reviewBody {
-  color: rgba(255, 255, 255, 0.7);
+  color: var(--ink-70, rgba(255, 255, 255, 0.7));
   font-size: var(--fs-p-size-mobile);
   line-height: 1.5;
   margin: 0;
@@ -504,7 +504,7 @@
 .stateText {
   padding: 3rem 1rem;
   text-align: center;
-  color: rgba(255, 255, 255, 0.45);
+  color: var(--ink-45, rgba(255, 255, 255, 0.45));
   font-size: var(--fs-p-size-desktop);
 }
 
@@ -548,7 +548,7 @@
 .modalClose {
   background: transparent;
   border: none;
-  color: rgba(255, 255, 255, 0.6);
+  color: var(--ink-60, rgba(255, 255, 255, 0.6));
   font-size: 1.4rem;
   cursor: pointer;
   line-height: 1;
@@ -574,7 +574,7 @@
 
 .modalLabel {
   font-size: var(--fs-p-size-mobile);
-  color: rgba(255, 255, 255, 0.5);
+  color: var(--ink-50, rgba(255, 255, 255, 0.5));
   margin: 0;
 }
 
@@ -643,7 +643,7 @@
 
 .modalNote {
   font-size: 0.78rem;
-  color: rgba(255, 255, 255, 0.5);
+  color: var(--ink-50, rgba(255, 255, 255, 0.5));
   line-height: 1.5;
   margin: 0;
 }

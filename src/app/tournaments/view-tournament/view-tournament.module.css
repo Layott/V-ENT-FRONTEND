@@ -16,7 +16,7 @@
 }
 
 .errText {
-  color: rgba(255,255,255,0.5);
+  color: var(--ink-50, rgba(255, 255, 255, 0.5));
   padding: 2rem 1rem;
   text-align: center;
 }
@@ -35,7 +35,7 @@
 .outlineBtn {
   background: transparent;
 
-  color: rgba(255,255,255,0.75);
+  color: var(--ink-75, rgba(255, 255, 255, 0.75));
   padding: 0.55rem 1rem;
   border-radius: 8px;
   font-family: inherit;
@@ -71,7 +71,7 @@
 }
 
 .backLink {
-  color: rgba(255,255,255,0.75);
+  color: var(--ink-75, rgba(255, 255, 255, 0.75));
   font-size: var(--fs-p-size-mobile);
   text-decoration: none;
   font-weight: var(--fw-medium);
@@ -102,9 +102,9 @@
   display: inline-block;
   background-color: rgba(237,28,36,0.2);
   color: #ff7575;
-  font-size: 0.65rem;
+  font-size: 0.6875rem;
   font-weight: var(--fw-semi-bold);
-  letter-spacing: 0.07em;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
   padding: 4px 9px;
   border-radius: 8px;
@@ -112,7 +112,7 @@
 }
 
 .statusBadge {
-  font-size: 0.65rem;
+  font-size: 0.6875rem;
   font-weight: var(--fw-bold);
   letter-spacing: 0.08em;
   text-transform: uppercase;
@@ -121,13 +121,12 @@
   display: flex;
   align-items: center;
   gap: 0.3rem;
-  background: rgba(0,0,0,0.5);
-  backdrop-filter: blur(4px);
+  background: rgba(0,0,0,0.78);
 }
 
 .status_upcoming { color: #f59e0b;  background-color: rgba(245, 158, 11, 0.14); }
 .status_in_progress { color: var(--v-ent-light-gold);  background-color: rgba(0, 255, 8, 0.14); }
-.status_completed { color: rgba(255,255,255,0.6);  background-color: rgba(255, 255, 255, 0.14); }
+.status_completed { color: var(--ink-60, rgba(255, 255, 255, 0.6));  background-color: rgba(255, 255, 255, 0.14); }
 
 .heroTitle {
   font-size: var(--mobile-h1-size);
@@ -139,7 +138,7 @@
 
 .heroOrganizer {
   font-size: var(--fs-p-size-mobile);
-  color: rgba(255,255,255,0.7);
+  color: var(--ink-70, rgba(255, 255, 255, 0.7));
   margin: 0;
 }
 
@@ -153,7 +152,7 @@
   display: flex;
   align-items: center;
   gap: 0.4rem;
-  background-color: rgba(255,255,255,0.08);
+  background-color: rgba(20, 21, 24, 0.78);
 
   color: var(--primary-bg);
   font-family: inherit;
@@ -161,7 +160,6 @@
   padding: 0.55rem 1rem;
   border-radius: 8px;
   cursor: pointer;
-  backdrop-filter: blur(4px);
 }
 
 /* ── Meta strip ── */
@@ -188,16 +186,16 @@
 
 .metaIcon {
   font-size: 1.4rem;
-  color: rgba(255,255,255,0.4);
+  color: var(--ink-40, rgba(255, 255, 255, 0.4));
   flex-shrink: 0;
 }
 
 .metaLabel {
   font-size: 0.7rem;
-  color: rgba(255,255,255,0.45);
+  color: var(--ink-45, rgba(255, 255, 255, 0.45));
   margin: 0;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.08em;
   font-weight: var(--fw-medium);
 }
 
@@ -263,7 +261,7 @@
 .tabBtn {
   background: transparent;
   border: none;
-  color: rgba(255, 255, 255, 0.5);
+  color: var(--ink-50, rgba(255, 255, 255, 0.5));
   font-family: inherit;
   font-size: var(--fs-p-size-mobile);
   font-weight: var(--fw-medium);
@@ -302,7 +300,7 @@
 
 .sectionText {
   font-size: var(--fs-p-size-mobile);
-  color: rgba(255,255,255,0.7);
+  color: var(--ink-70, rgba(255, 255, 255, 0.7));
   line-height: 1.55;
   margin: 0;
 }
@@ -352,7 +350,7 @@
 
 .organizerHandle {
   font-size: 0.75rem;
-  color: rgba(255,255,255,0.45);
+  color: var(--ink-45, rgba(255, 255, 255, 0.45));
   margin: 0;
 }
 
@@ -371,9 +369,9 @@
   background-color: rgba(255,255,255,0.04);
 
   border-radius: 8px;
-  color: rgba(255,255,255,0.7);
+  color: var(--ink-70, rgba(255, 255, 255, 0.7));
   font-size: 1rem;
-  transition: all 0.2s;
+  transition: background-color 150ms ease-out, color 150ms ease-out;
 }
 
 .socialBtn:hover {
@@ -412,7 +410,7 @@
   justify-content: center;
   font-weight: var(--fw-bold);
   font-size: 1rem;
-  color: rgba(255,255,255,0.7);
+  color: var(--ink-70, rgba(255, 255, 255, 0.7));
 }
 
 .sponsorName {
@@ -427,11 +425,11 @@
   color: var(--v-ent-gold);
   margin: 0;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.08em;
 }
 .ruleList {
   padding-left: 1.4rem;
-  color: rgba(255,255,255,0.7);
+  color: var(--ink-70, rgba(255, 255, 255, 0.7));
   line-height: 1.75;
   font-size: var(--fs-p-size-mobile);
   margin: 0;
@@ -453,7 +451,7 @@
   padding: 0.75rem 1rem;
 
   font-size: var(--fs-p-size-mobile);
-  color: rgba(255,255,255,0.7);
+  color: var(--ink-70, rgba(255, 255, 255, 0.7));
 }
 
 .penaltyRow:last-child { border-bottom: none; }
@@ -468,13 +466,13 @@
 
 .bracketSub {
   font-size: var(--fs-p-size-mobile);
-  color: rgba(255,255,255,0.6);
+  color: var(--ink-60, rgba(255, 255, 255, 0.6));
   margin: 0 0 0.25rem;
 }
 
 .bracketHint {
   font-size: 0.75rem;
-  color: rgba(255,255,255,0.4);
+  color: var(--ink-40, rgba(255, 255, 255, 0.4));
   margin: 0;
 }
 
@@ -510,9 +508,9 @@
 }
 
 .roundBadge {
-  font-size: 0.6rem;
+  font-size: 0.6875rem;
   font-weight: var(--fw-semi-bold);
-  letter-spacing: 0.04em;
+  letter-spacing: 0.08em;
   padding: 2px 6px;
   border-radius: 8px;
   text-transform: uppercase;
@@ -520,7 +518,7 @@
 
 .roundBadgeDone { background: rgba(212, 175, 55,0.15); color: var(--v-ent-gold); }
 .roundBadgeLive { background: rgba(13,116,206,0.2); color: #60a5fa; }
-.roundBadgeUpcoming { background: rgba(255,255,255,0.06); color: rgba(255,255,255,0.5); }
+.roundBadgeUpcoming { background: rgba(255,255,255,0.06); color: var(--ink-50, rgba(255, 255, 255, 0.5)); }
 
 .matchCard {
   background: transparent;
@@ -531,7 +529,7 @@
   flex-direction: column;
   gap: 0.4rem;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: background-color 150ms ease-out;
   font-family: inherit;
   text-align: left;
 }
@@ -556,15 +554,15 @@
 }
 
 .matchLabel {
-  font-size: 0.65rem;
-  color: rgba(255,255,255,0.5);
+  font-size: 0.6875rem;
+  color: var(--ink-50, rgba(255, 255, 255, 0.5));
   font-weight: var(--fw-medium);
 }
 
 .matchDot {
-  font-size: 0.55rem;
+  font-size: 0.6875rem;
   font-weight: var(--fw-bold);
-  letter-spacing: 0.05em;
+  letter-spacing: 0.08em;
   padding: 2px 6px;
   border-radius: 8px;
   text-transform: uppercase;
@@ -572,7 +570,7 @@
 
 .dot_completed { background: rgba(212, 175, 55,0.15); color: var(--v-ent-gold); }
 .dot_in_progress { background: rgba(13,116,206,0.2); color: #60a5fa; }
-.dot_upcoming { background: rgba(255,255,255,0.06); color: rgba(255,255,255,0.45); }
+.dot_upcoming { background: rgba(255,255,255,0.06); color: var(--ink-45, rgba(255, 255, 255, 0.45)); }
 
 .matchTeams {
   display: flex;
@@ -601,9 +599,9 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 0.65rem;
+  font-size: 0.6875rem;
   font-weight: var(--fw-bold);
-  color: rgba(255,255,255,0.7);
+  color: var(--ink-70, rgba(255, 255, 255, 0.7));
   flex-shrink: 0;
 }
 
@@ -624,7 +622,7 @@
   text-align: right;
 }
 
-.scoreNa { color: rgba(255,255,255,0.3); font-size: 0.7rem; font-weight: var(--fw-medium); }
+.scoreNa { color: var(--ink-30, rgba(255, 255, 255, 0.3)); font-size: 0.7rem; font-weight: var(--fw-medium); }
 
 /* ── Modal ── */
 .modalOverlay {
@@ -666,7 +664,7 @@
 .modalClose {
   background: transparent;
   border: none;
-  color: rgba(255,255,255,0.5);
+  color: var(--ink-50, rgba(255, 255, 255, 0.5));
   font-size: 1.2rem;
   cursor: pointer;
   display: flex;
@@ -740,7 +738,7 @@
 
 .vsLabel {
   font-size: 0.85rem;
-  color: rgba(255,255,255,0.4);
+  color: var(--ink-40, rgba(255, 255, 255, 0.4));
   font-weight: var(--fw-bold);
   letter-spacing: 0.1em;
 }
@@ -755,7 +753,7 @@
   justify-content: space-between;
   padding: 0.4rem 0;
   font-size: var(--fs-p-size-mobile);
-  color: rgba(255,255,255,0.55);
+  color: var(--ink-55, rgba(255, 255, 255, 0.55));
 }
 
 .modalMetaVal { color: var(--primary-bg); font-weight: var(--fw-medium); }
@@ -802,7 +800,7 @@
   max-width: 280px;
 }
 
-.searchBarSmall svg { color: rgba(255,255,255,0.45); flex-shrink: 0; }
+.searchBarSmall svg { color: var(--ink-45, rgba(255, 255, 255, 0.45)); flex-shrink: 0; }
 
 .searchBarSmall input {
   background: transparent;
@@ -835,15 +833,15 @@
   background-color: #28292d;
   font-size: 0.7rem;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
-  color: rgba(255,255,255,0.55);
+  letter-spacing: 0.08em;
+  color: var(--ink-55, rgba(255, 255, 255, 0.55));
   font-weight: var(--fw-semi-bold);
 }
 
 .tableRow {
 
   font-size: var(--fs-p-size-mobile);
-  color: rgba(255,255,255,0.75);
+  color: var(--ink-75, rgba(255, 255, 255, 0.75));
   transition: background 0.15s;
 }
 
@@ -880,7 +878,7 @@
 
 .teamCellTag {
   font-size: 0.7rem;
-  color: rgba(255,255,255,0.45);
+  color: var(--ink-45, rgba(255, 255, 255, 0.45));
   margin: 0;
 }
 
@@ -905,9 +903,9 @@
 }
 
 .partStatus {
-  font-size: 0.65rem;
+  font-size: 0.6875rem;
   font-weight: var(--fw-bold);
-  letter-spacing: 0.05em;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
   padding: 3px 7px;
   border-radius: 8px;
@@ -953,10 +951,10 @@
 }
 
 .cardLabel {
-  font-size: 0.65rem;
-  color: rgba(255,255,255,0.4);
+  font-size: 0.6875rem;
+  color: var(--ink-40, rgba(255, 255, 255, 0.4));
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.08em;
 }
 
 .partCardBody span:not(.cardLabel) {
@@ -983,13 +981,13 @@
 
 .vcUnit {
   font-size: var(--desktop-h6-size);
-  color: rgba(255,255,255,0.5);
+  color: var(--ink-50, rgba(255, 255, 255, 0.5));
   font-weight: var(--fw-medium);
 }
 
 .prizeFiat {
   font-size: var(--fs-p-size-mobile);
-  color: rgba(255,255,255,0.5);
+  color: var(--ink-50, rgba(255, 255, 255, 0.5));
   margin: 0;
 }
 
@@ -1014,8 +1012,8 @@
   background-color: #28292d;
   font-size: 0.7rem;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
-  color: rgba(255,255,255,0.55);
+  letter-spacing: 0.08em;
+  color: var(--ink-55, rgba(255, 255, 255, 0.55));
   font-weight: var(--fw-semi-bold);
 }
 
@@ -1032,13 +1030,13 @@
 
 .prizeLabel {
   font-size: 0.7rem;
-  color: rgba(255,255,255,0.45);
+  color: var(--ink-45, rgba(255, 255, 255, 0.45));
   margin: 2px 0 0;
 }
 
 .prizeAmtCell { color: var(--v-ent-gold); font-weight: var(--fw-bold); }
 
-.prizePercent { color: rgba(255,255,255,0.55); text-align: right; }
+.prizePercent { color: var(--ink-55, rgba(255, 255, 255, 0.55)); text-align: right; }
 
 .sponsorBreakdown {
   display: flex;
@@ -1065,13 +1063,13 @@
   align-items: center;
   justify-content: center;
   font-weight: var(--fw-bold);
-  color: rgba(255,255,255,0.8);
+  color: var(--ink-80, rgba(255, 255, 255, 0.8));
   flex-shrink: 0;
 }
 
 .sbInfo { flex: 1; }
 .sbName { font-size: var(--fs-p-size-mobile); color: var(--primary-bg); margin: 0; font-weight: var(--fw-semi-bold); }
-.sbTier { font-size: 0.7rem; color: rgba(255,255,255,0.45); margin: 2px 0 0; }
+.sbTier { font-size: 0.7rem; color: var(--ink-45, rgba(255, 255, 255, 0.45)); margin: 2px 0 0; }
 .sbAmount { font-size: var(--fs-p-size-mobile); color: var(--v-ent-gold); font-weight: var(--fw-bold); margin: 0; }
 
 /* ── Stream ── */
@@ -1121,7 +1119,7 @@
 
 .streamPlaceholderSub {
   font-size: var(--fs-p-size-mobile);
-  color: rgba(255,255,255,0.5);
+  color: var(--ink-50, rgba(255, 255, 255, 0.5));
   margin: 0;
 }
 
@@ -1130,7 +1128,7 @@
   gap: 1rem;
   margin-top: 0.6rem;
   font-size: 0.75rem;
-  color: rgba(255,255,255,0.6);
+  color: var(--ink-60, rgba(255, 255, 255, 0.6));
 }
 
 .viewerCount { color: var(--v-ent-light-gold); font-weight: var(--fw-semi-bold); }
@@ -1164,7 +1162,7 @@
 .chatViewers {
   margin-left: auto;
   font-size: 0.7rem;
-  color: rgba(255,255,255,0.45);
+  color: var(--ink-45, rgba(255, 255, 255, 0.45));
   font-weight: var(--fw-regular);
 }
 
@@ -1334,7 +1332,7 @@
 .reportUrlLabel {
   display: block;
   font-size: 0.72rem;
-  color: rgba(255,255,255,0.55);
+  color: var(--ink-55, rgba(255, 255, 255, 0.55));
   margin: 0.75rem 0 0.35rem;
 }
 
@@ -1444,7 +1442,7 @@
   font-size: 0.7rem;
   text-transform: uppercase;
   letter-spacing: 0.08em;
-  color: rgba(255, 255, 255, 0.45);
+  color: var(--ink-45, rgba(255, 255, 255, 0.45));
 }
 
 .eventStripName {
@@ -1459,7 +1457,7 @@
 .eventStripMeta {
   margin: 0;
   font-size: 0.78rem;
-  color: rgba(255, 255, 255, 0.55);
+  color: var(--ink-55, rgba(255, 255, 255, 0.55));
 }
 
 .eventCovered,
@@ -1541,7 +1539,7 @@
 .ownerLink:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
 
 .ownerArrow {
-  color: rgba(255, 255, 255, 0.45);
+  color: var(--ink-45, rgba(255, 255, 255, 0.45));
   flex-shrink: 0;
 }
 
@@ -1566,7 +1564,7 @@
 
 .rulesDocHint {
   display: block;
-  color: rgba(255, 255, 255, 0.5);
+  color: var(--ink-50, rgba(255, 255, 255, 0.5));
   font-size: 0.79rem;
   margin-top: 0.15rem;
 }

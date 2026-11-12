@@ -35,6 +35,8 @@ import { useT } from '@/i18n/LanguageProvider';
 import { adminToken } from '@/lib/adminToken'
 import PagerArrow from '@/components/pager-arrow/PagerArrow';
 import { formatNgn } from '@/lib/currency';
+import { markScrimDown, isScrimClick } from '@/lib/scrim';
+import RowMenu from '@/components/admin/RowMenu';
 
 const TABS = ['overview', 'tickets', 'sent'];
 const PAGE_SIZE = 25;
@@ -256,7 +258,7 @@ function AdminEventDetailInner() {
   return (
     <div className={shared.pageContainer}>
       <div className={`${shared.sidebarOverlay} ${sidebarOpen ? shared.open : ''}`}
-        onClick={() => setSidebarOpen(false)} />
+        onPointerDown={markScrimDown} data-scrim="" onClick={(e) => isScrimClick(e) && (setSidebarOpen(false))} />
       <AdminNav admin={admin} onLogout={logout} sidebarOpen={sidebarOpen} badges={{}} />
       <div className={shared.mainContainer}>
         <AdminHeader admin={admin} onLogout={logout} onMenuOpen={() => setSidebarOpen(true)} />
@@ -280,9 +282,13 @@ function AdminEventDetailInner() {
               </div>
               <div className={styles.headerActions}>
                 {mayAct && (event.is_active
-                  ? <button className={styles.dangerBtn} onClick={() => ask('cancelEvent', null, tt('admin.whyCancelEvent', 'Why is this event being cancelled?'))} disabled={busy === 'state'}>
-                      {tt('admin.cancelEvent', 'Cancel event')}
-                    </button>
+                  ? <RowMenu label={tt('admin.eventActions', 'Event actions')}>
+                      {/* Cancelling refunds everybody: behind a menu, never the
+                          first thing under the title (Apple review S12). */}
+                      <button type="button" role="menuitem" data-danger="" onClick={() => ask('cancelEvent', null, tt('admin.whyCancelEvent', 'Why is this event being cancelled?'))} disabled={busy === 'state'}>
+                        {tt('admin.cancelEvent', 'Cancel event')}
+                      </button>
+                    </RowMenu>
                   : <button className={`${shared.actBtn} ${shared.actView}`} onClick={() => setEventState('restore')} disabled={busy === 'state'}>
                       {tt('admin.restoreEvent', 'Restore event')}
                     </button>)}
@@ -456,7 +462,7 @@ const Overview = ({ tt, numbers, detail }) => (
               {detail.tiers.map(t => <tr key={t.id}>
                 <td>{t.name}</td>
                 {/* Naira, said so: a bare 2000.00 sat beside a revenue tile in VC (audit 557). */}
-                <td>{formatNgn(t.price_ngn)}</td>
+                <td>{Number(t.price_ngn) === 0 ? tt('tickets.free', 'Free') : formatNgn(t.price_ngn)}</td>
                 <td>{t.sold}</td>
                 <td>{t.remaining === null ? tt('admin.unlimited', 'No limit') : t.remaining}</td>
               </tr>)}

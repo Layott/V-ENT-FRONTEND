@@ -18,7 +18,7 @@
   margin: 0;
   font-size: 0.85rem;
   line-height: 1.55;
-  color: rgba(255, 255, 255, 0.55);
+  color: var(--ink-55, rgba(255, 255, 255, 0.55));
   max-width: 70ch;
 }
 
@@ -69,7 +69,7 @@
   padding: 0.2rem 0.55rem;
   border-radius: 8px;
   background-color: rgba(255, 255, 255, 0.08);
-  color: rgba(255, 255, 255, 0.6);
+  color: var(--ink-60, rgba(255, 255, 255, 0.6));
   font-size: 0.72rem;
   font-weight: var(--fw-semi-bold);
 }
@@ -81,7 +81,7 @@
   color: var(--v-ent-success);
 }
 
-.desc { color: rgba(255, 255, 255, 0.72); }
+.desc { color: var(--ink-72, rgba(255, 255, 255, 0.72)); }
 
 .buy, .ghost {
   min-height: 44px;
@@ -96,13 +96,13 @@
 .buy { background-color: var(--v-ent-success); color: #fff; }
 .ghost {
   background-color: #33343a;
-  color: rgba(255, 255, 255, 0.78);
+  color: var(--ink-78, rgba(255, 255, 255, 0.78));
   font-weight: var(--fw-medium);
 }
 
 .buy:disabled, .ghost:disabled {
   background-color: #2a2b30;
-  color: rgba(255, 255, 255, 0.3);
+  color: var(--ink-30, rgba(255, 255, 255, 0.3));
   cursor: not-allowed;
 }
 
@@ -137,7 +137,7 @@
 .modalSub {
   margin: 0 0 1rem;
   font-size: 0.88rem;
-  color: rgba(255, 255, 255, 0.6);
+  color: var(--ink-60, rgba(255, 255, 255, 0.6));
 }
 
 .field {
@@ -150,7 +150,7 @@
 .label {
   font-size: 0.78rem;
   font-weight: var(--fw-medium);
-  color: rgba(255, 255, 255, 0.65);
+  color: var(--ink-65, rgba(255, 255, 255, 0.65));
 }
 
 .input {
@@ -164,7 +164,7 @@
   min-width: 0;
 }
 
-.input::placeholder { color: rgba(255, 255, 255, 0.3); }
+.input::placeholder { color: var(--ink-30, rgba(255, 255, 255, 0.3)); }
 
 /* The conditions get their own surface. They are the thing being agreed to,
    and setting them apart is what makes that legible rather than decorative. */
@@ -179,14 +179,14 @@
   margin: 0 0 0.4rem;
   font-size: 0.8rem;
   font-weight: var(--fw-semi-bold);
-  color: rgba(255, 255, 255, 0.75);
+  color: var(--ink-75, rgba(255, 255, 255, 0.75));
 }
 
 .rulesBody {
   margin: 0 0 0.7rem;
   font-size: 0.86rem;
   line-height: 1.6;
-  color: rgba(255, 255, 255, 0.8);
+  color: var(--ink-80, rgba(255, 255, 255, 0.8));
   white-space: pre-wrap;
 }
 

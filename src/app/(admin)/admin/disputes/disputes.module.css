@@ -27,10 +27,10 @@
 .resolveLabel {
   font-family: "ClashGrotesk-Variable", sans-serif;
   font-size: 0.7rem;
-  color: rgba(255, 255, 255, 0.45);
+  color: var(--ink-45, rgba(255, 255, 255, 0.45));
   margin-bottom: 0.45rem;
   text-transform: uppercase;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.08em;
 }
 
 .resolveTextarea {
@@ -54,7 +54,7 @@
 }
 
 .resolveTextarea::placeholder {
-  color: rgba(255, 255, 255, 0.35);
+  color: var(--ink-35, rgba(255, 255, 255, 0.35));
 }
 
 .resolveBtns {

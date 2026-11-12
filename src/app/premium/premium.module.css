@@ -38,7 +38,7 @@
 .pageSubtitle {
   margin: 0;
   font-size: var(--fs-p-size-mobile);
-  color: rgba(255, 255, 255, 0.45);
+  color: var(--ink-45, rgba(255, 255, 255, 0.45));
   max-width: 44rem;
 }
 
@@ -93,12 +93,12 @@
 
 .priceUnit {
   font-size: var(--fs-p-size-mobile);
-  color: rgba(255, 255, 255, 0.6);
+  color: var(--ink-60, rgba(255, 255, 255, 0.6));
 }
 
 .priceBody {
   margin: 0 0 0.9rem;
-  color: rgba(255, 255, 255, 0.6);
+  color: var(--ink-60, rgba(255, 255, 255, 0.6));
   font-size: var(--fs-p-size-mobile);
   line-height: 1.4;
   max-width: 40rem;
@@ -112,7 +112,7 @@
 
 .standingNote {
   margin: 0.4rem 0 0;
-  color: rgba(255, 255, 255, 0.45);
+  color: var(--ink-45, rgba(255, 255, 255, 0.45));
   font-size: 0.82rem;
 }
 
@@ -126,7 +126,7 @@
 
 .label {
   font-size: 0.8rem;
-  color: rgba(255, 255, 255, 0.5);
+  color: var(--ink-50, rgba(255, 255, 255, 0.5));
 }
 
 .select {
@@ -170,7 +170,7 @@
 
 .action:disabled {
   background-color: #3a3b41;
-  color: rgba(255, 255, 255, 0.4);
+  color: var(--ink-40, rgba(255, 255, 255, 0.4));
   cursor: not-allowed;
 }
 

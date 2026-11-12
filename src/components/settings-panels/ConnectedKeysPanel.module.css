@@ -15,7 +15,7 @@
 .sub {
   font-family: "ClashGrotesk-Variable", sans-serif;
   font-size: 0.85rem;
-  color: rgba(255, 255, 255, 0.55);
+  color: var(--ink-55, rgba(255, 255, 255, 0.55));
   line-height: 1.5;
   margin: 0 0 0.9rem;
 }
@@ -157,7 +157,7 @@
   border: none;
   border-radius: 8px;
   background-color: #303136;
-  color: rgba(255, 255, 255, 0.75);
+  color: var(--ink-75, rgba(255, 255, 255, 0.75));
   font-family: "ClashGrotesk-Variable", sans-serif;
   font-size: 0.85rem;
   cursor: pointer;
@@ -182,6 +182,6 @@
 .hint {
   font-family: "ClashGrotesk-Variable", sans-serif;
   font-size: 0.78rem;
-  color: rgba(255, 255, 255, 0.5);
+  color: var(--ink-50, rgba(255, 255, 255, 0.5));
   margin: 0.15rem 0 0;
 }

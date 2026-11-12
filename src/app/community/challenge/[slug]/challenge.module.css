@@ -42,7 +42,7 @@
   display: inline-flex;
   align-items: center;
   gap: 0.4rem;
-  color: rgba(255, 255, 255, 0.6);
+  color: var(--ink-60, rgba(255, 255, 255, 0.6));
   font-size: 0.85rem;
   text-decoration: none;
   align-self: flex-start;
@@ -76,21 +76,21 @@
   font-size: 0.72rem;
   font-weight: var(--fw-semi-bold);
   text-transform: uppercase;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.08em;
   background-color: rgba(255, 255, 255, 0.08);
-  color: rgba(255, 255, 255, 0.75);
+  color: var(--ink-75, rgba(255, 255, 255, 0.75));
 }
 
 .status_open { background-color: rgba(201, 162, 39, 0.18); color: #e2be44; }
 .status_accepted,
 .status_in_progress { background-color: rgba(76, 175, 80, 0.16); color: #7fce82; }
 .status_played,
-.status_completed { background-color: rgba(255, 255, 255, 0.1); color: rgba(255, 255, 255, 0.8); }
+.status_completed { background-color: rgba(255, 255, 255, 0.1); color: var(--ink-80, rgba(255, 255, 255, 0.8)); }
 .status_cancelled { background-color: rgba(237, 28, 36, 0.14); color: #ef9a9a; }
 
 .gameLine {
   font-size: 0.82rem;
-  color: rgba(255, 255, 255, 0.55);
+  color: var(--ink-55, rgba(255, 255, 255, 0.55));
 }
 
 .versus {
@@ -115,11 +115,11 @@
   word-break: break-word;
 }
 
-.sideOpen { color: rgba(255, 255, 255, 0.4); font-weight: var(--fw-regular); }
+.sideOpen { color: var(--ink-40, rgba(255, 255, 255, 0.4)); font-weight: var(--fw-regular); }
 
 .vs {
   font-size: 0.8rem;
-  color: rgba(255, 255, 255, 0.4);
+  color: var(--ink-40, rgba(255, 255, 255, 0.4));
   text-transform: uppercase;
   letter-spacing: 0.08em;
 }
@@ -140,11 +140,11 @@
   line-height: 1;
 }
 
-.scoreDash { color: rgba(255, 255, 255, 0.4); font-size: 0.9rem; }
+.scoreDash { color: var(--ink-40, rgba(255, 255, 255, 0.4)); font-size: 0.9rem; }
 
 .scoreNote {
   font-size: 0.78rem;
-  color: rgba(255, 255, 255, 0.5);
+  color: var(--ink-50, rgba(255, 255, 255, 0.5));
   margin-left: 0.4rem;
 }
 
@@ -166,8 +166,8 @@
 .factLabel {
   font-size: 0.72rem;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
-  color: rgba(255, 255, 255, 0.4);
+  letter-spacing: 0.08em;
+  color: var(--ink-40, rgba(255, 255, 255, 0.4));
 }
 
 .factValue {
@@ -187,14 +187,14 @@
 .cardSub {
   font-size: 0.83rem;
   line-height: 1.55;
-  color: rgba(255, 255, 255, 0.6);
+  color: var(--ink-60, rgba(255, 255, 255, 0.6));
   margin: 0 0 0.9rem;
 }
 
 .notes {
   font-size: 0.88rem;
   line-height: 1.6;
-  color: rgba(255, 255, 255, 0.78);
+  color: var(--ink-78, rgba(255, 255, 255, 0.78));
   margin: 0;
   white-space: pre-wrap;
   word-break: break-word;
@@ -259,7 +259,7 @@
 
 .pickerLabel {
   font-size: 0.83rem;
-  color: rgba(255, 255, 255, 0.6);
+  color: var(--ink-60, rgba(255, 255, 255, 0.6));
 }
 
 .teamPickBtn {
@@ -302,7 +302,7 @@
 
 .scoreLabel {
   font-size: 0.78rem;
-  color: rgba(255, 255, 255, 0.55);
+  color: var(--ink-55, rgba(255, 255, 255, 0.55));
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -322,7 +322,7 @@
 
 .stateText {
   font-size: 0.88rem;
-  color: rgba(255, 255, 255, 0.6);
+  color: var(--ink-60, rgba(255, 255, 255, 0.6));
   margin: 0;
 }
 
@@ -350,7 +350,7 @@
 
 .lockedSub {
   font-size: var(--fs-p-size-mobile);
-  color: rgba(255, 255, 255, 0.55);
+  color: var(--ink-55, rgba(255, 255, 255, 0.55));
   margin: 0 0 0.5rem;
 }
 

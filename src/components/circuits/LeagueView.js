@@ -107,6 +107,7 @@ export default function LeagueView({ slug }) {
   if (missing) {
     return (
       <div className={styles.container}>
+        <BackLink href="/circuits">{tt('back.toCircuits', 'Back to circuits')}</BackLink>
         <h1 className={styles.pageTitle}>{tt('league.notFound', 'No such league')}</h1>
         <p className={styles.empty}>
           {tt('league.notFoundBody', 'This league does not exist, or it is not published yet.')}{' '}
@@ -118,6 +119,7 @@ export default function LeagueView({ slug }) {
   if (problem) {
     return (
       <div className={styles.container}>
+        <BackLink href="/circuits">{tt('back.toCircuits', 'Back to circuits')}</BackLink>
         <p className={styles.problem} role="alert">{problem}</p>
         <div className={styles.actions}>
           <button type="button" className={styles.ghost} onClick={() => { setProblem(''); load(); }}>
@@ -130,6 +132,7 @@ export default function LeagueView({ slug }) {
   if (!data) {
     return (
       <div className={styles.container} aria-busy="true">
+        <BackLink href="/circuits">{tt('back.toCircuits', 'Back to circuits')}</BackLink>
         <div className={`${styles.skeleton} ${styles.skeletonHero}`} />
         <div className={styles.skeletonList}>
           {[0, 1, 2].map((i) => <div key={i} className={`${styles.skeleton} ${styles.skeletonHero}`} />)}

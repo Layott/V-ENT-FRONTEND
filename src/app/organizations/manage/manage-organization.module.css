@@ -19,7 +19,7 @@
 }
 
 .statusText {
-  color: rgba(255, 255, 255, 0.6);
+  color: var(--ink-60, rgba(255, 255, 255, 0.6));
   font-size: var(--fs-p-size-mobile);
   padding: 1rem;
 }
@@ -50,11 +50,11 @@
   background-color: var(--overlay-gray);
 
   border-radius: 8px;
-  color: rgba(255, 255, 255, 0.75);
+  color: var(--ink-75, rgba(255, 255, 255, 0.75));
   text-decoration: none;
   font-size: 0.78rem;
   font-weight: var(--fw-medium);
-  transition: all 0.2s;
+  transition: color 150ms ease-out;
   width: max-content;
 }
 
@@ -72,7 +72,7 @@
 
 .pageSubtitle {
   font-size: var(--fs-p-size-mobile);
-  color: rgba(255, 255, 255, 0.5);
+  color: var(--ink-50, rgba(255, 255, 255, 0.5));
   margin: 0.25rem 0 0;
 }
 
@@ -115,7 +115,7 @@
   position: relative;
   background: transparent;
 
-  color: rgba(255, 255, 255, 0.7);
+  color: var(--ink-70, rgba(255, 255, 255, 0.7));
   font-family: inherit;
   font-size: var(--fs-p-size-mobile);
   font-weight: var(--fw-medium);
@@ -139,7 +139,7 @@
 .tabBadge {
   background-color: var(--v-ent-red);
   color: var(--primary-bg);
-  font-size: 0.65rem;
+  font-size: 0.6875rem;
   font-weight: var(--fw-bold);
   padding: 1px 6px;
   border-radius: 10px;
@@ -190,14 +190,14 @@
 
 .bioText {
   font-size: var(--fs-p-size-mobile);
-  color: rgba(255, 255, 255, 0.7);
+  color: var(--ink-70, rgba(255, 255, 255, 0.7));
   line-height: 1.55;
   margin: 0;
 }
 
 .countPill {
   background-color: rgba(255, 255, 255, 0.08);
-  color: rgba(255, 255, 255, 0.7);
+  color: var(--ink-70, rgba(255, 255, 255, 0.7));
   font-size: 0.7rem;
   font-weight: var(--fw-medium);
   padding: 2px 8px;
@@ -216,7 +216,7 @@
 }
 
 .searchIcon {
-  color: rgba(255, 255, 255, 0.5);
+  color: var(--ink-50, rgba(255, 255, 255, 0.5));
   font-size: 1rem;
 }
 
@@ -232,7 +232,7 @@
 }
 
 .searchInput::placeholder {
-  color: rgba(255, 255, 255, 0.35);
+  color: var(--ink-35, rgba(255, 255, 255, 0.35));
 }
 
 .primaryBtn {
@@ -248,7 +248,7 @@
   font-weight: var(--fw-semi-bold);
   border-radius: 8px;
   cursor: pointer;
-  transition: all 0.25s;
+  transition: background-color 150ms ease-out, opacity 150ms ease-out;
 }
 
 .primaryBtn:hover:not(:disabled) {
@@ -301,12 +301,12 @@
 
 .requestTime {
   font-size: 0.72rem;
-  color: rgba(255, 255, 255, 0.45);
+  color: var(--ink-45, rgba(255, 255, 255, 0.45));
 }
 
 .requestMessage {
   font-size: var(--fs-p-size-mobile);
-  color: rgba(255, 255, 255, 0.7);
+  color: var(--ink-70, rgba(255, 255, 255, 0.7));
   margin: 0;
   font-style: italic;
   line-height: 1.45;
@@ -336,8 +336,8 @@
   padding: 0.85rem 1rem;
   font-size: 0.7rem;
   text-transform: uppercase;
-  letter-spacing: 0.06em;
-  color: rgba(255, 255, 255, 0.55);
+  letter-spacing: 0.08em;
+  color: var(--ink-55, rgba(255, 255, 255, 0.55));
 
   background-color: #161618;
   font-weight: var(--fw-semi-bold);
@@ -396,12 +396,12 @@
 
 .memberHandle {
   font-size: 0.7rem;
-  color: rgba(255, 255, 255, 0.5);
+  color: var(--ink-50, rgba(255, 255, 255, 0.5));
   margin: 0.1rem 0 0;
 }
 
 .cellMuted {
-  color: rgba(255, 255, 255, 0.45);
+  color: var(--ink-45, rgba(255, 255, 255, 0.45));
 }
 
 /* ── Role pills ── */
@@ -409,11 +409,11 @@
   display: inline-block;
   padding: 3px 8px;
   border-radius: 8px;
-  font-size: 0.68rem;
+  font-size: 0.6875rem;
   font-weight: var(--fw-semi-bold);
   text-transform: capitalize;
   background-color: rgba(255, 255, 255, 0.06);
-  color: rgba(255, 255, 255, 0.7);
+  color: var(--ink-70, rgba(255, 255, 255, 0.7));
 
 }
 
@@ -444,7 +444,7 @@
 .menuBtn {
   background: transparent;
 
-  color: rgba(255, 255, 255, 0.7);
+  color: var(--ink-70, rgba(255, 255, 255, 0.7));
   border-radius: 8px;
   width: 32px;
   height: 32px;
@@ -532,7 +532,7 @@
   padding: 1.25rem 1rem;
   text-align: center;
   font-size: var(--fs-p-size-mobile);
-  color: rgba(255, 255, 255, 0.5);
+  color: var(--ink-50, rgba(255, 255, 255, 0.5));
 }
 
 /* ── Teams tab list ── */
@@ -589,7 +589,7 @@
 
 .teamSub {
   font-size: 0.72rem;
-  color: rgba(255, 255, 255, 0.5);
+  color: var(--ink-50, rgba(255, 255, 255, 0.5));
 }
 
 /* ── Verification ── */
@@ -634,7 +634,7 @@
   height: 24px;
   border-radius: 50%;
   background-color: rgba(255, 255, 255, 0.06);
-  color: rgba(255, 255, 255, 0.6);
+  color: var(--ink-60, rgba(255, 255, 255, 0.6));
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -657,7 +657,7 @@
 
 .verifyItemSub {
   font-size: 0.78rem;
-  color: rgba(255, 255, 255, 0.5);
+  color: var(--ink-50, rgba(255, 255, 255, 0.5));
   margin: 0;
   line-height: 1.45;
 }
@@ -726,7 +726,7 @@
 
 .lockedSub {
   font-size: var(--fs-p-size-mobile);
-  color: rgba(255, 255, 255, 0.55);
+  color: var(--ink-55, rgba(255, 255, 255, 0.55));
   margin: 0 0 0.5rem;
 }
 
@@ -742,7 +742,7 @@
   font-weight: var(--fw-semi-bold);
   border-radius: 8px;
   text-decoration: none;
-  transition: all 0.25s;
+  transition: background-color 150ms ease-out;
 }
 
 .lockedBtn:hover {
@@ -808,7 +808,7 @@
 
 .panelNote {
   margin: 0.35rem 0 1rem;
-  color: rgba(255, 255, 255, 0.45);
+  color: var(--ink-45, rgba(255, 255, 255, 0.45));
   font-size: 0.83rem;
   line-height: 1.5;
   max-width: 62ch;
@@ -837,9 +837,9 @@
 .formField { display: flex; flex-direction: column; gap: 0.35rem; }
 
 .formLabel {
-  color: rgba(255, 255, 255, 0.5);
+  color: var(--ink-50, rgba(255, 255, 255, 0.5));
   font-size: 0.75rem;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
 }
 
@@ -858,14 +858,14 @@
 .formTextarea { resize: vertical; line-height: 1.5; }
 
 .formInput::placeholder,
-.formTextarea::placeholder { color: rgba(255, 255, 255, 0.3); }
+.formTextarea::placeholder { color: var(--ink-30, rgba(255, 255, 255, 0.3)); }
 
 /* Filled chips, selected by a stronger fill. Never a ring. */
 .scopeRow { display: flex; flex-wrap: wrap; gap: 0.35rem; margin-top: 0.4rem; }
 
 .scopeChip {
   background-color: #2a2b30;
-  color: rgba(255, 255, 255, 0.6);
+  color: var(--ink-60, rgba(255, 255, 255, 0.6));
   border: none;
   border-radius: 8px;
   padding: 0.28rem 0.6rem;
@@ -912,13 +912,13 @@
 .fileInput {
   font-family: inherit;
   font-size: 0.75rem;
-  color: rgba(255, 255, 255, 0.5);
+  color: var(--ink-50, rgba(255, 255, 255, 0.5));
   max-width: 240px;
 }
 
 .fileInput::file-selector-button {
   background-color: #2a2b30;
-  color: rgba(255, 255, 255, 0.8);
+  color: var(--ink-80, rgba(255, 255, 255, 0.8));
   border: none;
   border-radius: 8px;
   padding: 0.35rem 0.7rem;
@@ -928,12 +928,12 @@
   cursor: pointer;
 }
 
-.role_member { background-color: #2a2b30; color: rgba(255, 255, 255, 0.6); }
+.role_member { background-color: #2a2b30; color: var(--ink-60, rgba(255, 255, 255, 0.6)); }
 
 .invite_pending { background-color: #3a3520; color: #e8c766; }
 .invite_accepted { background-color: #1f3524; color: #8ed49a; }
 .invite_declined { background-color: #3a2323; color: #e59a9a; }
-.invite_cancelled { background-color: #2a2b30; color: rgba(255, 255, 255, 0.5); }
+.invite_cancelled { background-color: #2a2b30; color: var(--ink-50, rgba(255, 255, 255, 0.5)); }
 
 .linkRow { max-width: 320px; margin-bottom: 1rem; }
 

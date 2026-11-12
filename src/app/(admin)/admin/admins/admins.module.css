@@ -13,13 +13,13 @@
 }
 
 .email {
-  color: rgba(255, 255, 255, 0.38);
+  color: var(--ink-38, rgba(255, 255, 255, 0.38));
   font-size: 0.75rem;
   margin-top: 0.1rem;
 }
 
 .note {
-  color: rgba(255, 255, 255, 0.42);
+  color: var(--ink-42, rgba(255, 255, 255, 0.42));
   font-size: 0.74rem;
   line-height: 1.5;
   margin-top: 0.3rem;
@@ -61,7 +61,7 @@
   border-radius: 8px;
   padding: 0.4rem 0.7rem;
   min-height: 44px;
-  color: rgba(255, 255, 255, 0.72);
+  color: var(--ink-72, rgba(255, 255, 255, 0.72));
   font-family: "ClashGrotesk-Variable", sans-serif;
   font-size: 0.75rem;
   cursor: pointer;
@@ -78,7 +78,7 @@
 }
 
 .perm {
-  color: rgba(255, 255, 255, 0.75);
+  color: var(--ink-75, rgba(255, 255, 255, 0.75));
   font-size: 0.8rem;
   line-height: 1.7;
   list-style: none;

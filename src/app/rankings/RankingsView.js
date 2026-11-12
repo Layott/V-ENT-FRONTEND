@@ -410,10 +410,10 @@ const RankingsView = () => {
                 e.stopPropagation();
                 navigateToProfile(entry);
               }}>
-                      {tt("ui.view.69bd", "View")}
+                      {tt('rankings.openProfile', 'Open profile')}
                     </button>
                     <button type="button" className={`${styles.actionBtn} ${following[entry.id] ? styles.actionFollowing : styles.actionFollow}`} onClick={e => toggleFollow(e, entry)}>
-                      {following[entry.id] ? 'Following' : 'Follow'}
+                      {following[entry.id] ? tt('ui.following', 'Following') : tt('ui.follow', 'Follow')}
                     </button>
                   </div>
 
@@ -459,7 +459,7 @@ const RankingsView = () => {
                         {tt("ui.view.profile.b987", "View profile")}
                       </button>
                       <button type="button" className={`${styles.actionBtn} ${following[entry.id] ? styles.actionFollowing : styles.actionFollow}`} onClick={e => toggleFollow(e, entry)}>
-                        {following[entry.id] ? 'Following' : 'Follow'}
+                        {following[entry.id] ? tt('ui.following', 'Following') : tt('ui.follow', 'Follow')}
                       </button>
                     </div>
                   </div>

@@ -22,7 +22,7 @@
   margin: 0;
   font-size: 0.88rem;
   line-height: 1.55;
-  color: rgba(255, 255, 255, 0.55);
+  color: var(--ink-55, rgba(255, 255, 255, 0.55));
   max-width: 70ch;
 }
 
@@ -60,7 +60,7 @@
 .label {
   font-size: 0.78rem;
   font-weight: var(--fw-medium);
-  color: rgba(255, 255, 255, 0.55);
+  color: var(--ink-55, rgba(255, 255, 255, 0.55));
 }
 
 .value {
@@ -90,11 +90,11 @@
 }
 
 .primary { background-color: var(--v-ent-success); color: #fff; }
-.ghost { background-color: #33343a; color: rgba(255, 255, 255, 0.78); }
+.ghost { background-color: #33343a; color: var(--ink-78, rgba(255, 255, 255, 0.78)); }
 
 .primary:disabled {
   background-color: #2a2b30;
-  color: rgba(255, 255, 255, 0.3);
+  color: var(--ink-30, rgba(255, 255, 255, 0.3));
   cursor: not-allowed;
 }
 

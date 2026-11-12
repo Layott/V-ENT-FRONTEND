@@ -18,7 +18,7 @@
   text-align: center;
   font-family: "ClashGrotesk-Variable", sans-serif;
   font-size: 0.85rem;
-  color: rgba(255, 255, 255, 0.5);
+  color: var(--ink-50, rgba(255, 255, 255, 0.5));
 }
 
 .cardList {
@@ -47,7 +47,7 @@
   color: #fff;
   font-family: "Fraunces", sans-serif;
   font-size: 0.7rem;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.08em;
   flex-shrink: 0;
   text-transform: uppercase;
 }
@@ -70,7 +70,7 @@
 .cardExp {
   font-family: "ClashGrotesk-Variable", sans-serif;
   font-size: 0.75rem;
-  color: rgba(255, 255, 255, 0.5);
+  color: var(--ink-50, rgba(255, 255, 255, 0.5));
 }
 
 .cardActions {
@@ -119,7 +119,7 @@
 .kycGateSub {
   font-family: "ClashGrotesk-Variable", sans-serif;
   font-size: 0.78rem;
-  color: rgba(255, 255, 255, 0.55);
+  color: var(--ink-55, rgba(255, 255, 255, 0.55));
   margin: 0;
   max-width: 380px;
   line-height: 1.4;
@@ -157,13 +157,13 @@
 .bankNum {
   font-family: "ClashGrotesk-Variable", sans-serif;
   font-size: 0.78rem;
-  color: rgba(255, 255, 255, 0.6);
+  color: var(--ink-60, rgba(255, 255, 255, 0.6));
 }
 
 .bankHolder {
   font-family: "ClashGrotesk-Variable", sans-serif;
   font-size: 0.72rem;
-  color: rgba(255, 255, 255, 0.45);
+  color: var(--ink-45, rgba(255, 255, 255, 0.45));
 }
 
 @media (max-width: 540px) {

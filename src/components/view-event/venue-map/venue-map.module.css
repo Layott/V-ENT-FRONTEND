@@ -42,7 +42,7 @@
   background-color: #212225;
   border-radius: 14px;
   padding: 1.4rem 1.1rem;
-  color: rgba(255, 255, 255, 0.55);
+  color: var(--ink-55, rgba(255, 255, 255, 0.55));
   font-size: 0.95rem;
   line-height: 1.6;
 }
@@ -85,7 +85,7 @@
 }
 
 .shareBtn:disabled {
-  color: rgba(255, 255, 255, 0.45);
+  color: var(--ink-45, rgba(255, 255, 255, 0.45));
   cursor: default;
 }
 
@@ -98,7 +98,7 @@
 
 .privacy {
   margin-top: 0.7rem;
-  color: rgba(255, 255, 255, 0.5);
+  color: var(--ink-50, rgba(255, 255, 255, 0.5));
   font-size: 0.85rem;
   line-height: 1.6;
   max-width: 60ch;
@@ -106,7 +106,7 @@
 
 .summary {
   margin-top: 0.5rem;
-  color: rgba(255, 255, 255, 0.72);
+  color: var(--ink-72, rgba(255, 255, 255, 0.72));
   font-size: 0.92rem;
 }
 
@@ -127,11 +127,11 @@
 
 .mapHolder :global(.leaflet-control-attribution) {
   background-color: rgba(19, 19, 22, 0.78);
-  color: rgba(255, 255, 255, 0.55);
+  color: var(--ink-55, rgba(255, 255, 255, 0.55));
 }
 
 .mapHolder :global(.leaflet-control-attribution a) {
-  color: rgba(255, 255, 255, 0.75);
+  color: var(--ink-75, rgba(255, 255, 255, 0.75));
 }
 
 /* The attribution link is a phone's only way to the licence, so on a phone it

@@ -24,7 +24,7 @@
   font-size: 0.72rem;
   letter-spacing: 0.09em;
   text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.4);
+  color: var(--ink-40, rgba(255, 255, 255, 0.4));
 }
 
 .hint,
@@ -33,7 +33,7 @@
   margin: 0;
   font-size: 0.85rem;
   line-height: 1.55;
-  color: rgba(255, 255, 255, 0.6);
+  color: var(--ink-60, rgba(255, 255, 255, 0.6));
 }
 
 .problem {
@@ -115,7 +115,7 @@
 
 .muted {
   font-size: 0.8rem;
-  color: rgba(255, 255, 255, 0.55);
+  color: var(--ink-55, rgba(255, 255, 255, 0.55));
 }
 
 .figure {

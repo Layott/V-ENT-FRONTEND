@@ -47,7 +47,7 @@
 }
 
 .handle {
-  font-size: 12px;
+  font-size: 0.75rem;
   color: var(--text-secondary, #b6b6b6);
   overflow: hidden;
   text-overflow: ellipsis;
@@ -64,5 +64,5 @@
 
 @media (max-width: 768px) {
   .chip { gap: 6px; }
-  .handle { font-size: 11px; }
+  .handle { font-size: 0.6875rem; }
 }

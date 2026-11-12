@@ -62,7 +62,7 @@
   display: inline-flex;
   align-items: center;
   gap: 0.35rem;
-  color: rgba(255, 255, 255, 0.6);
+  color: var(--ink-60, rgba(255, 255, 255, 0.6));
   font-size: 0.85rem;
   margin-bottom: 1rem;
   text-decoration: none;
@@ -90,18 +90,18 @@
 .gameTag {
   font-size: 0.7rem;
   background-color: #303136;
-  color: rgba(255, 255, 255, 0.7);
+  color: var(--ink-70, rgba(255, 255, 255, 0.7));
   padding: 0.2rem 0.65rem;
   border-radius: 999px;
 }
 
 .statusPill {
-  font-size: 0.65rem;
+  font-size: 0.6875rem;
   padding: 0.18rem 0.55rem;
   border-radius: 999px;
   font-weight: var(--fw-semi-bold);
   text-transform: uppercase;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.08em;
 }
 
 .status_live {
@@ -116,7 +116,7 @@
 
 .status_settled {
   background-color: rgba(255, 255, 255, 0.06);
-  color: rgba(255, 255, 255, 0.55);
+  color: var(--ink-55, rgba(255, 255, 255, 0.55));
 }
 
 .heroMatch {
@@ -152,7 +152,7 @@
 
 .teamLabel {
   font-size: 0.7rem;
-  color: rgba(255, 255, 255, 0.5);
+  color: var(--ink-50, rgba(255, 255, 255, 0.5));
   margin: 0;
   letter-spacing: 0.04em;
 }
@@ -177,7 +177,7 @@
 
 .vsLabel {
   font-size: 0.85rem;
-  color: rgba(255, 255, 255, 0.4);
+  color: var(--ink-40, rgba(255, 255, 255, 0.4));
   font-weight: var(--fw-bold);
   letter-spacing: 0.05em;
 }
@@ -206,10 +206,10 @@
 .heroStat { display: flex; flex-direction: column; gap: 0.2rem; align-items: flex-start; }
 
 .heroStatLabel {
-  font-size: 0.66rem;
-  color: rgba(255, 255, 255, 0.45);
+  font-size: 0.6875rem;
+  color: var(--ink-45, rgba(255, 255, 255, 0.45));
   text-transform: uppercase;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.08em;
   margin: 0;
 }
 
@@ -253,7 +253,7 @@
 
 .sectionSub {
   font-size: 0.78rem;
-  color: rgba(255, 255, 255, 0.5);
+  color: var(--ink-50, rgba(255, 255, 255, 0.5));
   margin: 0 0 1rem;
 }
 
@@ -312,16 +312,17 @@
 .winChip {
   background-color: rgba(212, 175, 55, 0.18);
   color: var(--v-ent-gold);
-  font-size: 0.65rem;
+  font-size: 0.6875rem;
   padding: 1px 6px;
   border-radius: 8px;
   font-weight: var(--fw-bold);
   text-transform: uppercase;
+  letter-spacing: 0.08em;
 }
 
 .outcomeMeta {
   font-size: 0.72rem;
-  color: rgba(255, 255, 255, 0.5);
+  color: var(--ink-50, rgba(255, 255, 255, 0.5));
   margin: 0.2rem 0 0;
 }
 
@@ -366,16 +367,16 @@
   padding: 0.55rem 0.85rem;
   border-radius: 8px;
   font-size: 0.82rem;
-  color: rgba(255, 255, 255, 0.65);
+  color: var(--ink-65, rgba(255, 255, 255, 0.65));
 }
 
 .balanceLine strong { color: var(--v-ent-gold); }
 
 .stakeFieldLabel {
   font-size: 0.7rem;
-  color: rgba(255, 255, 255, 0.55);
+  color: var(--ink-55, rgba(255, 255, 255, 0.55));
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.08em;
   font-weight: var(--fw-medium);
   margin-top: 0.25rem;
 }
@@ -451,7 +452,7 @@
 .quickAmtBtn {
   background-color: #1a1a1e;
 
-  color: rgba(255, 255, 255, 0.7);
+  color: var(--ink-70, rgba(255, 255, 255, 0.7));
   padding: 0.45rem;
   border-radius: 8px;
   font-family: inherit;
@@ -481,7 +482,7 @@
   flex-direction: column;
   gap: 0.15rem;
   font-size: 0.78rem;
-  color: rgba(255, 255, 255, 0.55);
+  color: var(--ink-55, rgba(255, 255, 255, 0.55));
 }
 
 .summaryGrid strong {
@@ -613,7 +614,7 @@
 
 .successSub {
   font-size: 0.85rem;
-  color: rgba(255, 255, 255, 0.7);
+  color: var(--ink-70, rgba(255, 255, 255, 0.7));
   margin: 0;
   line-height: 1.5;
 }
@@ -638,7 +639,6 @@
   justify-content: center;
   padding: 1rem;
   z-index: 1100;
-  backdrop-filter: blur(4px);
 }
 
 .modal {
@@ -672,7 +672,7 @@
 .modalClose {
   background: transparent;
   border: none;
-  color: rgba(255, 255, 255, 0.55);
+  color: var(--ink-55, rgba(255, 255, 255, 0.55));
   cursor: pointer;
   font-size: 1.2rem;
   display: flex;
@@ -691,7 +691,7 @@
 
 .modalText {
   font-size: 0.85rem;
-  color: rgba(255, 255, 255, 0.75);
+  color: var(--ink-75, rgba(255, 255, 255, 0.75));
   line-height: 1.55;
   margin: 0;
 }
@@ -705,7 +705,7 @@
   flex-direction: column;
   gap: 0.4rem;
   font-size: 0.82rem;
-  color: rgba(255, 255, 255, 0.7);
+  color: var(--ink-70, rgba(255, 255, 255, 0.7));
   line-height: 1.5;
 }
 
@@ -719,7 +719,7 @@
 
 .stateText {
   padding: 2.5rem 1rem;
-  color: rgba(255, 255, 255, 0.45);
+  color: var(--ink-45, rgba(255, 255, 255, 0.45));
   font-size: var(--fs-p-size-mobile);
   text-align: center;
   background-color: #1a1a1e;

@@ -171,7 +171,7 @@ const NotFoundShell = () => {
           display: 'flex',
           justifyContent: 'center'
         }}>
-          <Link href="/tournaments"><button className={`${styles.primaryBtn} goldBTN`}>{tt("ui.back.tournaments.534f", "Back to Tournaments")}</button></Link>
+          <Link href="/tournaments"><button className={`${styles.primaryBtn} quietBTN`}>{tt("ui.back.tournaments.534f", "Back to Tournaments")}</button></Link>
         </div>
       </div>
     </main>
@@ -193,7 +193,7 @@ const ErrorShell = ({
             padding: 0
           }}>{message || tx("Something went wrong loading this tournament.")}</p>
           <div className={styles.errorCardActions}>
-            <button className={`${styles.primaryBtn} goldBTN`} onClick={onRetry}>{tt("ui.retry.9f5c", "Retry")}</button>
+            <button className={`${styles.primaryBtn} quietBTN`} onClick={onRetry}>{tt("ui.retry.9f5c", "Retry")}</button>
             <Link href="/tournaments"><button className={styles.outlineBtn}>{tt("ui.back.tournaments.534f", "Back to Tournaments")}</button></Link>
           </div>
         </div>
@@ -472,7 +472,7 @@ export const ViewTournamentContent = ({
                       : tt('lineup.buildMine', 'Build your lineup for this tournament')}
                   </Link>}
                   {isOrganizer ? <Link href={`/tournaments/${id}/manage`}>
-                      <button className={`${styles.primaryBtn} goldBTN`}>{tt("ui.manage.bf58", "Manage")}</button>
+                      <button className={`${styles.primaryBtn} redBTN`}>{tt("ui.manage.bf58", "Manage")}</button>
                     </Link> : tournament.is_registered ?
                 // The API refuses a second registration, so say so instead
                 // of offering a button that always errors.
@@ -484,7 +484,7 @@ export const ViewTournamentContent = ({
                 <button className={styles.primaryBtn} disabled>
                       {tournament.status === 'completed' ? tx("Tournament over") : tx("Registration closed")}
                     </button> : <Link href={`/tournaments/${id}/register`}>
-                      <button className={`${styles.primaryBtn} goldBTN`}>{tt("ui.register.d672", "Register")}</button>
+                      <button className={`${styles.primaryBtn} redBTN`}>{tt("ui.register.d672", "Register")}</button>
                     </Link>}
                 </div>
               </div>
@@ -581,7 +581,7 @@ export const ViewTournamentContent = ({
 
           {/* Sticky tab nav */}
           <div className={styles.stickyTabs}>
-            <div className={styles.tabBar}>
+            <div className={styles.tabBar} data-edge-fade="">
               {TABS.filter(t => !t.leagueOnly || isLeagueFormat(tournament?.bracket_type))
                 .map(t => <button key={t.id} className={`${styles.tabBtn} ${activeTab === t.id ? styles.tabBtnActive : ''}`} onClick={() => setActiveTab(t.id)}>
                   {tx(t.label)}
@@ -952,7 +952,7 @@ const ParticipantsPanel = ({
         display: 'flex',
         justifyContent: 'center'
       }}>
-            <button className={`${styles.primaryBtn} goldBTN`} onClick={() => setReloadKey(k => k + 1)}>{tt("ui.retry.9f5c", "Retry")}</button>
+            <button className={`${styles.primaryBtn} quietBTN`} onClick={() => setReloadKey(k => k + 1)}>{tt("ui.retry.9f5c", "Retry")}</button>
           </div>
         </div>}
 
@@ -1209,7 +1209,7 @@ const StreamPanel = ({
               <p className={styles.streamPlaceholderSub}>
                 {tx(source.label)} {tt("ui.does.not.allow.broadcast.1165", "does not allow the broadcast to be embedded here.")}
               </p>
-              <a href={source.url} target="_blank" rel="noopener noreferrer" className={`${styles.primaryBtn} goldBTN`}>
+              <a href={source.url} target="_blank" rel="noopener noreferrer" className={`${styles.primaryBtn} quietBTN`}>
                 {tt("ui.open.stream.58d9", "Open the stream")}
               </a>
             </div>}

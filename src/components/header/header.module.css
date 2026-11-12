@@ -51,7 +51,7 @@
 }
 
 .breadcrumbNav {
-  font-size: 0.6rem;
+  font-size: 0.6875rem;
   width: 100%;
   display: flex;
   justify-content: flex-start;
@@ -102,7 +102,7 @@
   justify-content: center;
   padding: 5px;
   border-radius: 8px;
-  transition: all ease-in-out 0.15s;
+  transition: width 150ms ease-out, box-shadow 150ms ease-out;
   background-color: #303136;
 
   left: 50%;
@@ -187,7 +187,7 @@
 }
 
 .bellBtn:hover {
-  color: rgba(255, 255, 255, 0.7);
+  color: var(--ink-70, rgba(255, 255, 255, 0.7));
 }
 
 .bellIcon {
@@ -205,7 +205,7 @@
   background-color: var(--v-ent-red);
   color: #FFF;
   font-family: "ClashGrotesk-Variable", sans-serif;
-  font-size: 0.6rem;
+  font-size: 0.6875rem;
   font-weight: var(--fw-bold);
   line-height: 16px;
   text-align: center;
@@ -233,7 +233,7 @@
 }
 
 .userUsername {
-  font-size: 0.65rem;
+  font-size: 0.6875rem;
 }
 
 .userAvatar {

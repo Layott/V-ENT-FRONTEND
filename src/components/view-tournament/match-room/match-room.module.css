@@ -50,7 +50,7 @@
   border: none;
   border-radius: 10px;
   background-color: rgba(255, 255, 255, 0.08);
-  color: rgba(255, 255, 255, 0.75);
+  color: var(--ink-75, rgba(255, 255, 255, 0.75));
   cursor: pointer;
   font-size: 1.15rem;
 }
@@ -83,14 +83,14 @@
   margin-top: 0.25rem;
   color: var(--v-ent-light-gold, #E8C760);
   font-size: 0.72rem;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
 }
 
 .handle {
   display: block;
   margin-top: 0.15rem;
-  color: rgba(255, 255, 255, 0.5);
+  color: var(--ink-50, rgba(255, 255, 255, 0.5));
   font-size: 0.74rem;
 }
 
@@ -106,7 +106,7 @@
 }
 
 .pens {
-  color: rgba(255, 255, 255, 0.6);
+  color: var(--ink-60, rgba(255, 255, 255, 0.6));
   font-size: 0.72rem;
   font-weight: var(--fw-regular, 400);
   margin-top: 0.2rem;
@@ -126,7 +126,7 @@
   font-size: 0.86rem;
 }
 
-.facts dt { color: rgba(255, 255, 255, 0.5); }
+.facts dt { color: var(--ink-50, rgba(255, 255, 255, 0.5)); }
 .facts dd { color: rgba(255, 255, 255, 0.88); margin: 0; text-align: right; }
 
 .block {
@@ -146,7 +146,7 @@
 }
 
 .muted {
-  color: rgba(255, 255, 255, 0.6);
+  color: var(--ink-60, rgba(255, 255, 255, 0.6));
   font-size: 0.86rem;
   line-height: 1.5;
 }
@@ -190,13 +190,13 @@
 }
 
 .in { color: var(--v-ent-success, #4caf50); }
-.notIn { color: rgba(255, 255, 255, 0.55); }
+.notIn { color: var(--ink-55, rgba(255, 255, 255, 0.55)); }
 
 .room {
   display: flex;
   flex-wrap: wrap;
   gap: 0.4rem 1.2rem;
-  color: rgba(255, 255, 255, 0.8);
+  color: var(--ink-80, rgba(255, 255, 255, 0.8));
   font-size: 0.95rem;
 }
 
@@ -234,9 +234,9 @@
 .block > .field { flex: 0 0 auto; }
 
 .label {
-  color: rgba(255, 255, 255, 0.55);
+  color: var(--ink-55, rgba(255, 255, 255, 0.55));
   font-size: 0.76rem;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
   overflow-wrap: anywhere;
 }
@@ -334,7 +334,7 @@
   border: none;
   border-radius: 8px;
   background-color: #33343a;
-  color: rgba(255, 255, 255, 0.8);
+  color: var(--ink-80, rgba(255, 255, 255, 0.8));
   font-family: inherit;
   font-size: 0.86rem;
   cursor: pointer;

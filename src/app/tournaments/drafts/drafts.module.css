@@ -24,7 +24,7 @@
 }
 
 .backLink {
-  color: rgba(255,255,255,0.6);
+  color: var(--ink-60, rgba(255, 255, 255, 0.6));
   font-size: 0.78rem;
   text-decoration: none;
   font-weight: var(--fw-medium);
@@ -43,7 +43,7 @@
 
 .pageSub {
   font-size: var(--fs-p-size-mobile);
-  color: rgba(255,255,255,0.45);
+  color: var(--ink-45, rgba(255, 255, 255, 0.45));
   margin: 0;
 }
 
@@ -91,9 +91,9 @@
 .gameTag {
   background-color: rgba(237,28,36,0.15);
   color: var(--v-ent-red);
-  font-size: 0.65rem;
+  font-size: 0.6875rem;
   font-weight: var(--fw-semi-bold);
-  letter-spacing: 0.05em;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
   padding: 3px 8px;
   border-radius: 8px;
@@ -102,7 +102,7 @@
 .draftBadge {
   background-color: rgba(245,158,11,0.15);
   color: #f59e0b;
-  font-size: 0.6rem;
+  font-size: 0.6875rem;
   font-weight: var(--fw-bold);
   letter-spacing: 0.08em;
   padding: 3px 7px;
@@ -119,7 +119,7 @@
 
 .draftMeta {
   font-size: 0.72rem;
-  color: rgba(255,255,255,0.45);
+  color: var(--ink-45, rgba(255, 255, 255, 0.45));
   margin: 0;
 }
 
@@ -132,7 +132,7 @@
   display: flex;
   justify-content: space-between;
   font-size: 0.72rem;
-  color: rgba(255,255,255,0.55);
+  color: var(--ink-55, rgba(255, 255, 255, 0.55));
   margin-bottom: 0.4rem;
 }
 
@@ -174,8 +174,8 @@
   cursor: pointer;
   background-color: transparent;
 
-  color: rgba(255,255,255,0.75);
-  transition: all 0.2s;
+  color: var(--ink-75, rgba(255, 255, 255, 0.75));
+  transition: opacity 150ms ease-out;
   width: 100%;
 }
 
@@ -237,7 +237,7 @@
 
 .emptySub {
   font-size: var(--fs-p-size-mobile);
-  color: rgba(255,255,255,0.45);
+  color: var(--ink-45, rgba(255, 255, 255, 0.45));
   margin: 0 0 1rem;
 }
 
@@ -330,7 +330,7 @@
 
 .inlineErrorSub {
   font-size: var(--fs-p-size-mobile);
-  color: rgba(255, 255, 255, 0.45);
+  color: var(--ink-45, rgba(255, 255, 255, 0.45));
   margin: 0 0 1rem;
 }
 

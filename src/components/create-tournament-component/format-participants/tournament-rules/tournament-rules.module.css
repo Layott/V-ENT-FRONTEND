@@ -28,7 +28,7 @@
 }
 
 .docHint {
-  color: rgba(255, 255, 255, 0.5);
+  color: var(--ink-50, rgba(255, 255, 255, 0.5));
   font-size: 0.82rem;
   line-height: 1.5;
   max-width: 62ch;

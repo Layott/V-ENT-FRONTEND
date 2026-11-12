@@ -17,6 +17,7 @@ import { IoClose, IoShareSocialOutline } from 'react-icons/io5';
 import { useT } from '@/i18n/LanguageProvider';
 import { embedSnippets } from '@/lib/embed';
 import styles from './share-card.module.css';
+import { markScrimDown, isScrimClick } from '@/lib/scrim';
 
 /** The canvas the code is drawn onto, and the PNG the download button saves. */
 const QrCanvas = ({ value }) => {
@@ -229,7 +230,7 @@ export default function ShareCard({ url, title, text, label, compact = false,
       {open && (
         <div
           className={styles.overlay}
-          onClick={event => { if (event.target === event.currentTarget) setOpen(false); }}
+          onPointerDown={markScrimDown} data-scrim="" onClick={event => { if (isScrimClick(event)) setOpen(false); }}
         >
           <div className={styles.panel} role="dialog" aria-modal="true">
             <div className={styles.head}>

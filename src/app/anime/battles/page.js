@@ -8,6 +8,7 @@
 
 import { useCallback, useEffect, useState } from 'react';
 import Link from 'next/link';
+import { LuChevronRight } from 'react-icons/lu';
 import { useSession } from 'next-auth/react';
 import Header from '@/components/header/Header';
 import MobileHeader from '@/components/mobile-header/MobileHeader';
@@ -105,6 +106,7 @@ const Battles = () => {
                       {fill(tt('anime.charactersIn', '{n} characters'),
                         { n: b.characters })}
                     </span>
+                    <LuChevronRight className={styles.rowChevron} aria-hidden="true" />
                   </Link>
                 </li>
               ))}

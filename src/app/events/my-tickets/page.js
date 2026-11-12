@@ -21,6 +21,7 @@ import UserChip from '@/components/user-chip/UserChip';
 import VendorOrders from '@/components/vendor-orders/VendorOrders';
 import { fuzzyMatches } from '@/lib/fuzzy';
 import BackLink from '@/components/back-link/BackLink';
+import { markScrimDown, isScrimClick } from '@/lib/scrim';
 const STATUS_FILTERS = [{
   id: 'all'
 }, {
@@ -403,8 +404,8 @@ const MyTickets = () => {
       <BottomMenu />
 
       {/* Full QR modal */}
-      {activeTicket && <div className={styles.modalOverlay} onClick={e => {
-      if (e.target === e.currentTarget) closeTicket();
+      {activeTicket && <div className={styles.modalOverlay} onPointerDown={markScrimDown} data-scrim="" onClick={e => {
+      if (isScrimClick(e)) closeTicket();
     }}>
           <div className={styles.qrModal}>
             <div className={styles.qrModalHeader}>

@@ -10,7 +10,7 @@
   margin: 0;
   font-size: 0.85rem;
   line-height: 1.55;
-  color: rgba(255, 255, 255, 0.55);
+  color: var(--ink-55, rgba(255, 255, 255, 0.55));
   max-width: 70ch;
 }
 
@@ -60,19 +60,19 @@
 
 /* Sold out is a fact, not a failure. Muted rather than red: the organiser
    wanted this to happen. */
-.pillGone { background-color: rgba(255, 255, 255, 0.08); color: rgba(255, 255, 255, 0.6); }
+.pillGone { background-color: rgba(255, 255, 255, 0.08); color: var(--ink-60, rgba(255, 255, 255, 0.6)); }
 
 .rowMeta {
   margin: 0 0 0.4rem;
   font-size: 0.82rem;
-  color: rgba(255, 255, 255, 0.6);
+  color: var(--ink-60, rgba(255, 255, 255, 0.6));
 }
 
 .rowDesc {
   margin: 0 0 0.7rem;
   font-size: 0.85rem;
   line-height: 1.5;
-  color: rgba(255, 255, 255, 0.75);
+  color: var(--ink-75, rgba(255, 255, 255, 0.75));
   max-width: 70ch;
 }
 
@@ -112,7 +112,7 @@
 .label {
   font-size: 0.78rem;
   font-weight: var(--fw-medium);
-  color: rgba(255, 255, 255, 0.65);
+  color: var(--ink-65, rgba(255, 255, 255, 0.65));
 }
 
 .input, .textarea {
@@ -137,7 +137,7 @@
   font-family: inherit;
 }
 
-.input::placeholder, .textarea::placeholder { color: rgba(255, 255, 255, 0.3); }
+.input::placeholder, .textarea::placeholder { color: var(--ink-30, rgba(255, 255, 255, 0.3)); }
 
 .check {
   grid-column: 1 / -1;
@@ -145,7 +145,7 @@
   align-items: center;
   gap: 0.55rem;
   font-size: 0.85rem;
-  color: rgba(255, 255, 255, 0.8);
+  color: var(--ink-80, rgba(255, 255, 255, 0.8));
   min-height: 44px;
   cursor: pointer;
 }
@@ -167,12 +167,12 @@
 }
 
 .primary { background-color: var(--v-ent-success); color: #fff; }
-.ghost { background-color: #33343a; color: rgba(255, 255, 255, 0.78); font-weight: var(--fw-medium); }
+.ghost { background-color: #33343a; color: var(--ink-78, rgba(255, 255, 255, 0.78)); font-weight: var(--fw-medium); }
 .danger { background-color: #3a2c2d; color: var(--v-ent-red); }
 
 .primary:disabled, .ghost:disabled, .danger:disabled {
   background-color: #2a2b30;
-  color: rgba(255, 255, 255, 0.3);
+  color: var(--ink-30, rgba(255, 255, 255, 0.3));
   cursor: not-allowed;
 }
 

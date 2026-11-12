@@ -56,7 +56,7 @@ const FormatsClient = () => {
               <p className={styles.createBody}>
                 {tt('formats.createBody', 'Choose any of these when you create a tournament. The same explainer sits beside each format while you choose.')}
               </p>
-              <Link href="/tournaments/create-tournament" className={`btn goldBTN ${styles.createBtn}`}>
+              <Link href="/tournaments/create-tournament" className={`btn redBTN ${styles.createBtn}`}>
                 {tt('formats.create', 'Create a tournament')}
               </Link>
             </section>

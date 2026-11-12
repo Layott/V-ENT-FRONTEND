@@ -20,6 +20,7 @@ import MobileHeader from '@/components/mobile-header/MobileHeader';
 import BottomMenu from '@/components/bottom-menu/BottomMenu';
 import Sidebar from '@/components/sidebar/Sidebar';
 import NeedsAccount from '@/components/needs-account/NeedsAccount';
+import PayShortfall from '@/components/pay/PayShortfall';
 import PlanCard, { planStyles, priceLabel } from '@/components/memberships/PlanCard';
 import { useT } from '@/i18n/LanguageProvider';
 import { apiMessage } from '@/lib/apiMessage';
@@ -238,7 +239,14 @@ const PlanPageClient = ({ slug }) => {
                     .replace('{have}', formatNumber(walletVc))
                     .replace('{short}', formatNumber(plan.price_vc - walletVc))}
                 </span>
-                <Link href="/wallets/topup" className={planStyles.action}>
+                {/* A card at this door too (owner rule, 25 October 2026; Apple
+                    review P115-4): the card covers what the wallet is short, here,
+                    and the coins land before Join is pressed. */}
+                <PayShortfall needVc={plan.price_vc} purpose="membership"
+                  token={viewer.token}
+                  resume={{ door: 'plan', slug: plan.slug }}
+                  onPaid={() => load()} />
+                <Link href="/wallets/topup" className={`${planStyles.action} ${planStyles.actionQuiet}`}>
                   {tt('billing.topUp', 'Add VENT COINS')}
                 </Link>
               </div>

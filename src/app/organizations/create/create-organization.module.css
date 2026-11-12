@@ -33,7 +33,7 @@
 
 .wizardSubtitle {
   font-size: var(--fs-p-size-mobile);
-  color: rgba(255, 255, 255, 0.5);
+  color: var(--ink-50, rgba(255, 255, 255, 0.5));
   margin: 0.25rem 0 0;
 }
 
@@ -66,12 +66,12 @@
 
 .cancelLink {
   font-size: var(--fs-p-size-mobile);
-  color: rgba(255, 255, 255, 0.6);
+  color: var(--ink-60, rgba(255, 255, 255, 0.6));
   text-decoration: none;
   padding: 0.5rem 0.85rem;
 
   border-radius: 8px;
-  transition: all 0.3s;
+  transition: color 150ms ease-out;
 }
 
 .cancelLink:hover {
@@ -112,7 +112,7 @@
   height: 30px;
   border-radius: 50%;
   background-color: #1a1a1d;
-  color: rgba(255, 255, 255, 0.5);
+  color: var(--ink-50, rgba(255, 255, 255, 0.5));
   font-size: 0.85rem;
   font-weight: var(--fw-semi-bold);
   display: flex;
@@ -120,7 +120,7 @@
   justify-content: center;
   flex-shrink: 0;
 
-  transition: all 0.3s;
+  transition: background-color 150ms ease-out, color 150ms ease-out;
 }
 
 .progressActive .progressDot {
@@ -135,7 +135,7 @@
 
 .progressLabel {
   font-size: 0.78rem;
-  color: rgba(255, 255, 255, 0.55);
+  color: var(--ink-55, rgba(255, 255, 255, 0.55));
   white-space: nowrap;
   font-weight: var(--fw-medium);
 }
@@ -173,7 +173,7 @@
 
 .sectionSub {
   font-size: var(--fs-p-size-mobile);
-  color: rgba(255, 255, 255, 0.55);
+  color: var(--ink-55, rgba(255, 255, 255, 0.55));
   margin: -0.5rem 0 0;
 }
 
@@ -198,7 +198,7 @@
 
 .helpText {
   font-size: 0.72rem;
-  color: rgba(255, 255, 255, 0.45);
+  color: var(--ink-45, rgba(255, 255, 255, 0.45));
 }
 
 .input {
@@ -218,7 +218,7 @@
 }
 
 .input::placeholder {
-  color: rgba(255, 255, 255, 0.35);
+  color: var(--ink-35, rgba(255, 255, 255, 0.35));
 }
 
 .textarea {
@@ -241,7 +241,7 @@
 }
 
 .textarea::placeholder {
-  color: rgba(255, 255, 255, 0.35);
+  color: var(--ink-35, rgba(255, 255, 255, 0.35));
 }
 
 /* ── Upload row ── */
@@ -280,7 +280,7 @@
 
 .logoPlaceholder {
   font-size: 0.72rem;
-  color: rgba(255, 255, 255, 0.4);
+  color: var(--ink-40, rgba(255, 255, 255, 0.4));
 }
 
 .uploadBtn {
@@ -296,7 +296,7 @@
   font-family: inherit;
   font-size: var(--fs-p-size-mobile);
   font-weight: var(--fw-medium);
-  transition: all 0.3s;
+  transition: background-color 150ms ease-out;
 }
 
 .uploadBtn:hover {
@@ -316,7 +316,7 @@
   font-family: inherit;
   font-size: var(--fs-p-size-mobile);
   font-weight: var(--fw-medium);
-  transition: all 0.25s;
+  transition: background-color 150ms ease-out;
 }
 
 .uploadGhost:hover {
@@ -340,7 +340,7 @@
 
 .bannerPlaceholder {
   font-size: 0.85rem;
-  color: rgba(255, 255, 255, 0.4);
+  color: var(--ink-40, rgba(255, 255, 255, 0.4));
 }
 
 /* ── Chips ── */
@@ -353,14 +353,14 @@
 .chip {
   background-color: #1a1a1d;
 
-  color: rgba(255, 255, 255, 0.8);
+  color: var(--ink-80, rgba(255, 255, 255, 0.8));
   padding: 0.45rem 0.9rem;
   border-radius: 20px;
   font-family: inherit;
   font-size: var(--fs-p-size-mobile);
   font-weight: var(--fw-medium);
   cursor: pointer;
-  transition: all 0.25s;
+  transition: background-color 150ms ease-out;
 }
 
 .chip:hover {
@@ -406,13 +406,13 @@
   height: 38px;
   background-color: transparent;
 
-  color: rgba(255, 255, 255, 0.6);
+  color: var(--ink-60, rgba(255, 255, 255, 0.6));
   border-radius: 8px;
   cursor: pointer;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.2s;
+  transition: background-color 150ms ease-out, color 150ms ease-out;
 }
 
 .removeRowBtn:hover {
@@ -468,9 +468,9 @@
 
 .reviewLabel {
   font-size: 0.75rem;
-  color: rgba(255, 255, 255, 0.5);
+  color: var(--ink-50, rgba(255, 255, 255, 0.5));
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.06em;
   font-weight: var(--fw-medium);
 }
 
@@ -529,7 +529,7 @@
   font-weight: var(--fw-semi-bold);
   border-radius: 8px;
   cursor: pointer;
-  transition: all ease-in-out 0.15s;
+  transition: background-color 150ms ease-out, opacity 150ms ease-out;
 }
 
 .primaryBtn:hover:not(:disabled) {
@@ -555,7 +555,7 @@
   font-weight: var(--fw-medium);
   border-radius: 8px;
   cursor: pointer;
-  transition: all ease-in-out 0.15s;
+  transition: background-color 150ms ease-out, opacity 150ms ease-out;
 }
 
 .secondaryBtn:hover:not(:disabled) {

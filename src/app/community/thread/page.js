@@ -334,7 +334,7 @@ const ThreadInner = ({
                 </div>
 
                 <div className={styles.replyList}>
-                  {pagedReplies.length === 0 ? <p className={styles.stateText}>{tt("ui.no.replies.yet.first.84f0", "No replies yet. Be the first.")}</p> : pagedReplies.map(reply => <div key={reply.id} className={styles.replyCard}>
+                  {pagedReplies.length === 0 ? <p className={styles.stateText}>{thread?.is_locked ? tt('community.noRepliesClosed', 'No replies. This thread is closed.') : tt("ui.no.replies.yet.first.84f0", "No replies yet. Be the first.")}</p> : pagedReplies.map(reply => <div key={reply.id} className={styles.replyCard}>
                         <div className={styles.replyAvatar}>
                           <Avatar src={reply.author.avatar} name={reply.author.username} size={36} />
                         </div>

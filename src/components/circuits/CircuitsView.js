@@ -10,6 +10,7 @@
 
 import { useCallback, useEffect, useState } from 'react';
 import Link from 'next/link';
+import { LuChevronRight } from 'react-icons/lu';
 import { useRouter } from 'next/navigation';
 import { useT } from '@/i18n/LanguageProvider';
 import { apiMessage } from '@/lib/apiMessage';
@@ -36,6 +37,7 @@ function CircuitItem({ c, tt }) {
         {tt('circuit.tournamentCount', '{n} tournaments').replace('{n}', c.tournaments ?? 0)}
       </span>
       {!c.is_published && <span className={`${styles.tag} ${styles.tagGold}`}>{tt('circuit.draft', 'Draft')}</span>}
+      <LuChevronRight className={styles.itemChevron} aria-hidden="true" />
     </Link>
   );
 }
@@ -52,6 +54,7 @@ function LeagueItem({ l, tt }) {
         {plural(tt, l.divisions ?? 0, 'league.divisionOne', '{n} division', 'league.divisionsN', '{n} divisions')}
       </span>
       {!l.is_published && <span className={`${styles.tag} ${styles.tagGold}`}>{tt('circuit.draft', 'Draft')}</span>}
+      <LuChevronRight className={styles.itemChevron} aria-hidden="true" />
     </Link>
   );
 }

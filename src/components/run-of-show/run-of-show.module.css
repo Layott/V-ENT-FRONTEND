@@ -37,7 +37,7 @@
 }
 
 .eyebrow {
-  color: rgba(255, 255, 255, 0.45);
+  color: var(--ink-45, rgba(255, 255, 255, 0.45));
   font-size: 0.74rem;
   letter-spacing: 0.14em;
   text-transform: uppercase;
@@ -53,7 +53,7 @@
 }
 
 .subtitle {
-  color: rgba(255, 255, 255, 0.62);
+  color: var(--ink-62, rgba(255, 255, 255, 0.62));
   font-size: 0.9rem;
   line-height: 1.5;
   margin: 0;
@@ -96,7 +96,7 @@
   padding: 0.55rem 0.95rem;
   border-radius: 999px;
   background-color: rgba(255, 255, 255, 0.07);
-  color: rgba(255, 255, 255, 0.72);
+  color: var(--ink-72, rgba(255, 255, 255, 0.72));
   font-size: 0.85rem;
   font-weight: var(--fw-medium);
   cursor: pointer;
@@ -119,7 +119,7 @@
 }
 
 .dayNote {
-  color: rgba(255, 255, 255, 0.5);
+  color: var(--ink-50, rgba(255, 255, 255, 0.5));
   font-size: 0.82rem;
   margin: 0;
 }
@@ -163,7 +163,7 @@
 }
 
 .liveClock {
-  color: rgba(255, 255, 255, 0.55);
+  color: var(--ink-55, rgba(255, 255, 255, 0.55));
   font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
   font-size: 0.8rem;
 }
@@ -235,14 +235,14 @@
 }
 
 .upNextLabel {
-  color: rgba(255, 255, 255, 0.4);
+  color: var(--ink-40, rgba(255, 255, 255, 0.4));
   font-size: 0.7rem;
   letter-spacing: 0.12em;
   text-transform: uppercase;
 }
 
 .upNextTime {
-  color: rgba(255, 255, 255, 0.75);
+  color: var(--ink-75, rgba(255, 255, 255, 0.75));
   font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
   font-size: 0.8rem;
 }
@@ -255,7 +255,7 @@
 }
 
 .upNextOwner {
-  color: rgba(255, 255, 255, 0.45);
+  color: var(--ink-45, rgba(255, 255, 255, 0.45));
   font-size: 0.78rem;
 }
 
@@ -279,7 +279,7 @@
   font-weight: var(--fw-semi-bold);
   letter-spacing: 0.16em;
   text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.42);
+  color: var(--ink-42, rgba(255, 255, 255, 0.42));
   margin: 0.35rem 0 0;
 }
 
@@ -328,7 +328,7 @@
 }
 
 .long {
-  color: rgba(255, 255, 255, 0.4);
+  color: var(--ink-40, rgba(255, 255, 255, 0.4));
   font-size: 0.72rem;
 }
 
@@ -365,7 +365,7 @@
 
 .owner {
   background-color: rgba(255, 255, 255, 0.09);
-  color: rgba(255, 255, 255, 0.7);
+  color: var(--ink-70, rgba(255, 255, 255, 0.7));
 }
 
 .match {
@@ -380,14 +380,14 @@
 }
 
 .note {
-  color: rgba(255, 255, 255, 0.5);
+  color: var(--ink-50, rgba(255, 255, 255, 0.5));
   font-size: 0.82rem;
   line-height: 1.5;
   margin: 0;
 }
 
 .zoneLine {
-  color: rgba(255, 255, 255, 0.35);
+  color: var(--ink-35, rgba(255, 255, 255, 0.35));
   font-size: 0.78rem;
   margin: 0.5rem 0 0;
 }
@@ -406,7 +406,7 @@
 }
 
 .emptyLine {
-  color: rgba(255, 255, 255, 0.6);
+  color: var(--ink-60, rgba(255, 255, 255, 0.6));
   font-size: 0.9rem;
   line-height: 1.5;
   margin: 0;
@@ -438,7 +438,7 @@
   display: inline-flex;
   align-items: center;
   min-height: 44px;
-  color: rgba(255, 255, 255, 0.7);
+  color: var(--ink-70, rgba(255, 255, 255, 0.7));
   font-size: 0.86rem;
 }
 
@@ -514,7 +514,7 @@
    without pressing every option to find out. */
 .roleCount {
   margin-left: 0.4rem;
-  color: rgba(255, 255, 255, 0.4);
+  color: var(--ink-40, rgba(255, 255, 255, 0.4));
   font-size: 0.72rem;
   font-variant-numeric: tabular-nums;
 }

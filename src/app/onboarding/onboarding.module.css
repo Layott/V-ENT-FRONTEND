@@ -39,7 +39,7 @@
 
   font-size: 0.8rem;
   font-weight: var(--fw-semi-bold);
-  transition: all 0.25s ease-in-out;
+  transition: background-color 150ms ease-out, color 150ms ease-out, opacity 150ms ease-out;
 }
 
 .stepDotActive {
@@ -54,7 +54,7 @@
 
 .stepLabel {
   font-size: var(--fs-p-size-sm-mobile);
-  color: rgba(255, 255, 255, 0.5);
+  color: var(--ink-50, rgba(255, 255, 255, 0.5));
   font-weight: var(--fw-medium);
 }
 
@@ -79,7 +79,7 @@
 
 .stepSub {
   font-size: var(--fs-p-size-sm-mobile);
-  color: rgba(255, 255, 255, 0.6);
+  color: var(--ink-60, rgba(255, 255, 255, 0.6));
   text-align: center;
   line-height: 1.5;
   font-weight: var(--fw-light);
@@ -129,7 +129,7 @@
 
 .hint {
   font-size: var(--fs-p-size-sm-mobile);
-  color: rgba(255, 255, 255, 0.45);
+  color: var(--ink-45, rgba(255, 255, 255, 0.45));
   font-weight: var(--fw-light);
 }
 
@@ -189,7 +189,7 @@
   font-size: var(--fs-p-size-sm-mobile);
   font-weight: var(--fw-medium);
   cursor: pointer;
-  transition: all 0.2s ease-in-out;
+  transition: background-color 150ms ease-out;
   text-align: center;
 }
 
@@ -222,7 +222,7 @@
 
 .walletHead {
   font-size: var(--fs-p-size-sm-mobile);
-  color: rgba(255, 255, 255, 0.55);
+  color: var(--ink-55, rgba(255, 255, 255, 0.55));
   font-weight: var(--fw-medium);
 }
 
@@ -246,7 +246,7 @@
 
 .walletNote {
   font-size: var(--fs-p-size-sm-mobile);
-  color: rgba(255, 255, 255, 0.5);
+  color: var(--ink-50, rgba(255, 255, 255, 0.5));
   font-weight: var(--fw-light);
 }
 
@@ -302,7 +302,7 @@
 }
 
 .recap li span {
-  color: rgba(255, 255, 255, 0.55);
+  color: var(--ink-55, rgba(255, 255, 255, 0.55));
   font-weight: var(--fw-medium);
 }
 
@@ -332,13 +332,13 @@
   height: 40px;
   padding: 0 1rem;
   background: transparent;
-  color: rgba(255, 255, 255, 0.7);
+  color: var(--ink-70, rgba(255, 255, 255, 0.7));
 
   border-radius: 8px;
   font-size: var(--fs-p-size-sm-mobile);
   font-weight: var(--fw-medium);
   cursor: pointer;
-  transition: all 0.2s ease-in-out;
+  transition: color 150ms ease-out;
 }
 
 .ghostBtn:hover {
@@ -400,7 +400,7 @@
 .uploadHintLine {
   font-family: 'ClashGrotesk-Variable', sans-serif;
   font-size: 0.72rem;
-  color: rgba(255, 255, 255, 0.4);
+  color: var(--ink-40, rgba(255, 255, 255, 0.4));
   margin-top: 0.4rem;
 }
 

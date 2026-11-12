@@ -45,6 +45,61 @@
   --shell-offset: 0px;
 }
 
+/* Muted text, one token per shade (Apple review S17, inbox 569). Every muted
+   colour in the site's CSS reads one of these, with the same rgba as its own
+   fallback. A reader who asks their device for more contrast gets each shade
+   about 0.3 brighter, capped short of full white so hierarchy survives. */
+:root {
+  --ink-30: rgba(255, 255, 255, 0.3);
+  --ink-32: rgba(255, 255, 255, 0.32);
+  --ink-35: rgba(255, 255, 255, 0.35);
+  --ink-38: rgba(255, 255, 255, 0.38);
+  --ink-40: rgba(255, 255, 255, 0.4);
+  --ink-42: rgba(255, 255, 255, 0.42);
+  --ink-45: rgba(255, 255, 255, 0.45);
+  --ink-50: rgba(255, 255, 255, 0.5);
+  --ink-52: rgba(255, 255, 255, 0.52);
+  --ink-55: rgba(255, 255, 255, 0.55);
+  --ink-58: rgba(255, 255, 255, 0.58);
+  --ink-60: rgba(255, 255, 255, 0.6);
+  --ink-62: rgba(255, 255, 255, 0.62);
+  --ink-65: rgba(255, 255, 255, 0.65);
+  --ink-66: rgba(255, 255, 255, 0.66);
+  --ink-672: rgba(255, 255, 255, 0.672);
+  --ink-68: rgba(255, 255, 255, 0.68);
+  --ink-70: rgba(255, 255, 255, 0.7);
+  --ink-72: rgba(255, 255, 255, 0.72);
+  --ink-75: rgba(255, 255, 255, 0.75);
+  --ink-78: rgba(255, 255, 255, 0.78);
+  --ink-80: rgba(255, 255, 255, 0.8);
+}
+@media (prefers-contrast: more) {
+  :root {
+    --ink-30: rgba(255, 255, 255, 0.6);
+    --ink-32: rgba(255, 255, 255, 0.62);
+    --ink-35: rgba(255, 255, 255, 0.65);
+    --ink-38: rgba(255, 255, 255, 0.68);
+    --ink-40: rgba(255, 255, 255, 0.7);
+    --ink-42: rgba(255, 255, 255, 0.72);
+    --ink-45: rgba(255, 255, 255, 0.75);
+    --ink-50: rgba(255, 255, 255, 0.8);
+    --ink-52: rgba(255, 255, 255, 0.82);
+    --ink-55: rgba(255, 255, 255, 0.85);
+    --ink-58: rgba(255, 255, 255, 0.88);
+    --ink-60: rgba(255, 255, 255, 0.9);
+    --ink-62: rgba(255, 255, 255, 0.92);
+    --ink-65: rgba(255, 255, 255, 0.92);
+    --ink-66: rgba(255, 255, 255, 0.92);
+    --ink-672: rgba(255, 255, 255, 0.92);
+    --ink-68: rgba(255, 255, 255, 0.92);
+    --ink-70: rgba(255, 255, 255, 0.92);
+    --ink-72: rgba(255, 255, 255, 0.92);
+    --ink-75: rgba(255, 255, 255, 0.92);
+    --ink-78: rgba(255, 255, 255, 0.92);
+    --ink-80: rgba(255, 255, 255, 0.92);
+  }
+}
+
 @media only screen and (min-width: 1024px) {
   :root {
     --shell-offset: 250px;
@@ -113,6 +168,16 @@ fieldset {
   border: 0;
 }
 
+/* A button with no fill of its own is transparent, never the browser's
+   light button face (Apple review F1, F2, inbox 568). Every text colour on
+   this site is light, so a button whose class set no background drew white
+   on near-white: the comic Subscribe and the My list tab, found twice by the
+   runtime scan. Any class that sets a background still wins (a class beats
+   an element rule). scripts/check-button-face.mjs keeps this rule here. */
+button {
+  background-color: transparent;
+}
+
 button:focus-visible,
 a:focus-visible,
 input:focus-visible,
@@ -154,6 +219,25 @@ p {
 
 a {
   text-decoration: none;
+}
+
+/* The quiet button (Apple review S9): one filled main action per screen, and
+   every other action beside it on a quiet fill one step above the panel.
+   Per-row actions in a list are quiet too. Never a ring. Element-qualified so
+   a module class that brings its own faint fill does not win over it. */
+.quietBTN,
+a.quietBTN,
+button.quietBTN {
+  color: var(--primary-bg);
+  background-color: #303136;
+  transition: background-color 150ms ease-out;
+  cursor: pointer;
+}
+
+.quietBTN:hover,
+a.quietBTN:hover,
+button.quietBTN:hover {
+  background-color: #3a3b41;
 }
 
 .goldBTN {
@@ -322,6 +406,115 @@ html {
 .btn,
 .grnBTN {
   transition: background-color 150ms ease-out, transform 120ms ease-out, filter 120ms ease-out;
+}
+
+/* Every control answers the press (Apple review S1, inbox 569). PressState
+   sets data-pressed on pointerdown on the nearest button, link, tab or
+   [role=button]; held, it dims and draws a little smaller at once. `scale`
+   composes with any transform the element already carries, so a centred or
+   translated control does not jump. It
+   comes back at once on release (state changes are instant here). The
+   browser's own grey tap flash is turned off because this replaces it. */
+html {
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Pop-ups (Apple review S2, S3). useDialog marks the box data-dialog and the
+   dark layer behind it data-sheet-scrim. A pop-up grows out of the control
+   that opened it and leaves the same way; on a phone it is a sheet anchored
+   to the bottom, where the thumb is, with a handle to drag it down by. Only
+   opacity, scale and translate move. Reduced motion makes it an instant
+   change (the global rule shortens every animation). */
+@keyframes ventDialogIn {
+  from { opacity: 0; scale: 0.96; }
+  to { opacity: 1; scale: 1; }
+}
+@keyframes ventDialogOut {
+  from { opacity: 1; scale: 1; }
+  to { opacity: 0; scale: 0.96; }
+}
+@keyframes ventSheetIn {
+  from { translate: 0 100%; }
+  to { translate: 0 0; }
+}
+@keyframes ventSheetOut {
+  from { translate: 0 0; }
+  to { translate: 0 100%; }
+}
+[data-dialog="open"] {
+  animation: ventDialogIn 200ms cubic-bezier(0.2, 0.9, 0.3, 1) both;
+}
+[data-dialog="closing"] {
+  animation: ventDialogOut 180ms ease-in both;
+  pointer-events: none;
+}
+[data-dialog]:focus {
+  outline: none;
+}
+@media (max-width: 720px) {
+  [data-sheet-scrim] {
+    align-items: flex-end !important;
+    justify-content: center !important;
+    padding: 0 !important;
+  }
+  [data-sheet] {
+    position: relative;
+    width: 100% !important;
+    max-width: 100% !important;
+    max-height: 92dvh;
+    margin: 0 !important;
+    border-radius: 16px 16px 0 0 !important;
+    padding-top: 1.6rem;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    touch-action: pan-y;
+    transition: translate 220ms cubic-bezier(0.2, 0.9, 0.3, 1);
+  }
+  [data-sheet]::before {
+    content: "";
+    position: absolute;
+    top: 8px;
+    left: 50%;
+    width: 40px;
+    height: 5px;
+    margin-left: -20px;
+    border-radius: 3px;
+    background-color: rgba(255, 255, 255, 0.28);
+  }
+  [data-sheet][data-dialog="open"] {
+    animation: ventSheetIn 240ms cubic-bezier(0.2, 0.9, 0.3, 1) both;
+  }
+  [data-sheet][data-dialog="closing"] {
+    animation: ventSheetOut 200ms ease-in both;
+  }
+  [data-sheet][data-dragging] {
+    animation: none;
+    transition: none;
+  }
+}
+
+/* Inner scrollers keep their scroll, and a sideways row fades at the edge
+   where more waits (Apple review S22). EdgeFade sets data-more. */
+[data-edge-fade] {
+  overscroll-behavior-x: contain;
+}
+[data-edge-fade][data-more="right"] {
+  mask-image: linear-gradient(to right, #000 calc(100% - 32px), transparent);
+}
+[data-edge-fade][data-more="left"] {
+  mask-image: linear-gradient(to left, #000 calc(100% - 32px), transparent);
+}
+[data-edge-fade][data-more="left right"] {
+  mask-image: linear-gradient(to right, transparent, #000 32px, #000 calc(100% - 32px), transparent);
+}
+.quietScroll {
+  overscroll-behavior: contain;
+}
+
+[data-pressed] {
+  filter: brightness(0.86);
+  scale: 0.97;
+  transition: none !important;
 }
 
 /* Reduce motion, everywhere (apple-design review, inbox 547): 29 rules

@@ -64,7 +64,7 @@
 .heroSubtitle {
   font-family: "ClashGrotesk-Variable", sans-serif;
   font-size: var(--fs-p-size-mobile);
-  color: rgba(255, 255, 255, 0.62);
+  color: var(--ink-62, rgba(255, 255, 255, 0.62));
   line-height: 1.55;
   max-width: 720px;
 }
@@ -87,7 +87,7 @@
 
 .searchIcon {
   font-size: 1.4rem;
-  color: rgba(255, 255, 255, 0.55);
+  color: var(--ink-55, rgba(255, 255, 255, 0.55));
   flex-shrink: 0;
 }
 
@@ -103,13 +103,13 @@
 }
 
 .searchInput::placeholder {
-  color: rgba(255, 255, 255, 0.4);
+  color: var(--ink-40, rgba(255, 255, 255, 0.4));
 }
 
 .clearBtn {
   background: rgba(255, 255, 255, 0.08);
   border: none;
-  color: rgba(255, 255, 255, 0.7);
+  color: var(--ink-70, rgba(255, 255, 255, 0.7));
   width: 28px;
   height: 28px;
   border-radius: 50%;
@@ -152,7 +152,7 @@
 
 .summary {
   position: relative;
-  color: rgba(255, 255, 255, 0.7);
+  color: var(--ink-70, rgba(255, 255, 255, 0.7));
   font-family: "ClashGrotesk-Variable", sans-serif;
   font-size: 0.85rem;
 }
@@ -203,7 +203,7 @@
   gap: 0.4rem;
   background-color: var(--overlay-gray);
 
-  color: rgba(255, 255, 255, 0.65);
+  color: var(--ink-65, rgba(255, 255, 255, 0.65));
   padding: 0.45rem 0.85rem;
   border-radius: 999px;
   font-family: "ClashGrotesk-Variable", sans-serif;
@@ -244,7 +244,7 @@
   background-color: rgba(255, 255, 255, 0.18);
   color: var(--white);
   font-family: "Fraunces", sans-serif;
-  font-size: 0.65rem;
+  font-size: 0.6875rem;
   padding: 1px 7px;
   border-radius: 999px;
   min-width: 20px;
@@ -334,11 +334,11 @@
 }
 
 .filterLabel {
-  color: rgba(255, 255, 255, 0.65);
+  color: var(--ink-65, rgba(255, 255, 255, 0.65));
   font-family: "ClashGrotesk-Variable", sans-serif;
   font-size: 0.7rem;
   text-transform: uppercase;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.08em;
 }
 
 .selectWrap {
@@ -370,7 +370,7 @@
   right: 0.6rem;
   top: 50%;
   transform: translateY(-50%);
-  color: rgba(255, 255, 255, 0.55);
+  color: var(--ink-55, rgba(255, 255, 255, 0.55));
   pointer-events: none;
   font-size: 0.95rem;
 }
@@ -422,7 +422,7 @@
 }
 
 .filtersHelpBody {
-  color: rgba(255, 255, 255, 0.55);
+  color: var(--ink-55, rgba(255, 255, 255, 0.55));
   font-size: 0.78rem;
   font-family: "ClashGrotesk-Variable", sans-serif;
   line-height: 1.5;
@@ -492,7 +492,7 @@
 }
 
 .tabResultCount {
-  color: rgba(255, 255, 255, 0.6);
+  color: var(--ink-60, rgba(255, 255, 255, 0.6));
   font-family: "ClashGrotesk-Variable", sans-serif;
   font-size: 0.85rem;
 }
@@ -502,7 +502,7 @@
 
   border-radius: 10px;
   padding: 1.5rem;
-  color: rgba(255, 255, 255, 0.55);
+  color: var(--ink-55, rgba(255, 255, 255, 0.55));
   font-family: "ClashGrotesk-Variable", sans-serif;
   font-size: 0.85rem;
   text-align: center;
@@ -535,7 +535,7 @@
 }
 
 .emptyBody {
-  color: rgba(255, 255, 255, 0.55);
+  color: var(--ink-55, rgba(255, 255, 255, 0.55));
   font-family: "ClashGrotesk-Variable", sans-serif;
   font-size: 0.85rem;
   max-width: 460px;
@@ -551,7 +551,7 @@
 }
 
 .suggestionsLabel {
-  color: rgba(255, 255, 255, 0.55);
+  color: var(--ink-55, rgba(255, 255, 255, 0.55));
   font-family: "ClashGrotesk-Variable", sans-serif;
   font-size: 0.72rem;
   text-transform: uppercase;
@@ -608,12 +608,12 @@
 .clearRecentsBtn {
   background: transparent;
   border: none;
-  color: rgba(255, 255, 255, 0.55);
+  color: var(--ink-55, rgba(255, 255, 255, 0.55));
   font-family: "ClashGrotesk-Variable", sans-serif;
   font-size: 0.7rem;
   cursor: pointer;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.08em;
 }
 
 .clearRecentsBtn:hover {
@@ -650,7 +650,7 @@
 }
 
 .recentItemIcon {
-  color: rgba(255, 255, 255, 0.4);
+  color: var(--ink-40, rgba(255, 255, 255, 0.4));
   font-size: 1rem;
 }
 
@@ -688,15 +688,14 @@
 }
 
 .statusBadge {
-  background-color: rgba(0, 0, 0, 0.55);
+  background-color: rgba(0, 0, 0, 0.78);
   color: var(--white);
   font-family: "ClashGrotesk-Variable", sans-serif;
-  font-size: 0.65rem;
+  font-size: 0.6875rem;
   padding: 3px 9px;
   border-radius: 999px;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
-  backdrop-filter: blur(4px);
+  letter-spacing: 0.08em;
 }
 
 .status_upcoming {
@@ -711,28 +710,27 @@
 
 .status_completed {
   background-color: rgba(255, 255, 255, 0.18);
-  color: rgba(255, 255, 255, 0.7);
+  color: var(--ink-70, rgba(255, 255, 255, 0.7));
 }
 
 .freeBadge {
   background-color: var(--v-ent-gold);
   color: var(--white);
   font-family: "Fraunces", sans-serif;
-  font-size: 0.6rem;
+  font-size: 0.6875rem;
   padding: 3px 8px;
   border-radius: 8px;
   letter-spacing: 0.05em;
 }
 
 .typeBadge {
-  background-color: rgba(0, 0, 0, 0.55);
+  background-color: rgba(0, 0, 0, 0.78);
   color: var(--white);
   font-family: "ClashGrotesk-Variable", sans-serif;
-  font-size: 0.65rem;
+  font-size: 0.6875rem;
   padding: 3px 9px;
   border-radius: 8px;
   text-transform: capitalize;
-  backdrop-filter: blur(4px);
 }
 
 .tCardBody {
@@ -749,11 +747,11 @@
   background-color: rgba(237, 28, 36, 0.18);
   color: var(--v-ent-red);
   font-family: "ClashGrotesk-Variable", sans-serif;
-  font-size: 0.68rem;
+  font-size: 0.6875rem;
   padding: 2px 8px;
   border-radius: 8px;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.08em;
 }
 
 .tCardTitle {
@@ -778,13 +776,13 @@
   display: inline-flex;
   align-items: center;
   gap: 0.4rem;
-  color: rgba(255, 255, 255, 0.65);
+  color: var(--ink-65, rgba(255, 255, 255, 0.65));
   font-family: "ClashGrotesk-Variable", sans-serif;
   font-size: 0.78rem;
 }
 
 .metaIcon {
-  color: rgba(255, 255, 255, 0.45);
+  color: var(--ink-45, rgba(255, 255, 255, 0.45));
   font-size: 0.85rem;
   flex-shrink: 0;
 }
@@ -805,7 +803,7 @@
 }
 
 .formatTag {
-  color: rgba(255, 255, 255, 0.55);
+  color: var(--ink-55, rgba(255, 255, 255, 0.55));
   font-family: "ClashGrotesk-Variable", sans-serif;
   font-size: 0.72rem;
 }
@@ -873,7 +871,7 @@
 }
 
 .teamMeta {
-  color: rgba(255, 255, 255, 0.55);
+  color: var(--ink-55, rgba(255, 255, 255, 0.55));
   font-size: 0.75rem;
   font-family: "ClashGrotesk-Variable", sans-serif;
 }
@@ -882,14 +880,14 @@
   background-color: rgba(212, 175, 55, 0.2);
   color: var(--v-ent-light-gold);
   font-family: "Fraunces", sans-serif;
-  font-size: 0.62rem;
+  font-size: 0.6875rem;
   padding: 3px 8px;
   border-radius: 8px;
   letter-spacing: 0.05em;
 }
 
 .teamBio {
-  color: rgba(255, 255, 255, 0.6);
+  color: var(--ink-60, rgba(255, 255, 255, 0.6));
   font-family: "ClashGrotesk-Variable", sans-serif;
   font-size: 0.8rem;
   line-height: 1.45;
@@ -911,7 +909,7 @@
   display: inline-flex;
   align-items: center;
   gap: 0.3rem;
-  color: rgba(255, 255, 255, 0.6);
+  color: var(--ink-60, rgba(255, 255, 255, 0.6));
   font-family: "ClashGrotesk-Variable", sans-serif;
   font-size: 0.75rem;
 }
@@ -1022,28 +1020,26 @@
   position: absolute;
   top: 0.55rem;
   left: 0.55rem;
-  background-color: rgba(0, 0, 0, 0.55);
+  background-color: rgba(0, 0, 0, 0.78);
   color: var(--white);
   font-family: "ClashGrotesk-Variable", sans-serif;
-  font-size: 0.65rem;
+  font-size: 0.6875rem;
   padding: 3px 8px;
   border-radius: 8px;
   text-transform: capitalize;
-  backdrop-filter: blur(4px);
 }
 
 .listingCondition {
   position: absolute;
   top: 0.55rem;
   right: 0.55rem;
-  background-color: rgba(0, 0, 0, 0.55);
+  background-color: rgba(0, 0, 0, 0.78);
   color: rgba(255, 255, 255, 0.85);
   font-family: "ClashGrotesk-Variable", sans-serif;
-  font-size: 0.62rem;
+  font-size: 0.6875rem;
   padding: 3px 8px;
   border-radius: 8px;
   text-transform: capitalize;
-  backdrop-filter: blur(4px);
 }
 
 .salePill {
@@ -1053,7 +1049,7 @@
   background-color: var(--v-ent-red);
   color: var(--white);
   font-family: "Fraunces", sans-serif;
-  font-size: 0.6rem;
+  font-size: 0.6875rem;
   padding: 3px 8px;
   border-radius: 8px;
   letter-spacing: 0.05em;
@@ -1098,7 +1094,7 @@
 }
 
 .priceStrike {
-  color: rgba(255, 255, 255, 0.4);
+  color: var(--ink-40, rgba(255, 255, 255, 0.4));
   font-family: "ClashGrotesk-Variable", sans-serif;
   font-size: 0.78rem;
   text-decoration: line-through;
@@ -1123,7 +1119,7 @@
 }
 
 .sellerHandle {
-  color: rgba(255, 255, 255, 0.7);
+  color: var(--ink-70, rgba(255, 255, 255, 0.7));
   font-family: "ClashGrotesk-Variable", sans-serif;
   font-size: 0.72rem;
   flex: 1;
@@ -1176,15 +1172,15 @@
   background-color: rgba(212, 175, 55, 0.2);
   color: var(--v-ent-light-gold);
   font-family: "Fraunces", sans-serif;
-  font-size: 0.62rem;
+  font-size: 0.6875rem;
   padding: 3px 8px;
   border-radius: 8px;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.08em;
 }
 
 .threadReplies {
-  color: rgba(255, 255, 255, 0.55);
+  color: var(--ink-55, rgba(255, 255, 255, 0.55));
   font-family: "ClashGrotesk-Variable", sans-serif;
   font-size: 0.72rem;
 }
@@ -1211,13 +1207,13 @@
 }
 
 .threadAuthorName {
-  color: rgba(255, 255, 255, 0.7);
+  color: var(--ink-70, rgba(255, 255, 255, 0.7));
   font-family: "ClashGrotesk-Variable", sans-serif;
   font-size: 0.75rem;
 }
 
 .threadDate {
-  color: rgba(255, 255, 255, 0.4);
+  color: var(--ink-40, rgba(255, 255, 255, 0.4));
   font-family: "ClashGrotesk-Variable", sans-serif;
   font-size: 0.7rem;
   margin-left: auto;
@@ -1263,11 +1259,11 @@
   font-family: "ClashGrotesk-Variable", sans-serif;
   font-size: 0.72rem;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.08em;
 }
 
 .clubDesc {
-  color: rgba(255, 255, 255, 0.6);
+  color: var(--ink-60, rgba(255, 255, 255, 0.6));
   font-family: "ClashGrotesk-Variable", sans-serif;
   font-size: 0.78rem;
   line-height: 1.4;
@@ -1286,11 +1282,11 @@
   background-color: rgba(212, 175, 55, 0.2);
   color: var(--v-ent-light-gold);
   font-family: "Fraunces", sans-serif;
-  font-size: 0.62rem;
+  font-size: 0.6875rem;
   padding: 2px 8px;
   border-radius: 8px;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.08em;
 }
 
 /* ─── MANGA CARD ─── */
@@ -1324,15 +1320,14 @@
   position: absolute;
   top: 0.55rem;
   left: 0.55rem;
-  background-color: rgba(0, 0, 0, 0.55);
+  background-color: rgba(0, 0, 0, 0.78);
   color: var(--white);
   font-family: "ClashGrotesk-Variable", sans-serif;
-  font-size: 0.62rem;
+  font-size: 0.6875rem;
   padding: 3px 8px;
   border-radius: 8px;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
-  backdrop-filter: blur(4px);
+  letter-spacing: 0.08em;
 }
 
 .mangaBody {
@@ -1354,7 +1349,7 @@
 }
 
 .mangaGenres {
-  color: rgba(255, 255, 255, 0.55);
+  color: var(--ink-55, rgba(255, 255, 255, 0.55));
   font-family: "ClashGrotesk-Variable", sans-serif;
   font-size: 0.72rem;
   text-transform: capitalize;
@@ -1414,7 +1409,7 @@
   background-color: var(--v-ent-red);
   color: var(--white);
   font-family: "Fraunces", sans-serif;
-  font-size: 0.6rem;
+  font-size: 0.6875rem;
   padding: 3px 8px;
   border-radius: 8px;
   letter-spacing: 0.06em;
@@ -1512,7 +1507,7 @@
   background-color: rgba(212, 175, 55, 0.85);
   color: var(--white);
   font-family: "Fraunces", sans-serif;
-  font-size: 0.6rem;
+  font-size: 0.6875rem;
   padding: 3px 8px;
   border-radius: 8px;
   letter-spacing: 0.05em;
@@ -1533,13 +1528,13 @@
 }
 
 .orgRegion {
-  color: rgba(255, 255, 255, 0.55);
+  color: var(--ink-55, rgba(255, 255, 255, 0.55));
   font-family: "ClashGrotesk-Variable", sans-serif;
   font-size: 0.72rem;
 }
 
 .orgBio {
-  color: rgba(255, 255, 255, 0.62);
+  color: var(--ink-62, rgba(255, 255, 255, 0.62));
   font-family: "ClashGrotesk-Variable", sans-serif;
   font-size: 0.78rem;
   line-height: 1.45;

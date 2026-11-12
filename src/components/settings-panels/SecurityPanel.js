@@ -9,6 +9,7 @@ import { useT } from '@/i18n/LanguageProvider';
 import { useTx } from '@/i18n/LanguageProvider';
 import { apiMessage } from '@/lib/apiMessage';
 import { formatRelative } from '@/lib/datetime';
+import { markScrimDown, isScrimClick } from '@/lib/scrim';
 
 // Recent sign-ins are read from the account. There used to be a fixed list of
 // ten invented ones here - a MacBook, an iPad, addresses in Lagos and Abuja -
@@ -280,7 +281,7 @@ const SecurityPanel = ({
           </div>
 
           <div className={shared.formFooter}>
-            <button type="submit" className={`${shared.btn} ${shared.goldBTN}`} disabled={submitting}>
+            <button type="submit" className={`${shared.btn} ${'redBTN'}`} disabled={submitting}>
               {submitting ? tx("Updating…") : tx("Update password")}
             </button>
           </div>
@@ -377,7 +378,7 @@ const SecurityPanel = ({
       </div>
 
       {/* 2FA QR Modal */}
-      {showQR && <div className={shared.modalBackdrop} onClick={() => setShowQR(false)}>
+      {showQR && <div className={shared.modalBackdrop} onPointerDown={markScrimDown} data-scrim="" onClick={(e) => isScrimClick(e) && (setShowQR(false))}>
           <div className={shared.modal} onClick={e => e.stopPropagation()}>
             <h3 className={shared.modalTitle}>{tt("ui.set.up.two.factor.9be4", "Set up two-factor authentication")}</h3>
             <p className={shared.modalSub}>
@@ -417,7 +418,7 @@ const SecurityPanel = ({
               </button>
               {/* Disabled until six digits are in, because a button that can
                   only fail is a button that should not be pressable. */}
-              <button type="button" className={`${shared.btn} ${shared.goldBTN}`}
+              <button type="button" className={`${shared.btn} ${'redBTN'}`}
                       onClick={confirm2FA} disabled={busy2FA || code.length !== 6}>
                 {busy2FA ? tt('ui.checking', 'Checking...') : tt("ui.enable.fa.5f22", "Enable 2FA")}
               </button>
@@ -427,7 +428,7 @@ const SecurityPanel = ({
 
       {/* Turning it OFF costs a code too. A stolen session must not be enough
           to remove the protection that exists because sessions get stolen. */}
-      {disabling && <div className={shared.modalBackdrop} onClick={() => setDisabling(false)}>
+      {disabling && <div className={shared.modalBackdrop} onPointerDown={markScrimDown} data-scrim="" onClick={(e) => isScrimClick(e) && (setDisabling(false))}>
           <div className={shared.modal} onClick={e => e.stopPropagation()}>
             <h3 className={shared.modalTitle}>{tt('settings.twoFactorOffTitle', 'Turn off two-factor authentication')}</h3>
             <p className={shared.modalSub}>

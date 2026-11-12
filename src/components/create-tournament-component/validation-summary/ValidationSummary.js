@@ -15,6 +15,7 @@
 import { useEffect, useRef } from 'react';
 import { useT, useTx } from '@/i18n/LanguageProvider';
 import styles from './validation-summary.module.css';
+import { scrollBehavior } from '@/lib/scrollMotion';
 
 const ValidationSummary = ({ errors = {} }) => {
   const tt = useT();
@@ -29,7 +30,7 @@ const ValidationSummary = ({ errors = {} }) => {
 
   useEffect(() => {
     if (!signature || !ref.current) return;
-    ref.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    ref.current.scrollIntoView({ behavior: scrollBehavior(), block: 'center' });
     // Focused as well as scrolled, so somebody on a keyboard or a screen
     // reader lands on the reason rather than being silently returned to the
     // top of a form.

@@ -2,7 +2,7 @@
 
 .back {
   display: inline-block;
-  color: rgba(255, 255, 255, 0.5);
+  color: var(--ink-50, rgba(255, 255, 255, 0.5));
   font-size: 0.82rem;
   margin-bottom: 1.1rem;
   min-height: 44px;
@@ -45,18 +45,18 @@
   background-color: #3a3b42;
   border-radius: 8px;
   padding: 0.1rem 0.45rem;
-  color: rgba(255, 255, 255, 0.65);
+  color: var(--ink-65, rgba(255, 255, 255, 0.65));
   font-size: 0.72rem;
 }
 
 .messageWhen {
-  color: rgba(255, 255, 255, 0.35);
+  color: var(--ink-35, rgba(255, 255, 255, 0.35));
   font-size: 0.72rem;
   margin-left: auto;
 }
 
 .messageBody {
-  color: rgba(255, 255, 255, 0.78);
+  color: var(--ink-78, rgba(255, 255, 255, 0.78));
   font-size: 0.85rem;
   line-height: 1.6;
   margin-bottom: 0.65rem;

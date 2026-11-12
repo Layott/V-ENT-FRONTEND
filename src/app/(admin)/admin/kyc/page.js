@@ -16,6 +16,7 @@ import Avatar from '@/components/avatar/Avatar';
 import { mediaUrl } from '@/lib/mediaUrl';
 import { adminToken } from '@/lib/adminToken'
 import { fuzzyMatches } from '@/lib/fuzzy';
+import { markScrimDown, isScrimClick } from '@/lib/scrim';
 const REJECT_REASONS = ['Document unclear or unreadable', 'Name mismatch', 'Expired document', 'Document not acceptable', 'Suspected fraud'];
 const TABS = [{
   key: 'pending',
@@ -201,7 +202,7 @@ function KycInner() {
   if (authLoading) return null;
   const pendingCount = submissions.filter(k => k.status === 'pending').length;
   return <div className={shared.pageContainer}>
-      <div className={`${shared.sidebarOverlay} ${sidebarOpen ? shared.open : ''}`} onClick={() => setSidebarOpen(false)} />
+      <div className={`${shared.sidebarOverlay} ${sidebarOpen ? shared.open : ''}`} onPointerDown={markScrimDown} data-scrim="" onClick={(e) => isScrimClick(e) && (setSidebarOpen(false))} />
       <AdminNav admin={admin} onLogout={logout} sidebarOpen={sidebarOpen} badges={{
       kyc: pendingCount
     }} />
@@ -210,7 +211,7 @@ function KycInner() {
         <main className={shared.contentArea}>
           <div className={shared.pageHeader}>
             <div>
-              <h1 className={shared.pageTitle}>{tt("ui.kyc.review.1a55", "KYC Review")}</h1>
+              <h1 className={shared.pageTitle}>{tt('adminNav.identityChecks', 'Identity checks')}</h1>
               <p className={shared.pageSubtitle}>{tt("ui.verify.user.identity.documents.d0fa", "Verify user identity documents.")}</p>
             </div>
           </div>
@@ -289,7 +290,7 @@ function KycInner() {
       </div>
 
       {/* KYC preview / reject modal */}
-      {previewModal && <div className={styles.modalOverlay} onClick={() => setPreviewModal(null)}>
+      {previewModal && <div className={styles.modalOverlay} onPointerDown={markScrimDown} data-scrim="" onClick={(e) => isScrimClick(e) && (setPreviewModal(null))}>
           <div className={`${styles.modal} ${previewModal.mode === 'reject' ? styles.modalNarrow : ''}`} onClick={e => e.stopPropagation()}>
             <div className={styles.modalHeader}>
               <div>
@@ -300,7 +301,7 @@ function KycInner() {
                   {previewModal.kyc.username} · {(previewModal.kyc.doc_type || '').replace('_', ' ')}
                 </p>
               </div>
-              <button className={styles.modalClose} onClick={() => setPreviewModal(null)}>×</button>
+              <button aria-label={tt('ui.close', 'Close')} className={styles.modalClose} onClick={() => setPreviewModal(null)}>×</button>
             </div>
 
             {previewModal.mode === 'view' && <>

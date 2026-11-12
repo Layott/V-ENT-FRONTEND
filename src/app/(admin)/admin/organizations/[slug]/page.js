@@ -33,6 +33,7 @@ import { mediaUrl } from '@/lib/mediaUrl';
 import shared from '@/components/admin/admin.module.css';
 import styles from './org-detail.module.css';
 import { adminToken } from '@/lib/adminToken'
+import { markScrimDown, isScrimClick } from '@/lib/scrim';
 
 const API = process.env.NEXT_PUBLIC_API_URL;
 
@@ -166,7 +167,7 @@ function OrgDetailInner() {
 
   return <div className={shared.pageContainer}>
       <div className={`${shared.sidebarOverlay} ${sidebarOpen ? shared.open : ''}`}
-           onClick={() => setSidebarOpen(false)} />
+           onPointerDown={markScrimDown} data-scrim="" onClick={(e) => isScrimClick(e) && (setSidebarOpen(false))} />
       <AdminNav admin={admin} onLogout={logout} sidebarOpen={sidebarOpen} badges={{}} />
       <div className={shared.mainContainer}>
         <AdminHeader admin={admin} onLogout={logout} onMenuOpen={() => setSidebarOpen(true)} />
@@ -222,8 +223,8 @@ function OrgDetailInner() {
                 </div>
               </div>
 
-              {premiumOpen && <div className={shared.modalOverlay} onClick={(e) => {
-                if (e.target === e.currentTarget) setPremiumOpen(false);
+              {premiumOpen && <div className={shared.modalOverlay} onPointerDown={markScrimDown} data-scrim="" onClick={(e) => {
+                if (isScrimClick(e)) setPremiumOpen(false);
               }}>
                   <div className={shared.modal}>
                     <p className={shared.modalTitle}>
@@ -372,7 +373,7 @@ function OrgDetailInner() {
       </div>
 
       {editing ? <div className={shared.modalOverlay}
-                      onClick={(e) => { if (e.target === e.currentTarget) setEditing(false); }}>
+                      onPointerDown={markScrimDown} data-scrim="" onClick={(e) => { if (isScrimClick(e)) setEditing(false); }}>
         <div className={shared.modal}>
           <h3 className={shared.modalTitle}>{tt('adminOrg.editTitle', 'Edit this organisation')}</h3>
           <p className={shared.modalSub}>
@@ -404,7 +405,7 @@ function OrgDetailInner() {
       </div> : null}
 
       {removing ? <div className={shared.modalOverlay}
-                       onClick={(e) => { if (e.target === e.currentTarget) setRemoving(null); }}>
+                       onPointerDown={markScrimDown} data-scrim="" onClick={(e) => { if (isScrimClick(e)) setRemoving(null); }}>
         <div className={shared.modal}>
           <h3 className={shared.modalTitle}>
             {tt('adminOrg.removeTitle', 'Take {who} out of this organisation?')

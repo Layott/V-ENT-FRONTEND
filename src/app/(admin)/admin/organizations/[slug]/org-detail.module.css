@@ -2,7 +2,7 @@
 
 .back {
   display: inline-block;
-  color: rgba(255, 255, 255, 0.5);
+  color: var(--ink-50, rgba(255, 255, 255, 0.5));
   font-size: 0.82rem;
   margin-bottom: 1.1rem;
   min-height: 44px;
@@ -33,5 +33,5 @@
   margin-top: 6px;
   font-size: 0.78rem;
   line-height: 1.35;
-  color: rgba(255, 255, 255, 0.55);
+  color: var(--ink-55, rgba(255, 255, 255, 0.55));
 }

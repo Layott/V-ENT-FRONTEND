@@ -15,7 +15,7 @@ const BelowHero = () => {
       <div className={styles.curveVectorContainer}>
         <div className={styles.curveVectorText}>
           <p>
-            {tt("ui.level.up.gaming.anime.bb20", "Level up your gaming and anime experience with tournaments, exclusive merchandise, and much more. Join V-ENT and unlock a world where fans rule.")}
+            {tt("landing.belowHero.plain", "Find a tournament, register your team, buy a ticket to an event and follow the results in one place. Entry fees and tickets are paid in VENT COINS or by card.")}
           </p>
         </div>
       </div>

@@ -67,7 +67,7 @@ export default function GlobalError({ error, reset }) {
               </p>
             )}
             <div className={styles.actions}>
-              <button type="button" className={`${styles.primary} goldBTN`} onClick={() => reset()}>
+              <button type="button" className={`${styles.primary} redBTN`} onClick={() => reset()}>
                 {copy.retry}
               </button>
               <a href={locale === 'en' ? '/' : `/${locale}`} className={styles.secondary}>

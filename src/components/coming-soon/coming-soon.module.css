@@ -61,7 +61,7 @@
 }
 
 .blurb {
-  color: rgba(255, 255, 255, 0.62);
+  color: var(--ink-62, rgba(255, 255, 255, 0.62));
   font-size: var(--fs-p-size-desktop);
   line-height: 1.6;
   margin: 0 auto;
@@ -118,7 +118,7 @@
 
 .branchIntro {
   margin: 1.25rem 0 1rem;
-  color: rgba(255, 255, 255, 0.65);
+  color: var(--ink-65, rgba(255, 255, 255, 0.65));
   font-size: 0.92rem;
 }
 
@@ -150,7 +150,7 @@
 
 .notifyDone {
   margin: 0;
-  color: rgba(255, 255, 255, 0.8);
+  color: var(--ink-80, rgba(255, 255, 255, 0.8));
 }
 
 .textButton {
@@ -179,7 +179,7 @@
   display: inline-flex;
   align-items: center;
   min-height: 44px;
-  color: rgba(255, 255, 255, 0.75);
+  color: var(--ink-75, rgba(255, 255, 255, 0.75));
 }
 
 @media only screen and (max-width: 767px) {

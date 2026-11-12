@@ -80,7 +80,7 @@ export default function BirthdayCard({ showToast }) {
         <span className={shared.fieldHelper}>{tt('birthday.once', 'You can set this once. Check it before saving.')}</span>
         {problem && <span className={`${shared.fieldHelper} ${styles.problem}`} role="alert">{problem}</span>}
         <div className={shared.formFooter}>
-          <button type="button" className={`${shared.btn} ${shared.goldBTN}`} disabled={busy || !value} onClick={save}>
+          <button type="button" className={`${shared.btn} ${'redBTN'}`} disabled={busy || !value} onClick={save}>
             {busy ? tt('ui.saving.8f2a', 'Saving…') : tt('birthday.save', 'Save date of birth')}
           </button>
         </div>

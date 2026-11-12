@@ -24,7 +24,7 @@
 .helperText {
   font-family: "ClashGrotesk-Variable", sans-serif;
   font-size: 0.72rem;
-  color: rgba(255, 255, 255, 0.4);
+  color: var(--ink-40, rgba(255, 255, 255, 0.4));
   margin: 0.4rem 0 0;
 }
 

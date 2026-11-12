@@ -250,7 +250,7 @@ const LinkedAccountsPanel = ({
                     </div>
                   </div>
 
-                  {p.id === 'google' ? <span className={styles.sub}>{connected ? tx("Sign-in method") : tx("Not used")}</span> : <button type="button" className={`${shared.btn} ${shared.btnSm} ${connected ? shared.ghostBTN : shared.goldBTN}`} onClick={() => connected ? disconnect(p.id) : connect(p.id)} disabled={working || !connected && !configured}>
+                  {p.id === 'google' ? <span className={styles.sub}>{connected ? tx("Sign-in method") : tx("Not used")}</span> : <button type="button" className={`${shared.btn} ${shared.btnSm} ${connected ? shared.ghostBTN : 'quietBTN'}`} onClick={() => connected ? disconnect(p.id) : connect(p.id)} disabled={working || !connected && !configured}>
                       {working ? tt("ui.working.9a03", "Working...") : connected ? tt("ui.disconnect.5f2b", "Disconnect") : tt("ui.connect.8e41", "Connect")}
                     </button>}
                 </div>;
@@ -291,7 +291,7 @@ const LinkedAccountsPanel = ({
                 </div>
               </div>
               <button type="button"
-                      className={`${shared.btn} ${shared.btnSm} ${linked.discord?.dm_enabled ? shared.ghostBTN : shared.goldBTN}`}
+                      className={`${shared.btn} ${shared.btnSm} ${linked.discord?.dm_enabled ? shared.ghostBTN : 'quietBTN'}`}
                       aria-pressed={Boolean(linked.discord?.dm_enabled)}
                       disabled={busy === 'discord-dm' || linked.discord?.dm_available === false}
                       onClick={() => toggleDm(!linked.discord?.dm_enabled)}>
@@ -325,7 +325,7 @@ const LinkedAccountsPanel = ({
                       </div>
                     </div>
 
-                    {meta.is_sign_in_method ? <span className={styles.sub}>{tt("ui.sign.in.method.4c1a", "Sign-in method")}</span> : <button type="button" className={`${shared.btn} ${shared.btnSm} ${meta.connected ? shared.ghostBTN : shared.goldBTN}`} onClick={() => meta.connected ? disconnectExternal(slug) : connectExternal(slug)} disabled={working || !meta.connected && !meta.configured}>
+                    {meta.is_sign_in_method ? <span className={styles.sub}>{tt("ui.sign.in.method.4c1a", "Sign-in method")}</span> : <button type="button" className={`${shared.btn} ${shared.btnSm} ${meta.connected ? shared.ghostBTN : 'quietBTN'}`} onClick={() => meta.connected ? disconnectExternal(slug) : connectExternal(slug)} disabled={working || !meta.connected && !meta.configured}>
                         {working ? tt("ui.working.9a03", "Working...") : meta.connected ? tt("ui.disconnect.5f2b", "Disconnect") : tt("ui.connect.8e41", "Connect")}
                       </button>}
                   </div>;

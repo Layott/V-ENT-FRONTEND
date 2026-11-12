@@ -96,14 +96,14 @@
 .activityText {
   font-family: "ClashGrotesk-Variable", sans-serif;
   font-size: 0.85rem;
-  color: rgba(255, 255, 255, 0.78);
+  color: var(--ink-78, rgba(255, 255, 255, 0.78));
   line-height: 1.4;
   margin-bottom: 0.2rem;
 }
 .activityMeta {
   font-family: "ClashGrotesk-Variable", sans-serif;
   font-size: 0.7rem;
-  color: rgba(255, 255, 255, 0.35);
+  color: var(--ink-35, rgba(255, 255, 255, 0.35));
 }
 
 /* Legacy: fallback */
@@ -126,7 +126,7 @@
 }
 
 .notBuiltText {
-  color: rgba(255, 255, 255, 0.42);
+  color: var(--ink-42, rgba(255, 255, 255, 0.42));
   font-size: 0.85rem;
   line-height: 1.7;
   margin-top: 0.5rem;

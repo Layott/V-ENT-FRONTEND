@@ -169,7 +169,7 @@ const TeamProfileMembersTable = ({
 
             {isOwner && <div className={styles.alignRight}>
                 {m.role !== 'owner' ? <div className={styles.menuWrap}>
-                    <button type="button" className={styles.menuBtn} onClick={() => setOpenMenu(openMenu === m.user_id ? null : m.user_id)}>
+                    <button aria-label={tt('ui.moreOptions', 'More options')} type="button" className={styles.menuBtn} onClick={() => setOpenMenu(openMenu === m.user_id ? null : m.user_id)}>
                       <BsThreeDots />
                     </button>
                     {openMenu === m.user_id && <div className={styles.menuDropdown}>

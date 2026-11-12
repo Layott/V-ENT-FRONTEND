@@ -44,7 +44,7 @@
   flex-direction: column;
   align-items: center;
   gap: 1rem;
-  color: rgba(255, 255, 255, 0.6);
+  color: var(--ink-60, rgba(255, 255, 255, 0.6));
   font-size: var(--fs-p-size-mobile);
 }
 
@@ -80,7 +80,7 @@
 
 .errorText {
   font-size: var(--fs-p-size-mobile);
-  color: rgba(255, 255, 255, 0.6);
+  color: var(--ink-60, rgba(255, 255, 255, 0.6));
   margin: 0 0 1.5rem;
 }
 
@@ -114,7 +114,7 @@
 .backBtn {
   background-color: transparent;
 
-  color: rgba(255, 255, 255, 0.75);
+  color: var(--ink-75, rgba(255, 255, 255, 0.75));
 }
 
 .backBtn:hover {

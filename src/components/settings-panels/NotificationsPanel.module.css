@@ -17,7 +17,7 @@
   text-align: left;
   font-family: "ClashGrotesk-Variable", sans-serif;
   font-size: 0.8rem;
-  color: rgba(255, 255, 255, 0.7);
+  color: var(--ink-70, rgba(255, 255, 255, 0.7));
 
 }
 
@@ -40,11 +40,11 @@
 .allBtn {
   background: transparent;
 
-  color: rgba(255, 255, 255, 0.55);
+  color: var(--ink-55, rgba(255, 255, 255, 0.55));
   font-family: "ClashGrotesk-Variable", sans-serif;
-  font-size: 0.65rem;
+  font-size: 0.6875rem;
   text-transform: uppercase;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.08em;
   padding: 2px 8px;
   border-radius: 999px;
   cursor: pointer;
@@ -76,7 +76,7 @@
 .eventSub {
   font-family: "ClashGrotesk-Variable", sans-serif;
   font-size: 0.72rem;
-  color: rgba(255, 255, 255, 0.45);
+  color: var(--ink-45, rgba(255, 255, 255, 0.45));
   line-height: 1.4;
 }
 
@@ -109,7 +109,7 @@
   font-family: "ClashGrotesk-Variable", sans-serif;
   font-size: 0.8rem;
   line-height: 1.5;
-  color: rgba(255, 255, 255, 0.6);
+  color: var(--ink-60, rgba(255, 255, 255, 0.6));
   margin: 0;
 }
 
@@ -136,15 +136,15 @@
 }
 
 .soonLabel {
-  color: rgba(255, 255, 255, 0.45);
+  color: var(--ink-45, rgba(255, 255, 255, 0.45));
 }
 
 .soonChip {
   font-family: "ClashGrotesk-Variable", sans-serif;
-  font-size: 0.62rem;
+  font-size: 0.6875rem;
   text-transform: uppercase;
-  letter-spacing: 0.04em;
-  color: rgba(255, 255, 255, 0.55);
+  letter-spacing: 0.08em;
+  color: var(--ink-55, rgba(255, 255, 255, 0.55));
   background: rgba(255, 255, 255, 0.07);
   border-radius: 8px;
   padding: 2px 8px;
@@ -153,7 +153,7 @@
 .soonCell {
   font-family: "ClashGrotesk-Variable", sans-serif;
   font-size: 0.72rem;
-  color: rgba(255, 255, 255, 0.35);
+  color: var(--ink-35, rgba(255, 255, 255, 0.35));
 }
 
 .problem {
@@ -180,6 +180,6 @@
 .footnote {
   font-family: "ClashGrotesk-Variable", sans-serif;
   font-size: 0.75rem;
-  color: rgba(255, 255, 255, 0.45);
+  color: var(--ink-45, rgba(255, 255, 255, 0.45));
   margin: 0.9rem 0 0;
 }

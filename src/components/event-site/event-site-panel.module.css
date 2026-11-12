@@ -22,7 +22,7 @@
 
 .hint {
   margin: 0;
-  color: rgba(255, 255, 255, 0.6);
+  color: var(--ink-60, rgba(255, 255, 255, 0.6));
   font-size: 0.88rem;
   line-height: 1.5;
 }
@@ -67,7 +67,7 @@
 
 .label {
   margin: 0;
-  color: rgba(255, 255, 255, 0.55);
+  color: var(--ink-55, rgba(255, 255, 255, 0.55));
   font-size: 0.78rem;
 }
 
@@ -85,7 +85,7 @@
   box-sizing: border-box;
 }
 
-.input::placeholder { color: rgba(255, 255, 255, 0.35); }
+.input::placeholder { color: var(--ink-35, rgba(255, 255, 255, 0.35)); }
 
 .accentRow {
   display: flex;
@@ -118,7 +118,7 @@
   border: 0;
   border-radius: 999px;
   background-color: rgba(255, 255, 255, 0.08);
-  color: rgba(255, 255, 255, 0.78);
+  color: var(--ink-78, rgba(255, 255, 255, 0.78));
   font-size: 0.85rem;
   font-family: inherit;
   cursor: pointer;
@@ -168,7 +168,7 @@
   padding: 0.35rem 0.4rem 0.35rem 0.9rem;
 }
 
-.sectionOff .sectionName { color: rgba(255, 255, 255, 0.45); }
+.sectionOff .sectionName { color: var(--ink-45, rgba(255, 255, 255, 0.45)); }
 
 .sectionName {
   color: #fff;

@@ -13,6 +13,7 @@ import { apiMessage } from '@/lib/apiMessage';
 import { formatDateTime } from '@/lib/datetime';
 import { discardDraft, readDraft, saveDraft, stepText } from '@/lib/registrationDraft';
 import { peekResume } from '@/components/pay/PayShortfall';
+import { markScrimDown, isScrimClick } from '@/lib/scrim';
 const TournamentRegistrationModal = ({
   isOpen,
   onClose,
@@ -335,11 +336,11 @@ const TournamentRegistrationModal = ({
   if (!isOpen) return null;
   return <>
       
-      {!showTeamModal && !showReviewModal && !showPaymentModal && !showSuccessModal && !showTicket && <div className={styles.modalOverlay} onClick={handleCancel}>
+      {!showTeamModal && !showReviewModal && !showPaymentModal && !showSuccessModal && !showTicket && <div className={styles.modalOverlay} onPointerDown={markScrimDown} data-scrim="" onClick={(e) => isScrimClick(e) && handleCancel(e)}>
           <div className={styles.modalContent} onClick={e => e.stopPropagation()}>
             <div className={styles.modalHeader}>
               <h2 className={styles.modalTitle}>{tt("ui.register.tournament.0b66", "Register For Tournament")}</h2>
-              <button className={styles.closeButton} onClick={handleCancel}>
+              <button aria-label={tt('ui.close', 'Close')} className={styles.closeButton} onClick={handleCancel}>
                 ×
               </button>
             </div>
@@ -403,7 +404,7 @@ const TournamentRegistrationModal = ({
                 {tt("ui.cancel.77df", "Cancel")}
               </button>
               <button className={`${styles.nextButton} ${!selectedOption ? styles.disabled : ''}`} onClick={handleNext} disabled={!selectedOption}>
-                {tt("ui.next.2f04", "Next →")}
+                {selectedOption === 'team' ? tt('register.chooseTeam', 'Choose your team') : selectedOption === 'individual' ? tt('register.continueAsPlayer', 'Continue as a player') : tt('register.pickOne', 'Pick one to continue')}
               </button>
             </div>}
           </div>

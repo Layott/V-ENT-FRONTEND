@@ -175,7 +175,7 @@
   justify-content: center;
   gap: 0.25rem;
   font-weight: 500;
-  transition: all ease-in-out 0.15s;
+  transition: background-color 150ms ease-out;
   background-color: rgba(255, 255, 255, 0.04);
 }
 
@@ -260,7 +260,7 @@
   justify-content: center;
   gap: 0.25rem;
 
-  transition: all ease-in-out 0.15s;
+  transition: background-color 150ms ease-out;
   width: 135px;
   flex-grow: 1;
 }
@@ -375,7 +375,7 @@
   justify-content: center;
   padding: 5px;
   border-radius: 8px;
-  transition: all ease-in-out 0.15s;
+  transition: width 150ms ease-out, box-shadow 150ms ease-out;
   background-color: #303136;
 
   left: 50%;
@@ -558,7 +558,7 @@
 .manageBTN {
   font-size: 0.9rem;
   color: #B2B3BD;
-  transition: all ease-in-out 0.15s;
+  transition: color 150ms ease-out;
 }
 
 .viewBTN:hover,

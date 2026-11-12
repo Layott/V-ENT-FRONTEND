@@ -23,6 +23,8 @@ import styles from './vendor-shop.module.css';
 import { useT } from '@/i18n/LanguageProvider';
 import { useTx } from '@/i18n/LanguageProvider';
 import { fuzzyMatches } from '@/lib/fuzzy';
+import { markScrimDown, isScrimClick } from '@/lib/scrim';
+import { plural } from '@/lib/plural';
 const CART_STORAGE_KEY = eventId => `vendor_cart_${eventId || 'unknown'}`;
 const VendorShopContent = ({
   slug: slugFromPath
@@ -342,9 +344,9 @@ const VendorShopContent = ({
                       <p className={styles.vendorDesc}>{tx(v.description)}</p>
                       <div className={styles.vendorFoot}>
                         <span className={styles.productCount}>
-                          {v.products?.length || 0} {tt("ui.products.fbdc", "products")}
+                          {plural(tt, v.products?.length || 0, 'vendorShop.productOne', '{n} product', 'vendorShop.productsN', '{n} products')}
                         </span>
-                        <span className={styles.viewLink}>{tt("ui.view.stall.d3b1", "View stall →")}</span>
+                        <span className={styles.viewLink}>{tt('vendorShop.openStall', 'Open the stall')}</span>
                       </div>
                     </div>
                   </Link>)}
@@ -357,8 +359,8 @@ const VendorShopContent = ({
       <BottomMenu />
 
       {/* Product modal */}
-      {activeProduct && <div className={styles.modalOverlay} onClick={e => {
-      if (e.target === e.currentTarget) setActiveProduct(null);
+      {activeProduct && <div className={styles.modalOverlay} onPointerDown={markScrimDown} data-scrim="" onClick={e => {
+      if (isScrimClick(e)) setActiveProduct(null);
     }}>
           <div className={styles.productModal}>
             <button className={styles.modalCloseAbs} onClick={() => setActiveProduct(null)} type="button" aria-label={tt("ui.close.bbfa", "Close")}>
@@ -391,8 +393,8 @@ const VendorShopContent = ({
         </div>}
 
       {/* Cart drawer */}
-      {cartOpen && <div className={styles.modalOverlay} onClick={e => {
-      if (e.target === e.currentTarget) setCartOpen(false);
+      {cartOpen && <div className={styles.modalOverlay} onPointerDown={markScrimDown} data-scrim="" onClick={e => {
+      if (isScrimClick(e)) setCartOpen(false);
     }}>
           <aside className={styles.cartDrawer}>
             <div className={styles.cartHeader}>

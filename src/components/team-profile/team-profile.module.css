@@ -87,7 +87,7 @@
   font-size: 0.7rem;
   font-weight: var(--fw-bold);
   letter-spacing: 0.05em;
-  color: rgba(255, 255, 255, 0.7);
+  color: var(--ink-70, rgba(255, 255, 255, 0.7));
   background-color: rgba(255, 255, 255, 0.08);
   padding: 3px 8px;
   border-radius: 8px;
@@ -97,6 +97,7 @@
   font-size: 0.7rem;
   font-weight: var(--fw-semi-bold);
   text-transform: uppercase;
+  letter-spacing: 0.08em;
   color: var(--v-ent-gold);
   background-color: rgba(212, 175, 55, 0.15);
 
@@ -115,12 +116,12 @@
   align-items: center;
   gap: 0.35rem;
   font-size: var(--fs-p-size-mobile);
-  color: rgba(255, 255, 255, 0.65);
+  color: var(--ink-65, rgba(255, 255, 255, 0.65));
 }
 
 .heroMetaIcon {
   font-size: 0.95rem;
-  color: rgba(255, 255, 255, 0.55);
+  color: var(--ink-55, rgba(255, 255, 255, 0.55));
 }
 
 .heroActions {
@@ -159,7 +160,7 @@
 .heroBtnPrimary:disabled {
   background-color: rgba(255, 255, 255, 0.08);
 
-  color: rgba(255, 255, 255, 0.5);
+  color: var(--ink-50, rgba(255, 255, 255, 0.5));
   cursor: not-allowed;
 }
 
@@ -197,7 +198,7 @@
 
 .countPill {
   background-color: rgba(255, 255, 255, 0.08);
-  color: rgba(255, 255, 255, 0.7);
+  color: var(--ink-70, rgba(255, 255, 255, 0.7));
   font-size: 0.7rem;
   font-weight: var(--fw-medium);
   padding: 2px 8px;
@@ -206,7 +207,7 @@
 
 .bioText {
   font-size: var(--fs-p-size-mobile);
-  color: rgba(255, 255, 255, 0.7);
+  color: var(--ink-70, rgba(255, 255, 255, 0.7));
   line-height: 1.55;
   margin: 0;
 }
@@ -252,7 +253,7 @@
 
 .coreGameSub {
   font-size: 0.78rem;
-  color: rgba(255, 255, 255, 0.5);
+  color: var(--ink-50, rgba(255, 255, 255, 0.5));
   margin: 0;
 }
 
@@ -271,7 +272,7 @@
   border-radius: 8px;
 
   font-size: var(--fs-p-size-mobile);
-  color: rgba(255, 255, 255, 0.7);
+  color: var(--ink-70, rgba(255, 255, 255, 0.7));
   cursor: pointer;
   transition: background-color 0.2s, color 0.2s;
 }
@@ -313,7 +314,7 @@
 
 .ownerUsername {
   font-size: var(--fs-p-size-mobile);
-  color: rgba(255, 255, 255, 0.5);
+  color: var(--ink-50, rgba(255, 255, 255, 0.5));
   margin: 0.1rem 0 0;
 }
 
@@ -357,10 +358,10 @@
 }
 
 .quickStatLabel {
-  font-size: 0.68rem;
-  color: rgba(255, 255, 255, 0.5);
+  font-size: 0.6875rem;
+  color: var(--ink-50, rgba(255, 255, 255, 0.5));
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.08em;
 }
 
 /* ───────────────────── MEMBERS TABLE ───────────────────── */
@@ -406,7 +407,7 @@
 }
 
 .searchIcon {
-  color: rgba(255, 255, 255, 0.5);
+  color: var(--ink-50, rgba(255, 255, 255, 0.5));
   font-size: 1rem;
 }
 
@@ -446,8 +447,8 @@
   background-color: #1a1a1d;
   font-size: 0.7rem;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
-  color: rgba(255, 255, 255, 0.55);
+  letter-spacing: 0.08em;
+  color: var(--ink-55, rgba(255, 255, 255, 0.55));
   font-weight: var(--fw-semi-bold);
 }
 
@@ -502,11 +503,11 @@
 
 .memberHandle {
   font-size: 0.7rem;
-  color: rgba(255, 255, 255, 0.5);
+  color: var(--ink-50, rgba(255, 255, 255, 0.5));
   margin: 0.1rem 0 0;
 }
 
-.cellMuted { color: rgba(255, 255, 255, 0.55); font-size: var(--fs-p-size-mobile); }
+.cellMuted { color: var(--ink-55, rgba(255, 255, 255, 0.55)); font-size: var(--fs-p-size-mobile); }
 
 .cellWinrate {
   display: flex;
@@ -562,7 +563,7 @@
 
 .roleMember {
   background-color: rgba(255, 255, 255, 0.06);
-  color: rgba(255, 255, 255, 0.7);
+  color: var(--ink-70, rgba(255, 255, 255, 0.7));
 
 }
 
@@ -573,7 +574,7 @@
 .menuBtn {
   background: transparent;
 
-  color: rgba(255, 255, 255, 0.7);
+  color: var(--ink-70, rgba(255, 255, 255, 0.7));
   border-radius: 8px;
   width: 32px;
   height: 32px;
@@ -647,7 +648,7 @@
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  color: rgba(255, 255, 255, 0.6);
+  color: var(--ink-60, rgba(255, 255, 255, 0.6));
 }
 
 .memberMobileBody {
@@ -721,8 +722,8 @@
   background-color: #1a1a1d;
   font-size: 0.7rem;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
-  color: rgba(255, 255, 255, 0.55);
+  letter-spacing: 0.08em;
+  color: var(--ink-55, rgba(255, 255, 255, 0.55));
   font-weight: var(--fw-semi-bold);
 }
 
@@ -826,10 +827,10 @@
 }
 
 .activityMobileGrid > div span:first-child {
-  color: rgba(255, 255, 255, 0.5);
+  color: var(--ink-50, rgba(255, 255, 255, 0.5));
   text-transform: uppercase;
-  letter-spacing: 0.04em;
-  font-size: 0.66rem;
+  letter-spacing: 0.08em;
+  font-size: 0.6875rem;
 }
 
 /* ───────────────────── STATS ───────────────────── */
@@ -880,9 +881,9 @@
 
 .kpiLabel {
   font-size: 0.7rem;
-  color: rgba(255, 255, 255, 0.5);
+  color: var(--ink-50, rgba(255, 255, 255, 0.5));
   text-transform: uppercase;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.08em;
   margin: 0.15rem 0 0;
 }
 
@@ -906,7 +907,7 @@
   display: flex;
   justify-content: space-between;
   font-size: 0.7rem;
-  color: rgba(255, 255, 255, 0.5);
+  color: var(--ink-50, rgba(255, 255, 255, 0.5));
   margin-top: 0.3rem;
 }
 
@@ -946,7 +947,7 @@
 
 .gameCount {
   font-size: var(--fs-p-size-mobile);
-  color: rgba(255, 255, 255, 0.7);
+  color: var(--ink-70, rgba(255, 255, 255, 0.7));
   text-align: right;
 }
 
@@ -975,7 +976,7 @@
 
 .requestMessage {
   font-size: var(--fs-p-size-mobile);
-  color: rgba(255, 255, 255, 0.7);
+  color: var(--ink-70, rgba(255, 255, 255, 0.7));
   margin: 0;
   line-height: 1.45;
 }
@@ -990,7 +991,7 @@
 
 .requestTime {
   font-size: 0.75rem;
-  color: rgba(255, 255, 255, 0.45);
+  color: var(--ink-45, rgba(255, 255, 255, 0.45));
   display: inline-flex;
   align-items: center;
   gap: 0.3rem;
@@ -1003,7 +1004,7 @@
 
 .stateText {
   font-size: var(--fs-p-size-mobile);
-  color: rgba(255, 255, 255, 0.5);
+  color: var(--ink-50, rgba(255, 255, 255, 0.5));
   padding: 0.5rem 0;
   margin: 0;
 }

@@ -715,7 +715,7 @@ const OrgProfileContent = ({
                         <td>{formatDate(t.start_date)}</td>
                         <td>
                           <Link href={`/tournaments/${t.slug || t.id}`} className={styles.smallBtn}>
-                            {tt("ui.view.69bd", "View")}
+                            {tt('orgProfile.openTournament', 'Open the tournament')}
                           </Link>
                         </td>
                       </tr>)}
@@ -749,7 +749,7 @@ const OrgProfileContent = ({
                         <td>{formatDate(e.start_date)}</td>
                         <td>
                           <Link href={`/events/${e.slug || e.id}`} className={styles.smallBtn}>
-                            {tt("ui.view.69bd", "View")}
+                            {tt('orgProfile.openEvent', 'Open the event')}
                           </Link>
                         </td>
                       </tr>)}

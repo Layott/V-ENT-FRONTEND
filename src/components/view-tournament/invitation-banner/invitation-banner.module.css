@@ -27,14 +27,14 @@
 }
 
 .message {
-  color: rgba(255, 255, 255, 0.78);
+  color: var(--ink-78, rgba(255, 255, 255, 0.78));
   font-size: 0.94rem;
   line-height: 1.55;
   margin-top: 0.35rem;
 }
 
 .note {
-  color: rgba(255, 255, 255, 0.5);
+  color: var(--ink-50, rgba(255, 255, 255, 0.5));
   font-size: 0.85rem;
   line-height: 1.55;
   margin-top: 0.45rem;
@@ -70,7 +70,7 @@
 
 .decline {
   background-color: #33343a;
-  color: rgba(255, 255, 255, 0.8);
+  color: var(--ink-80, rgba(255, 255, 255, 0.8));
 }
 
 .decline:hover:enabled { background-color: #3d3e45; color: #fff; }

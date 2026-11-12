@@ -101,9 +101,9 @@ const MembersTabComponent = ({
                 <p>{members.length} {tt("ui.members.f13e", "members")}</p>
 
                 <div className={tableStyles.toggleTableView} onClick={toggleTableView}>
-                {showGalleryView ? <button className={tableStyles.galleryViewBTN}>
+                {showGalleryView ? <button aria-label={tt('ui.galleryView', 'Show as a gallery')} className={tableStyles.galleryViewBTN}>
                     <RiGalleryView2 className={tableStyles.galleryViewIcon} />
-                    </button> : <button className={tableStyles.galleryViewBTN}>
+                    </button> : <button aria-label={tt('ui.gridView', 'Show as a grid')} className={tableStyles.galleryViewBTN}>
                     <IoGridOutline className={tableStyles.galleryViewIcon} />
                     </button>}
                 </div>
@@ -167,7 +167,7 @@ const MembersTabComponent = ({
                     {tt("ui.view.profile.685e", "View Profile")}
                   </Link>
 
-                  <button className={`${tableStyles.threeDotsBTN} ${profileStyles.topMostLayerColor}`}>
+                  <button aria-label={tt('ui.moreOptions', 'More options')} className={`${tableStyles.threeDotsBTN} ${profileStyles.topMostLayerColor}`}>
                     <BsThreeDots />
                   </button>
                 </div>
@@ -217,7 +217,7 @@ const MembersTabComponent = ({
                       {tt("ui.view.profile.685e", "View Profile")}
                     </Link>
 
-                    <button className={`${tableStyles.threeDotsBTN} ${profileStyles.topMostLayerColor}`}>
+                    <button aria-label={tt('ui.moreOptions', 'More options')} className={`${tableStyles.threeDotsBTN} ${profileStyles.topMostLayerColor}`}>
                       <BsThreeDots />
                     </button>
                   </div>
@@ -249,13 +249,13 @@ const MembersTabComponent = ({
         </p>
 
         <div className={tableStyles.pagination}>
-          <button className={`${tableStyles.navIconBTN} ${currentPage === 1 ? tableStyles.hidden : ''}`} onClick={handlePrevClick} disabled={currentPage === 1}>
+          <button aria-label={tt('pager.previous', 'Previous page')} className={`${tableStyles.navIconBTN} ${currentPage === 1 ? tableStyles.hidden : ''}`} onClick={handlePrevClick} disabled={currentPage === 1}>
             <BsChevronLeft className={tableStyles.navIcon} />
           </button>
           {pageNumbers.map(number => <button key={number} className={`${tableStyles.pageBTN} ${currentPage === number ? tableStyles.activePage : ''}`} onClick={() => handlePageChange(number)}>
               {number}
             </button>)}
-          <button className={`${tableStyles.navIconBTN} ${currentPage === Math.ceil(members.length / rowsPerPage) ? tableStyles.hidden : ''}`} onClick={handleNextClick} disabled={currentPage === Math.ceil(members.length / rowsPerPage)}>
+          <button aria-label={tt('pager.next', 'Next page')} className={`${tableStyles.navIconBTN} ${currentPage === Math.ceil(members.length / rowsPerPage) ? tableStyles.hidden : ''}`} onClick={handleNextClick} disabled={currentPage === Math.ceil(members.length / rowsPerPage)}>
             <BsChevronRight className={tableStyles.navIcon} />
           </button>
         </div>

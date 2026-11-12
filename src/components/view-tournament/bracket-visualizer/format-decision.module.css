@@ -12,7 +12,7 @@
 }
 
 .line {
-  color: rgba(255, 255, 255, 0.7);
+  color: var(--ink-70, rgba(255, 255, 255, 0.7));
   font-size: 0.9rem;
   line-height: 1.5;
 }
@@ -52,7 +52,7 @@
 .chip:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
 
 .count {
-  color: rgba(255, 255, 255, 0.55);
+  color: var(--ink-55, rgba(255, 255, 255, 0.55));
   font-size: 0.82rem;
 }
 

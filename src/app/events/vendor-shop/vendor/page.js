@@ -26,6 +26,7 @@ import Sidebar from '@/components/sidebar/Sidebar';
 import styles from './vendor.module.css';
 import { useT } from '@/i18n/LanguageProvider';
 import { useTx } from '@/i18n/LanguageProvider';
+import { markScrimDown, isScrimClick } from '@/lib/scrim';
 const CART_STORAGE_KEY = eventId => `vendor_cart_${eventId || 'unknown'}`;
 // `eventSlug` and `stallSlug` come from the named address
 // (/events/<event>/stall/<stall>); the query string is the address links
@@ -350,7 +351,7 @@ export const VendorStallContent = ({ eventSlug = '', stallSlug = '' } = {}) => {
   if (error || !vendor) return renderShell(<div className={styles.errorState}>
         <h1 className={styles.errorTitle}>{tt("ui.couldn't.load.vendor.0e61", "Couldn't load vendor")}</h1>
         <p className={styles.errorSub}>{error || tx("Vendor not found.")}</p>
-        <Link href={eventId ? `/events/${eventId}/vendor-shop` : '/events'} className={`${styles.errorBtn} goldBTN`}>
+        <Link href={eventId ? `/events/${eventId}/vendor-shop` : '/events'} className={`${styles.errorBtn} quietBTN`}>
           {tt("ui.back.vendor.shop.9b5d", "Back to vendor shop")}
         </Link>
       </div>);
@@ -366,9 +367,10 @@ export const VendorStallContent = ({ eventSlug = '', stallSlug = '' } = {}) => {
             <Link href={`/events/${eventId}/vendor-shop`} className={styles.backLink}>
               <IoArrowBack /> {tt("ui.back.vendors.5aba", "Back to vendors")}
             </Link>
-            <Link href={`/events/${eventId}/vendor-shop`} className={styles.cartChip}>
+            {/* A cart is for somebody who can check out (Apple review P067-6). */}
+            {viewer.signedIn && <Link href={`/events/${eventId}/vendor-shop`} className={styles.cartChip}>
               <FaShoppingCart /> {cartCount} {tt("ui.cart.91c0", "in cart")}
-            </Link>
+            </Link>}
           </div>
 
           {/* Banner */}
@@ -416,7 +418,7 @@ export const VendorStallContent = ({ eventSlug = '', stallSlug = '' } = {}) => {
               <button className={styles.contactBtn} onClick={() => setContactOpen(true)} type="button">
                 <IoChatbubblesOutline /> {tt("ui.contact.b374", "Contact")}
               </button>
-              <Link href={`/events/${eventId}?tab=map`} className={`${styles.mapBtn} goldBTN`}>
+              <Link href={`/events/${eventId}?tab=map`} className={`${styles.mapBtn} quietBTN`}>
                 <FaMapPin /> {tt("ui.visit.booth.venue.68db", "Visit booth at venue")}
               </Link>
             </div>
@@ -450,7 +452,7 @@ export const VendorStallContent = ({ eventSlug = '', stallSlug = '' } = {}) => {
                     </p>
                     {(p.variants || []).length > 0 && <p className={styles.productOptions}>{p.variants.join(' · ')}</p>}
                     <span className={styles.addBtn}>
-                      {p.in_stock ? tx("Add to cart") : tt('stall.unavailable', 'Unavailable')}
+                      {!p.in_stock ? tt('stall.unavailable', 'Unavailable') : viewer.signedIn ? tx("Add to cart") : tt('stall.signInToBuy', 'Sign in to buy')}
                     </span>
                   </div>
                 </button>)}
@@ -461,8 +463,8 @@ export const VendorStallContent = ({ eventSlug = '', stallSlug = '' } = {}) => {
       <BottomMenu />
 
       {/* Product modal */}
-      {activeProduct && <div className={styles.modalOverlay} onClick={e => {
-      if (e.target === e.currentTarget) { setActiveProduct(null); setPickedVariant(''); }
+      {activeProduct && <div className={styles.modalOverlay} onPointerDown={markScrimDown} data-scrim="" onClick={e => {
+      if (isScrimClick(e)) { setActiveProduct(null); setPickedVariant(''); }
     }}>
           <div className={styles.productModal}>
             <button className={styles.modalCloseAbs} onClick={() => { setActiveProduct(null); setPickedVariant(''); }} type="button" aria-label={tt("ui.close.bbfa", "Close")}>
@@ -497,16 +499,19 @@ export const VendorStallContent = ({ eventSlug = '', stallSlug = '' } = {}) => {
                     {activeProduct.variants.map(v => <button key={v} type="button" className={styles.optionChip} aria-pressed={pickedVariant === v} onClick={() => setPickedVariant(v)}>{v}</button>)}
                   </div>
                 </div>}
-              <button className={`${styles.addToCartBtn} ${activeProduct.in_stock ? 'goldBTN' : ''}`} onClick={() => addToCart(activeProduct, pickedVariant)} disabled={!activeProduct.in_stock || ((activeProduct.variants || []).length > 0 && !pickedVariant)} type="button">
+              {!viewer.loading && !viewer.signedIn && activeProduct.in_stock ? <button type="button" className={`${styles.addToCartBtn} redBTN`}
+                  onClick={() => window.location.assign(`/login?next=${encodeURIComponent(window.location.pathname)}`)}>
+                  {tt('stall.signInToBuy', 'Sign in to buy')}
+                </button> : <button className={`${styles.addToCartBtn} ${activeProduct.in_stock ? 'goldBTN' : ''}`} onClick={() => addToCart(activeProduct, pickedVariant)} disabled={!activeProduct.in_stock || ((activeProduct.variants || []).length > 0 && !pickedVariant)} type="button">
                 {!activeProduct.in_stock ? tx("Sold out") : ((activeProduct.variants || []).length > 0 && !pickedVariant) ? tt('stall.pickOptionFirst', 'Pick an option first') : tx("Add to cart")}
-              </button>
+              </button>}
             </div>
           </div>
         </div>}
 
       {/* Contact modal */}
-      {contactOpen && <div className={styles.modalOverlay} onClick={e => {
-      if (e.target === e.currentTarget) closeContact();
+      {contactOpen && <div className={styles.modalOverlay} onPointerDown={markScrimDown} data-scrim="" onClick={e => {
+      if (isScrimClick(e)) closeContact();
     }}>
           <div className={styles.contactModal}>
             <div className={styles.contactHeader}>
@@ -533,7 +538,7 @@ export const VendorStallContent = ({ eventSlug = '', stallSlug = '' } = {}) => {
                   <p className={styles.successSub}>
                     {tt('stall.contactSentHow', '{name} has it as a notification with your username.').replace('{name}', vendor.name)}
                   </p>
-                  <button className={`${styles.contactSendBtn} goldBTN`} onClick={closeContact} type="button">
+                  <button className={`${styles.contactSendBtn} quietBTN`} onClick={closeContact} type="button">
                     {tt("ui.done.e9b4", "Done")}
                   </button>
                 </div>}
@@ -557,8 +562,8 @@ export const VendorStallContent = ({ eventSlug = '', stallSlug = '' } = {}) => {
         </div>}
 
       {/* ── Cart / checkout ── */}
-      {cartOpen && <div className={styles.modalOverlay} onClick={e => {
-      if (e.target === e.currentTarget) setCartOpen(false);
+      {cartOpen && <div className={styles.modalOverlay} onPointerDown={markScrimDown} data-scrim="" onClick={e => {
+      if (isScrimClick(e)) setCartOpen(false);
     }}>
           <div className={styles.cartPanel}>
             <div className={styles.cartHeader}>

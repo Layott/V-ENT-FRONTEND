@@ -18,6 +18,7 @@ import styles from './dm.module.css';
 import { useT } from '@/i18n/LanguageProvider';
 import { useTx } from '@/i18n/LanguageProvider';
 import UserChip from '@/components/user-chip/UserChip';
+import { scrollBehavior } from '@/lib/scrollMotion';
 const formatTime = iso => {
   if (!iso) return '';
   return new Date(iso).toLocaleTimeString(appLocale(), {
@@ -116,7 +117,7 @@ const DmInner = ({
   }, [id, router, fetchThread]);
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({
-      behavior: 'smooth'
+      behavior: scrollBehavior()
     });
   }, [thread?.messages?.length]);
   const otherParticipant = t => t?.with || null;

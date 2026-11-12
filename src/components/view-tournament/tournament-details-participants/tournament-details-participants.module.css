@@ -1,5 +1,5 @@
 .stateText {
-  color: rgba(255, 255, 255, 0.4);
+  color: var(--ink-40, rgba(255, 255, 255, 0.4));
   font-size: var(--fs-p-size-desktop);
   padding: 2rem 0;
   text-align: center;
@@ -21,7 +21,7 @@
   justify-content: center;
   font-size: 0.7rem;
   font-weight: var(--fw-bold);
-  color: rgba(255, 255, 255, 0.5);
+  color: var(--ink-50, rgba(255, 255, 255, 0.5));
   flex-shrink: 0;
 }
 

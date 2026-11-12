@@ -32,6 +32,7 @@ import shared from '@/components/admin/admin.module.css';
 import styles from './admins.module.css';
 import { adminToken } from '@/lib/adminToken'
 import UserPicker from '@/components/user-picker/UserPicker';
+import { markScrimDown, isScrimClick } from '@/lib/scrim';
 
 const API = process.env.NEXT_PUBLIC_API_URL;
 
@@ -142,7 +143,7 @@ function AdminsInner() {
 
   return <div className={shared.pageContainer}>
       <div className={`${shared.sidebarOverlay} ${sidebarOpen ? shared.open : ''}`}
-           onClick={() => setSidebarOpen(false)} />
+           onPointerDown={markScrimDown} data-scrim="" onClick={(e) => isScrimClick(e) && (setSidebarOpen(false))} />
       <AdminNav admin={admin} onLogout={logout} sidebarOpen={sidebarOpen} badges={{}} />
       <div className={shared.mainContainer}>
         <AdminHeader admin={admin} onLogout={logout} onMenuOpen={() => setSidebarOpen(true)}
@@ -195,7 +196,7 @@ function AdminsInner() {
                         <td>
                           <span className={`${shared.badge} ${shared.roleAdmin}`}>{tt(`adminRole.${row.admin_role}`, row.role_label)}</span>
                           {row.awaiting_feature ? <p className={styles.note}>
-                            {tt('adminAdmins.awaiting', 'Grants nothing until {what} is built.')
+                            {tt('adminAdmins.awaitingUntil', 'Grants nothing until {what}.')
                               .replace('{what}', row.awaiting_feature)}
                           </p> : null}
                         </td>
@@ -245,7 +246,7 @@ function AdminsInner() {
                 </button>
               </div>
               {row.awaiting_feature ? <p className={styles.note}>
-                {tt('adminAdmins.awaiting', 'Grants nothing until {what} is built.')
+                {tt('adminAdmins.awaitingUntil', 'Grants nothing until {what}.')
                   .replace('{what}', row.awaiting_feature)}
               </p> : null}
               {openRole === row.value ? <ul className={styles.permList}>
@@ -257,7 +258,7 @@ function AdminsInner() {
       </div>
 
       {grantOpen ? <div className={shared.modalOverlay}
-                        onClick={(e) => { if (e.target === e.currentTarget) setGrantOpen(false); }}>
+                        onPointerDown={markScrimDown} data-scrim="" onClick={(e) => { if (isScrimClick(e)) setGrantOpen(false); }}>
         <div className={shared.modal}>
           <h3 className={shared.modalTitle}>{tt('adminAdmins.grantTitle', 'Give somebody a role')}</h3>
           <p className={shared.modalSub}>
@@ -288,7 +289,7 @@ function AdminsInner() {
       </div> : null}
 
       {revoking ? <div className={shared.modalOverlay}
-                       onClick={(e) => { if (e.target === e.currentTarget) setRevoking(null); }}>
+                       onPointerDown={markScrimDown} data-scrim="" onClick={(e) => { if (isScrimClick(e)) setRevoking(null); }}>
         <div className={shared.modal}>
           <h3 className={shared.modalTitle}>
             {tt('adminAdmins.revokeTitle', 'Take the console away from {who}?')

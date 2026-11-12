@@ -18,6 +18,7 @@ import Link from 'next/link';
 import { useT } from '@/i18n/LanguageProvider';
 import { apiMessage } from '@/lib/apiMessage';
 import styles from './admin-bar.module.css';
+import { markScrimDown, isScrimClick } from '@/lib/scrim';
 
 /** Ask the API what this visitor may administer.
  *
@@ -169,7 +170,7 @@ export default function AdminBar({
         </div>
       </div>
 
-      {open && <div className={styles.overlay} onClick={() => setOpen(false)}>
+      {open && <div className={styles.overlay} onPointerDown={markScrimDown} data-scrim="" onClick={(e) => isScrimClick(e) && (setOpen(false))}>
           <div className={styles.modal} onClick={e => e.stopPropagation()}>
             <p className={styles.modalTitle}>{title}</p>
             <p className={styles.modalSub}>

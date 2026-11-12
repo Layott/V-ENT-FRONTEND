@@ -1,0 +1,45 @@
+/* The tour offer on /home (Apple review S23): a filled surface, no stroke. */
+.card {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem 1.25rem;
+  margin: 0 0 1.25rem;
+  padding: 1rem 1.25rem;
+  border-radius: 14px;
+  background-color: var(--overlay-gray);
+}
+
+.text {
+  flex: 1 1 260px;
+  margin: 0;
+  font-size: var(--fs-p-size-mobile);
+  line-height: 1.5;
+  color: var(--ink-75, rgba(255, 255, 255, 0.75));
+}
+
+.text strong {
+  color: var(--primary-bg);
+  font-weight: var(--fw-semi-bold);
+}
+
+.actions {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.actions :global(.btn) {
+  padding: 0 1.1rem;
+}
+
+.quiet {
+  min-height: 37px;
+  padding: 0 1rem;
+  border-radius: 10px;
+  background-color: #303136;
+  color: var(--primary-bg);
+  font-weight: var(--fw-semi-bold);
+  cursor: pointer;
+}

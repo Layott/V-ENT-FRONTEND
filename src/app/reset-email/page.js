@@ -160,8 +160,9 @@ const ResetEmail = () => {
             {values.map((val, i) => <input className={styles.codeBox} key={i} type="text" inputMode="numeric" maxLength="1" value={val} onChange={e => handleChange(e, i)} onKeyDown={e => handleKeyDown(e, i)} ref={el => inputsRef.current[i] = el} />)}
           </div>
           <br />
-          <button type="submit" className={`btn redBTN ${generalStyles.formBTN}`}>
-            {tt("ui.submit.2dac", "Submit")}
+          {/* Nothing to check until all six digits are in (Apple review P121-2). */}
+          <button type="submit" className={`btn redBTN ${generalStyles.formBTN}`} disabled={values.join('').length < 6}>
+            {tt('resetEmail.checkCode', 'Check the code')}
           </button>
 
           <button type="button" className={generalStyles.resendBtn}
@@ -184,7 +185,7 @@ const ResetEmail = () => {
               </div>
 
               <div className={generalStyles.formHelperContainer}>
-                  <p>{tt("ui.remember.password.62ad", "Remember password?")} <Link href={'/login'}>{tt("ui.login.4e5a", "Login")}</Link></p>
+                  <p>{tt("ui.remember.password.62ad", "Remember password?")} <Link href={'/login'}>{tt("ui.login.4e5a", "Log in")}</Link></p>
               </div>
           </div>
         </main>

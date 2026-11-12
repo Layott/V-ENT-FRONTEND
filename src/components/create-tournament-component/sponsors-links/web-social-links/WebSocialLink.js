@@ -100,7 +100,7 @@ const WebSocialLink = ({
         }, index) => <div key={index} className={styles.inputGroup}>
               <label htmlFor={`field-${index}`}>{label}</label>
               <input id={`field-${index}`} type="text" placeholder={placeholder} value={value} onChange={e => handleFieldChange(index, e.target.value)} className={`${createTournamentStyles.inputText} ${styles.inputText}`} />
-              <button className={styles.deleteBTN} onClick={() => handleDeleteField(index)}>
+              <button aria-label={tt('ui.remove', 'Remove')} className={styles.deleteBTN} onClick={() => handleDeleteField(index)}>
                 <FaTrash className={styles.deleteIcon} />
               </button>
             </div>)}

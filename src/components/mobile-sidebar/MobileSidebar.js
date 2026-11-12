@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { LuChevronDown } from 'react-icons/lu';
 import { useComingSoon } from '@/lib/platformModules';
 import { useRoutePath } from '@/lib/routePath';
@@ -57,11 +57,17 @@ const MobileSidebar = ({
   // way or with a flick and it closes, otherwise it settles back. A drag only
   // counts once it has moved 10px and more sideways than up or down, so the
   // list still scrolls. Mouse drags are left alone: the close button is there.
+  //
+  // Apple review S4: the release used to decide on distance or on the AVERAGE
+  // speed of the whole drag. It now reads the speed of the last few moves,
+  // projects where the panel would come to rest, and closes when that is past
+  // half way; a drag the wrong way gives a little, like a rubber band.
   const drag = useRef(null);
   const [dragX, setDragX] = useState(0);
   const onPointerDown = e => {
     if (!isOpen || e.pointerType === 'mouse') return;
-    drag.current = { x: e.clientX, y: e.clientY, t: e.timeStamp, decided: false, sideways: false };
+    drag.current = { x: e.clientX, y: e.clientY, t: e.timeStamp, decided: false, sideways: false,
+      lastX: e.clientX, lastT: e.timeStamp, v: 0 };
   };
   const onPointerMove = e => {
     const d = drag.current;
@@ -73,17 +79,45 @@ const MobileSidebar = ({
       d.decided = true;
       d.sideways = dx > 0 && Math.abs(dx) > Math.abs(dy);
     }
-    if (d.sideways) setDragX(Math.max(0, dx));
+    if (!d.sideways) return;
+    const dt = Math.max(1, e.timeStamp - d.lastT);
+    d.v = 0.6 * ((e.clientX - d.lastX) / dt) + 0.4 * d.v;
+    d.lastX = e.clientX;
+    d.lastT = e.timeStamp;
+    setDragX(dx > 0 ? dx : Math.max(-24, dx / 4));
   };
   const onPointerEnd = e => {
     const d = drag.current;
     drag.current = null;
     if (!d || !d.sideways) return;
     const dx = Math.max(0, e.clientX - d.x);
-    const speed = dx / Math.max(1, e.timeStamp - d.t);
+    // Where a throw at this speed would come to rest (200ms of travel).
+    const projected = dx + Math.max(0, d.v) * 200;
     setDragX(0);
-    if (dx > (e.currentTarget.offsetWidth || 360) / 3 || speed > 0.6) closeSidebar();
+    if (projected > (e.currentTarget.offsetWidth || 360) / 2) closeSidebar();
   };
+
+  // Escape and Back close the open menu (Apple review S4). Opening pushes a
+  // history entry; Back pops it instead of leaving the page.
+  const closeRef = useRef(closeSidebar);
+  useEffect(() => { closeRef.current = closeSidebar; }, [closeSidebar]);
+  useEffect(() => {
+    if (!isOpen) return undefined;
+    let own = false;
+    try {
+      window.history.pushState({ ...(window.history.state || {}), ventMenu: true }, '');
+      own = true;
+    } catch { /* Back stays the browser's */ }
+    const onKey = (e) => { if (e.key === 'Escape') closeRef.current(); };
+    const onPop = () => { if (own) { own = false; closeRef.current(); } };
+    document.addEventListener('keydown', onKey);
+    window.addEventListener('popstate', onPop);
+    return () => {
+      document.removeEventListener('keydown', onKey);
+      window.removeEventListener('popstate', onPop);
+      if (own && window.history.state?.ventMenu) window.history.back();
+    };
+  }, [isOpen]);
   const toggleGroup = key => setOpenGroups(g => ({ ...g, [key]: !g[key] }));
 
   // Function to Check if the Route is Active
@@ -99,7 +133,10 @@ const MobileSidebar = ({
     // middleware also accepts, so pressing Logout did not sign anybody out.
     await logOut();
   };
-  return <div className={`${styles.mobileSidebar} quietScroll ${isOpen ? styles.open : ''} ${dragX ? styles.dragging : ''}`}
+  // Closed, it is off the screen and out of reach: inert, so a keyboard or a
+  // screen reader does not walk into its fifteen links (Apple review S4).
+  return <div id="mobile-menu" inert={!isOpen} aria-hidden={!isOpen}
+    className={`${styles.mobileSidebar} quietScroll ${isOpen ? styles.open : ''} ${dragX ? styles.dragging : ''}`}
     style={dragX ? { '--drag': `${dragX}px` } : undefined}
     onPointerDown={onPointerDown} onPointerMove={onPointerMove}
     onPointerUp={onPointerEnd} onPointerCancel={onPointerEnd}>

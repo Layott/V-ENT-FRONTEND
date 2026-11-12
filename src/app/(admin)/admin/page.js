@@ -14,6 +14,7 @@ import { useT } from '@/i18n/LanguageProvider';
 import { useTx } from '@/i18n/LanguageProvider';
 import { adminTargetLabel, adminActivityText } from '@/lib/adminTarget';
 import { adminToken } from '@/lib/adminToken'
+import { markScrimDown, isScrimClick } from '@/lib/scrim';
 const KPI_DEFS = [
 // Icons come from the set the admin nav already uses, not emoji: emoji render
 // as a different picture on every operating system and read as decoration on a
@@ -139,7 +140,7 @@ function OverviewInner() {
   }, [authLoading, admin, fetchAll]);
   if (authLoading) return null;
   return <div className={shared.pageContainer}>
-      <div className={`${shared.sidebarOverlay} ${sidebarOpen ? shared.open : ''}`} onClick={() => setSidebarOpen(false)} />
+      <div className={`${shared.sidebarOverlay} ${sidebarOpen ? shared.open : ''}`} onPointerDown={markScrimDown} data-scrim="" onClick={(e) => isScrimClick(e) && (setSidebarOpen(false))} />
       <AdminNav admin={admin} onLogout={logout} sidebarOpen={sidebarOpen} badges={{
       kyc: kpis.pending_kyc || 0,
       payouts: kpis.pending_payouts || 0
@@ -226,9 +227,9 @@ function OverviewInner() {
               with nothing behind it. Those sections wait for their feature,
               and saying so is better than shipping empty tabs." */}
           <div className={styles.notBuilt}>
-            <p className={shared.sectionTitle}>{tt('admin.notBuiltTitle', 'Not here yet')}</p>
+            <p className={shared.sectionTitle}>{tt('admin.closedTitle', 'Closed for now')}</p>
             <p className={styles.notBuiltText}>
-              {tt('admin.notBuiltBody', 'There is no marketplace section, no wager section and no shop section in this console, because none of those features is built on the platform. The marketplace is Phase 4, the shop is Phase 3, the wager system is Phase 6 and needs a legal review first, and manga and AMV review arrives with the anime module in Phase 5. Each one gets its console section on the day it has something to manage. The Marketplace Manager and Wager Manager roles can already be assigned and grant nothing until then.')}
+              {tt('admin.closedBody', 'The marketplace, the shop and the anime pages are built and closed to the public, so they have no section in this console yet; each gets one on the day it opens. The wager system is not built: it needs a legal review first. The Marketplace Manager and Wager Manager roles can be given now and grant nothing until then.')}
             </p>
           </div>
         </main>

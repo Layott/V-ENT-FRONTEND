@@ -260,7 +260,7 @@ const EditUserProfileContent = () => {
             <div className={shared.pageGrid}>
               <aside className={shared.submenuCard}>
                 <div className={shared.submenuLabel}>{tt("ui.menu.57f5", "Menu")}</div>
-                <ul className={shared.submenuList}>
+                <ul className={shared.submenuList} data-edge-fade="">
                   {PANELS.map(p => <li key={p.id} className={`${shared.submenuItem} ${activePanel === p.id ? shared.submenuItemActive : ''}`}>
                       <button type="button" onClick={() => setPanel(p.id)}>
                         {tx(p.label)}
@@ -304,7 +304,7 @@ const EditUserProfileContent = () => {
           <div className={shared.pageGrid}>
             <aside className={shared.submenuCard}>
               <div className={shared.submenuLabel}>{tt("ui.menu.57f5", "Menu")}</div>
-              <ul className={shared.submenuList}>
+              <ul className={shared.submenuList} data-edge-fade="">
                 {PANELS.map(p => <li key={p.id} className={`${shared.submenuItem} ${activePanel === p.id ? shared.submenuItemActive : ''}`}>
                     <button type="button" onClick={() => setPanel(p.id)}>
                       {tx(p.label)}

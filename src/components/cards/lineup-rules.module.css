@@ -18,7 +18,7 @@
 }
 
 .subTitle {
-  color: rgba(255, 255, 255, 0.5);
+  color: var(--ink-50, rgba(255, 255, 255, 0.5));
   font-family: 'ClashGrotesk-Variable', sans-serif;
   font-size: 0.74rem;
   letter-spacing: 0.09em;
@@ -27,7 +27,7 @@
 }
 
 .hint {
-  color: rgba(255, 255, 255, 0.55);
+  color: var(--ink-55, rgba(255, 255, 255, 0.55));
   font-size: 0.9rem;
   line-height: 1.6;
   margin-top: 0.5rem;
@@ -41,7 +41,7 @@
 }
 
 .muted {
-  color: rgba(255, 255, 255, 0.45);
+  color: var(--ink-45, rgba(255, 255, 255, 0.45));
   font-size: 0.92rem;
   margin-top: 0.5rem;
 }
@@ -66,7 +66,7 @@
   border: none;
   border-radius: 10px;
   background-color: #2a2b30;
-  color: rgba(255, 255, 255, 0.72);
+  color: var(--ink-72, rgba(255, 255, 255, 0.72));
   font-family: 'ClashGrotesk-Variable', sans-serif;
   font-size: 0.9rem;
   cursor: pointer;
@@ -75,7 +75,7 @@
 
 .chip:hover:enabled { background-color: #33343a; color: #fff; }
 .chip:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
-.chip:disabled { color: rgba(255, 255, 255, 0.35); cursor: default; }
+.chip:disabled { color: var(--ink-35, rgba(255, 255, 255, 0.35)); cursor: default; }
 
 .chipOn {
   background-color: var(--v-ent-gold, #D4AF37);
@@ -103,7 +103,7 @@
 .count {
   flex: 1 1 auto;
   min-width: 0;
-  color: rgba(255, 255, 255, 0.6);
+  color: var(--ink-60, rgba(255, 255, 255, 0.6));
   font-size: 0.92rem;
 }
 
@@ -124,7 +124,7 @@
 
 .save:hover:enabled { background-color: #ff2229; }
 .save:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
-.save:disabled { background-color: #33343a; color: rgba(255, 255, 255, 0.4); cursor: default; }
+.save:disabled { background-color: #33343a; color: var(--ink-40, rgba(255, 255, 255, 0.4)); cursor: default; }
 
 /* ----------------------------------------------------------------- search */
 
@@ -163,7 +163,7 @@
   outline: none;
 }
 
-.input::placeholder { color: rgba(255, 255, 255, 0.3); }
+.input::placeholder { color: var(--ink-30, rgba(255, 255, 255, 0.3)); }
 .input:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
 
 .ghost {
@@ -173,7 +173,7 @@
   border: none;
   border-radius: 10px;
   background-color: transparent;
-  color: rgba(255, 255, 255, 0.6);
+  color: var(--ink-60, rgba(255, 255, 255, 0.6));
   font-family: 'ClashGrotesk-Variable', sans-serif;
   font-size: 0.9rem;
   cursor: pointer;
@@ -199,7 +199,7 @@
 }
 
 .state {
-  color: rgba(255, 255, 255, 0.6);
+  color: var(--ink-60, rgba(255, 255, 255, 0.6));
   font-size: 0.9rem;
   margin-top: 0.5rem;
 }
@@ -231,7 +231,7 @@
 }
 
 .label {
-  color: rgba(255, 255, 255, 0.55);
+  color: var(--ink-55, rgba(255, 255, 255, 0.55));
   font-size: 0.82rem;
 }
 

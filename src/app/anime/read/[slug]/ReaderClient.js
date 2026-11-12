@@ -52,6 +52,7 @@ const ReaderClient = ({ slug }) => {
   const [settings, setSettings] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [missing, setMissing] = useState(false);
   const [page, setPage] = useState(1);
   const [showSettings, setShowSettings] = useState(false);
   const [busy, setBusy] = useState(false);
@@ -82,6 +83,7 @@ const ReaderClient = ({ slug }) => {
         router.replace(err.data.url);
         return;
       }
+      setMissing(err.code === 'NOT_FOUND');
       setError(err.code === 'NOT_FOUND'
         ? tt('anime.noSuchChapter', 'There is no chapter here.')
         : (apiMessage(tt, err, 'anime.loadFailed', 'We could not load it.')));
@@ -182,21 +184,39 @@ const ReaderClient = ({ slug }) => {
     return (
       <div className={styles.pageContainer}>
         <Header />
-        <p className={styles.emptyText}>{tt('ui.loading.33ce', 'Loading…')}</p>
+        <main className={styles.mainContainer}>
+          <div className={styles.rightPaneContainer}>
+            <p className={styles.emptyText}>{tt('ui.loading.33ce', 'Loading…')}</p>
+          </div>
+        </main>
       </div>
     );
   }
 
+  // Never a dead end (Apple review F7): the reader draws no site menu, so a
+  // missing or failed chapter keeps the reader's own top bar with a way back
+  // to the comics, and offers Try again only when trying again can help.
   if (error || !chapter) {
     return (
       <div className={styles.pageContainer}>
         <Header />
-        <div className={styles.emptyText}>
-          <p>{error}</p>
-          <button type="button" className={styles.bottomNavBtn} onClick={load}>
-            {tt('common.tryAgain', 'Try again')}
-          </button>
-        </div>
+        <main className={styles.mainContainer}>
+          <div className={styles.rightPaneContainer}>
+            <div className={styles.topBar}>
+              <Link className={styles.backBtn} href="/anime/manga">
+                <LuChevronLeft /> {tt('anime.backToComics', 'Back to the comics')}
+              </Link>
+            </div>
+            <div className={styles.emptyText} role="alert">
+              <h1 className={styles.stateTitle}>{error || tt('anime.noSuchChapter', 'There is no chapter here.')}</h1>
+              {!missing && (
+                <button type="button" className={styles.bottomNavBtn} onClick={load}>
+                  {tt('common.tryAgain', 'Try again')}
+                </button>
+              )}
+            </div>
+          </div>
+        </main>
       </div>
     );
   }

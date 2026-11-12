@@ -158,26 +158,15 @@ const ManageOrgContent = ({
         headers['Authorization'] = `Bearer ${session.user.sessionToken}`;
       }
       const API = process.env.NEXT_PUBLIC_API_URL;
-      const [orgRes, memRes, reqRes, teamsRes, allTeamsRes, walletRes, capRes, invRes, clubRes] =
-        await Promise.all([fetch(`${API}/organization/${orgId}/`, {
-        headers
-      }), fetch(`${API}/organization/${orgId}/members/`, {
-        headers
-      }), fetch(`${API}/organization/${orgId}/requests/`, {
-        headers
-      }), fetch(`${API}/organization/${orgId}/teams/`, {
-        headers
-      }), fetch(`${API}/organization/linkable-teams/`, {
-        headers
-      }), fetch(`${API}/auth/wallet/balance/`, {
-        headers
-      }), fetch(`${API}/organization/${orgId}/capabilities/`, {
-        headers
-      }), fetch(`${API}/organization/${orgId}/invites/`, {
-        headers
-      }), fetch(`${API}/organization/${orgId}/clubs/`, {
-        headers
-      })]);
+      // Permission first (Apple review S25): the organisation and what this
+      // person may do in it, then the manager-only lists only for a manager.
+      // A member or a stranger used to fire nine requests, the invites and
+      // join requests among them refused, before the page said it was not
+      // theirs to manage.
+      const [orgRes, capRes] = await Promise.all([
+        fetch(`${API}/organization/${orgId}/`, { headers }),
+        fetch(`${API}/organization/${orgId}/capabilities/`, { headers }),
+      ]);
       const orgData = await orgRes.json().catch(() => ({}));
       // A 404 is "no such organisation" and falls through to that sentence.
       // Anything else that is not ok is a failure to say out loud, not a
@@ -187,6 +176,25 @@ const ManageOrgContent = ({
         return;
       }
       setOrg(orgData?.data?.organization || null);
+      const capData = await capRes.json().catch(() => null);
+      setMe(capData?.data?.me || null);
+      if (!['owner', 'admin', 'manager'].includes(orgData?.data?.organization?.my_role)) return;
+      const [memRes, reqRes, teamsRes, allTeamsRes, walletRes, invRes, clubRes] =
+        await Promise.all([fetch(`${API}/organization/${orgId}/members/`, {
+        headers
+      }), fetch(`${API}/organization/${orgId}/requests/`, {
+        headers
+      }), fetch(`${API}/organization/${orgId}/teams/`, {
+        headers
+      }), fetch(`${API}/organization/linkable-teams/`, {
+        headers
+      }), fetch(`${API}/auth/wallet/balance/`, {
+        headers
+      }), fetch(`${API}/organization/${orgId}/invites/`, {
+        headers
+      }), fetch(`${API}/organization/${orgId}/clubs/`, {
+        headers
+      })]);
       const memData = await memRes.json();
       setMembers(memData?.data?.members || []);
       const reqData = await reqRes.json();
@@ -197,8 +205,6 @@ const ManageOrgContent = ({
       setAllTeams(allTeamsData?.data?.teams || []);
       const walletData = await walletRes.json();
       setKycVerified(!!walletData?.data?.kyc_verified);
-      const capData = await capRes.json();
-      setMe(capData?.data?.me || null);
       const invData = await invRes.json().catch(() => null);
       setInvites(invData?.data?.invites || []);
       const clubData = await clubRes.json().catch(() => null);

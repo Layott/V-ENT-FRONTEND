@@ -46,7 +46,7 @@
 .pageSub {
   font-family: 'ClashGrotesk-Variable', sans-serif;
   font-size: 0.9rem;
-  color: rgba(255, 255, 255, 0.5);
+  color: var(--ink-50, rgba(255, 255, 255, 0.5));
   max-width: 60ch;
 }
 
@@ -77,13 +77,13 @@
 }
 
 .label {
-  color: rgba(255, 255, 255, 0.65);
+  color: var(--ink-65, rgba(255, 255, 255, 0.65));
   font-family: 'ClashGrotesk-Variable', sans-serif;
   font-size: 0.82rem;
 }
 
 .hint {
-  color: rgba(255, 255, 255, 0.4);
+  color: var(--ink-40, rgba(255, 255, 255, 0.4));
   font-size: 0.76rem;
   line-height: 1.5;
   display: block;
@@ -108,7 +108,7 @@
 }
 
 .file {
-  color: rgba(255, 255, 255, 0.6);
+  color: var(--ink-60, rgba(255, 255, 255, 0.6));
   font-size: 0.82rem;
 }
 
@@ -165,7 +165,7 @@
 
 .primaryBtn:disabled {
   background-color: #33343A;
-  color: rgba(255, 255, 255, 0.45);
+  color: var(--ink-45, rgba(255, 255, 255, 0.45));
   cursor: default;
 }
 
@@ -181,7 +181,7 @@
   background-color: #26272C;
   border-radius: 10px;
   padding: 11px 18px;
-  color: rgba(255, 255, 255, 0.8);
+  color: var(--ink-80, rgba(255, 255, 255, 0.8));
   font-family: 'ClashGrotesk-Variable', sans-serif;
   font-size: 0.85rem;
   text-decoration: none;
@@ -194,7 +194,7 @@
 }
 
 .muted {
-  color: rgba(255, 255, 255, 0.5);
+  color: var(--ink-50, rgba(255, 255, 255, 0.5));
   font-size: 0.88rem;
 }
 
@@ -215,7 +215,7 @@
   background-color: #1B1C20;
   border-radius: 14px;
   padding: 1.5rem;
-  color: rgba(255, 255, 255, 0.75);
+  color: var(--ink-75, rgba(255, 255, 255, 0.75));
   font-size: 0.9rem;
 }
 
@@ -270,7 +270,7 @@
 }
 
 .artNone {
-  color: rgba(255, 255, 255, 0.4);
+  color: var(--ink-40, rgba(255, 255, 255, 0.4));
   font-size: 0.8rem;
 }
 
@@ -332,7 +332,7 @@
 }
 
 .hubSub {
-  color: rgba(255, 255, 255, 0.5);
+  color: var(--ink-50, rgba(255, 255, 255, 0.5));
   font-size: 0.8rem;
   line-height: 1.45;
 }
@@ -340,7 +340,7 @@
 /* Tournament-specific additions on top of the shared edit-page shape. */
 
 .sectionHead {
-  color: rgba(255, 255, 255, 0.55);
+  color: var(--ink-55, rgba(255, 255, 255, 0.55));
   font-size: 0.78rem;
   font-weight: 600;
   letter-spacing: 0.08em;
@@ -364,7 +364,7 @@
 
 .check {
   align-items: center;
-  color: rgba(255, 255, 255, 0.75);
+  color: var(--ink-75, rgba(255, 255, 255, 0.75));
   cursor: pointer;
   display: flex;
   font-size: 0.88rem;
@@ -392,7 +392,7 @@
   width: 100%;
 }
 
-.area::placeholder { color: rgba(255, 255, 255, 0.32); }
+.area::placeholder { color: var(--ink-32, rgba(255, 255, 255, 0.32)); }
 
 .artRow {
   display: grid;

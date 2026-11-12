@@ -28,7 +28,7 @@ const Code = ({ children, label }) => {
   return (
     <div className={styles.codeWrap}>
       {label && <span className={styles.codeLabel}>{label}</span>}
-      <pre className={styles.code}><code>{children}</code></pre>
+      <pre className={styles.code} data-edge-fade=""><code>{children}</code></pre>
       <button type="button" className={styles.copyBtn} onClick={copy}>
         {copied ? t('docs.copied', 'Copied') : t('docs.copy', 'Copy')}
       </button>

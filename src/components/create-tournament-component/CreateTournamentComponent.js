@@ -3,6 +3,7 @@ import { clearDraft, readDraft, writeDraft } from '@/lib/wizardDraft';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { useT, useTx } from '@/i18n/LanguageProvider';
+import BackLink from '@/components/back-link/BackLink';
 import { apiMessage } from '@/lib/apiMessage';
 import { ventFetch, API, tokenFrom } from '@/components/tournament-lib/tournamentApi';
 import { validateAll } from './tournamentWizardValidation';
@@ -14,6 +15,7 @@ import PrizeDistribution from './prize-distribution/PrizeDistribution';
 import SponsorsLinks from './sponsors-links/SponsorsLinks';
 import Review from './review/Review';
 import styles from './create-tournament-component.module.css';
+import { scrollBehavior } from '@/lib/scrollMotion';
 
 // Reads the persisted wizard draft synchronously. Used both as the lazy
 // initializer for formData (so the very first render - and therefore every
@@ -409,7 +411,7 @@ const CreateTournamentComponent = ({ draftId = null }) => {
   // Scrolled to, not just rendered. See the note on the banner below.
   useEffect(() => {
     if (statusMessage && bannerRef.current) {
-      bannerRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      bannerRef.current.scrollIntoView({ behavior: scrollBehavior(), block: 'center' });
     }
   }, [statusMessage]);
 
@@ -428,6 +430,8 @@ const CreateTournamentComponent = ({ draftId = null }) => {
           {statusMessage.text}
         </div>
       )}
+      {/* A way out, as the event wizard has (Apple review S20). */}
+      <BackLink href="/tournaments">{tt('back.toTournaments', 'Back to tournaments')}</BackLink>
       <ProgressMenu selectedTab={selectedTab} setSelectedTab={setSelectedTab} />
       <div>{renderTabContent()}</div>
     </div>

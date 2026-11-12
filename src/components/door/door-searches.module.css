@@ -31,7 +31,7 @@
 
 .headMeta {
   font-size: 0.85rem;
-  color: rgba(255, 255, 255, 0.55);
+  color: var(--ink-55, rgba(255, 255, 255, 0.55));
 }
 
 .body {
@@ -42,7 +42,7 @@
   margin: 0 0 1rem;
   font-size: 0.85rem;
   line-height: 1.5;
-  color: rgba(255, 255, 255, 0.55);
+  color: var(--ink-55, rgba(255, 255, 255, 0.55));
   max-width: 62ch;
 }
 
@@ -60,7 +60,7 @@
   padding: 0 1rem;
   border-radius: 8px;
   background-color: #2a2b30;
-  color: rgba(255, 255, 255, 0.65);
+  color: var(--ink-65, rgba(255, 255, 255, 0.65));
   font-size: 0.85rem;
   cursor: pointer;
 }
@@ -74,7 +74,7 @@
 .counts {
   margin: 0 0 0.85rem;
   font-size: 0.85rem;
-  color: rgba(255, 255, 255, 0.7);
+  color: var(--ink-70, rgba(255, 255, 255, 0.7));
 }
 
 .error {
@@ -87,7 +87,7 @@
   margin: 0;
   padding: 1.25rem 0;
   font-size: 0.9rem;
-  color: rgba(255, 255, 255, 0.5);
+  color: var(--ink-50, rgba(255, 255, 255, 0.5));
 }
 
 /* Wide content scrolls inside its own container rather than pushing the page
@@ -110,7 +110,7 @@
   font-size: 0.72rem;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.45);
+  color: var(--ink-45, rgba(255, 255, 255, 0.45));
   font-weight: var(--fw-semi-bold);
   padding: 0.85rem 1rem;
 }
@@ -153,7 +153,7 @@
 }
 
 .muted {
-  color: rgba(255, 255, 255, 0.5);
+  color: var(--ink-50, rgba(255, 255, 255, 0.5));
   font-size: 0.85rem;
   white-space: nowrap;
 }

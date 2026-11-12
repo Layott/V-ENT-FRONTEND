@@ -6,7 +6,7 @@
 .tGame {
   font-family: "ClashGrotesk-Variable", sans-serif;
   font-size: 0.7rem;
-  color: rgba(255, 255, 255, 0.4);
+  color: var(--ink-40, rgba(255, 255, 255, 0.4));
   margin-top: 0.1rem;
 }
 
@@ -42,7 +42,7 @@
 .modalSub {
   font-family: "ClashGrotesk-Variable", sans-serif;
   font-size: 0.82rem;
-  color: rgba(255, 255, 255, 0.5);
+  color: var(--ink-50, rgba(255, 255, 255, 0.5));
   margin-bottom: 1.25rem;
 }
 
@@ -58,8 +58,8 @@
   font-family: "ClashGrotesk-Variable", sans-serif;
   font-size: 0.7rem;
   text-transform: uppercase;
-  letter-spacing: 0.06em;
-  color: rgba(255, 255, 255, 0.45);
+  letter-spacing: 0.08em;
+  color: var(--ink-45, rgba(255, 255, 255, 0.45));
   margin-bottom: 0.35rem;
 }
 .formInput {
@@ -136,7 +136,7 @@
 
 .matchRound {
   flex: 0 0 130px;
-  color: rgba(255, 255, 255, 0.45);
+  color: var(--ink-45, rgba(255, 255, 255, 0.45));
   font-size: 0.76rem;
 }
 
@@ -146,13 +146,13 @@
 }
 
 .matchVs {
-  color: rgba(255, 255, 255, 0.35);
+  color: var(--ink-35, rgba(255, 255, 255, 0.35));
   margin: 0 0.3rem;
 }
 
 .matchScore {
   flex: 0 0 auto;
-  color: rgba(255, 255, 255, 0.55);
+  color: var(--ink-55, rgba(255, 255, 255, 0.55));
   font-size: 0.78rem;
 }
 
@@ -166,7 +166,7 @@
   background-color: rgba(255, 255, 255, 0.07);
   border-radius: 8px;
   padding: 8px 16px;
-  color: rgba(255, 255, 255, 0.8);
+  color: var(--ink-80, rgba(255, 255, 255, 0.8));
   font-family: 'ClashGrotesk-Variable', sans-serif;
   font-size: 0.84rem;
   cursor: pointer;
@@ -208,7 +208,7 @@
   background-color: #2a2b30;
   border-radius: 8px;
   padding: 0.55rem 0.75rem;
-  color: rgba(255, 255, 255, 0.6);
+  color: var(--ink-60, rgba(255, 255, 255, 0.6));
   font-size: 0.82rem;
 }
 

@@ -30,7 +30,7 @@ const FooterLanding = () => {
 
                 <div className={styles.aboutVENTParagraphContainer}>
                     <p>
-                        V-ent is the ultimate esports hub, designed for gamers and enthusiasts alike. It&#39;s a place where competitive energy meets community vibes, offering top-tier gaming experiences, tournaments and events.
+                        {tt("landing.footer.about", "V-ENT is where players in Nigeria find tournaments and events, register, pay their entry and follow the results. Built in Nigeria by Vermillion Encore.")}
                     </p>
                 </div>
             </div>

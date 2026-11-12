@@ -24,20 +24,20 @@
 }
 
 .state {
-  color: rgba(255, 255, 255, 0.6);
+  color: var(--ink-60, rgba(255, 255, 255, 0.6));
   font-size: 0.9rem;
   margin-top: 0.5rem;
   margin-bottom: 0.9rem;
 }
 
 .muted {
-  color: rgba(255, 255, 255, 0.45);
+  color: var(--ink-45, rgba(255, 255, 255, 0.45));
   font-size: 0.92rem;
   margin-top: 0.5rem;
 }
 
 .smallHint {
-  color: rgba(255, 255, 255, 0.4);
+  color: var(--ink-40, rgba(255, 255, 255, 0.4));
   font-size: 0.82rem;
   margin-top: 0.45rem;
 }
@@ -69,7 +69,7 @@
   font-weight: var(--fw-semi-bold, 600);
 }
 
-.draft { color: rgba(255, 255, 255, 0.45); }
+.draft { color: var(--ink-45, rgba(255, 255, 255, 0.45)); }
 .submitted { color: var(--v-ent-gold, #D4AF37); }
 .accepted { color: var(--v-ent-success, #4caf50); }
 .rejected { color: var(--v-ent-red, #ED1C24); }
@@ -77,7 +77,7 @@
 .formation,
 .when {
   flex: 0 0 auto;
-  color: rgba(255, 255, 255, 0.5);
+  color: var(--ink-50, rgba(255, 255, 255, 0.5));
   font-size: 0.86rem;
 }
 
@@ -89,7 +89,7 @@
   border: none;
   border-radius: 10px;
   background-color: #33343a;
-  color: rgba(255, 255, 255, 0.75);
+  color: var(--ink-75, rgba(255, 255, 255, 0.75));
   font-family: 'ClashGrotesk-Variable', sans-serif;
   font-size: 0.88rem;
   cursor: pointer;
@@ -165,7 +165,7 @@
 .accept:disabled,
 .reject:disabled {
   background-color: #33343a;
-  color: rgba(255, 255, 255, 0.4);
+  color: var(--ink-40, rgba(255, 255, 255, 0.4));
   cursor: default;
 }
 

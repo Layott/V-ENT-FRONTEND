@@ -136,7 +136,7 @@ const SeriesClient = ({ slug }) => {
           </div>
 
           {chapters.length > 0 && (
-            <Link className={styles.readBtn}
+            <Link className={`${styles.readBtn} redBTN`}
                   href={`/anime/read/${carryOn?.chapter || chapters[0].slug}`}>
               {carryOn
                 ? tt('anime.carryOn', 'Carry on reading')
@@ -171,7 +171,7 @@ const SeriesClient = ({ slug }) => {
           )}
 
           {series.pricing === 'subscription' && viewer.signedIn && !series.mine && (
-            <button type="button" className={styles.readBtn} disabled={busy}
+            <button type="button" className={`${styles.readBtn} goldBTN`} disabled={busy}
                     onClick={() => act(`/series/${series.slug}/subscribe/`,
                       { months: 1 },
                       tt('anime.subscribed', 'You are subscribed.'))}>

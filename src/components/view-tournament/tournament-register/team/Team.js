@@ -14,6 +14,7 @@ import { useT } from '@/i18n/LanguageProvider';
 import { useTx } from '@/i18n/LanguageProvider';
 import { plural } from '@/lib/plural';
 import { fuzzyMatches } from '@/lib/fuzzy';
+import { markScrimDown, isScrimClick } from '@/lib/scrim';
 
 // Coerce a raw team payload into the shape this modal renders. Keeps the real
 // `id` so the downstream Payment step can send `team_id`.
@@ -92,7 +93,7 @@ const ChooseTeamModal = ({
     if (onClose) onClose();
   };
   if (!isOpen) return null;
-  return <div className={styles.modalOverlay} onClick={handleClose}>
+  return <div className={styles.modalOverlay} onPointerDown={markScrimDown} data-scrim="" onClick={(e) => isScrimClick(e) && handleClose(e)}>
       <div className={styles.modalContent} onClick={e => e.stopPropagation()}>
         <div className={styles.modalHeader}>
           <div className={styles.headerLeft}>
@@ -103,7 +104,7 @@ const ChooseTeamModal = ({
             </button>
             <h2 className={styles.modalTitle}>{tt("ui.choose.team.dafe", "Choose Your Team")}</h2>
           </div>
-          <button className={styles.closeButton} onClick={handleClose}>
+          <button aria-label={tt('ui.close', 'Close')} className={styles.closeButton} onClick={handleClose}>
             ×
           </button>
         </div>

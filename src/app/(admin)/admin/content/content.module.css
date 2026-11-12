@@ -16,7 +16,7 @@
   border-radius: 8px;
   padding: 0.55rem 1rem;
   min-height: 44px;
-  color: rgba(255, 255, 255, 0.6);
+  color: var(--ink-60, rgba(255, 255, 255, 0.6));
   font-family: "ClashGrotesk-Variable", sans-serif;
   font-size: 0.85rem;
   cursor: pointer;
@@ -43,7 +43,7 @@
 }
 
 .detail {
-  color: rgba(255, 255, 255, 0.5);
+  color: var(--ink-50, rgba(255, 255, 255, 0.5));
   font-size: 0.78rem;
   margin-top: 0.35rem;
   max-width: 32rem;
@@ -60,7 +60,7 @@
   display: flex;
   align-items: flex-start;
   gap: 0.55rem;
-  color: rgba(255, 255, 255, 0.7);
+  color: var(--ink-70, rgba(255, 255, 255, 0.7));
   font-size: 0.82rem;
   line-height: 1.5;
   margin-bottom: 1.1rem;
@@ -78,7 +78,7 @@
 /* What is not built, said in a sentence on the page ground rather than drawn
  * as a panel of controls that do nothing. */
 .waiting {
-  color: rgba(255, 255, 255, 0.4);
+  color: var(--ink-40, rgba(255, 255, 255, 0.4));
   font-size: 0.82rem;
   line-height: 1.6;
   margin-top: 1.25rem;

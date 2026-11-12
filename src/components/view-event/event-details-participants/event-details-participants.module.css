@@ -142,7 +142,7 @@
 }
 
 .emptyStateBody {
-  color: rgba(255, 255, 255, 0.6);
+  color: var(--ink-60, rgba(255, 255, 255, 0.6));
   font-size: var(--fs-p-size-desktop);
   line-height: 1.6;
   margin: 0 auto;

@@ -18,6 +18,8 @@ import Avatar from '@/components/avatar/Avatar';
 import { mediaUrl } from '@/lib/mediaUrl';
 import { adminToken } from '@/lib/adminToken'
 import BackLink from '@/components/back-link/BackLink';
+import { markScrimDown, isScrimClick } from '@/lib/scrim';
+import RowMenu from '@/components/admin/RowMenu';
 const TABS = [{
   key: 'logins',
   label: 'Logins'
@@ -220,7 +222,7 @@ function UserDetailInner() {
   if (authLoading) return null;
   const u = detail?.user;
   return <div className={shared.pageContainer}>
-      <div className={`${shared.sidebarOverlay} ${sidebarOpen ? shared.open : ''}`} onClick={() => setSidebarOpen(false)} />
+      <div className={`${shared.sidebarOverlay} ${sidebarOpen ? shared.open : ''}`} onPointerDown={markScrimDown} data-scrim="" onClick={(e) => isScrimClick(e) && (setSidebarOpen(false))} />
       <AdminNav admin={admin} onLogout={logout} sidebarOpen={sidebarOpen} badges={{}} />
       <div className={shared.mainContainer}>
         <AdminHeader admin={admin} onLogout={logout} onMenuOpen={() => setSidebarOpen(true)} />
@@ -234,7 +236,9 @@ function UserDetailInner() {
                 {u?.full_name && `${u.full_name} · `}{u?.email}
               </p>
             </div>
-            <div className={shared.pageActions}>
+            {/* Only once the record is here (Apple review F5): after a failed
+                load these acted on an account nobody could see. */}
+            {!loading && !error && u && <div className={shared.pageActions}>
               <button className={`${shared.actBtn} ${shared.actView}`} onClick={() => setNotifyModalOpen(true)}>
                 {tt("ui.send.notification.0df1", "Send Notification")}
               </button>
@@ -244,11 +248,8 @@ function UserDetailInner() {
               <button className={`${shared.actBtn} ${shared.actView}`} onClick={() => setResetOpen(true)}>
                 {tt('adminUser.reset', 'Send a password reset')}
               </button>
-              {u?.status === 'banned' ? <button className={`${shared.actBtn} ${shared.actApprove}`} onClick={() => action('unban')}>
+              {u?.status === 'banned' && <button className={`${shared.actBtn} ${shared.actApprove}`} onClick={() => action('unban')}>
                   {tt("ui.unban.d267", "Unban")}
-                </button> : <button className={`${shared.actBtn} ${shared.actBan}`}
-                  onClick={() => { setBanOpen(true); setBanReason(''); }}>
-                  {tt("ui.ban.bfa1", "Ban")}
                 </button>}
               {/* Only to somebody who may actually do it. A control that is
                   rendered and then refused is the fault this project bans by
@@ -263,14 +264,22 @@ function UserDetailInner() {
                           onClick={() => { setPremiumOpen(true); setPremiumNote(''); }}>
                     {tt('adminUser.givePremium', 'Give premium')}
                   </button>)}
-              <button className={`${shared.actBtn} ${shared.actReject}`}
-                      onClick={() => { setDeleteOpen(true); setDeleteTyped(''); }}>
-                {tt('adminUser.delete', 'Delete account')}
-              </button>
-            </div>
+              {/* Ban and Delete last, behind a menu (Apple review S12): they came
+                  before the details and one press from anything else. */}
+              <RowMenu label={tt('adminUser.accountActions', 'Account actions')}>
+                {u?.status !== 'banned' && <button type="button" role="menuitem" data-danger=""
+                  onClick={() => { setBanOpen(true); setBanReason(''); }}>
+                  {tt("ui.ban.bfa1", "Ban")}
+                </button>}
+                <button type="button" role="menuitem" data-danger=""
+                        onClick={() => { setDeleteOpen(true); setDeleteTyped(''); }}>
+                  {tt('adminUser.delete', 'Delete account')}
+                </button>
+              </RowMenu>
+            </div>}
           </div>
 
-          {loading ? <p className={shared.stateText}>{tt("ui.loading.33ce", "Loading…")}</p> : error ? <p className={shared.errorText} role="alert">{error}</p> : !detail || !detail.user ? <p className={shared.stateText}>{tt("ui.user.not.found.9c98", "User not found.")}</p> : <>
+          {loading ? <p className={shared.stateText}>{tt("ui.loading.33ce", "Loading…")}</p> : error ? <div role="alert"><p className={shared.errorText}>{error}</p><button type="button" className={`${shared.actBtn} ${shared.actView}`} onClick={() => fetchDetail()}>{tt('ui.tryAgain', 'Try again')}</button></div> : !detail || !detail.user ? <p className={shared.stateText}>{tt("ui.user.not.found.9c98", "User not found.")}</p> : <>
               {/* Profile summary */}
               <div className={`${shared.card} ${styles.summary}`}>
                 <div className={styles.avatar}>
@@ -462,7 +471,7 @@ function UserDetailInner() {
       </div>
 
       {/* Role assignment modal */}
-      {roleModalOpen && <div className={styles.modalOverlay} onClick={() => setRoleModalOpen(false)}>
+      {roleModalOpen && <div className={styles.modalOverlay} onPointerDown={markScrimDown} data-scrim="" onClick={(e) => isScrimClick(e) && (setRoleModalOpen(false))}>
           <div className={styles.modal} onClick={e => e.stopPropagation()}>
             <p className={styles.modalTitle}>{tt("ui.change.role.7b55", "Change Role")}</p>
             <p className={styles.modalSub}>
@@ -493,8 +502,8 @@ function UserDetailInner() {
       {/* Premium, with the reason in the same press. A note added afterwards
           is a note nobody adds, and "why does this account have premium" is
           the question the field exists to answer. */}
-      {premiumOpen && <div className={shared.modalOverlay} onClick={(e) => {
-        if (e.target === e.currentTarget) setPremiumOpen(false);
+      {premiumOpen && <div className={shared.modalOverlay} onPointerDown={markScrimDown} data-scrim="" onClick={(e) => {
+        if (isScrimClick(e)) setPremiumOpen(false);
       }}>
           <div className={shared.modal}>
             <p className={shared.modalTitle}>
@@ -523,8 +532,8 @@ function UserDetailInner() {
           </div>
         </div>}
 
-      {banOpen && <div className={shared.modalOverlay} onClick={(e) => {
-        if (e.target === e.currentTarget) setBanOpen(false);
+      {banOpen && <div className={shared.modalOverlay} onPointerDown={markScrimDown} data-scrim="" onClick={(e) => {
+        if (isScrimClick(e)) setBanOpen(false);
       }}>
           <div className={shared.modal}>
             <p className={shared.modalTitle}>{tt('admin.banTitle', 'Ban this account?')}</p>
@@ -550,8 +559,8 @@ function UserDetailInner() {
           </div>
         </div>}
 
-      {resetOpen && <div className={shared.modalOverlay} onClick={(e) => {
-        if (e.target === e.currentTarget) setResetOpen(false);
+      {resetOpen && <div className={shared.modalOverlay} onPointerDown={markScrimDown} data-scrim="" onClick={(e) => {
+        if (isScrimClick(e)) setResetOpen(false);
       }}>
           <div className={shared.modal}>
             <p className={shared.modalTitle}>{tt('adminUser.resetTitle', 'Send a password reset?')}</p>
@@ -575,8 +584,8 @@ function UserDetailInner() {
           </div>
         </div>}
 
-      {deleteOpen && <div className={shared.modalOverlay} onClick={(e) => {
-        if (e.target === e.currentTarget) setDeleteOpen(false);
+      {deleteOpen && <div className={shared.modalOverlay} onPointerDown={markScrimDown} data-scrim="" onClick={(e) => {
+        if (isScrimClick(e)) setDeleteOpen(false);
       }}>
           <div className={shared.modal}>
             <p className={shared.modalTitle}>{tt('adminUser.deleteTitle', 'Delete this account for good?')}</p>
@@ -602,7 +611,7 @@ function UserDetailInner() {
           </div>
         </div>}
 
-      {notifyModalOpen && <div className={styles.modalOverlay} onClick={() => setNotifyModalOpen(false)}>
+      {notifyModalOpen && <div className={styles.modalOverlay} onPointerDown={markScrimDown} data-scrim="" onClick={(e) => isScrimClick(e) && (setNotifyModalOpen(false))}>
           <div className={styles.modal} onClick={e => e.stopPropagation()}>
             <p className={styles.modalTitle}>{tt("ui.send.notification.0df1", "Send Notification")}</p>
             <p className={styles.modalSub}>

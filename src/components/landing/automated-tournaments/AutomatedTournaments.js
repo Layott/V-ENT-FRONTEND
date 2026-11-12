@@ -77,8 +77,8 @@ const AutomatedTournaments = () => {
                     the session is still being asked for. */}
                 <div className={styles.actions}>
                     {!viewer.loading && !viewer.signedIn && (
-                        <Link href="/signup" className="btn redBTN">
-                            {tt("ui.signup.894b", "Signup")}
+                        <Link href="/signup" className="btn quietBTN">
+                            {tt("ui.signup.894b", "Sign up")}
                         </Link>
                     )}
                     <Link href="/tournaments" className={`btn ${viewer.signedIn ? 'redBTN' : styles.quietBtn}`}>

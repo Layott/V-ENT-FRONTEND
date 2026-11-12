@@ -218,7 +218,7 @@ export default function RulesEditor({ tournamentId, token, onSaved, canEdit = tr
       {canEdit && !meta?.locked && presets?.formats?.length > 0 && (
         <section className={styles.block}>
           <h4 className={styles.blockTitle}>
-            {tt('rules.startFrom', 'Start from a standard set')}
+            {tt('rules.startFrom', 'Start from a format')}
           </h4>
           <p className={styles.hint}>
             {tt('rules.startFromHint',
@@ -339,7 +339,7 @@ export default function RulesEditor({ tournamentId, token, onSaved, canEdit = tr
 
       {/* --------------------------------------------------- tie-breakers */}
       <section className={styles.block}>
-        <h4 className={styles.blockTitle}>{tt('rules.tiebreakers', 'When two are level')}</h4>
+        <h4 className={styles.blockTitle}>{tt('rules.tiebreakers', 'If teams are tied')}</h4>
         <p className={styles.hint}>
           {tt('rules.tiebreakersHint',
             'Applied from the top down. The first one that separates them decides, and the standings will say which one it was.')}

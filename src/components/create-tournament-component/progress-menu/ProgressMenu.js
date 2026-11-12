@@ -10,7 +10,7 @@ const ProgressMenu = ({ selectedTab, setSelectedTab }) => {
     ];
 
   return (
-    <div className={styles.outerProgressMenuContainer}>
+    <div className={styles.outerProgressMenuContainer} data-edge-fade="">
         <div className={styles.progressMenuContainer}>
             {tabs.map((tab) => (
                 <button

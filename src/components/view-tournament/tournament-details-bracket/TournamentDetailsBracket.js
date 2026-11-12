@@ -209,7 +209,7 @@ const TournamentDetailsBracket = ({
   if (error) {
     return <div className={styles.stateContainer}>
         <span className={styles.errorText}>{error}</span>
-        <button className="btn goldBTN" onClick={fetchBracket}>{tt("ui.retry.9f5c", "Retry")}</button>
+        <button className="btn quietBTN" onClick={fetchBracket}>{tt("ui.retry.9f5c", "Retry")}</button>
       </div>;
   }
   if (!rounds.length) {

@@ -5,6 +5,9 @@ import Link from 'next/link';
 import '../../app/globals.css';
 import { useT } from '@/i18n/LanguageProvider';
 import { useAdminAuth } from '@/components/admin/useAdminAuth';
+import { itemForPath } from '@/components/admin/AdminNav';
+import useTableLabels from '@/components/admin/useTableLabels';
+import { useRoutePath } from '@/lib/routePath';
 import RouteLoading from '@/components/route-loading/RouteLoading';
 import styles from './admin-guard.module.css';
 
@@ -44,7 +47,10 @@ export default function AdminLayout({
   // One guard here rather than a check in each of fourteen pages, so a section
   // built next week is covered on the day it is written, and the permission it
   // needs is read from the same map the nav reads.
-  const { loading, allowed, needed } = useAdminAuth();
+  const { loading, allowed } = useAdminAuth();
+  const section = itemForPath(useRoutePath());
+  // Column names onto every console table cell, for the stacked phone rows.
+  useTableLabels();
 
   // No page renders until the console knows who this is. The session token
   // lives in memory now (R66), and on the first render of a fresh visit the
@@ -67,13 +73,16 @@ export default function AdminLayout({
             {tt('admin.notYoursBody',
               'Your role does not include this part of the console, so there is nothing here for you to change. If you need it, ask a super admin to widen your role.')}
           </p>
-          {needed?.length ? (
+          {/* The section by its name, never the permission key (Apple review
+              S13): "It needs: manage_admins" in monospace told a moderator
+              nothing they could act on. */}
+          {section ? (
             <p className={styles.needed}>
-              {tt('admin.notYoursNeeds', 'It needs: {perms}')
-                .replace('{perms}', needed.join(', '))}
+              {tt('admin.notYoursSection', 'Ask a super admin to add {section} to your role.')
+                .replace('{section}', tt(section.k, section.label))}
             </p>
           ) : null}
-          <Link href="/admin" className={`${styles.back} grnBTN`}>
+          <Link href="/admin" className={`${styles.back} btn`}>
             {tt('admin.backToDashboard', 'Back to the dashboard')}
           </Link>
         </div>

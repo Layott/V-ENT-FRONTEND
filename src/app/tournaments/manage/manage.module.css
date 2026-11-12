@@ -81,7 +81,7 @@
   display: inline-flex;
   align-items: center;
   min-height: 44px;
-  color: rgba(255,255,255,0.6);
+  color: var(--ink-60, rgba(255, 255, 255, 0.6));
   font-size: 0.78rem;
   text-decoration: none;
   font-weight: var(--fw-medium);
@@ -108,9 +108,9 @@
 .gameTag {
   background-color: rgba(237,28,36,0.15);
   color: var(--v-ent-red);
-  font-size: 0.65rem;
+  font-size: 0.6875rem;
   font-weight: var(--fw-semi-bold);
-  letter-spacing: 0.05em;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
   padding: 3px 8px;
   border-radius: 8px;
@@ -119,7 +119,7 @@
 .statusBadge {
   background-color: rgba(0,255,8,0.12);
   color: var(--v-ent-light-gold);
-  font-size: 0.65rem;
+  font-size: 0.6875rem;
   font-weight: var(--fw-bold);
   letter-spacing: 0.06em;
   padding: 3px 8px;
@@ -131,7 +131,7 @@
 
 .metaText {
   font-size: 0.75rem;
-  color: rgba(255,255,255,0.5);
+  color: var(--ink-50, rgba(255, 255, 255, 0.5));
   display: inline-flex;
   align-items: center;
   gap: 0.3rem;
@@ -175,7 +175,7 @@
   background-color: #1a1a1d;
   border: none;
   border-radius: 8px;
-  color: rgba(255, 255, 255, 0.6);
+  color: var(--ink-60, rgba(255, 255, 255, 0.6));
   font-family: inherit;
   font-size: var(--fs-p-size-mobile);
   font-weight: var(--fw-medium);
@@ -206,7 +206,7 @@
 
 .panelSub {
   font-size: var(--fs-p-size-mobile);
-  color: rgba(255,255,255,0.55);
+  color: var(--ink-55, rgba(255, 255, 255, 0.55));
   margin: -0.5rem 0 1rem;
 }
 
@@ -237,7 +237,7 @@
   text-align: left;
   cursor: pointer;
   font-family: inherit;
-  transition: all 0.2s;
+  transition: background-color 150ms ease-out;
 }
 
 .matchListItem:hover { background-color: rgba(255, 255, 255, 0.05); }
@@ -254,16 +254,16 @@
 }
 
 .matchRound {
-  font-size: 0.65rem;
-  color: rgba(255,255,255,0.5);
+  font-size: 0.6875rem;
+  color: var(--ink-50, rgba(255, 255, 255, 0.5));
   font-weight: var(--fw-bold);
   letter-spacing: 0.05em;
 }
 
 .matchStatusBadge {
-  font-size: 0.6rem;
+  font-size: 0.6875rem;
   font-weight: var(--fw-bold);
-  letter-spacing: 0.05em;
+  letter-spacing: 0.08em;
   padding: 2px 6px;
   border-radius: 8px;
   text-transform: uppercase;
@@ -282,7 +282,7 @@
 
 .matchListTime {
   font-size: 0.7rem;
-  color: rgba(255,255,255,0.45);
+  color: var(--ink-45, rgba(255, 255, 255, 0.45));
   margin: 0.15rem 0 0;
 }
 
@@ -306,17 +306,18 @@
   justify-content: space-between;
   margin-bottom: 1.25rem;
   font-size: 0.75rem;
-  color: rgba(255,255,255,0.55);
+  color: var(--ink-55, rgba(255, 255, 255, 0.55));
 }
 
 .sbRound { font-weight: var(--fw-medium); }
 
 .sbStatusPill {
-  font-size: 0.65rem;
+  font-size: 0.6875rem;
   font-weight: var(--fw-bold);
   padding: 3px 7px;
   border-radius: 8px;
   text-transform: uppercase;
+  letter-spacing: 0.08em;
 }
 
 .sbScoreRow {
@@ -372,7 +373,7 @@
   font-size: 1.1rem;
   font-weight: var(--fw-bold);
   cursor: pointer;
-  transition: all 0.15s;
+  transition: background-color 150ms ease-out;
 }
 
 .scoreBtn:hover {
@@ -391,7 +392,7 @@
 
 .sbVS {
   font-size: 0.85rem;
-  color: rgba(255,255,255,0.4);
+  color: var(--ink-40, rgba(255, 255, 255, 0.4));
   font-weight: var(--fw-bold);
   letter-spacing: 0.1em;
 }
@@ -414,10 +415,10 @@
 
 .previewTitle {
   font-size: 0.78rem;
-  color: rgba(255,255,255,0.55);
+  color: var(--ink-55, rgba(255, 255, 255, 0.55));
   margin: 0 0 0.75rem;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.06em;
   font-weight: var(--fw-semi-bold);
 }
 
@@ -440,7 +441,7 @@
 
 .overlayTeam span {
   font-size: 0.85rem;
-  color: rgba(255,255,255,0.7);
+  color: var(--ink-70, rgba(255, 255, 255, 0.7));
   font-weight: var(--fw-bold);
   letter-spacing: 0.05em;
 }
@@ -452,14 +453,14 @@
 }
 
 .overlayDot {
-  font-size: 0.6rem;
+  font-size: 0.6875rem;
   color: var(--v-ent-red);
 
 }
 
 .previewHint {
   font-size: 0.7rem;
-  color: rgba(255,255,255,0.4);
+  color: var(--ink-40, rgba(255, 255, 255, 0.4));
   margin: 0.6rem 0 0;
 }
 
@@ -484,8 +485,8 @@
   background-color: #28292d;
   font-size: 0.7rem;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
-  color: rgba(255,255,255,0.55);
+  letter-spacing: 0.08em;
+  color: var(--ink-55, rgba(255, 255, 255, 0.55));
   font-weight: var(--fw-semi-bold);
 }
 
@@ -498,12 +499,12 @@
 
 .partTeamName { color: var(--primary-bg); font-weight: var(--fw-semi-bold); }
 
-.partCaptain { color: rgba(255,255,255,0.6); font-size: 0.78rem; }
+.partCaptain { color: var(--ink-60, rgba(255, 255, 255, 0.6)); font-size: 0.78rem; }
 
 .partStatusBadge {
-  font-size: 0.65rem;
+  font-size: 0.6875rem;
   font-weight: var(--fw-bold);
-  letter-spacing: 0.05em;
+  letter-spacing: 0.08em;
   padding: 3px 7px;
   border-radius: 8px;
   text-transform: uppercase;
@@ -529,7 +530,7 @@
   cursor: pointer;
   font-family: inherit;
   font-weight: var(--fw-semi-bold);
-  transition: all 0.15s;
+  transition: background-color 150ms ease-out, color 150ms ease-out, opacity 150ms ease-out;
 }
 
 .smallBtnGrn { border-color: var(--v-ent-gold); color: var(--v-ent-gold); }
@@ -582,7 +583,7 @@
 .modalClose {
   background: transparent;
   border: none;
-  color: rgba(255,255,255,0.5);
+  color: var(--ink-50, rgba(255, 255, 255, 0.5));
   cursor: pointer;
   font-size: 1.1rem;
 }
@@ -591,7 +592,7 @@
 
 .modalSub {
   font-size: 0.78rem;
-  color: rgba(255,255,255,0.55);
+  color: var(--ink-55, rgba(255, 255, 255, 0.55));
   margin: 0 0 0.75rem;
   line-height: 1.5;
 }
@@ -618,7 +619,7 @@
 
 .bracketSub {
   font-size: 0.78rem;
-  color: rgba(255,255,255,0.5);
+  color: var(--ink-50, rgba(255, 255, 255, 0.5));
   margin: 0 0 0.85rem;
 }
 
@@ -660,7 +661,7 @@
   background-color: rgba(255,255,255,0.02);
   border-radius: 8px;
 
-  transition: all 0.15s;
+  transition: background-color 150ms ease-out, color 150ms ease-out, opacity 150ms ease-out;
 }
 
 .slotDraggable {
@@ -692,7 +693,7 @@
 
 .slotScore {
   font-weight: var(--fw-bold);
-  color: rgba(255,255,255,0.6);
+  color: var(--ink-60, rgba(255, 255, 255, 0.6));
   margin-left: 0.5rem;
 }
 
@@ -713,7 +714,7 @@
   border-radius: 10px;
   padding: 1.25rem;
   text-decoration: none;
-  transition: all 0.2s;
+  transition: background-color 150ms ease-out, color 150ms ease-out;
 }
 
 .linkCard:hover {
@@ -736,13 +737,13 @@
 
 .linkSub {
   font-size: 0.78rem;
-  color: rgba(255,255,255,0.55);
+  color: var(--ink-55, rgba(255, 255, 255, 0.55));
   margin: 0;
   line-height: 1.45;
 }
 
 .linkArrow {
-  color: rgba(255,255,255,0.4);
+  color: var(--ink-40, rgba(255, 255, 255, 0.4));
   font-size: 1.1rem;
   margin-left: auto;
   flex-shrink: 0;
@@ -828,7 +829,7 @@
 
 .remindCount {
   font-size: 0.82rem;
-  color: rgba(255, 255, 255, 0.45);
+  color: var(--ink-45, rgba(255, 255, 255, 0.45));
 }
 
 .remindBody {
@@ -939,7 +940,7 @@
 }
 
 .statFieldLabel {
-  color: rgba(255, 255, 255, 0.5);
+  color: var(--ink-50, rgba(255, 255, 255, 0.5));
   font-family: 'ClashGrotesk-Variable', sans-serif;
   font-size: 0.76rem;
 }

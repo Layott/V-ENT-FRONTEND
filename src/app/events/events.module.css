@@ -43,7 +43,7 @@
 
 .pageSub {
   font-size: var(--fs-p-size-mobile);
-  color: rgba(255, 255, 255, 0.5);
+  color: var(--ink-50, rgba(255, 255, 255, 0.5));
   margin: 0;
   max-width: 540px;
 }
@@ -171,7 +171,7 @@
   flex-wrap: wrap;
   gap: 0.85rem;
   font-size: 0.78rem;
-  color: rgba(255, 255, 255, 0.55);
+  color: var(--ink-55, rgba(255, 255, 255, 0.55));
 }
 
 .featuredFooter {
@@ -205,14 +205,14 @@
   background-color: var(--overlay-gray);
 
   border-radius: 999px;
-  color: rgba(255, 255, 255, 0.6);
+  color: var(--ink-60, rgba(255, 255, 255, 0.6));
   font-family: inherit;
   font-size: 0.8rem;
   font-weight: var(--fw-medium);
   padding: 0.45rem 1.05rem;
   cursor: pointer;
   white-space: nowrap;
-  transition: all 0.2s;
+  transition: background-color 150ms ease-out, color 150ms ease-out;
 }
 
 .tabBtn:hover {
@@ -221,8 +221,8 @@
 }
 
 .tabBtnActive {
-  background-color: var(--v-ent-red);
-  color: #fff;
+  background-color: #4a4c54;
+  color: var(--primary-bg);
 
   font-weight: var(--fw-semi-bold);
 }
@@ -249,7 +249,7 @@
 }
 
 .searchIcon {
-  color: rgba(255, 255, 255, 0.45);
+  color: var(--ink-45, rgba(255, 255, 255, 0.45));
   font-size: 1.05rem;
   flex-shrink: 0;
 }
@@ -265,7 +265,7 @@
 }
 
 .searchInput::placeholder {
-  color: rgba(255, 255, 255, 0.35);
+  color: var(--ink-35, rgba(255, 255, 255, 0.35));
 }
 
 .filterToggle {
@@ -276,13 +276,13 @@
   border-radius: 8px;
   background-color: var(--overlay-gray);
 
-  color: rgba(255, 255, 255, 0.8);
+  color: var(--ink-80, rgba(255, 255, 255, 0.8));
   font-family: inherit;
   font-size: var(--fs-p-size-mobile);
   font-weight: var(--fw-semi-bold);
   cursor: pointer;
   position: relative;
-  transition: all 0.2s;
+  transition: background-color 150ms ease-out, color 150ms ease-out;
 }
 
 .filterToggle:hover,
@@ -342,8 +342,8 @@
 .filterLabel {
   font-size: 0.72rem;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
-  color: rgba(255, 255, 255, 0.5);
+  letter-spacing: 0.08em;
+  color: var(--ink-50, rgba(255, 255, 255, 0.5));
   font-weight: var(--fw-medium);
 }
 
@@ -390,7 +390,7 @@
   position: absolute;
   right: 0.6rem;
   pointer-events: none;
-  color: rgba(255, 255, 255, 0.5);
+  color: var(--ink-50, rgba(255, 255, 255, 0.5));
   font-size: 0.85rem;
 }
 
@@ -408,7 +408,7 @@
 
 .resultCount {
   font-size: 0.78rem;
-  color: rgba(255, 255, 255, 0.45);
+  color: var(--ink-45, rgba(255, 255, 255, 0.45));
 }
 
 .cardGrid {
@@ -462,7 +462,7 @@
   flex-wrap: wrap;
   gap: 0.65rem;
   font-size: 0.74rem;
-  color: rgba(255, 255, 255, 0.55);
+  color: var(--ink-55, rgba(255, 255, 255, 0.55));
 }
 
 .cardFooter {
@@ -493,7 +493,7 @@
   align-items: center;
   gap: 0.3rem;
   font-size: 0.7rem;
-  color: rgba(255, 255, 255, 0.55);
+  color: var(--ink-55, rgba(255, 255, 255, 0.55));
   background-color: rgba(255, 255, 255, 0.05);
   padding: 3px 8px;
   border-radius: 999px;
@@ -541,7 +541,7 @@
 
 .emptySub {
   font-size: var(--fs-p-size-mobile);
-  color: rgba(255, 255, 255, 0.5);
+  color: var(--ink-50, rgba(255, 255, 255, 0.5));
   margin: 0 0 0.6rem;
 }
 
@@ -556,7 +556,7 @@
 
 .stateText {
   padding: 2rem 1rem;
-  color: rgba(255, 255, 255, 0.45);
+  color: var(--ink-45, rgba(255, 255, 255, 0.45));
   font-size: var(--fs-p-size-mobile);
   text-align: center;
 }
@@ -667,7 +667,7 @@
   display: block;
   font-family: 'ClashGrotesk-Variable', sans-serif;
   font-size: 0.74rem;
-  color: rgba(255, 255, 255, 0.45);
+  color: var(--ink-45, rgba(255, 255, 255, 0.45));
   margin-top: 0.15rem;
 }
 

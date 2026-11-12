@@ -19,7 +19,7 @@
 
 .hint,
 .muted {
-  color: rgba(255, 255, 255, 0.5);
+  color: var(--ink-50, rgba(255, 255, 255, 0.5));
   font-size: 0.83rem;
   line-height: 1.5;
   max-width: 62ch;
@@ -67,8 +67,8 @@
 }
 
 .noLogo {
-  color: rgba(255, 255, 255, 0.35);
-  font-size: 0.63rem;
+  color: var(--ink-35, rgba(255, 255, 255, 0.35));
+  font-size: 0.6875rem;
   text-align: center;
   line-height: 1.2;
   padding: 0 2px;
@@ -89,12 +89,12 @@
 }
 
 .rowKind {
-  color: rgba(255, 255, 255, 0.5);
+  color: var(--ink-50, rgba(255, 255, 255, 0.5));
   font-size: 0.75rem;
 }
 
 .rowUrl {
-  color: rgba(255, 255, 255, 0.4);
+  color: var(--ink-40, rgba(255, 255, 255, 0.4));
   font-size: 0.75rem;
   overflow-wrap: anywhere;
 }

@@ -46,7 +46,7 @@
   margin: 0;
   font-size: 0.88rem;
   line-height: 1.55;
-  color: rgba(255, 255, 255, 0.55);
+  color: var(--ink-55, rgba(255, 255, 255, 0.55));
   max-width: 70ch;
 }
 
@@ -113,7 +113,7 @@
 }
 
 .pillOn { background-color: rgba(76, 175, 80, 0.18); color: var(--v-ent-success); }
-.pillOff { background-color: rgba(255, 255, 255, 0.08); color: rgba(255, 255, 255, 0.6); }
+.pillOff { background-color: rgba(255, 255, 255, 0.08); color: var(--ink-60, rgba(255, 255, 255, 0.6)); }
 
 .open, .primary {
   min-height: 44px;
@@ -127,7 +127,7 @@
   white-space: nowrap;
 }
 
-.open { background-color: #33343a; color: rgba(255, 255, 255, 0.8); }
+.open { background-color: #33343a; color: var(--ink-80, rgba(255, 255, 255, 0.8)); }
 .primary { background-color: var(--v-ent-success); color: #fff; }
 
 @media (max-width: 720px) {

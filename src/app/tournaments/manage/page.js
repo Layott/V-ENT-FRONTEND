@@ -488,7 +488,7 @@ const ManageContent = ({ slug }) => {
               {/* Only for somebody who runs production: the organiser, or a
                   helper given the caster's part. Anybody else is never shown
                   the tab it opens. */}
-              {holds('caster') && <button type="button" className={`${styles.btn} goldBTN`} onClick={() => openTab('production')}>
+              {holds('caster') && <button type="button" className={`${styles.btn} quietBTN`} onClick={() => openTab('production')}>
                 <LuRadio /> {tt("ui.production.panel.ccb3", "Production Panel")}
               </button>}
             </div>

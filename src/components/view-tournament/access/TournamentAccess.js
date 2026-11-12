@@ -284,7 +284,7 @@ export default function TournamentAccess({ tournamentId, token, visibility }) {
       {/* The data out. CSV because the next step is a pivot table or a mail
           merge, and every spreadsheet on earth opens it. */}
       <div className={styles.block}>
-        <p className={styles.title}>{tt('export.title', 'Take the data out')}</p>
+        <p className={styles.title}>{tt('export.title', 'Download results')}</p>
         <p className={styles.hint}>
           {tt('export.hint2', 'A spreadsheet to work on, or a document to send. The results sheet has a row per match, so an aggregate fixture is not collapsed into one line. Excel, Word and PDF are premium.')}
         </p>

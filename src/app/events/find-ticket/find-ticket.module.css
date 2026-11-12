@@ -24,7 +24,7 @@
 }
 
 .sub {
-  color: rgba(255, 255, 255, 0.55);
+  color: var(--ink-55, rgba(255, 255, 255, 0.55));
   font-size: 0.9rem;
   line-height: 1.6;
 }
@@ -45,7 +45,7 @@
 }
 
 .label {
-  color: rgba(255, 255, 255, 0.6);
+  color: var(--ink-60, rgba(255, 255, 255, 0.6));
   font-family: 'ClashGrotesk-Variable', sans-serif;
   font-size: 0.8rem;
 }
@@ -85,7 +85,7 @@
    reads as the button that works. */
 .go:disabled {
   background-color: rgba(255, 255, 255, 0.08);
-  color: rgba(255, 255, 255, 0.45);
+  color: var(--ink-45, rgba(255, 255, 255, 0.45));
   cursor: default;
 }
 .go:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
@@ -116,7 +116,7 @@
 }
 
 .meta {
-  color: rgba(255, 255, 255, 0.65);
+  color: var(--ink-65, rgba(255, 255, 255, 0.65));
   font-size: 0.86rem;
 }
 

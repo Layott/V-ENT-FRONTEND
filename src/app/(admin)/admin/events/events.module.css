@@ -6,7 +6,7 @@
 .eMeta {
   font-family: "ClashGrotesk-Variable", sans-serif;
   font-size: 0.7rem;
-  color: rgba(255, 255, 255, 0.4);
+  color: var(--ink-40, rgba(255, 255, 255, 0.4));
   margin-top: 0.1rem;
 }
 
@@ -42,7 +42,7 @@
 .modalSub {
   font-family: "ClashGrotesk-Variable", sans-serif;
   font-size: 0.82rem;
-  color: rgba(255, 255, 255, 0.5);
+  color: var(--ink-50, rgba(255, 255, 255, 0.5));
   margin-bottom: 1.25rem;
 }
 
@@ -58,8 +58,8 @@
   font-family: "ClashGrotesk-Variable", sans-serif;
   font-size: 0.7rem;
   text-transform: uppercase;
-  letter-spacing: 0.06em;
-  color: rgba(255, 255, 255, 0.45);
+  letter-spacing: 0.08em;
+  color: var(--ink-45, rgba(255, 255, 255, 0.45));
   margin-bottom: 0.35rem;
 }
 .formInput {

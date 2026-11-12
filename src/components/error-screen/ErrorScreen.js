@@ -76,7 +76,7 @@ export default function ErrorScreen({ error, reset, whatKey, whatText }) {
 
         <div className={styles.actions}>
           {reset && (
-            <button type="button" className={`${styles.primary} goldBTN`} onClick={reset}>
+            <button type="button" className={`${styles.primary} redBTN`} onClick={reset}>
               {tt('error.retry', 'Try again')}
             </button>
           )}

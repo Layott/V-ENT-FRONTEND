@@ -504,7 +504,9 @@ const CommunityInner = () => {
     }
   };
   useEffect(() => {
-    if (sessionReady && activeTab === 'dms') loadDms();
+    // Messages are private: nothing is asked of the API until somebody is
+    // signed in (Apple review S25; it answered 401 to every visitor).
+    if (sessionReady && signedIn && activeTab === 'dms') loadDms();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeTab, token, sessionReady]);
 
@@ -879,7 +881,7 @@ const CommunityInner = () => {
 
           {/* ─── FORUMS ─── */}
           {activeTab === 'forums' && <div className={styles.forumsLayout}>
-              <div className={styles.categoryList} role="group" aria-label={tt("ui.forum.categories.d09f", "Forum categories")}>
+              <div className={styles.categoryList} data-edge-fade="" role="group" aria-label={tt("ui.forum.categories.d09f", "Forum categories")}>
                 {FORUM_CATEGORIES.map(cat => <button key={cat} className={`${styles.categoryBtn} ${forumCategory === cat ? styles.categoryActive : ''}`} onClick={() => setForumCategory(cat)} aria-pressed={forumCategory === cat}>
                     <span>{cat}</span>
                   </button>)}
@@ -1028,7 +1030,11 @@ const CommunityInner = () => {
             </div>}
 
           {/* ─── DMs ─── */}
-          {activeTab === 'dms' && <div className={styles.dmLayout}>
+          {activeTab === 'dms' && sessionReady && !signedIn && <p className={styles.stateText}>
+              {tt('community.dmsSignIn', 'Your messages are private.')}{' '}
+              <Link href="/login?next=/community/dm">{tt('community.dmsSignInLink', 'Sign in to read them')}</Link>
+            </p>}
+          {activeTab === 'dms' && signedIn && <div className={styles.dmLayout}>
               <div className={styles.dmConvoListWrap}>
                 <div className={styles.dmContactSearch}>
                   <FaSearch className={styles.feedSearchIcon} />
@@ -1109,7 +1115,7 @@ const CommunityInner = () => {
                 }} onKeyDown={e => {
                   if (e.key === 'Enter') handleSendDm();
                 }} />
-                      <button className={`${styles.dmSendBtn} redBTN`} onClick={handleSendDm} disabled={!dmInput.trim() || dmSending}>
+                      <button aria-label={tt('ui.send', 'Send')} className={`${styles.dmSendBtn} redBTN`} onClick={handleSendDm} disabled={!dmInput.trim() || dmSending}>
                         <FaPaperPlane />
                       </button>
                     </div>
@@ -1216,7 +1222,7 @@ const CommunityInner = () => {
                   textAlign: 'right'
                 }} data-label={tt("scrim.action", "Action")}>
                           {scrim.status !== 'open' || scrim.is_mine ? <Link href={`/community/challenge/${scrim.slug}`} className={styles.scrimOpenBtn}>
-                              {scrim.is_mine && scrim.status === 'open' ? tt("ui.yours.7558", "Yours") : tt("ui.view.d3f1", "View")}
+                              {scrim.is_mine && scrim.status === 'open' ? tt("ui.yours.7558", "Yours") : tt('community.openChallenge', 'Open challenge')}
                             </Link> : <button className={styles.scrimAcceptBtn} onClick={() => handleAcceptScrim(scrim)} disabled={!isOpen || !token}>
                               {tt("ui.accept.9a2f", "Accept")}
                             </button>}

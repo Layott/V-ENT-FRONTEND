@@ -8,7 +8,7 @@
 
 .state,
 .hint {
-  color: rgba(255, 255, 255, 0.5);
+  color: var(--ink-50, rgba(255, 255, 255, 0.5));
   font-size: 0.83rem;
   line-height: 1.55;
   max-width: 68ch;
@@ -181,7 +181,7 @@
 }
 
 .codeUses {
-  color: rgba(255, 255, 255, 0.45);
+  color: var(--ink-45, rgba(255, 255, 255, 0.45));
   font-size: 0.72rem;
   white-space: nowrap;
 }

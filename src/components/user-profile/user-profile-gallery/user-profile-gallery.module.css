@@ -48,7 +48,7 @@
   border-radius: 8px;
   color: white;
   font-weight: 500;
-  font-size: 14px;
+  font-size: 0.875rem;
   z-index: 9999;
   max-width: 400px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
@@ -109,14 +109,14 @@
 
 .modalHeading {
   margin: 0 0 20px 0;
-  font-size: 18px;
+  font-size: 1.125rem;
   font-weight: 600;
   color: white;
 }
 
 .modalText {
   margin: 0 0 30px 0;
-  font-size: 14px;
+  font-size: 0.875rem;
   color: white;
   line-height: 1.4;
 }
@@ -143,7 +143,7 @@
   border-radius: 8px;
   background-color: white;
   color: #333;
-  font-size: 14px;
+  font-size: 0.875rem;
   font-weight: 500;
   cursor: pointer;
 }
@@ -154,7 +154,7 @@
   border-radius: 8px;
   background-color: #ef4444;
   color: white;
-  font-size: 14px;
+  font-size: 0.875rem;
   font-weight: 500;
   cursor: pointer;
   transition: opacity 0.3s ease;
@@ -175,7 +175,7 @@
 .errorMessage {
   padding: 20px;
   text-align: center;
-  color: rgba(255, 255, 255, 0.75);
+  color: var(--ink-75, rgba(255, 255, 255, 0.75));
   background-color: #2a2b30;
   border-radius: 10px;
   margin-bottom: 12px;
@@ -205,8 +205,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 16px;
-  transition: all 0.2s ease;
+  font-size: 1rem;
+  transition: background-color 150ms ease-out;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 

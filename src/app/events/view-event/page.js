@@ -69,6 +69,7 @@ import { eventTypeLabel } from '@/lib/labels';
 import { plural } from '@/lib/plural';
 import { prizeText } from '@/lib/prize';
 import BackLink from '@/components/back-link/BackLink';
+import { markScrimDown, isScrimClick } from '@/lib/scrim';
 const TABS = [{
   id: 'overview',
   label: 'Overview'
@@ -1142,7 +1143,7 @@ export const ViewEventContent = ({
   if (error || !event) return renderPage(<div className={styles.errorState}>
         <h2 className={styles.errorTitle}>{tt("ui.couldn't.load.event.e418", "Couldn't load event")}</h2>
         <p className={styles.errorSub}>{error || tx("Event not found.")}</p>
-        <Link href="/events" className={`${styles.errorBtn} goldBTN`}>
+        <Link href="/events" className={`${styles.errorBtn} quietBTN`}>
           {tt("ui.back.events.bd9a", "Back to events")}
         </Link>
       </div>);
@@ -1265,18 +1266,20 @@ export const ViewEventContent = ({
               </div>}
 
               <div className={styles.heroActions}>
-                {!cancelled && <button className={`${styles.heroPrimaryBtn} redBTN`} onClick={() => openTab('tickets')} type="button">
+                {/* Nothing to buy once it has ended (Apple review P061-2, P125-3),
+                    and My tickets only for somebody signed in (P061-9). */}
+                {!cancelled && !countdown?.ended && <button className={`${styles.heroPrimaryBtn} redBTN`} onClick={() => openTab('tickets')} type="button">
                   <IoTicketOutline /> {tt("ui.get.tickets.0b90", "Get tickets")}
                 </button>}
-                <Link href="/events/my-tickets" className={styles.heroSecondaryBtn}>
+                {sessionStatus === 'authenticated' && <Link href="/events/my-tickets" className={styles.heroSecondaryBtn}>
                   {tt("ui.my.tickets.5394", "My tickets")}
-                </Link>
+                </Link>}
               </div>
             </div>
           </div>
 
           {/* Tabs */}
-          <div className={styles.tabRow} ref={tabsRef}>
+          <div className={styles.tabRow} data-edge-fade="" ref={tabsRef}>
             {TABS.filter(t => !t.needsProgramme || hasProgramme).map(t => <button key={t.id} className={`${styles.tabBtn} ${activeTab === t.id ? styles.tabBtnActive : ''}`} aria-pressed={activeTab === t.id} onClick={() => openTab(t.id)} type="button">
                 {t.key ? tt(t.key, t.label) : tx(t.label)}
               </button>)}
@@ -1658,7 +1661,9 @@ export const ViewEventContent = ({
                           and next to a card that DID show a date it read as
                           though something had failed to load. */}
                       <p className={styles.tierDay}>{ticketWhen(t)}</p>
-                      <p className={styles.tierPrice}>
+                      {/* Free is called Free (Apple review S24): "0 VC / ticket"
+                          asked the reader to work out that nothing is owed. */}
+                      {Number(t.price) === 0 ? <p className={styles.tierPrice}>{tt('tickets.free', 'Free')}</p> : <p className={styles.tierPrice}>
                         {formatNumber(t.price)} VC
                         <span className={styles.tierUnit}>{tt("ui.ticket.de25", "/ ticket")}</span>
                         {/* What that is worth in the reader's own money. Shown as
@@ -1673,7 +1678,7 @@ export const ViewEventContent = ({
                               {tt("money.approx", "about {amount}").replace('{amount}', converted)}
                             </span> : null;
                   })()}
-                      </p>
+                      </p>}
                       <ul className={styles.perkList}>
                         {t.perks.map(p => <li key={p}>
                             <FaCheckCircle className={styles.perkIcon} /> {p}
@@ -1712,7 +1717,7 @@ export const ViewEventContent = ({
                   if (session?.user?.sessionToken) openBuy(t);
                   else setGuestTier(t);
                 }} type="button">
-                        {countdown?.ended ? tx("Event over") : t.available === 0 ? tx("Sold out") : tx("Buy ticket")}
+                        {countdown?.ended ? tx("Event over") : t.available === 0 ? tx("Sold out") : Number(t.price) === 0 ? tt('buy.getFreeTicket', 'Get a free ticket') : tx("Buy ticket")}
                       </button>
                     </div>)}
                 </div>}
@@ -1901,16 +1906,18 @@ export const ViewEventContent = ({
       <BottomMenu />
 
       {/* Buy ticket modal */}
-      {buyOpen && buyTier && <div className={styles.modalOverlay} onClick={e => {
-      if (e.target === e.currentTarget) closeBuy();
+      {buyOpen && buyTier && <div className={styles.modalOverlay} onPointerDown={markScrimDown} data-scrim="" onClick={e => {
+      if (isScrimClick(e)) closeBuy();
     }}>
           <div className={styles.modal}>
             <div className={styles.modalHeader}>
               <h2 className={styles.modalTitle}>
                 {buyStep === 3 ? tx("Ticket secured")
-                  : tt('buy.title', 'Buy {tier}').replace('{tier}', buyTier.name)}
+                  : Number(buyTier.price) === 0
+                    ? tt('buy.titleFree', 'Get {tier}').replace('{tier}', buyTier.name)
+                    : tt('buy.title', 'Buy {tier}').replace('{tier}', buyTier.name)}
               </h2>
-              <button className={styles.modalClose} onClick={closeBuy} type="button">
+              <button aria-label={tt('ui.close', 'Close')} className={styles.modalClose} onClick={closeBuy} type="button">
                 <MdOutlineClose />
               </button>
             </div>
@@ -1960,7 +1967,7 @@ export const ViewEventContent = ({
                 <div className={styles.confirmRow}>
                   <span className={styles.confirmLabel}>{tt("ui.price.3e82", "Price")}</span>
                   <span className={styles.confirmValue}>
-                    {formatNumber(unitCost)} VC x {buyQty}
+                    {unitCost === 0 ? tt('tickets.free', 'Free') : `${formatNumber(unitCost)} VC x ${buyQty}`}
                   </span>
                 </div>
                 {/* Why the unit price is not the one on the card. A discount
@@ -2020,14 +2027,14 @@ export const ViewEventContent = ({
                 <div className={styles.confirmRow}>
                   <span className={styles.confirmLabel}>{tt("ui.total.b259", "Total")}</span>
                   <span className={`${styles.confirmValue} ${styles.confirmGreen}`}>
-                    {formatNumber(totalCost)} VC
+                    {totalCost === 0 ? tt('tickets.free', 'Free') : `${formatNumber(totalCost)} VC`}
                   </span>
                 </div>
                 {quoteError && !priced && <p className={styles.modalError}>
                     {tt('buy.quoteFailed',
                       'We could not confirm the price just now. Try again in a moment.')}
                   </p>}
-                {walletBalance !== null && <div className={styles.confirmRow}>
+                {walletBalance !== null && totalCost > 0 && <div className={styles.confirmRow}>
                     <span className={styles.confirmLabel}>{tt("ui.wallet.balance.f6c5", "Wallet balance")}</span>
                     <span className={styles.confirmValue}>
                       {walletBalance.toLocaleString()} VC
@@ -2076,7 +2083,7 @@ export const ViewEventContent = ({
                 <p className={styles.body} style={{
             marginBottom: '0.5rem'
           }}>
-                  {tt("ui.confirm.payment.19b4", "Confirm payment for")} <strong>{event.name}</strong> - {buyTier.name} × {buyQty}.
+                  {totalCost === 0 ? tt('buy.confirmFree', 'Your free ticket for') : tt("ui.confirm.payment.19b4", "Confirm payment for")} <strong>{event.name}</strong> - {buyTier.name} × {buyQty}.
                 </p>
                 {feeCost > 0 && <>
                   <div className={styles.confirmRow}>
@@ -2088,6 +2095,7 @@ export const ViewEventContent = ({
                     <span className={styles.confirmValue}>{feeCost.toLocaleString(appLocale())} VC</span>
                   </div>
                 </>}
+                {totalCost > 0 && <>
                 <div className={styles.confirmRow}>
                   <span className={styles.confirmLabel}>{tt("ui.pay.2d77", "You pay")}</span>
                   <span className={`${styles.confirmValue} ${styles.confirmGreen}`}>
@@ -2098,6 +2106,7 @@ export const ViewEventContent = ({
                   <span className={styles.confirmLabel}>{tt("ui.method.8830", "Method")}</span>
                   <span className={styles.confirmValue}>{tt("ui.v.ent.wallet.2bc6", "V-ENT Wallet")}</span>
                 </div>
+                </>}
                 {totalCost > 0 && <div className={styles.confirmRow} style={{
             display: 'block'
           }}>
@@ -2119,7 +2128,7 @@ export const ViewEventContent = ({
                   }} />
 
                 <button className={`${styles.modalPrimaryBtn} redBTN`} onClick={handleBuy} disabled={buyLoading} type="button">
-                  {buyLoading ? tx("Processing…") : tx("Pay with wallet")}
+                  {buyLoading ? tx("Processing…") : totalCost === 0 ? tt('buy.getFree', 'Get my free ticket') : tx("Pay with wallet")}
                 </button>
                 <button className={styles.modalSecondaryBtn} onClick={() => setBuyStep(1)} type="button">
                   {tt("ui.back.b52b", "Back")}
@@ -2130,7 +2139,7 @@ export const ViewEventContent = ({
                 <div className={styles.successIcon}>
                   <FaCheckCircle />
                 </div>
-                <p className={styles.successTitle}>{tt("ui.payment.successful.8ea2", "Payment successful")}</p>
+                <p className={styles.successTitle}>{totalCost === 0 ? tt('buy.ticketSecured', 'Ticket secured') : tt("ui.payment.successful.8ea2", "Payment successful")}</p>
                 <p className={styles.successSub}>
                   {tt('buy.successLine', '{n} × {tier} for {event}')
                     .replace('{n}', formatNumber(buyQty))
@@ -2138,14 +2147,14 @@ export const ViewEventContent = ({
                     .replace('{event}', event.name)}
                 </p>
                 {buyResult?.qr_code && <p className={styles.qrCode}>QR: {buyResult.qr_code}</p>}
-                {typeof buyResult?.new_balance === 'number' && <p className={styles.successSub}>
+                {totalCost > 0 && typeof buyResult?.new_balance === 'number' && <p className={styles.successSub}>
                     {tt("ui.new.balance.7b25", "New balance:")} {Number(buyResult.new_balance).toLocaleString()} VC
                   </p>}
                 <GamesJoinedNote rows={buyResult?.games} onOpenGames={() => {
                   closeBuy();
                   openTab('games');
                 }} />
-                <Link href="/events/my-tickets" className={`${styles.modalPrimaryBtn} goldBTN`} style={{
+                <Link href="/events/my-tickets" className={`${styles.modalPrimaryBtn} redBTN`} style={{
             display: 'inline-flex',
             justifyContent: 'center',
             textDecoration: 'none'

@@ -441,7 +441,8 @@ const PartnersPage = () => {
             }) => <label key={key} className={styles.checkRow}>
                       <input type="checkbox" checked={form.requested_scopes.includes(key)} onChange={() => toggleScope(key)} />
                       <span>
-                        <code>{key}</code> {tt(`partners.scope.${key}`, label)}
+                        {/* What it does first, the key after it and quiet (Apple review P109-2). */}
+                        {tt(`partners.scope.${key}`, label)} <code className={styles.scopeKey}>{key}</code>
                         {/* Said on the row, so it is answered before it is asked. */}
                         <span className={selfServe.includes(key) ? styles.instantTag : styles.reviewTag}>
                           {selfServe.includes(key)

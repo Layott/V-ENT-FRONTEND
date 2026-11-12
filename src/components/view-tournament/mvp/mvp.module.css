@@ -12,7 +12,7 @@
 }
 
 .state {
-  color: rgba(255, 255, 255, 0.5);
+  color: var(--ink-50, rgba(255, 255, 255, 0.5));
   font-size: 0.9rem;
   line-height: 1.55;
   max-width: 64ch;
@@ -30,7 +30,7 @@
 }
 
 .awardLabel {
-  color: rgba(255, 255, 255, 0.55);
+  color: var(--ink-55, rgba(255, 255, 255, 0.55));
   font-family: 'ClashGrotesk-Variable', sans-serif;
   font-size: 0.72rem;
   letter-spacing: 0.09em;
@@ -46,12 +46,12 @@
 }
 
 .awardScore {
-  color: rgba(255, 255, 255, 0.7);
+  color: var(--ink-70, rgba(255, 255, 255, 0.7));
   font-size: 0.88rem;
 }
 
 .awardReason {
-  color: rgba(255, 255, 255, 0.6);
+  color: var(--ink-60, rgba(255, 255, 255, 0.6));
   font-size: 0.85rem;
   line-height: 1.55;
   margin-top: 0.2rem;
@@ -59,14 +59,14 @@
 }
 
 .scoring {
-  color: rgba(255, 255, 255, 0.62);
+  color: var(--ink-62, rgba(255, 255, 255, 0.62));
   font-size: 0.86rem;
   line-height: 1.6;
   max-width: 76ch;
 }
 
 .weight {
-  color: rgba(255, 255, 255, 0.42);
+  color: var(--ink-42, rgba(255, 255, 255, 0.42));
   font-variant-numeric: tabular-nums;
 }
 
@@ -83,11 +83,11 @@
 }
 
 .table thead th {
-  color: rgba(255, 255, 255, 0.45);
+  color: var(--ink-45, rgba(255, 255, 255, 0.45));
   font-family: 'ClashGrotesk-Variable', sans-serif;
   font-size: 0.72rem;
   font-weight: var(--fw-medium, 500);
-  letter-spacing: 0.05em;
+  letter-spacing: 0.08em;
   padding: 0 0.55rem 0.6rem;
   text-align: right;
   text-transform: uppercase;
@@ -123,7 +123,7 @@
 .posCol {
   text-align: left !important;
   width: 34px;
-  color: rgba(255, 255, 255, 0.45) !important;
+  color: var(--ink-45, rgba(255, 255, 255, 0.45)) !important;
 }
 
 .nameCol {
@@ -136,7 +136,7 @@
    repeats down the table and does not deserve the width. */
 .side {
   display: block;
-  color: rgba(255, 255, 255, 0.42);
+  color: var(--ink-42, rgba(255, 255, 255, 0.42));
   font-size: 0.76rem;
 }
 

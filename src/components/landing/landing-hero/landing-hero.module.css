@@ -230,7 +230,7 @@
 .topLeftImageContainer {
   height: 120px;
   border-radius: 20px;
-  transition: all ease-in-out 0.15s;
+  transition: background-color 150ms ease-out, color 150ms ease-out, opacity 150ms ease-out;
 }
 
 .bottomLeftImageContainer img,
@@ -445,7 +445,7 @@
   background: transparent;
   color: var(--text-primary, #f2f2f2);
   font-weight: 600;
-  font-size: 14px;
+  font-size: 0.875rem;
   text-decoration: none;
   white-space: nowrap;
 }
@@ -492,7 +492,7 @@
 
 .heroEntryNote {
   color: var(--text-secondary, #b6b6b6);
-  font-size: 13px;
+  font-size: 0.8125rem;
 }
 
 @media (max-width: 768px) {

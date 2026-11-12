@@ -26,6 +26,7 @@ import { adminToken } from '@/lib/adminToken';
 import { formatDateTime, formatNumber, isoToLocalInput, localInputToISO } from '@/lib/datetime';
 import { editStart, kindHref, readable, recordHref, recordsCall } from '@/lib/adminRecords';
 import styles from '../../records.module.css';
+import { markScrimDown, isScrimClick } from '@/lib/scrim';
 
 function Value({ field, tt }) {
   const text = readable(field, tt);
@@ -205,7 +206,7 @@ function RecordInner() {
   const editable = rec ? rec.fields.filter((f) => f.editable) : [];
   return (
     <div className={shared.pageContainer}>
-      <div className={`${shared.sidebarOverlay} ${sidebarOpen ? shared.open : ''}`} onClick={() => setSidebarOpen(false)} />
+      <div className={`${shared.sidebarOverlay} ${sidebarOpen ? shared.open : ''}`} onPointerDown={markScrimDown} data-scrim="" onClick={(e) => isScrimClick(e) && (setSidebarOpen(false))} />
       <AdminNav admin={admin} onLogout={logout} sidebarOpen={sidebarOpen} badges={{}} />
       <div className={shared.mainContainer}>
         <AdminHeader admin={admin} onLogout={logout} onMenuOpen={() => setSidebarOpen(true)} />

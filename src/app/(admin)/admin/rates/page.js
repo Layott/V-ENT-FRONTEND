@@ -26,6 +26,7 @@ import shared from '@/components/admin/admin.module.css';
 import styles from './rates.module.css';
 import { useT } from '@/i18n/LanguageProvider';
 import { adminToken } from '@/lib/adminToken'
+import { markScrimDown, isScrimClick } from '@/lib/scrim';
 const DAY = 24 * 60 * 60 * 1000;
 function RatesInner() {
   const tt = useT();
@@ -164,7 +165,7 @@ function RatesInner() {
   const isStale = iso => !iso || Date.now() - new Date(iso).getTime() > 3 * DAY;
   if (authLoading) return null;
   return <div className={shared.pageContainer}>
-      <div className={`${shared.sidebarOverlay} ${sidebarOpen ? shared.open : ''}`} onClick={() => setSidebarOpen(false)} />
+      <div className={`${shared.sidebarOverlay} ${sidebarOpen ? shared.open : ''}`} onPointerDown={markScrimDown} data-scrim="" onClick={(e) => isScrimClick(e) && (setSidebarOpen(false))} />
       <AdminNav admin={admin} onLogout={logout} sidebarOpen={sidebarOpen} badges={{}} />
       <div className={shared.mainContainer}>
         <AdminHeader admin={admin} onLogout={logout} onMenuOpen={() => setSidebarOpen(true)} />

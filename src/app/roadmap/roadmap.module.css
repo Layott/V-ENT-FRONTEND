@@ -21,7 +21,7 @@
 
 .intro {
   margin: 0 0 1.75rem;
-  color: rgba(255, 255, 255, 0.65);
+  color: var(--ink-65, rgba(255, 255, 255, 0.65));
   line-height: 1.6;
   max-width: 62ch;
 }

@@ -36,7 +36,7 @@
 }
 
 .modalTitle {
-  font-size: 24px;
+  font-size: 1.5rem;
   font-weight: 600;
   margin: 0;
   color: white;
@@ -46,7 +46,7 @@
   background: none;
   border: none;
   color: #9ca3af;
-  font-size: 32px;
+  font-size: 2rem;
   cursor: pointer;
   padding: 0;
   line-height: 1;
@@ -62,7 +62,7 @@
 }
 
 .subtitle {
-  font-size: 16px;
+  font-size: 1rem;
   color: #9ca3af;
   margin: 0 0 32px 0;
 }
@@ -81,7 +81,7 @@
   padding: 32px 24px;
   text-align: center;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: background-color 150ms ease-out, color 150ms ease-out, box-shadow 150ms ease-out;
   color: white;
   display: flex;
   flex-direction: column;
@@ -118,7 +118,7 @@
   align-items: center;
   justify-content: center;
   color: #d1d5db;
-  transition: all 0.3s ease;
+  transition: background-color 150ms ease-out, color 150ms ease-out;
 }
 
 .optionCard:hover .userIcon,
@@ -134,14 +134,14 @@
 }
 
 .optionTitle {
-  font-size: 20px;
+  font-size: 1.25rem;
   font-weight: 600;
   margin: 0;
   color: white;
 }
 
 .optionDescription {
-  font-size: 14px;
+  font-size: 0.875rem;
   color: #9ca3af;
   margin: 0;
   line-height: 1.4;
@@ -162,10 +162,10 @@
   color: #9ca3af;
   padding: 12px 24px;
   border-radius: 8px;
-  font-size: 16px;
+  font-size: 1rem;
   font-weight: 500;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: color 150ms ease-out, width 200ms ease-out;
 }
 
 .cancelButton:hover {
@@ -179,10 +179,10 @@
   color: white;
   padding: 12px 24px;
   border-radius: 8px;
-  font-size: 16px;
+  font-size: 1rem;
   font-weight: 500;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: background-color 150ms ease-out, color 150ms ease-out, width 200ms ease-out, box-shadow 150ms ease-out;
   display: flex;
   align-items: center;
   gap: 8px;
@@ -226,7 +226,7 @@
   }
   
   .modalTitle {
-    font-size: 20px;
+    font-size: 1.25rem;
   }
   
   .modalFooter {
@@ -250,10 +250,10 @@
 }
 
 .resumeKicker {
-  color: rgba(255, 255, 255, 0.5);
+  color: var(--ink-50, rgba(255, 255, 255, 0.5));
   font-size: 0.72rem;
   font-weight: 600;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
 }
 
@@ -267,7 +267,7 @@
 
 .resumeText {
   margin: 0;
-  color: rgba(255, 255, 255, 0.65);
+  color: var(--ink-65, rgba(255, 255, 255, 0.65));
   font-size: 0.88rem;
   line-height: 1.5;
 }

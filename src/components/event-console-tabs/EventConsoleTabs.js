@@ -24,7 +24,7 @@ import styles from './event-console-tabs.module.css';
 // id, translation key, English. `null` id means Details, which is its own
 // route rather than a tab on the console.
 export const CONSOLE_TABS = [
-  [null, 'console.tabDetails', 'Details'],
+  [null, 'console.tabDetails', 'Edit details'],
   ['tickets', 'console.tabTickets', 'Tickets'],
   ['money', 'console.tabMoney', 'Money'],
   ['numbers', 'console.tabNumbers', 'Sales and attendance'],
@@ -65,7 +65,7 @@ export default function EventConsoleTabs({ eventRef, active, onSelect }) {
   if (!eventRef) return null;
 
   return (
-    <div className={styles.strip} role="tablist">
+    <div className={styles.strip} role="tablist" data-edge-fade="">
       {CONSOLE_TABS.map(([id, key, fallback]) => {
         const isDetails = id === null;
         const on = isDetails ? active === 'details' : active === id;

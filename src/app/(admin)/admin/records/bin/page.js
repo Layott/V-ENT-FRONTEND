@@ -19,6 +19,7 @@ import { formatDate, formatDateTime, formatNumber } from '@/lib/datetime';
 import { recordsCall } from '@/lib/adminRecords';
 import { adminTargetLabel } from '@/lib/adminTarget';
 import styles from '../records.module.css';
+import { markScrimDown, isScrimClick } from '@/lib/scrim';
 
 function BinInner() {
   const tt = useT();
@@ -73,7 +74,7 @@ function BinInner() {
   if (authLoading) return null;
   return (
     <div className={shared.pageContainer}>
-      <div className={`${shared.sidebarOverlay} ${sidebarOpen ? shared.open : ''}`} onClick={() => setSidebarOpen(false)} />
+      <div className={`${shared.sidebarOverlay} ${sidebarOpen ? shared.open : ''}`} onPointerDown={markScrimDown} data-scrim="" onClick={(e) => isScrimClick(e) && (setSidebarOpen(false))} />
       <AdminNav admin={admin} onLogout={logout} sidebarOpen={sidebarOpen} badges={{}} />
       <div className={shared.mainContainer}>
         <AdminHeader admin={admin} onLogout={logout} onMenuOpen={() => setSidebarOpen(true)} />

@@ -89,6 +89,7 @@ export const EditEventContent = ({ slug: slugFromPath }) => {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
+  const [refused, setRefused] = useState(false);
   const [notice, setNotice] = useState('');
 
   const [logoPreview, setLogoPreview] = useState('');
@@ -148,6 +149,12 @@ export const EditEventContent = ({ slug: slugFromPath }) => {
           // 18 for adults only, 0 for everybody (inbox 305).
           min_age: Number(e.min_age) >= 18 ? 18 : 0,
         };
+        // Asked before the form is drawn (Apple review P063-8): door staff and
+        // strangers saw every field and were refused only on save.
+        if (e.can_edit === false) {
+          setRefused(true);
+          return;
+        }
         setOriginal(shaped);
         setForm(shaped);
         return;
@@ -228,7 +235,7 @@ export const EditEventContent = ({ slug: slugFromPath }) => {
             </div>
             {/* Both, because an organiser on this page on the day of the
                 event is one tap from the gate. Row 168. */}
-            {ref && <div className={styles.headActions}>
+            {ref && !refused && <div className={styles.headActions}>
               <DoorScannerLink eventRef={ref} />
               <Link href={`/events/${ref}/attendees`} className={styles.ghostBtn}>
                 {tt('eventEdit.doorList', 'Door list')}
@@ -243,10 +250,18 @@ export const EditEventContent = ({ slug: slugFromPath }) => {
               the twelve-card grid: cards that jumped to a differently shaped
               page are exactly what made this feel like two places, and the
               strip is still on screen after you press one. */}
-          <EventConsoleTabs eventRef={ref} active="details" />
+          {!refused && <EventConsoleTabs eventRef={ref} active="details" />}
 
           {loading ? (
             <p className={styles.muted}>{tt('ui.loading.33ce', 'Loading…')}</p>
+          ) : refused ? (
+            <div className={styles.errorCard} role="alert">
+              <LuTriangleAlert aria-hidden="true" />
+              <p>{tt('eventEdit.notYours', 'Only the people running this event can change it.')}</p>
+              <Link href={`/events/${ref}`} className={styles.ghostBtn}>
+                {tt('eventEdit.view', 'View the public page')}
+              </Link>
+            </div>
           ) : !form ? (
             <div className={styles.errorCard}>
               <LuTriangleAlert aria-hidden="true" />

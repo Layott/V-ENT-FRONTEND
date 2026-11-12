@@ -32,6 +32,7 @@ import SlotPictures, { VenueLayoutView } from './SlotPictures';
 import NeedsAccount from '@/components/needs-account/NeedsAccount';
 import styles from './trade-here.module.css';
 import { useAutoRefresh } from '@/lib/useLiveData';
+import { markScrimDown, isScrimClick } from '@/lib/scrim';
 
 const TradeHere = ({ eventRef, eventName }) => {
   const tt = useT();
@@ -184,7 +185,7 @@ const TradeHere = ({ eventRef, eventName }) => {
         ))}
       </ul>
 
-      {open && <div className={styles.backdrop} onClick={() => setOpen(null)}>
+      {open && <div className={styles.backdrop} onPointerDown={markScrimDown} data-scrim="" onClick={(e) => isScrimClick(e) && (setOpen(null))}>
         <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
           <h3 className={styles.modalTitle}>{open.name}</h3>
           <p className={styles.modalSub}>

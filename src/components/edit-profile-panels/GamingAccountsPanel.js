@@ -141,7 +141,7 @@ const GamingAccountsPanel = ({ onCancel, showToast }) => {
                   </div>
                   <button
                     type="button"
-                    className={`${shared.btn} ${connected ? shared.ghostBTN : shared.goldBTN} ${styles.action}`}
+                    className={`${shared.btn} ${connected ? shared.ghostBTN : 'redBTN'} ${styles.action}`}
                     disabled={working || (!connected && !configured)}
                     onClick={() => (connected ? disconnect(p.id) : connect(p.id))}
                   >

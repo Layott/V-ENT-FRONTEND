@@ -49,6 +49,7 @@ import PendingInvites from '@/components/invitations/PendingInvites';
 import { formatWithZone, formatNumber, isoToLocalInput, withLocalDatesAsISO } from '@/lib/datetime';
 import LegacyIdRoute from '@/components/legacy-id-route/LegacyIdRoute';
 import BackLink from '@/components/back-link/BackLink';
+import { scrollBehavior } from '@/lib/scrollMotion';
 const API = process.env.NEXT_PUBLIC_API_URL;
 
 // The site's language, not the browser's.
@@ -308,14 +309,12 @@ export const ManageEventContent = ({
       if (!quiet) setError('');
       setRefused(false);
     }
-    const [r, p, m, ti, mo, ho, se, qu, cf, me, an, au, po, el, ea, ab] = await Promise.all([
-      call('/referrals/'), call('/promos/'), call('/managers/'), call('/tiers/'),
-      call('/money/'), call('/holds/'), call('/sessions/manage/'), call('/waitlist/all/'),
-      call('/checkout-fields/manage/'),
-      call('/metrics/'), call('/announcements/'), call('/announcements/audience/'),
-      call('/polls/'), call('/email-limits/'),
-      call('/earnings/'),
-      call('/abandoned/'),
+    // Permission first (Apple review S25): the three panels that only a
+    // manager may read decide whether this person is a manager at all. Asked
+    // alone, so a stranger, a ticket holder or door staff gets the refusal
+    // after three requests instead of sixteen, thirteen of them refused.
+    const [r, p, m] = await Promise.all([
+      call('/referrals/'), call('/promos/'), call('/managers/'),
     ]);
     if (!r.ok && !p.ok && !m.ok) {
       setError(apiMessage(tt, r.body, 'api.couldNotLoadThisEvent', 'Could not load this event.'));
@@ -328,6 +327,15 @@ export const ManageEventContent = ({
       setLoading(false);
       return;
     }
+    const [ti, mo, ho, se, qu, cf, me, an, au, po, el, ea, ab] = await Promise.all([
+      call('/tiers/'),
+      call('/money/'), call('/holds/'), call('/sessions/manage/'), call('/waitlist/all/'),
+      call('/checkout-fields/manage/'),
+      call('/metrics/'), call('/announcements/'), call('/announcements/audience/'),
+      call('/polls/'), call('/email-limits/'),
+      call('/earnings/'),
+      call('/abandoned/'),
+    ]);
     setTiers(ti.body?.data?.tiers || []);
     setEventDays(ti.body?.data?.days || []);
     const cap = ti.body?.data?.capacity || null;
@@ -542,7 +550,7 @@ export const ManageEventContent = ({
   // once it is on the page.
   useEffect(() => {
     if (!error) return;
-    document.querySelector('[data-console-error]')?.scrollIntoView({ block: 'center', behavior: 'smooth' });
+    document.querySelector('[data-console-error]')?.scrollIntoView({ block: 'center', behavior: scrollBehavior() });
   }, [error]);
 
   // ------------------------------------------------------ messages and polls
