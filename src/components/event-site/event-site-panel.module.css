@@ -177,6 +177,13 @@
   overflow-wrap: anywhere;
 }
 
+.sectionEmpty {
+  display: block;
+  margin-top: 0.15rem;
+  color: var(--ink-55, rgba(255, 255, 255, 0.55));
+  font-size: 0.75rem;
+}
+
 .sectionActions {
   display: flex;
   align-items: center;

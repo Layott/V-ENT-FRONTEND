@@ -15,7 +15,7 @@ import { CiSearch } from 'react-icons/ci';
 import { TiArrowSortedDown } from 'react-icons/ti';
 import { HiPlus } from 'react-icons/hi';
 import { MdOutlineClose, MdOutlineEvent } from 'react-icons/md';
-import { IoCalendarOutline, IoLocationOutline, IoTicketOutline } from 'react-icons/io5';
+import { IoCalendarOutline, IoGlobeOutline, IoLocationOutline, IoTicketOutline } from 'react-icons/io5';
 import { FaUsers, FaFire } from 'react-icons/fa';
 import Header from '@/components/header/Header';
 import MobileHeader from '@/components/mobile-header/MobileHeader';
@@ -343,9 +343,12 @@ const EventsListingContent = () => {
                           <span className={styles.metaItem}>
                             <IoCalendarOutline /> {formatDate(e.start_date)}
                           </span>
-                          <span className={styles.metaItem}>
+                          {/* Where, or that it is online: an online event has no pin (inbox 588). */}
+                          {e.location ? <span className={styles.metaItem}>
                             <IoLocationOutline /> {e.location}
-                          </span>
+                          </span> : e.event_type === 'virtual' && <span className={styles.metaItem}>
+                            <IoGlobeOutline /> {tt('site.online', 'Online')}
+                          </span>}
                         </div>
                         <div className={styles.featuredFooter}>
                           <span className={styles.priceLabel}>{tx(tier.label)}</span>
@@ -458,9 +461,12 @@ const EventsListingContent = () => {
                           <span className={styles.metaItem}>
                             <IoCalendarOutline /> {formatDate(e.start_date)}
                           </span>
-                          <span className={styles.metaItem}>
+                          {/* Where, or that it is online: an online event has no pin (inbox 588). */}
+                          {e.location ? <span className={styles.metaItem}>
                             <IoLocationOutline /> {e.location}
-                          </span>
+                          </span> : e.event_type === 'virtual' && <span className={styles.metaItem}>
+                            <IoGlobeOutline /> {tt('site.online', 'Online')}
+                          </span>}
                         </div>
                         <div className={styles.cardFooter}>
                           <span className={styles.priceLabel}>{tx(tier.label)}</span>

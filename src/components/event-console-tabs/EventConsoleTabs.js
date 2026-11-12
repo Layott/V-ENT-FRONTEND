@@ -60,13 +60,18 @@ export const CONSOLE_TABS = [
  *                  navigating, so the console switches in place rather than
  *                  reloading itself.
  */
-export default function EventConsoleTabs({ eventRef, active, onSelect }) {
+// Tabs a kind of event does not have (inbox 588). Pitches and stalls are
+// places at a venue, so an online event has no such tab.
+const NOT_FOR = { virtual: new Set(['vendors']) };
+
+export default function EventConsoleTabs({ eventRef, active, onSelect, eventType }) {
   const tt = useT();
   if (!eventRef) return null;
+  const skip = NOT_FOR[eventType] || new Set();
 
   return (
     <div className={styles.strip} role="tablist" data-edge-fade="">
-      {CONSOLE_TABS.map(([id, key, fallback]) => {
+      {CONSOLE_TABS.filter(([id]) => !skip.has(id)).map(([id, key, fallback]) => {
         const isDetails = id === null;
         const on = isDetails ? active === 'details' : active === id;
         const className = `${styles.tab} ${on ? styles.tabOn : ''}`;
