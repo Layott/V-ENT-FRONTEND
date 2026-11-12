@@ -3,7 +3,7 @@ import ServedSummary from '@/components/seo/ServedSummary';
 import { VendorShopContent } from '../../vendor-shop/page';
 import { generateMetadata as describe } from './layout';
 
-// `/events/name-of-the-thing/vendor-shop` - the event addressed by name rather than by a number in a query
+// `/events/name-of-the-thing/stalls` - the event addressed by name rather than by a number in a query
 // string. The old `?id=` address still resolves, because links already shared
 // have to keep working.
 //

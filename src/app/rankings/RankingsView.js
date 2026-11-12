@@ -176,6 +176,16 @@ const RankingsView = () => {
     }
     return arr;
   }, [activeList, sortBy]);
+  // The top 50, then "Show more" (CEO, 12 November 2026, inbox 594-12): the
+  // table ran to hundreds of rows on one page. "Your rank" stays pinned at the
+  // foot of the screen, so a player below the cut still sees where they are.
+  // A new tab, filter, search or sort starts again at 50.
+  const RANK_PAGE = 50;
+  const [shownRows, setShownRows] = useState(RANK_PAGE);
+  useEffect(() => {
+    setShownRows(RANK_PAGE);
+  }, [tab, game, region, country, search, sortBy]);
+  const visibleList = useMemo(() => sortedList.slice(0, shownRows), [sortedList, shownRows]);
   const top3 = useMemo(() => {
     // Always podium by rank (top 3 by points), regardless of secondary sort.
     return [...activeList].sort((a, b) => a.rank - b.rank).slice(0, 3);
@@ -353,7 +363,7 @@ const RankingsView = () => {
           </div>}
 
         {!loading && !error && sortedList.length > 0 && <div className={styles.tableBody}>
-            {sortedList.map(entry => {
+            {visibleList.map(entry => {
           const isMe = entry.is_session_user;
           const isExpanded = expandedRow === entry.id;
           return <div key={entry.id} className={`${styles.row} ${isMe ? styles.rowMe : ''}`} role="button" tabIndex={0} onClick={() => navigateToProfile(entry)} onKeyDown={e => {
@@ -465,6 +475,14 @@ const RankingsView = () => {
                   </div>
                 </div>;
         })}
+          </div>}
+        {!loading && !error && sortedList.length > visibleList.length && <div className={styles.moreRow}>
+            <span className={styles.moreCount}>
+              {tt('rank.showingOf', 'Showing the top {n} of {total}').replace('{n}', visibleList.length).replace('{total}', sortedList.length)}
+            </span>
+            <button type="button" className={`${styles.moreBtn} quietBTN`} onClick={() => setShownRows(n => n + RANK_PAGE)}>
+              {tt('rank.showMore', 'Show more')}
+            </button>
           </div>}
       </div>
 

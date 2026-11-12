@@ -1,0 +1,102 @@
+/* A section that opens and closes (inbox 594-9). Surfaces and space: the fold
+   is a filled panel one step off the form behind it; the open one a step
+   lighter. No stroke anywhere. */
+.fold {
+  background-color: #222327;
+  border-radius: 12px;
+  min-width: 0;
+}
+
+.inset {
+  background-color: #28292d;
+  border-radius: 10px;
+}
+
+.open {
+  background-color: #26272c;
+}
+
+.inset.open {
+  background-color: #2d2e33;
+}
+
+.headRow {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding-right: 0.6rem;
+}
+
+.heading {
+  flex: 1 1 auto;
+  min-width: 0;
+  margin: 0;
+  font: inherit;
+}
+
+.head {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  width: 100%;
+  min-height: 56px;
+  padding: 0.7rem 0.4rem 0.7rem 1rem;
+  text-align: left;
+  color: inherit;
+  cursor: pointer;
+  border-radius: 12px;
+}
+
+.head:hover {
+  background-color: rgba(255, 255, 255, 0.03);
+}
+
+.text {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  min-width: 0;
+  flex: 1 1 auto;
+}
+
+.title {
+  color: #fff;
+  font-family: 'ClashGrotesk-Variable', sans-serif;
+  font-size: 1rem;
+  font-weight: var(--fw-semi-bold, 600);
+}
+
+.inset .title {
+  font-size: 0.95rem;
+}
+
+.summary {
+  color: var(--ink-60, rgba(255, 255, 255, 0.6));
+  font-family: 'ClashGrotesk-Variable', sans-serif;
+  font-size: 0.82rem;
+  line-height: 1.4;
+  overflow-wrap: anywhere;
+}
+
+.chevron {
+  flex-shrink: 0;
+  font-size: 1.1rem;
+  color: var(--ink-50, rgba(255, 255, 255, 0.5));
+}
+
+.chevronOpen {
+  transform: rotate(180deg);
+}
+
+.aside {
+  display: inline-flex;
+  flex-shrink: 0;
+}
+
+.body {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding: 0.25rem 1rem 1.1rem;
+  min-width: 0;
+}

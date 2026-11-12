@@ -103,6 +103,11 @@ const AllTeams = () => {
   const [region, setRegion] = useState(searchParams.get('region') || '');
   const [openToJoin, setOpenToJoin] = useState(searchParams.get('open_to_join') || '');
   const [search, setSearch] = useState(searchParams.get('search') || '');
+  // On a phone the three selects wait behind one Filters button (CEO,
+  // 12 November 2026, inbox 594-19): they took most of the first screen before
+  // any team appeared. On a wider screen they sit in the row as before.
+  const [filtersOpen, setFiltersOpen] = useState(false);
+  const activeFilters = [game, region, openToJoin].filter(Boolean).length;
   const [teams, setTeams] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -262,8 +267,16 @@ const AllTeams = () => {
           <input type="text" placeholder={tt("ui.search.teams.07a1", "Search teams…")} value={search} onChange={e => setSearch(e.target.value)} className={styles.searchInput} />
         </div>
 
+        <button type="button" className={`${styles.filterToggle} quietBTN`} aria-expanded={filtersOpen}
+                aria-controls="team-filters" onClick={() => setFiltersOpen(v => !v)}>
+          {activeFilters > 0
+            ? tt('teams.filtersOn', 'Filters ({n})').replace('{n}', activeFilters)
+            : tt('ui.filters.96e5', 'Filters')}
+        </button>
+
+        <div id="team-filters" className={`${styles.filterSelects} ${filtersOpen ? styles.filterSelectsOpen : ''}`}>
         <div className={styles.filterSelect}>
-          <select value={game} onChange={e => setGame(e.target.value)} className={styles.select}>
+          <select value={game} onChange={e => setGame(e.target.value)} className={styles.select} aria-label={tt("ui.all.games.f0ae", "All games")}>
             <option value="">{tt("ui.all.games.f0ae", "All games")}</option>
             {gameTitles.map(g => <option key={g} value={g}>{g}</option>)}
           </select>
@@ -271,7 +284,7 @@ const AllTeams = () => {
         </div>
 
         <div className={styles.filterSelect}>
-          <select value={region} onChange={e => setRegion(e.target.value)} className={styles.select}>
+          <select value={region} onChange={e => setRegion(e.target.value)} className={styles.select} aria-label={tt("ui.all.regions.3fc0", "All regions")}>
             <option value="">{tt("ui.all.regions.3fc0", "All regions")}</option>
             {REGIONS.map(r => <option key={r} value={r}>{r}</option>)}
           </select>
@@ -279,12 +292,13 @@ const AllTeams = () => {
         </div>
 
         <div className={styles.filterSelect}>
-          <select value={openToJoin} onChange={e => setOpenToJoin(e.target.value)} className={styles.select}>
+          <select value={openToJoin} onChange={e => setOpenToJoin(e.target.value)} className={styles.select} aria-label={tt("ui.open.join.any.677a", "Open to join · Any")}>
             <option value="">{tt("ui.open.join.any.677a", "Open to join · Any")}</option>
             <option value="yes">{tt("ui.yes.5397", "Yes")}</option>
             <option value="no">{tt("ui.no.816c", "No")}</option>
           </select>
           <TiArrowSortedDown className={styles.selectCaret} />
+        </div>
         </div>
       </div>
 
@@ -383,7 +397,10 @@ const AllTeams = () => {
 
                 <div className={styles.cardBody}>
                   <div className={styles.cardHeader}>
-                    <h4 className={styles.teamName}>{team.name}</h4>
+                    {/* The name opens the team: on a phone the card is a
+                        compact row with one button (inbox 594-19), and the
+                        whole card is one press from the team's page. */}
+                    <h4 className={styles.teamName}><Link href={teamHref} className={styles.teamNameLink}>{team.name}</Link></h4>
                     <span className={styles.teamTag}>{team.tag}</span>
                   </div>
 

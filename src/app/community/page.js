@@ -521,6 +521,14 @@ const CommunityInner = () => {
     });
   }, [dmThreads, dmContactQuery]);
   const openDm = async convo => {
+    // On a phone (and any screen where the two panes stack) the list comes
+    // first and a conversation opens on its own screen (CEO, 12 November
+    // 2026, inbox 594-22). Stacked, the empty "Pick a conversation" pane sat
+    // under the list as a screen of grey before anything happened.
+    if (typeof window !== 'undefined' && window.matchMedia('(max-width: 1023px)').matches) {
+      router.push(`/community/dm/${encodeURIComponent(convo.slug || convo.id)}`);
+      return;
+    }
     setDmError('');
     setActiveDm({
       ...convo,

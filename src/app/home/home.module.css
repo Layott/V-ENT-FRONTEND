@@ -1191,3 +1191,75 @@
     min-height: 44px;
   }
 }
+
+/* Signed in, and sent here from a page for signed-out visitors (inbox 594-18):
+   one quiet line on a filled surface, a link where there is somewhere to go,
+   and a dismiss. */
+.alreadyNotice {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.6rem 1rem;
+  background-color: #2a2b30;
+  border-radius: 12px;
+  padding: 0.6rem 0.6rem 0.6rem 1rem;
+  margin-bottom: 1.25rem;
+}
+
+.alreadyText {
+  flex: 1 1 16rem;
+  margin: 0;
+  color: var(--ink-85, rgba(255, 255, 255, 0.85));
+  font-size: 0.9rem;
+  line-height: 1.45;
+}
+
+.alreadyLink {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0 1rem;
+  border-radius: 10px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.alreadyClose {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
+  color: var(--ink-60, rgba(255, 255, 255, 0.6));
+  cursor: pointer;
+}
+
+.alreadyClose:hover {
+  background-color: rgba(255, 255, 255, 0.06);
+}
+
+/* See all, shown on a phone only, where a tournament list shows one card
+   (inbox 594-14). */
+.seeAllPhone {
+  display: none;
+}
+
+@media (max-width: 720px) {
+  .onePhone > :nth-child(n + 2) {
+    display: none;
+  }
+
+  .seeAllPhone {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 44px;
+    margin-top: 0.75rem;
+    border-radius: 10px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    text-decoration: none;
+  }
+}

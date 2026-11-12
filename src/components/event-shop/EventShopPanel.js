@@ -104,13 +104,13 @@ const EventShopPanel = ({ eventRef, token }) => {
 
   if (!shop) {
     return <div className={styles.card}>
-      <h3 className={styles.title}>{tt('shop.heading', 'The event shop')}</h3>
+      <h3 className={styles.title}>{tt('shop.heading', 'The stall run by the event')}</h3>
       <p className={styles.muted}>
         {tt('shop.intro', 'A shop of the event\'s own, for merch, food or drinks. Buyers pay with VENT COINS or a card and collect at the venue on the event day. You run it from the same screen as every other stall.')}
       </p>
       {!premium && <div className={styles.premiumBox}>
         <p className={styles.muted}>
-          {tt('shop.premiumNeeded', 'An event shop is part of Premium. Premium is what lets an event sell things of its own.')}
+          {tt('shop.premiumNeeded', 'A stall run by the event itself is part of Premium. Premium is what lets an event sell things of its own.')}
         </p>
         <Link href="/premium" className={styles.ghost}>
           {tt('shop.seePremium', 'See Premium')}

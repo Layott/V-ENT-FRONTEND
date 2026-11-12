@@ -179,7 +179,7 @@ export default function StudioDocsClient({ catalogue }) {
         </Code>
         <ul className={styles.bullets}>
           {kinds.map(kind => (
-            <li key={kind}><code className={styles.inlineCode}>{kind}</code> {deliveryKindLabel(t, kind)}</li>
+            <li key={kind}>{deliveryKindLabel(t, kind)} <code className={styles.inlineCode}>{kind}</code></li>
           ))}
         </ul>
         <p className={styles.body}>
@@ -299,10 +299,13 @@ settings.mode == 'KillRace' ? competitors.sum(it.kills) : (team.won ? 1 : 0)`}
           {t('partners.studioDocs.eventsBody', 'The same list V-ENT\'s own overlays and run of show read. Choose which to receive on your game\'s page; choose none to receive them all. A test event can be sent from the page at any time.')}
         </p>
         <dl className={styles.defs}>
+          {/* The plain sentence first, the identifier after (CEO, 12 November
+              2026, inbox 594-27): a reader who is not an engineer learns what
+              happens, and an engineer still finds the name to search for. */}
           {events.map(kind => (
-            <div className={styles.defRow} key={kind}>
-              <dt className={styles.defKey}><code>{kind}</code></dt>
-              <dd className={styles.defVal}>{studioEventLabel(t, kind)}</dd>
+            <div className={`${styles.defRow} ${styles.defRowPlain}`} key={kind}>
+              <dt className={styles.defPlain}>{studioEventLabel(t, kind)}</dt>
+              <dd className={styles.defVal}><code className={styles.inlineCode}>{kind}</code></dd>
             </div>
           ))}
         </dl>

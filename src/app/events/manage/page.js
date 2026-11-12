@@ -66,7 +66,7 @@ const FUNNEL_LABELS = {
   ticket_open: ['manage.stepTicketOpen', 'Looked at tickets'],
   buy_tap: ['manage.stepBuyTap', 'Tapped Buy'],
   checkout_start: ['manage.stepCheckoutStart', 'Reached the checkout'],
-  vendor_open: ['manage.stepVendorOpen', 'Opened the vendor list'],
+  vendor_open: ['manage.stepVendorOpen', 'Opened the stall list'],
   vendor_stall: ['manage.stepVendorStall', 'Opened a stall'],
   share: ['manage.stepShare', 'Shared the event'],
   directions: ['manage.stepDirections', 'Asked for directions'],
@@ -522,7 +522,7 @@ export const ManageEventContent = ({
 
   // Money on this tab is NAIRA (the ledger keeps it exact) with the whole
   // coins beside it, which is what a payout can actually move.
-  const moneyLine = (ngn, vc) => `${formatNumber(Number(ngn || 0))} NGN (${formatNumber(Number(vc || 0))} VC)`;
+  const moneyLine = (ngn, vc) => `₦${formatNumber(Number(ngn || 0))} (${formatNumber(Number(vc || 0))} VC)`;
 
   const run = async (fn, successKey, successText) => {
     setBusy(true);
@@ -1796,7 +1796,7 @@ export const ManageEventContent = ({
                           <div className={styles.rowMain}>
                             <strong className={styles.rowName}>{tt('manage.platformTook', 'V-ENT service fee')}</strong>
                           </div>
-                          <span className={styles.code}>{formatNumber(earnings.platform_fee_ngn)} NGN</span>
+                          <span className={styles.code}>₦{formatNumber(earnings.platform_fee_ngn)}</span>
                         </div>}
                       </div>
                       <p className={styles.cardHint}>
@@ -2178,7 +2178,7 @@ export const ManageEventContent = ({
                         <p className={styles.cardHint}>
                           {tt('manage.abandonedWhat', '{n} people reached the payment page and never paid, worth {ngn}. {r} came back on their own. Each address gets one reminder, only when you send it, and the list is deleted after {d} days.')
                             .replace('{n}', Number(abandoned.open).toLocaleString(appLocale()))
-                            .replace('{ngn}', formatNumber(abandoned.open_ngn) + ' NGN')
+                            .replace('{ngn}', '₦' + formatNumber(abandoned.open_ngn))
                             .replace('{r}', Number(abandoned.recovered).toLocaleString(appLocale()))
                             .replace('{d}', String(abandoned.kept_days))}
                         </p>
@@ -2294,11 +2294,11 @@ export const ManageEventContent = ({
                         <div className={styles.figureGrid}>
                           <div className={styles.figure}>
                             <strong className={styles.figureValue}>{Number(metrics.shop.orders).toLocaleString(appLocale())}</strong>
-                            <span className={styles.figureLabel}>{tt('manage.figureShopOrders', 'Shop orders')}</span>
+                            <span className={styles.figureLabel}>{tt('manage.figureShopOrders', 'Stall orders')}</span>
                           </div>
                           <div className={styles.figure}>
                             <strong className={styles.figureValue}>{Number(metrics.shop.revenue_vc).toLocaleString(appLocale())}</strong>
-                            <span className={styles.figureLabel}>{tt('manage.figureShopTaken', 'VENT COINS from the shop')}</span>
+                            <span className={styles.figureLabel}>{tt('manage.figureShopTaken', 'VENT COINS from the stalls')}</span>
                           </div>
                           <div className={styles.figure}>
                             <strong className={styles.figureValue}>{Number(metrics.shop.collected).toLocaleString(appLocale())}</strong>
@@ -2540,7 +2540,11 @@ export const ManageEventContent = ({
                               {tt('manage.pollOnlyAfter', 'Only after: {question}')
                                 .replace('{question}', (polls.find(q => q.id === poll.depends_on) || {}).question || '')}
                             </span>}
-                            {!poll.is_open && <span className={styles.offBadge}>{tt('manage.pollClosed', 'Closed')}</span>}
+                            {!poll.is_open && <span className={styles.offBadge}>
+                                {poll.closed_reason === 'event_ended'
+                                  ? tt('manage.pollClosedEnded', 'Closed: the event has ended')
+                                  : tt('manage.pollClosed', 'Closed')}
+                              </span>}
                             <span className={styles.code}>
                               {tt('manage.pollAnswers', '{n} answers').replace('{n}', poll.total_votes ?? 0)}
                             </span>
@@ -2552,9 +2556,17 @@ export const ManageEventContent = ({
                             </span>)}
                           </div>
                           <div className={styles.rowActions}>
-                            <button type="button" className={styles.ghostBtn} disabled={busy} onClick={() => setPollOpen(poll, !poll.is_open)}>
-                              {poll.is_open ? tt('manage.closePoll', 'Close it') : tt('manage.reopenPoll', 'Reopen it')}
-                            </button>
+                            {/* Closed because the event ended and the event
+                                stops polls then (inbox 590): reopening the poll
+                                would change nothing, so the control is the
+                                setting that would. */}
+                            {poll.closed_reason === 'event_ended'
+                              ? <Link href={`/events/${eventRef}/edit`} className={styles.ghostBtn}>
+                                  {tt('manage.pollAfterEndSetting', 'Change in event settings')}
+                                </Link>
+                              : <button type="button" className={styles.ghostBtn} disabled={busy} onClick={() => setPollOpen(poll, !poll.is_open)}>
+                                  {poll.is_open ? tt('manage.closePoll', 'Close it') : tt('manage.reopenPoll', 'Reopen it')}
+                                </button>}
                             {(poll.total_votes ?? 0) === 0 && <button type="button" className={styles.iconBtn} aria-label={tt('manage.removePoll', 'Remove this poll')} disabled={busy} onClick={() => removePoll(poll)}>
                               <FaTrash />
                             </button>}

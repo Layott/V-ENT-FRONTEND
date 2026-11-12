@@ -314,15 +314,15 @@ export const GUIDES = {
     does: ['Save the code', 'Open the event'],
   },
   '/events/vendor-shop': {
-    title: 'The shop at an event',
+    title: 'The stalls at an event',
     what: 'What the stalls at an event are selling.',
     does: ['Browse what is on sale', 'Buy with VENT COINS and collect it at the stall'],
     note: 'You pay here and collect there. The order code is what the stall asks for.',
   },
-  '/events/:slug/vendor-shop': {
-    title: 'The shop at an event',
+  '/events/:slug/stalls': {
+    title: 'The stalls at an event',
     what: 'What the stalls at this event are selling.',
-    does: ['Browse the stalls', 'Buy with VENT COINS and collect at the booth'],
+    does: ['Browse the stalls', 'Buy with VENT COINS and collect at the stall'],
   },
 
   // ----------------------------------------------------------------- wallet
@@ -656,7 +656,7 @@ export const GUIDES = {
   '/events/vendor-shop/vendor': {
     title: 'A stall',
     what: 'One seller at an event, and what they have on sale.',
-    does: ['Browse their products', 'Buy and collect at their booth'],
+    does: ['Browse their products', 'Buy and collect at their stall'],
   },
   // The stall's named address (18 September 2026); the query address
   // above still resolves and carries the same guide.
@@ -664,7 +664,7 @@ export const GUIDES = {
     title: 'A stall',
     what: 'One seller at an event, and what they have on sale.',
     does: ['Browse their products', 'Pick an option, add to your order and pay from your wallet',
-           'Collect at their booth, or have it delivered where the stall offers that'],
+           'Collect at their stall, or have it delivered where the stall offers that'],
   },
   '/production': {
     title: 'Production',

@@ -163,7 +163,7 @@ const OnboardingContent = () => {
               <h1 className={styles.stepTitle}>{tt("ui.vent.coins.wallet.b6d6", "Your VENT COINS wallet")}</h1>
               <p className={styles.stepSub}>
                 {tt("ui.vent.coins.vc.app.974a", "VENT COINS (VC) are the in-app currency for entry fees, prizes, and payouts.")}
-                <strong> {tt("ui.ngn.vc.f0cb", "1,000 NGN = 1 VC.")}</strong>
+                <strong> {tt("ui.ngn.vc.f0cb", "₦1,000 = 1 VC.")}</strong>
               </p>
 
               <div className={styles.walletCard}>

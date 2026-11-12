@@ -947,3 +947,24 @@
     min-width: 44px;
   }
 }
+
+/* "3 of 5 permissions" under a manager, opening the chips on a tap
+   (inbox 594-21). */
+.scopeCount {
+  display: flex;
+  align-items: center;
+  min-height: 44px;
+  margin-top: 0.2rem;
+  padding: 0 0.7rem;
+  border-radius: 8px;
+  background-color: #2a2b30;
+  color: var(--ink-75, rgba(255, 255, 255, 0.75));
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.scopeCount:hover,
+.scopeCount[aria-expanded="true"] {
+  background-color: #33343a;
+}

@@ -86,7 +86,7 @@ const StallsReviewPanel = ({ eventRef, token, onNotice }) => {
         : tt('stalls.rejected', '{name} was turned down.'),
       close: tt('stalls.closed', '{name} is closed.'),
       reopen: tt('stalls.reopened', '{name} is open again.'),
-      '': tt('stalls.boothSaved', 'Booth saved.'),
+      '': tt('stalls.boothSaved', 'Stall number saved.'),
     };
     onNotice?.((messages[decision] || messages['']).replace('{name}', stall.name));
     load({ quiet: true });
@@ -145,7 +145,7 @@ const StallsReviewPanel = ({ eventRef, token, onNotice }) => {
                     <button type="button" className={styles.ghost} disabled={busy}
                             onClick={() => decide(s, '', { booth: booths[s.id] })
                               .then(() => setBooths((b) => { const c = { ...b }; delete c[s.id]; return c; }))}>
-                      {tt('stalls.saveBooth', 'Save booth')}
+                      {tt('stalls.saveBooth', 'Save stall number')}
                     </button>
                   )}
                   {s.status === 'pending' && confirming?.id !== s.id && <>

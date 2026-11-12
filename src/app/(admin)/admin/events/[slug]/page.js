@@ -626,9 +626,9 @@ const WhatWasSent = ({ tt, sent, loading, slug, toast, may, onSent }) => {
     </div>
 
     <div className={shared.card}>
-      <h2 className={styles.cardTitle}>{tt('admin.vendorInvites', 'Vendors invited')}</h2>
+      <h2 className={styles.cardTitle}>{tt('admin.vendorInvites', 'Stalls invited')}</h2>
       {sent.vendor_invites.length === 0
-        ? <p className={shared.stateText}>{tt('admin.noVendorInvites', 'No vendors have been invited.')}</p>
+        ? <p className={shared.stateText}>{tt('admin.noVendorInvites', 'No stalls have been invited.')}</p>
         : <ul className={styles.plainList}>
           {sent.vendor_invites.map(v => <li key={v.id} className={styles.plainRow}>
             <span className={styles.attName}>{v.name}</span>

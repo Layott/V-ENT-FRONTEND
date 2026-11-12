@@ -97,6 +97,22 @@ const AuthorizeContent = () => {
     if (state) params2.set('state', state);
     window.location.href = `${redirectUri}?${params2}`;
   };
+  // A request that cannot work (CEO, 12 November 2026, inbox 594-25 and
+  // 594-26): the message, the main button shown greyed out so it is plain
+  // that it cannot be pressed, and the way back inside the card under the
+  // message, as the other not-found cards have it.
+  const invalidCard = label => <main className={styles.wrap}>
+      <div className={styles.card}>
+        <h1 className={styles.title}>{tt("ui.request.not.valid.cdfd", "This request is not valid")}</h1>
+        <p className={styles.body}>{error}</p>
+        <div className={styles.actions}>
+          <button type="button" className={styles.primary} disabled aria-disabled="true">{label}</button>
+        </div>
+        <BackLink href="/partners">{tt('back.toPartners', 'Back to partners')}</BackLink>
+      </div>
+    </main>;
+  if (error && status === 'unauthenticated') return invalidCard(tt("ui.sign.ada2", "Sign in"));
+  if (error && !info) return invalidCard(tt('partners.allow', 'Allow'));
   if (status === 'unauthenticated') {
     return <main className={styles.wrap}>
       <BackLink href="/partners">{tt('back.toPartners', 'Back to partners')}</BackLink>

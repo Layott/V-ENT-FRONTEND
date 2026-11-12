@@ -20,7 +20,7 @@ import { Suspense, useCallback, useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useSession } from 'next-auth/react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { LuCheck, LuX, LuRotateCw } from 'react-icons/lu';
+import { LuCheck, LuX, LuClock3, LuInfo } from 'react-icons/lu';
 import Header from '@/components/header/Header';
 import MobileHeader from '@/components/mobile-header/MobileHeader';
 import Sidebar from '@/components/sidebar/Sidebar';
@@ -146,7 +146,11 @@ function Outcome() {
       </>}
 
       {state === 'unsure' && <>
-        <span className={`${styles.badge} ${styles.badgeWait}`} aria-hidden="true"><LuRotateCw /></span>
+        {/* A clock while a payment waits to be confirmed; an information mark
+            when the address carries no payment at all. The reload arrow it
+            replaces read as "press to retry" (CEO, 12 November 2026, inbox
+            594-29). */}
+        <span className={`${styles.badge} ${styles.badgeWait}`} aria-hidden="true">{reference ? <LuClock3 /> : <LuInfo />}</span>
         {/* With no payment in the address there is nothing waiting to be
             confirmed, and a signed-out visitor was offered "Back to Wallet"
             with no word on the payment (audit 557). Say what happened, and

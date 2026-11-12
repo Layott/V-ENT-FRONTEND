@@ -55,7 +55,7 @@ export default function CurrencyChoice({ quotes }) {
       </div>
       {current && current.code !== 'NGN' && (
         <p className={styles.sum}>
-          {tt('pay.currency.youPay', 'You pay {amount} {code}. 1 {code} = {rate} NGN at Flutterwave\'s rate, held for 15 minutes. The price is set in naira.')
+          {tt('pay.currency.youPay', 'You pay {amount} {code}. 1 {code} = ₦{rate} at Flutterwave\'s rate, held for 15 minutes. The price is set in naira.')
             .replace('{amount}', formatNumber(Number(current.amount), {
               minimumFractionDigits: fraction(current.code), maximumFractionDigits: fraction(current.code),
             }))

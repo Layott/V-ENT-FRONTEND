@@ -126,7 +126,7 @@ const MyStallsPage = () => {
                           {tt('stall.roleStaff', 'Staff')}
                         </span>}
                         {s.kind === 'organiser' && <span className={styles.roleChip}>
-                          {tt('stall.kindOrganiser', 'Event shop')}
+                          {tt('stall.kindOrganiser', 'Run by the event')}
                         </span>}
                       </span>
                     )}

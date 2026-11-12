@@ -1,6 +1,6 @@
 import { buildMetadata, clamp, fetchForMetadata } from '@/lib/seo';
 
-// `/events/lagos-anime-con/vendor-shop` - the stalls trading at one event.
+// `/events/lagos-anime-con/stalls` - the stalls trading at one event.
 //
 // Built from the RECORD rather than from a constant, because every event's
 // stalls would otherwise share one title and one description, and a page that
@@ -27,7 +27,7 @@ export async function generateMetadata(props) {
   return buildMetadata({
     title,
     description,
-    path: `/events/${slug}/vendor-shop`,
+    path: `/events/${slug}/stalls`,
     image: event?.banner || event?.logo || null,
   });
 }

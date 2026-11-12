@@ -254,6 +254,11 @@ const nextConfig = {
       // sitemap there is; check-search fails if either stops forwarding.
       { source: '/sitemaps.xml', destination: '/sitemap.xml', permanent: true },
       { source: '/sitemap_index.xml', destination: '/sitemap.xml', permanent: true },
+      // One word for a seller at an event (CEO, 12 November 2026, inbox 594-3):
+      // the stalls at an event live at /events/<slug>/stalls. The address the
+      // page had before keeps working for every link already shared.
+      { source: '/events/:slug/vendor-shop', destination: '/events/:slug/stalls', permanent: true },
+      { source: '/:lang(fr|pt)/events/:slug/vendor-shop', destination: '/:lang/events/:slug/stalls', permanent: true },
     ];
   },
 };

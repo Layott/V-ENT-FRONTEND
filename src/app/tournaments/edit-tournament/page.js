@@ -37,6 +37,8 @@ import LegacyIdRoute from '@/components/legacy-id-route/LegacyIdRoute';
 import BackLink from '@/components/back-link/BackLink';
 import { authHeader } from '@/lib/authHeader';
 import TournamentOptions from '@/components/create-tournament-component/format-participants/tournament-options/TournamentOptions';
+import Fold from '@/components/fold/Fold';
+import { formatNumber, formatWithZone } from '@/lib/datetime';
 
 const API = process.env.NEXT_PUBLIC_API_URL;
 
@@ -76,6 +78,9 @@ const SOCIALS = [
   ['twitch_link', 'Twitch'], ['kick_link', 'Kick'],
   ['tiktok_link', 'TikTok'], ['bigolive_link', 'Bigo Live'],
 ];
+// Three link fields show; the rest open on demand (inbox 594-10). One that
+// already holds a link always shows, so nothing saved is ever out of sight.
+const SOCIALS_FIRST = 3;
 
 // The stored dates carry a zone; the control wants "YYYY-MM-DDTHH:mm" in local
 // time. Slicing the ISO string would shift the tournament by the offset, which
@@ -125,6 +130,7 @@ export const EditTournamentContent = ({ slug: slugFromPath }) => {
   // string re-rendered on every keystroke elsewhere on the form.
   const [logoPreview, setLogoPreview] = useState('');
   const [bannerPreview, setBannerPreview] = useState('');
+  const [allLinks, setAllLinks] = useState(false);
   useEffect(() => {
     if (!logo) { setLogoPreview(''); return undefined; }
     const url = URL.createObjectURL(logo);
@@ -305,6 +311,44 @@ export const EditTournamentContent = ({ slug: slugFromPath }) => {
     ['stats', 'tEdit.hubStats', 'Player stats', 'tEdit.hubStatsSub', 'What is counted, and what it is worth'],
   ];
 
+  // What each closed section says (CEO, 12 November 2026, inbox 594-9): the
+  // page reads as a summary of the tournament, and a section opens only to
+  // change something in it.
+  const pick = (list, value) => {
+    const row = list.find(([v]) => v === value);
+    return row ? tt(row[1], row[2]) : '';
+  };
+  const join = (...parts) => parts.filter(Boolean).join(' \u00b7 ');
+  const summaries = form ? {
+    what: join(form.tournament_title, form.tournament_game, form.game_mode),
+    art: (logoPreview || current.logo) && (bannerPreview || current.banner)
+      ? tt('tEdit.sumArtBoth', 'Logo and banner set')
+      : (logoPreview || current.logo)
+        ? tt('tEdit.sumArtLogo', 'Logo set, no banner yet')
+        : (bannerPreview || current.banner)
+          ? tt('tEdit.sumArtBanner', 'Banner set, no logo yet')
+          : tt('tEdit.sumArtNone', 'No logo or banner yet'),
+    format: join(
+      (formats.find((f) => (f.key || f.id) === form.bracket_type) || {}).label || form.bracket_type,
+      pick(ACCESS, form.tournament_access),
+      form.player_size ? tt('tEdit.sumPlaces', '{n} places').replace('{n}', form.player_size) : ''),
+    when: join(
+      form.start_date_and_time ? formatWithZone(form.start_date_and_time) : tt('tEdit.sumNoStart', 'No start set'),
+      pick(TYPES, form.tournament_type),
+      form.tournament_type !== 'online' ? form.tournament_location : ''),
+    money: join(
+      form.entry_fee === 'Paid'
+        ? tt('tEdit.sumEntryPaid', '{n} VENT COINS to enter').replace('{n}', formatNumber(Number(form.entry_fee_price) || 0))
+        : tt('tEdit.entryFree', 'Free'),
+      pick(PRIZE_TYPES, form.prize_type)),
+    links: (() => {
+      const n = SOCIALS.filter(([k]) => (form[k] || '').trim()).length;
+      return n === 0 ? tt('tEdit.sumNoLinks', 'No links yet')
+        : plural(tt, n, 'tEdit.sumLinksOne', '{n} link', 'tEdit.sumLinks', '{n} links');
+    })(),
+  } : {};
+  const socialsShown = SOCIALS.filter(([k], i) => allLinks || i < SOCIALS_FIRST || (form?.[k] || '').trim());
+
   return (
     <div className={styles.pageContainer}>
       <Header />
@@ -353,7 +397,7 @@ export const EditTournamentContent = ({ slug: slugFromPath }) => {
             </div>
           ) : (
             <div className={styles.form}>
-              <p className={styles.sectionHead}>{tt('tEdit.secWhat', 'What it is')}</p>
+              <Fold title={tt('tEdit.secWhat', 'What it is')} summary={summaries.what}>
 
               <label className={styles.field}>
                 <span className={styles.label}>{tt('tEdit.name', 'Name')}</span>
@@ -424,7 +468,9 @@ export const EditTournamentContent = ({ slug: slugFromPath }) => {
                 {rulesDoc && <span className={styles.hint}>{rulesDoc.name}</span>}
               </label>
 
-              <p className={styles.sectionHead}>{tt('tEdit.secArt', 'Logo and banner')}</p>
+              </Fold>
+
+              <Fold title={tt('tEdit.secArt', 'Logo and banner')} summary={summaries.art}>
               <div className={styles.artRow}>
                 <div className={styles.artBox}>
                   <span className={styles.label}>{tt('tEdit.logo', 'Logo')}</span>
@@ -450,7 +496,9 @@ export const EditTournamentContent = ({ slug: slugFromPath }) => {
                 </div>
               </div>
 
-              <p className={styles.sectionHead}>{tt('tEdit.secFormat', 'Format and entry')}</p>
+              </Fold>
+
+              <Fold title={tt('tEdit.secFormat', 'Format and entry')} summary={summaries.format}>
 
               <label className={styles.field}>
                 <span className={styles.label}>{tt('tEdit.format', 'Format')}</span>
@@ -524,7 +572,9 @@ export const EditTournamentContent = ({ slug: slugFromPath }) => {
                 </select>
               </label>
 
-              <p className={styles.sectionHead}>{tt('tEdit.secWhen', 'When and where')}</p>
+              </Fold>
+
+              <Fold title={tt('tEdit.secWhen', 'When and where')} summary={summaries.when}>
 
               <div className={styles.pair}>
                 <label className={styles.field}>
@@ -576,7 +626,9 @@ export const EditTournamentContent = ({ slug: slugFromPath }) => {
                 </label>
               )}
 
-              <p className={styles.sectionHead}>{tt('tEdit.secMoney', 'Money')}</p>
+              </Fold>
+
+              <Fold title={tt('tEdit.secMoney', 'Money')} summary={summaries.money}>
 
               <div className={styles.pair}>
                 <label className={styles.field}>
@@ -613,6 +665,8 @@ export const EditTournamentContent = ({ slug: slugFromPath }) => {
                 )}
               </div>
 
+              </Fold>
+
               {/* The format, who enters and the fee go in too: without them the
                   format's own settings (every place, the streak, home and away)
                   could be set in the wizard and never changed (inbox 588). */}
@@ -624,16 +678,22 @@ export const EditTournamentContent = ({ slug: slugFromPath }) => {
               }} live
                                  updateFormData={(key, value) => { if (key === 'options') setOptions(value); }} />
 
-              <p className={styles.sectionHead}>{tt('tEdit.secLinks', 'Where people can follow it')}</p>
-              <div className={styles.socialGrid}>
-                {SOCIALS.map(([key, label]) => (
-                  <label key={key} className={styles.field}>
-                    <span className={styles.label}>{label}</span>
-                    <input className={styles.input} value={form[key]}
-                           onChange={(e) => set(key, e.target.value)} />
-                  </label>
-                ))}
-              </div>
+              <Fold title={tt('tEdit.secLinks', 'Where people can follow it')} summary={summaries.links}>
+                <div className={styles.socialGrid}>
+                  {socialsShown.map(([key, label]) => (
+                    <label key={key} className={styles.field}>
+                      <span className={styles.label}>{label}</span>
+                      <input className={styles.input} value={form[key]} inputMode="url"
+                             onChange={(e) => set(key, e.target.value)} />
+                    </label>
+                  ))}
+                </div>
+                {socialsShown.length < SOCIALS.length && (
+                  <button type="button" className={`${styles.moreLinks} quietBTN`} onClick={() => setAllLinks(true)}>
+                    {tt('tEdit.moreLinks', 'More links ({n})').replace('{n}', SOCIALS.length - socialsShown.length)}
+                  </button>
+                )}
+              </Fold>
 
               {error && <p className={styles.problem} role="alert">{error}</p>}
               {notice && <p className={styles.notice}>{notice}</p>}

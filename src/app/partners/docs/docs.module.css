@@ -194,6 +194,18 @@
 
 .defKey { font-family: inherit; }
 
+/* A row that leads with its sentence (inbox 594-27). */
+.defRowPlain {
+  grid-template-columns: 1fr;
+  gap: 0.35rem;
+}
+
+.defPlain {
+  color: #fff;
+  font-size: 0.92rem;
+  line-height: 1.5;
+}
+
 .defKey code {
   font-family: ui-monospace, "Cascadia Mono", Menlo, Consolas, monospace;
   font-size: 0.8rem;

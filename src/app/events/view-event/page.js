@@ -90,7 +90,7 @@ const TABS = [{
   //
   // It was drawn by SCHEDULE_BLUEPRINT below: a function that invents a two day
   // programme from the event's start date, so EVERY event on the platform
-  // showed the same "Doors open + Vendor zone activation", "Cosplay parade" and
+  // showed the same "Doors open + stalls open", "Cosplay parade" and
   // "After-party + DJ set" whoever ran it and whatever it was about.
   //
   // That is worse than no tab. No tab says nothing has been published; an
@@ -98,7 +98,7 @@ const TABS = [{
   // 8pm for a DJ set that was never going to happen. The EventSession model
   // exists now; this comes back when the organiser can fill it in.
   id: 'vendors',
-  label: 'Vendors'
+  label: 'Stalls'
 }, {
   id: 'tournaments',
   label: 'Tournaments'
@@ -196,7 +196,7 @@ const VENUE_BOOTHS = [{
   type: 'esports'
 }, {
   id: 'b3',
-  name: 'Vendor Row A',
+  name: 'Stall row A',
   x: 45,
   y: 38,
   w: 22,
@@ -204,7 +204,7 @@ const VENUE_BOOTHS = [{
   type: 'vendor'
 }, {
   id: 'b4',
-  name: 'Vendor Row B',
+  name: 'Stall row B',
   x: 70,
   y: 38,
   w: 22,
@@ -1738,15 +1738,15 @@ export const ViewEventContent = ({
                   <div>
                     <h2 className={styles.sectionTitle}>{tt("ui.vendor.zone.2061", "Vendor zone")}</h2>
                     <p className={styles.body}>
-                      {tt("ui.browse.site.vendors.click.9204", "Browse on-site vendors. Click any vendor to view products and add to cart.")}
+                      {tt("ui.browse.site.vendors.click.9204", "Browse the stalls at this event. Open any stall to see what it sells and add to your order.")}
                     </p>
                   </div>
-                  <Link href={`/events/${event.slug || event.id}/vendor-shop`} className={styles.viewAllLink}>
-                    {tt("ui.view.vendor.shop.2a70", "View vendor shop")} <FiExternalLink />
+                  <Link href={`/events/${event.slug || event.id}/stalls`} className={styles.viewAllLink}>
+                    {tt("ui.view.vendor.shop.2a70", "View the stalls")} <FiExternalLink />
                   </Link>
                 </div>
 
-                {vendors.length === 0 ? <p className={styles.body}>{tt("ui.no.vendors.confirmed.yet.d9c7", "No vendors confirmed yet.")}</p> : <div className={styles.vendorGrid}>
+                {vendors.length === 0 ? <p className={styles.body}>{tt("ui.no.vendors.confirmed.yet.d9c7", "No stalls confirmed yet.")}</p> : <div className={styles.vendorGrid}>
                     {vendors.map(v => <Link key={v.id} href={`/events/${event.slug || event.id}/stall/${v.slug || v.id}`} className={styles.vendorCard}>
                         <div className={styles.vendorLogoWrap}>
                           {v.logo ? <Image src={mediaUrl(v.logo)} alt={v.name} width={56} height={56} className={styles.vendorLogo} unoptimized /> : <div className={styles.vendorLogoFallback}><FaStore /></div>}
@@ -1754,7 +1754,7 @@ export const ViewEventContent = ({
                         <div>
                           <p className={styles.vendorName}>{v.name}</p>
                           <p className={styles.vendorSub}>
-                            {v.category} {tt("ui.booth.9c19", "• Booth")} {v.booth}
+                            {v.category} {tt("ui.booth.9c19", "• Stall")} {v.booth}
                           </p>
                         </div>
                       </Link>)}
@@ -1859,7 +1859,7 @@ export const ViewEventContent = ({
                   <div>
                     <h2 className={styles.sectionTitle}>{tt("ui.venue.map.6100", "Venue map")}</h2>
                     <p className={styles.body}>
-                      {tt("ui.floor.plan.venue.booths.fef3", "Floor plan of the venue. Booths are colour-coded by zone.")}
+                      {tt("ui.floor.plan.venue.booths.fef3", "Floor plan of the venue. Stalls are colour-coded by zone.")}
                     </p>
                   </div>
                 </div>
@@ -1882,7 +1882,7 @@ export const ViewEventContent = ({
                   label: 'Esports'
                 }, {
                   type: 'vendor',
-                  label: 'Vendor'
+                  label: 'Stall'
                 }, {
                   type: 'food',
                   label: 'Food'

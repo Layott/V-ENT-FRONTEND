@@ -95,7 +95,7 @@ export const VendorStallContent = ({ eventSlug = '', stallSlug = '' } = {}) => {
 
   useEffect(() => {
     if (!vendorId) {
-      setError(tt('msg.vendorIdMissing2', 'This stall link is missing the stall name. Open the stall from the shop.'));
+      setError(tt('msg.vendorIdMissing2', 'This stall link is missing the stall name. Open the stall from the list of stalls.'));
       setLoading(false);
       return;
     }
@@ -111,7 +111,7 @@ export const VendorStallContent = ({ eventSlug = '', stallSlug = '' } = {}) => {
         if (data.status === 'success') {
           setVendor(data.data.vendor);
         } else {
-          setError(apiMessage(tt, data, "api.vendorNotFound", "Vendor not found."));
+          setError(apiMessage(tt, data, "api.vendorNotFound", "Stall not found."));
         }
       } catch (err) {
         console.error('Vendor fetch error:', err);
@@ -347,12 +347,12 @@ export const VendorStallContent = ({ eventSlug = '', stallSlug = '' } = {}) => {
       </main>
       <BottomMenu />
     </div>;
-  if (loading) return renderShell(<p className={styles.stateText}>{tt("ui.loading.vendor.stall.0650", "Loading vendor stall…")}</p>);
+  if (loading) return renderShell(<p className={styles.stateText}>{tt("ui.loading.vendor.stall.0650", "Loading the stall…")}</p>);
   if (error || !vendor) return renderShell(<div className={styles.errorState}>
         <h1 className={styles.errorTitle}>{tt('stall.couldNotOpen', 'That stall could not be opened')}</h1>
-        <p className={styles.errorSub}>{error || tx("Vendor not found.")}</p>
-        <Link href={eventId ? `/events/${eventId}/vendor-shop` : '/events'} className={`${styles.errorBtn} quietBTN`}>
-          {tt("ui.back.vendor.shop.9b5d", "Back to vendor shop")}
+        <p className={styles.errorSub}>{error || tx("Stall not found.")}</p>
+        <Link href={eventId ? `/events/${eventId}/stalls` : '/events'} className={`${styles.errorBtn} quietBTN`}>
+          {tt("ui.back.vendor.shop.9b5d", "Back to the stalls")}
         </Link>
       </div>);
   return <div className={styles.pageContainer}>
@@ -364,11 +364,11 @@ export const VendorStallContent = ({ eventSlug = '', stallSlug = '' } = {}) => {
 
         <div className={styles.rightPaneContainer}>
           <div className={styles.topRow}>
-            <Link href={`/events/${eventId}/vendor-shop`} className={styles.backLink}>
-              <IoArrowBack /> {tt("ui.back.vendors.5aba", "Back to vendors")}
+            <Link href={`/events/${eventId}/stalls`} className={styles.backLink}>
+              <IoArrowBack /> {tt("ui.back.vendors.5aba", "Back to the stalls")}
             </Link>
             {/* A cart is for somebody who can check out (Apple review P067-6). */}
-            {viewer.signedIn && <Link href={`/events/${eventId}/vendor-shop`} className={styles.cartChip}>
+            {viewer.signedIn && <Link href={`/events/${eventId}/stalls`} className={styles.cartChip}>
               <FaShoppingCart /> {cartCount} {tt("ui.cart.91c0", "in cart")}
             </Link>}
           </div>
@@ -404,7 +404,7 @@ export const VendorStallContent = ({ eventSlug = '', stallSlug = '' } = {}) => {
                 </div>
                 <div className={styles.metaRow}>
                   <span className={styles.metaItem}>
-                    <IoLocationOutline /> {tt('stall.boothAtVenue', 'Booth {n} at the venue').replace('{n}', vendor.booth_number || vendor.booth)}
+                    <IoLocationOutline /> {tt('stall.boothAtVenue', 'Stall {n} at the venue').replace('{n}', vendor.booth_number || vendor.booth)}
                   </span>
                   {vendor.category && <span className={styles.category}>{vendor.category}</span>}
                   {typeof vendor.rating === 'number' && <span className={styles.metaItem}>
@@ -419,7 +419,7 @@ export const VendorStallContent = ({ eventSlug = '', stallSlug = '' } = {}) => {
                 <IoChatbubblesOutline /> {tt("ui.contact.b374", "Contact")}
               </button>
               <Link href={`/events/${eventId}?tab=map`} className={`${styles.mapBtn} quietBTN`}>
-                <FaMapPin /> {tt("ui.visit.booth.venue.68db", "Visit booth at venue")}
+                <FaMapPin /> {tt("ui.visit.booth.venue.68db", "Visit the stall at the venue")}
               </Link>
             </div>
           </div>
@@ -486,8 +486,8 @@ export const VendorStallContent = ({ eventSlug = '', stallSlug = '' } = {}) => {
               <p className={styles.stockHint}>
                 {activeProduct.in_stock
                   ? plural(tt, Number(activeProduct.stock || 0),
-                      'stall.availableAtBoothOne', '{n} available at booth {booth}',
-                      'stall.availableAtBooth', '{n} available at booth {booth}',
+                      'stall.availableAtBoothOne', '{n} available at stall {booth}',
+                      'stall.availableAtBooth', '{n} available at stall {booth}',
                       formatNumber(Number(activeProduct.stock || 0)))
                       .replace('{booth}', vendor.booth_number || vendor.booth || '-')
                   : tx("Currently sold out - check back later.")}
@@ -525,7 +525,7 @@ export const VendorStallContent = ({ eventSlug = '', stallSlug = '' } = {}) => {
             <div className={styles.contactBody}>
               {!contactSent ? <NeedsAccount action={tt('stall.contactAction', 'message a stallholder')}>
                   <p className={styles.contactSub}>
-                    {tt('stall.contactHow', 'Ask a quick question. The stallholder gets it as a notification with your username, and can find you at the booth or on your profile.')}
+                    {tt('stall.contactHow', 'Ask a quick question. The stallholder gets it as a notification with your username, and can find you at the stall or on your profile.')}
                   </p>
                   <textarea className={styles.contactInput} rows={4} maxLength={400} placeholder={tt("ui.e.g.do.have.c6e0", "e.g. Do you have the Limited Tee in size XL?")} value={contactMsg} onChange={e => setContactMsg(e.target.value)} />
                   {contactError && <p className={styles.orderError} role="alert">{contactError}</p>}
@@ -582,7 +582,7 @@ export const VendorStallContent = ({ eventSlug = '', stallSlug = '' } = {}) => {
                 <p className={styles.orderHint}>
                   {placedOrder.fulfilment === 'deliver'
                     ? tt('stall.deliveryOnItsWay', 'It will be delivered to {name}. The stallholder marks it sent with a tracking number, and you see that in your orders.').replace('{name}', placedOrder.delivery_name || delivery.name)
-                    : `${tt("ui.show.this.code.at.f5ec", "Show this code at booth")} ${vendor?.booth || vendor?.booth_number || '-'} ${tt("ui.collect.af4d", "to collect.")}`}
+                    : `${tt("ui.show.this.code.at.f5ec", "Show this code at the stall")} ${vendor?.booth || vendor?.booth_number || '-'} ${tt("ui.collect.af4d", "to collect.")}`}
                 </p>
                 <ul className={styles.orderLines}>
                   {placedOrder.items.map(i => <li key={`${i.product_id}:${i.variant || ''}`} className={styles.orderLine}>
@@ -669,7 +669,7 @@ export const VendorStallContent = ({ eventSlug = '', stallSlug = '' } = {}) => {
                   {deliverable && <div className={styles.optionBlock}>
                       <p className={styles.optionLabel}>{tt('stall.howToGetIt', 'How do you want it?')}</p>
                       <div className={styles.optionRow} role="group" aria-label={tt('stall.howToGetIt', 'How do you want it?')}>
-                        <button type="button" className={styles.optionChip} aria-pressed={fulfilment === 'collect'} onClick={() => setFulfilment('collect')}>{tt('stall.collectAtBooth', 'Collect at the booth')}</button>
+                        <button type="button" className={styles.optionChip} aria-pressed={fulfilment === 'collect'} onClick={() => setFulfilment('collect')}>{tt('stall.collectAtBooth', 'Collect at the stall')}</button>
                         <button type="button" className={styles.optionChip} aria-pressed={fulfilment === 'deliver'} onClick={() => setFulfilment('deliver')}>{tt('stall.deliverToMe', 'Deliver to me')}</button>
                       </div>
                     </div>}
@@ -679,7 +679,7 @@ export const VendorStallContent = ({ eventSlug = '', stallSlug = '' } = {}) => {
                       <textarea className={styles.pinInputPlain} rows={2} placeholder={tt('stall.deliveryAddress', 'Delivery address')} value={delivery.address} onChange={e => setDelivery({ ...delivery, address: e.target.value })} autoComplete="street-address" aria-label={tt('stall.deliveryAddress', 'Delivery address')} />
                       <input className={styles.pinInputPlain} placeholder={tt('stall.deliveryNote', 'Anything the rider should know (optional)')} value={delivery.note} onChange={e => setDelivery({ ...delivery, note: e.target.value })} maxLength={200} aria-label={tt('stall.deliveryNote', 'Anything the rider should know (optional)')} />
                     </div>}
-                  {!deliverable && !isOrganiser && cart.some(i => i.can_deliver) && <p className={styles.stateText}>{tt('stall.collectOnlyMixed', 'Something in this order can only be collected, so the whole order is collected at the booth.')}</p>}
+                  {!deliverable && !isOrganiser && cart.some(i => i.can_deliver) && <p className={styles.stateText}>{tt('stall.collectOnlyMixed', 'Something in this order can only be collected, so the whole order is collected at the stall.')}</p>}
 
                   {/* Before the PIN: where and when to collect, and what cancelling
                       would get back, each in one plain line. */}

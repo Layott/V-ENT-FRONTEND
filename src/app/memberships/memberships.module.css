@@ -280,6 +280,18 @@
   font-size: var(--fs-p-size-mobile);
 }
 
+.emptyLink {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  margin-top: 1rem;
+  padding: 0 1.25rem;
+  border-radius: 10px;
+  font-weight: var(--fw-semi-bold);
+  text-decoration: none;
+}
+
 .emptyTitle {
   display: block;
   color: #fff;

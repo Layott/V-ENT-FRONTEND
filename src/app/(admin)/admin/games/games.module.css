@@ -12,30 +12,122 @@
 .gameList {
   display: flex;
   flex-direction: column;
-  gap: 0.9rem;
-  margin-bottom: 1.5rem;
+  gap: 0.5rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
 }
 
+/* One row per game; the open one is a step lighter, so the eye finds it. */
 .gameCard {
   background-color: rgba(255, 255, 255, 0.04);
   border-radius: 12px;
-  padding: 1rem 1.1rem;
+}
+
+.gameCardOpen {
+  background-color: rgba(255, 255, 255, 0.07);
 }
 
 .retired {
   opacity: 0.55;
 }
 
+/* The whole row is the control that opens the game. */
 .gameHead {
   display: flex;
   align-items: center;
-  flex-wrap: wrap;
   gap: 0.6rem 0.9rem;
+  width: 100%;
+  min-height: 56px;
+  padding: 0.65rem 1.1rem;
+  text-align: left;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+  border-radius: 12px;
+}
+
+.gameHead:hover {
+  background-color: rgba(255, 255, 255, 0.03);
 }
 
 .gameName {
   color: #fff;
   font-size: 1rem;
+  font-weight: 600;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.gameHead .count {
+  margin-left: auto;
+  white-space: nowrap;
+}
+
+.chevron {
+  flex-shrink: 0;
+  font-size: 1.1rem;
+  color: var(--ink-50, rgba(255, 255, 255, 0.5));
+}
+
+.chevronOpen {
+  transform: rotate(180deg);
+}
+
+.gameBody {
+  padding: 0.25rem 1.1rem 1.1rem;
+}
+
+.sectionHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+
+.sectionTitle {
+  font-family: 'ClashGrotesk-Variable', sans-serif;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #fff;
+  margin: 0;
+}
+
+.emptyLine {
+  font-family: 'ClashGrotesk-Variable', sans-serif;
+  font-size: 0.82rem;
+  color: var(--ink-50, rgba(255, 255, 255, 0.5));
+  margin: 0.6rem 0 0;
+}
+
+.gameActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.55rem;
+  margin-top: 1.25rem;
+}
+
+.gameActions .ghostBtn {
+  margin-left: 0;
+}
+
+@media (max-width: 640px) {
+  .gameHead {
+    flex-wrap: wrap;
+  }
+
+  .gameHead .count {
+    margin-left: 0;
+    flex-basis: 100%;
+    order: 5;
+    padding-left: calc(34px + 0.9rem);
+  }
+
+  .chevron {
+    margin-left: auto;
+    order: 4;
+  }
 }
 
 .count,
@@ -59,7 +151,7 @@
   display: flex;
   flex-direction: column;
   gap: 0.4rem;
-  margin-top: 0.85rem;
+  margin-top: 0.6rem;
 }
 
 .seriesRow {
@@ -218,9 +310,12 @@
 .addGameBlock {
   display: flex;
   flex-direction: column;
-  gap: 0.7rem;
-  margin-top: 1rem;
-  max-width: 420px;
+  gap: 0.8rem;
+  margin-bottom: 1.25rem;
+}
+
+.addGameBlock > * {
+  max-width: 460px;
 }
 
 .failed {

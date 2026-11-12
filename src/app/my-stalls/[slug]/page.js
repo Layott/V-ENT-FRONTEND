@@ -16,7 +16,7 @@
 // is standing up, holding a phone in one hand and a box in the other, so the
 // control is one big button and a tracking box that can be left empty.
 
-import { useCallback, useEffect, useMemo, useState, use } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState, use } from 'react';
 import { plural } from '@/lib/plural';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
@@ -76,6 +76,10 @@ const StallPage = props => {
   const [notice, setNotice] = useState('');
   const [draft, setDraft] = useState(EMPTY_PRODUCT);
   const [editing, setEditing] = useState(null);
+  // The add form waits behind its button so what is on sale is the first
+  // thing on the page (CEO, 12 November 2026, inbox 594-7); Edit opens it too.
+  const [formOpen, setFormOpen] = useState(false);
+  const formRef = useRef(null);
   const [image, setImage] = useState(null);
   const [busy, setBusy] = useState(false);
   // The order being marked as sent, and the tracking number typed for it.
@@ -213,6 +217,7 @@ const StallPage = props => {
     setDraft(EMPTY_PRODUCT);
     setEditing(null);
     setImage(null);
+    setFormOpen(false);
     loadStall();
   };
 
@@ -373,7 +378,10 @@ const StallPage = props => {
 
   const beginEdit = (p) => {
     setEditing(p.id);
+    setFormOpen(true);
     setImage(null);
+    // The form sits under the list; bring it to the person who pressed Edit.
+    setTimeout(() => formRef.current?.scrollIntoView({ block: 'start' }), 0);
     setDraft({
       name: p.name, description: p.description || '',
       price: String(p.price_ngn ?? ''), stock: String(p.stock ?? ''),
@@ -443,7 +451,7 @@ const StallPage = props => {
                 <div className={styles.headText}>
                   <h1 className={styles.title}>{stall.name}</h1>
                   {stall.kind === 'organiser' && <span className={styles.pillOn}>
-                    {tt('stall.eventShop', 'Event shop')}
+                    {tt('stall.eventShop', 'Run by the event')}
                   </span>}
                   <p className={styles.muted}>{stall.description || tt('stall.noDescription', 'No description yet.')}</p>
                   <button type="button" className={styles.ghost} onClick={aboutOpen ? () => setAboutOpen(false) : openAbout}>
@@ -551,7 +559,7 @@ const StallPage = props => {
                 <>
                   {products.length === 0
                     ? <p className={styles.muted}>
-                        {tt('stall.noProducts', 'Nothing on the stall yet. Add the first thing below.')}
+                        {tt('stall.noProducts2', 'Nothing on the stall yet.')}
                       </p>
                     : <ul className={styles.list}>
                         {products.map((p) => (
@@ -609,7 +617,13 @@ const StallPage = props => {
                         ))}
                       </ul>}
 
-                  <h2 className={styles.sub}>
+                  {!formOpen && !editing && <div className={styles.formActions}>
+                      <button type="button" className={styles.primary} onClick={() => setFormOpen(true)}>
+                        {tt('stall.addProduct', 'Add something to sell')}
+                      </button>
+                    </div>}
+                  {(formOpen || editing) && <>
+                  <h2 className={styles.sub} ref={formRef}>
                     {editing ? tt('stall.editProduct', 'Edit this') : tt('stall.addProduct', 'Add something to sell')}
                   </h2>
                   <div className={styles.form}>
@@ -697,18 +711,17 @@ const StallPage = props => {
                     </label>
                   </div>
                   <div className={styles.formActions}>
-                    {editing && (
-                      <button type="button" className={styles.ghost}
-                              onClick={() => { setEditing(null); setDraft(EMPTY_PRODUCT); setImage(null); }}>
-                        {tt('ui.cancel.77df', 'Cancel')}
-                      </button>
-                    )}
+                    <button type="button" className={styles.ghost}
+                            onClick={() => { setEditing(null); setFormOpen(false); setDraft(EMPTY_PRODUCT); setImage(null); }}>
+                      {tt('ui.cancel.77df', 'Cancel')}
+                    </button>
                     <button type="button" className={styles.primary}
                             disabled={busy || !draft.name.trim()} onClick={saveProduct}>
                       {busy ? tt('ui.saving', 'Saving...')
                         : editing ? tt('ui.save', 'Save') : tt('stall.put', 'Put it on the stall')}
                     </button>
                   </div>
+                  </>}
                 </>
               )}
 

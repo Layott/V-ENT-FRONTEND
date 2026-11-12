@@ -34,9 +34,13 @@ export default function DeleteControl({
   token,
   onDeleted,
   className = '',
+  // Opened from a row menu (inbox 594): the question shows at once, and
+  // stepping back hands control to the row again.
+  startAsking = false,
+  onClose,
 }) {
   const tt = useT();
-  const [asking, setAsking] = useState(false);
+  const [asking, setAsking] = useState(!!startAsking);
   const [busy, setBusy] = useState(false);
   const [problem, setProblem] = useState('');
   const [holders, setHolders] = useState(0);
@@ -77,7 +81,7 @@ export default function DeleteControl({
     }
   };
 
-  const stop = () => { setAsking(false); setProblem(''); setHolders(0); };
+  const stop = () => { setAsking(false); setProblem(''); setHolders(0); if (onClose) onClose(); };
 
   if (!asking) {
     return (

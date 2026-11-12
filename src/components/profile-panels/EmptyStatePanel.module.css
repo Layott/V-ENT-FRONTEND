@@ -218,3 +218,127 @@
   .welcomeBtn { width: 100%; justify-content: center; }
   .card { padding: 1.2rem; min-height: 230px; }
 }
+
+/* "Get started" (inbox 594-17): one card, four numbered steps, one filled
+   action. Surfaces and space, no strokes. */
+.start {
+  margin-top: 1.5rem;
+  background-color: var(--overlay-gray);
+  border-radius: 14px;
+  padding: 1.25rem;
+}
+
+.startHead {
+  margin-bottom: 1rem;
+}
+
+.startTitle {
+  margin: 0 0 0.3rem;
+  color: #fff;
+  font-family: "Fraunces", sans-serif;
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+.startSub {
+  margin: 0;
+  color: var(--ink-55, rgba(255, 255, 255, 0.55));
+  font-size: 0.85rem;
+  line-height: 1.5;
+}
+
+.steps {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.step {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+  background-color: #2a2b30;
+  border-radius: 12px;
+  padding: 0.75rem 0.75rem 0.75rem 0.9rem;
+}
+
+.stepNum {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background-color: #33343a;
+  color: #fff;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.stepText {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.stepTitle {
+  color: #fff;
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+.stepHint {
+  color: var(--ink-55, rgba(255, 255, 255, 0.55));
+  font-size: 0.8rem;
+  line-height: 1.4;
+}
+
+.stepMain,
+.stepGo {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  min-height: 44px;
+  padding: 0 1rem;
+  border-radius: 10px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.stepMain {
+  background-color: var(--v-ent-red);
+  color: #fff;
+}
+
+.stepMain:hover {
+  background-color: var(--v-ent-light-red);
+}
+
+.stepGo {
+  background-color: #33343a;
+  color: #fff;
+}
+
+.stepGo:hover {
+  background-color: #3d3e45;
+}
+
+@media (max-width: 560px) {
+  .step {
+    flex-wrap: wrap;
+  }
+
+  .stepMain,
+  .stepGo {
+    flex-basis: 100%;
+  }
+}

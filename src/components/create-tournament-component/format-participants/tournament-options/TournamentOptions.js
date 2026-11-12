@@ -6,6 +6,7 @@ import { useT } from '@/i18n/LanguageProvider';
 import { useTx } from '@/i18n/LanguageProvider';
 import { formatKey } from '@/lib/formatLabel';
 import { COUNTRIES, isKnownCountry } from '@/constants/countries';
+import Fold from '@/components/fold/Fold';
 
 // The settings an organiser configures beyond the headline fields. Every one of
 // these changes what the platform does: who is refused at registration, how the
@@ -133,6 +134,24 @@ const Toggle = ({
     </button>
     {tip ? <InfoTip id={tip} className={styles.toggleTip} /> : null}
   </div>;
+// One settings group. On the edit page (`live`) it is a fold whose closed row
+// says the group's current answer, "Check-in: 15 minutes before, no-shows
+// forfeited" (CEO, 12 November 2026, inbox 594-9); in the wizard it stays an
+// open panel, because there every group is being answered for the first time.
+// Defined outside the component so a re-render never remounts the inputs.
+const Group = ({
+  live,
+  title,
+  tip,
+  summary,
+  children
+}) => live ? <Fold as="h4" tone="inset" title={title} summary={summary} aside={tip ? <InfoTip id={tip} /> : null}>
+      {children}
+    </Fold> : <div className={styles.group}>
+      <h4 className={styles.groupTitle}>{title}{tip ? <InfoTip id={tip} /> : null}</h4>
+      {children}
+    </div>;
+
 // The formats decided by a table, which is where "each pair meets" means
 // something. Same set the server schedules as a round robin.
 const TABLE_KEYS = new Set(['round_robin', 'league', 'ladder', 'aggregate_2v2', 'league_phase']);
@@ -159,6 +178,36 @@ const TournamentOptions = ({
     const parsed = parseInt(value, 10);
     set(key, Number.isNaN(parsed) ? fallback : parsed);
   };
+  const fmt = formatKey(formData.bracket_type);
+  const labelOf = (list, value) => {
+    const row = list.find(c => c.value === value);
+    return row ? (row.key ? tt(row.key, row.label) : tx(row.label)) : '';
+  };
+  const join = (...parts) => parts.filter(Boolean).join(', ');
+  const isTeams = !['individual', 'individuals'].includes(formData.tournament_access);
+  // What each group says while it is closed (live only).
+  const sum = {
+    checkIn: options.check_in_minutes > 0
+      ? join(labelOf(CHECK_IN_CHOICES, options.check_in_minutes),
+        options.forfeit_without_check_in ? tt('opts.sumForfeit', 'no-shows forfeited') : tt('opts.sumNoForfeit', 'nobody forfeited'))
+      : tx('No check-in'),
+    seeding: join(labelOf(SEEDING_CHOICES, options.seeding_method),
+      options.every_place ? tt('opts.everyPlace', 'Play for every place')
+        : options.third_place_match ? tt('opts.sumThird', 'a third-place match') : ''),
+    legs: (options.legs || (fmt === 'league' ? 2 : 1)) === 2 ? tt('opts.legsHomeAway', 'Home and away') : tt('opts.legsOnce', 'Once'),
+    matches: join(
+      fmt === 'battle_royale' ? ''
+        : options.best_of_mode === 'escalating'
+          ? tt('opts.sumBestOfRise', 'Best of {a}, final best of {b}').replace('{a}', options.best_of).replace('{b}', options.best_of_final)
+          : tt('opts.sumBestOf', 'Best of {n}').replace('{n}', options.best_of),
+      tt('opts.sumBreak', '{n} minute breaks').replace('{n}', options.match_interval_minutes),
+      options.require_screenshot ? tt('opts.sumScreenshot', 'screenshot with every result') : ''),
+    rosters: join(tt('opts.sumRosterLock', 'Line-up changes: {when}').replace('{when}', labelOf(ROSTER_LOCK_CHOICES, options.roster_lock)),
+      tt('opts.sumSubs', '{n} substitutes').replace('{n}', options.max_substitutes || 0)),
+    who: join(options.restrict_country || tt('ui.open.everyone.4558', 'Open to everyone'),
+      options.min_age > 0 ? tt('opts.sumMinAge', '{n} and over').replace('{n}', options.min_age) : '',
+      options.require_kyc ? tt('opts.sumKyc', 'verified identity') : options.require_verified_email ? tt('opts.sumEmail', 'verified email') : ''),
+  };
   return <div className={createTournamentStyles.createSubSectionContainer}>
       <div className={createTournamentStyles.innerCreateSubSectionContainer}>
         <h3 className={createTournamentStyles.tournamentTypeH3}>{tt("ui.tournament.settings.3aa2", "Tournament Settings")}</h3>
@@ -169,8 +218,7 @@ const TournamentOptions = ({
         </p>
 
         {/* ---------------------------------------------------- check-in */}
-        <div className={styles.group}>
-          <h4 className={styles.groupTitle}>{tt("ui.check.4843", "Check-in")}<InfoTip id="checkInWindow" /></h4>
+        <Group live={live} title={tt("ui.check.4843", "Check-in")} tip="checkInWindow" summary={sum.checkIn}>
           <p className={styles.groupHint}>
             {tt("ui.entrants.confirm.they.are.d80c", "Entrants confirm they are actually there before the bracket is built. Without it,\n            round one is full of people who signed up weeks ago and forgot.")}
           </p>
@@ -190,11 +238,10 @@ const TournamentOptions = ({
             if (!v && formData.refund_locked) return;
             set('refund_no_shows', v);
           }} />}
-        </div>
+        </Group>
 
         {/* ----------------------------------------------------- seeding */}
-        <div className={styles.group}>
-          <h4 className={styles.groupTitle}>{tt("ui.seeding.2ac9", "Seeding")}<InfoTip id="seedingMethod" /></h4>
+        <Group live={live} title={tt("ui.seeding.2ac9", "Seeding")} tip="seedingMethod" summary={sum.seeding}>
           <div className={styles.seedGrid}>
             {SEEDING_CHOICES.map(choice => <button type="button" key={choice.value} className={`${styles.seedCard} ${options.seeding_method === choice.value ? styles.seedCardOn : ''}`} onClick={() => set('seeding_method', choice.value)}>
                 <span className={styles.seedLabel}>{tx(choice.label)}</span>
@@ -217,11 +264,10 @@ const TournamentOptions = ({
                 {[2, 3, 4, 5, 7, 10].map(n => <option key={n} value={n}>{n}</option>)}
               </select>
             </label>}
-        </div>
+        </Group>
 
         {/* A table: each pair meets once, or home and away (inbox 440). */}
-        {TABLE_KEYS.has(formatKey(formData.bracket_type)) && <div className={styles.group}>
-            <h4 className={styles.groupTitle}>{tt("opts.legs", "Each pair meets")}</h4>
+        {TABLE_KEYS.has(formatKey(formData.bracket_type)) && <Group live={live} title={tt("opts.legs", "Each pair meets")} summary={sum.legs}>
             <div className={styles.choiceRow}>
               {[[1, 'opts.legsOnce', 'Once'], [2, 'opts.legsHomeAway', 'Home and away']].map(([n, k, en]) => {
             const shown = options.legs || (formatKey(formData.bracket_type) === 'league' ? 2 : 1);
@@ -231,11 +277,10 @@ const TournamentOptions = ({
           })}
             </div>
             <p className={styles.groupHint}>{tt("opts.legsHint", "Home and away plays every pair twice, sides swapped, so it doubles the matches.")}</p>
-          </div>}
+          </Group>}
 
         {/* ----------------------------------------------------- matches */}
-        <div className={styles.group}>
-          <h4 className={styles.groupTitle}>{tt("ui.matches.ee2d", "Matches")}<InfoTip id="bestOfMode" /></h4>
+        <Group live={live} title={tt("ui.matches.ee2d", "Matches")} tip="bestOfMode" summary={sum.matches}>
 
           {/* A battle royale is lobbies scored by placement, not a series of
               games between two sides, so it has no "best of" (inbox 588). */}
@@ -298,14 +343,13 @@ const TournamentOptions = ({
           </p>
 
           <Toggle id="require_screenshot" tip="requireScreenshot" label={tt("ui.require.screenshot.every.result.bf3a", "Require a screenshot with every result")} hint={tt("opts.screenshotHint", "Disputes are far easier to settle when there is a picture attached.")} checked={options.require_screenshot} onChange={v => set('require_screenshot', v)} />
-        </div>
+        </Group>
 
         {/* ------------------------------------------------------ rosters */}
         {/* Line-ups and substitutes are about teams; a tournament players
             enter on their own has neither (inbox 588). */}
         {/* The wizard says 'individuals', the edit page 'individual'. */}
-        {!['individual', 'individuals'].includes(formData.tournament_access) && <div className={styles.group}>
-          <h4 className={styles.groupTitle}>{tt("ui.rosters.bdba", "Rosters")}<InfoTip id="rosterLock" /></h4>
+        {isTeams && <Group live={live} title={tt("ui.rosters.bdba", "Rosters")} tip="rosterLock" summary={sum.rosters}>
 
           <div className={styles.fieldRow}>
             <label className={styles.field} htmlFor="roster_lock">
@@ -320,11 +364,10 @@ const TournamentOptions = ({
               <input id="max_substitutes" type="number" min="0" max="10" className={`${createTournamentStyles.inputNumber} ${styles.select}`} value={options.max_substitutes} onChange={e => number('max_substitutes', e.target.value, 0)} />
             </label>
           </div>
-        </div>}
+        </Group>}
 
         {/* --------------------------------------------------- who enters */}
-        <div className={styles.group}>
-          <h4 className={styles.groupTitle}>{tt("ui.who.can.enter.a8dd", "Who can enter")}<InfoTip id="restrictCountry" /></h4>
+        <Group live={live} title={tt("ui.who.can.enter.a8dd", "Who can enter")} tip="restrictCountry" summary={sum.who}>
           <p className={styles.groupHint}>
             {tt("ui.anyone.who.does.not.2351", "Anyone who does not meet these is turned away at registration, before they pay\n            an entry fee.")}
           </p>
@@ -355,7 +398,7 @@ const TournamentOptions = ({
 
           <Toggle id="require_verified_email" tip="requireVerifiedEmail" label={tt("ui.verified.email.address.required.4ad7", "Verified email address required")} checked={options.require_verified_email} onChange={v => set('require_verified_email', v)} />
           <Toggle id="require_kyc" tip="requireKyc" label={tt("ui.verified.identity.required.299c", "Verified identity required")} hint={tt("opts.kycHint", "Already required automatically on any tournament that charges entry or pays a prize.")} checked={options.require_kyc} onChange={v => set('require_kyc', v)} />
-        </div>
+        </Group>
       </div>
     </div>;
 };

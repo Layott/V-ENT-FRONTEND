@@ -200,7 +200,7 @@ export default async function sitemap() {
           .filter((v) => v?.slug);
         if (!got.length) return [];
         return [
-          entry(`/events/${e.slug}/vendor-shop`, { changeFrequency: 'daily', priority: 0.5 }),
+          entry(`/events/${e.slug}/stalls`, { changeFrequency: 'daily', priority: 0.5 }),
           ...got.map((v) => entry(`/events/${e.slug}/stall/${v.slug}`, {
             changeFrequency: 'daily',
             priority: 0.5,
