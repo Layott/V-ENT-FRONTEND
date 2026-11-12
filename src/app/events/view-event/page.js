@@ -24,7 +24,8 @@ import { useCheckoutFields, CheckoutFieldList, missingRequired, quantityCeiling 
   from '@/components/checkout-fields/CheckoutFields';
 import Link from 'next/link';
 import Image from '@/components/media-image/MediaImage';
-import { IoCalendarOutline, IoLocationOutline, IoTicketOutline } from 'react-icons/io5';
+import { IoCalendarOutline, IoGlobeOutline, IoLocationOutline, IoTicketOutline } from 'react-icons/io5';
+import { eventAsks } from '@/lib/eventAsks';
 import { FaUsers, FaCheckCircle, FaCrown, FaStore, FaTrophy } from 'react-icons/fa';
 import { MdOutlineClose } from 'react-icons/md';
 import { FiExternalLink } from 'react-icons/fi';
@@ -98,7 +99,9 @@ const TABS = [{
   // 8pm for a DJ set that was never going to happen. The EventSession model
   // exists now; this comes back when the organiser can fill it in.
   id: 'vendors',
-  label: 'Stalls'
+  label: 'Stalls',
+  // Stalls are places at a venue (inbox 588): not on an online event.
+  asks: 'vendors'
 }, {
   id: 'tournaments',
   label: 'Tournaments'
@@ -113,7 +116,9 @@ const TABS = [{
   // from, and ping people to meet up. The rules are the server's.
   id: 'together',
   label: 'Going together',
-  key: 'together.title'
+  key: 'together.title',
+  // Travelling to a venue together: not on an online event (inbox 588).
+  asks: 'goingTogether'
 }
 // The Map tab draws VENUE_BOOTHS, a fixed floor plan with a main stage, a food
 // court and a VIP lounge. It is the same plan for every event, and no event
@@ -1227,9 +1232,12 @@ export const ViewEventContent = ({
                 <span className={styles.metaItem}>
                   <IoCalendarOutline /> {formatDateTime(event.start_date)}
                 </span>
-                <span className={styles.metaItem}>
+                {/* Where, or that it is online: no empty pin (inbox 588). */}
+                {event.location ? <span className={styles.metaItem}>
                   <IoLocationOutline /> {event.location}
-                </span>
+                </span> : event.event_type === 'virtual' && <span className={styles.metaItem}>
+                  <IoGlobeOutline /> {tt('site.online', 'Online')}
+                </span>}
                 <span className={styles.metaItem}>
                   <FaUsers /> {plural(tt, event.attendees_count, 'count.attendingOne', '{n} attending', 'count.attending', '{n} attending', formatNumber(event.attendees_count || 0))}
                 </span>
@@ -1282,7 +1290,7 @@ export const ViewEventContent = ({
 
           {/* Tabs */}
           <div className={styles.tabRow} data-edge-fade="" ref={tabsRef}>
-            {TABS.filter(t => !t.needsProgramme || hasProgramme).map(t => <button key={t.id} className={`${styles.tabBtn} ${activeTab === t.id ? styles.tabBtnActive : ''}`} aria-pressed={activeTab === t.id} onClick={() => openTab(t.id)} type="button">
+            {TABS.filter(t => (!t.needsProgramme || hasProgramme) && (!t.asks || eventAsks(event || {}, 0)[t.asks])).map(t => <button key={t.id} className={`${styles.tabBtn} ${activeTab === t.id ? styles.tabBtnActive : ''}`} aria-pressed={activeTab === t.id} onClick={() => openTab(t.id)} type="button">
                 {t.key ? tt(t.key, t.label) : tx(t.label)}
               </button>)}
           </div>
@@ -1727,7 +1735,7 @@ export const ViewEventContent = ({
               </div>}
 
             {/* VENDORS */}
-            {activeTab === 'vendors' && <div className={styles.vendorTab}>
+            {activeTab === 'vendors' && eventAsks(event || {}, 0).vendors && <div className={styles.vendorTab}>
                 {/* Pitches the organiser is SELLING, above the stalls that
                     already exist. Somebody on this tab is either shopping or
                     thinking about trading here, and the second group had no
@@ -1762,7 +1770,7 @@ export const ViewEventContent = ({
               </div>}
 
             {/* TOURNAMENTS */}
-            {activeTab === 'together' && <GoingTogether eventRef={id} onOpenTickets={() => openTab('tickets')} />}
+            {activeTab === 'together' && eventAsks(event || {}, 0).goingTogether && <GoingTogether eventRef={id} onOpenTickets={() => openTab('tickets')} />}
 
             {activeTab === 'games' && <EventGames eventRef={event?.slug || id} eventSlug={event?.slug || id} onOpenTickets={() => openTab('tickets')} />}
 
