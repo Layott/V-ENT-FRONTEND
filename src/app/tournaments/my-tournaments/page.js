@@ -35,7 +35,7 @@ const TABS = [{
 }, {
   // Tournaments that make their next edition by themselves (P7).
   id: 'blueprints',
-  label: 'Blueprints',
+  label: 'Templates',
   key: 'blueprint.tab'
 }];
 

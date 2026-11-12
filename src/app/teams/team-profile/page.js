@@ -32,10 +32,10 @@ const ALL_TABS = [{
   label: 'Members'
 }, {
   id: 'tournaments',
-  label: 'Activity Tournaments'
+  label: 'Tournaments'
 }, {
   id: 'events',
-  label: 'Activity Events'
+  label: 'Events'
 }, {
   id: 'stats',
   label: 'Stats'

@@ -180,8 +180,8 @@
 }
 
 .primaryBtn {
-  background: #d4af37;
-  color: #131316;
+  background: var(--v-ent-red);
+  color: var(--primary-bg);
   font-weight: 600;
   padding: 11px 20px;
   border-radius: 8px;

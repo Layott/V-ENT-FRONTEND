@@ -734,7 +734,7 @@
   display: inline-flex;
   align-items: center;
   gap: 0.4rem;
-  background-color: var(--v-ent-red);
+  background-color: #303136;
 
   color: var(--primary-bg);
   padding: 0.55rem 1rem;
@@ -746,7 +746,7 @@
 }
 
 .lockedBtn:hover {
-  background-color: var(--v-ent-light-red);
+  background-color: #3a3b41;
 
 }
 

@@ -291,7 +291,7 @@ export default function StudioGamePage(props) {
       <main className={styles.main}>
         <Sidebar />
         <section className={styles.content}>
-          <BackLink href="/partners/studios">{tt('partners.studios.backToGames', 'Your games')}</BackLink>
+          <BackLink href="/partners/studios">{tt('partners.studios.backToStudios', 'Back to game studios')}</BackLink>
 
           {/* One h1, whatever the state: who is reading decides what it says. */}
           {!viewer.loading && !(viewer.signedIn && loading) && (

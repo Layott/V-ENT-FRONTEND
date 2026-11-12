@@ -20,11 +20,13 @@ import Sidebar from '@/components/sidebar/Sidebar';
 import BottomMenu from '@/components/bottom-menu/BottomMenu';
 import styles from './find-ticket.module.css';
 import BackLink from '@/components/back-link/BackLink';
+import { useViewer } from '@/lib/gating';
 
 const API = process.env.NEXT_PUBLIC_API_URL;
 
 export default function FindTicket() {
   const tt = useT();
+  const viewer = useViewer();
   const [email, setEmail] = useState('');
   const [code, setCode] = useState('');
   const [ticket, setTicket] = useState(null);
@@ -110,14 +112,25 @@ export default function FindTicket() {
           </p>
         </div>}
 
-        <p className={styles.sub}>
-          {tt('find.makeAccount', 'Make an account with the same email address and every ticket you have bought appears in it automatically.')}
-        </p>
-        <div className={styles.linkRow}>
-          <Link href="/signup" className={styles.link}>
-            {tt('find.signup', 'Create an account')}
-          </Link>
-        </div>
+        {viewer.signedIn ? <>
+          <p className={styles.sub}>
+            {tt('find.signedInLine', 'Tickets bought with the email on your account are already in My tickets.')}
+          </p>
+          <div className={styles.linkRow}>
+            <Link href="/events/my-tickets" className={styles.link}>
+              {tt('find.openMyTickets', 'Open My tickets')}
+            </Link>
+          </div>
+        </> : !viewer.loading && <>
+          <p className={styles.sub}>
+            {tt('find.makeAccount', 'Make an account with the same email address and every ticket you have bought appears in it automatically.')}
+          </p>
+          <div className={styles.linkRow}>
+            <Link href="/signup" className={styles.link}>
+              {tt('find.signup', 'Create an account')}
+            </Link>
+          </div>
+        </>}
       </main>
 
       <BottomMenu />

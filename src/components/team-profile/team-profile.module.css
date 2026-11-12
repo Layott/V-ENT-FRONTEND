@@ -321,11 +321,12 @@
 .ownerLink {
   margin-left: auto;
   font-size: var(--fs-p-size-mobile);
-  color: var(--v-ent-gold);
-  text-decoration: none;
+  color: var(--primary-bg);
+  text-decoration: underline;
+  text-underline-offset: 2px;
 }
 
-.ownerLink:hover { color: var(--v-ent-light-gold); }
+.ownerLink:hover { color: var(--primary-bg); }
 
 .organizerName {
   font-size: var(--fs-p-size-desktop);

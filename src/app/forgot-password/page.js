@@ -102,6 +102,7 @@ const ForgotPassword = () => {
                     <section className={generalStyles.formHeader}>
                         <h1 className={generalStyles.formHeading}>{tt("ui.forgot.password.a2f0", "Forgot your password?")}</h1>
                         <p>{tt("ui.enter.email.address.associated.7977", "Enter the email address associated with your account.")}</p>
+                        <p>{tt('forgot.whatNext', 'If an account uses that address, we send it a link to set a new password.')}</p>
                     </section>
             {/* method="post" is not there to be used - onSubmit handles the
                 request. It is there because a form defaults to GET, and a

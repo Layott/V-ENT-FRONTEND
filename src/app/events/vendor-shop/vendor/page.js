@@ -95,7 +95,7 @@ export const VendorStallContent = ({ eventSlug = '', stallSlug = '' } = {}) => {
 
   useEffect(() => {
     if (!vendorId) {
-      setError(tt("msg.vendorIdMissing", "This link does not say which stall to open."));
+      setError(tt('msg.vendorIdMissing2', 'This stall link is missing the stall name. Open the stall from the shop.'));
       setLoading(false);
       return;
     }

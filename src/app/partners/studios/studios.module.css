@@ -194,8 +194,8 @@
 }
 
 .primaryBtn {
-  background: var(--v-ent-gold);
-  color: #131316;
+  background: #303136;
+  color: var(--primary-bg);
   font-weight: 600;
 }
 

@@ -48,7 +48,7 @@
   min-height: 44px; padding: 0 1.1rem; border: 0; border-radius: 10px; cursor: pointer;
   font-family: inherit; font-size: var(--fs-p-size-mobile); font-weight: var(--fw-semi-bold); text-decoration: none;
 }
-.primary { background-color: var(--v-ent-success, #4caf50); color: #0d1a0e; }
+.primary { background-color: var(--v-ent-red); color: var(--primary-bg); }
 .ghost, .linkBtn { background-color: #2a2b30; color: var(--primary-bg); font-weight: var(--fw-medium); }
 .danger { background-color: var(--v-ent-red); color: var(--white, #fff); }
 .primary:disabled, .ghost:disabled, .danger:disabled { opacity: 0.5; cursor: default; }

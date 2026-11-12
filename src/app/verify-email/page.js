@@ -1,7 +1,7 @@
 'use client';
 
 import { apiMessage } from '@/lib/apiMessage';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import styles from './verify-email.module.css';
 import CircularProgress from '@mui/material/CircularProgress';
@@ -10,6 +10,7 @@ import { VENT } from '@/app/api/auth/[...nextauth]/route';
 import { useT } from '@/i18n/LanguageProvider';
 import { useTx } from '@/i18n/LanguageProvider';
 import { readSignupRecord } from '@/lib/signupRecord';
+import useCooldown, { maskEmail } from '@/lib/useCooldown';
 import AuthHeader from '@/components/auth-header/AuthHeader';
 const VerifyEmail = () => {
   const tx = useTx();
@@ -18,6 +19,10 @@ const VerifyEmail = () => {
   const [open, setOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState('');
   const [snackbarType, setSnackbarType] = useState('success');
+  const cooldown = useCooldown(30);
+  const [sentTo, setSentTo] = useState('');
+  const [resent, setResent] = useState(false);
+  useEffect(() => { setSentTo(maskEmail(readSignupRecord()?.email)); }, []);
   const handleResend = async () => {
     setResendLoading(true);
     const storedSignupData = readSignupRecord();
@@ -42,6 +47,8 @@ const VerifyEmail = () => {
       if (response.ok) {
         setSnackbarMessage(apiMessage(tt, data, "api.verificationEmailSent", "Verification email sent!"));
         setSnackbarType('success');
+        setResent(true);
+        cooldown.start();
       } else {
         setSnackbarMessage(data.error || tt("msg.failedToResendVerification", "Failed to resend verification email."));
         setSnackbarType('error');
@@ -64,12 +71,17 @@ const VerifyEmail = () => {
 
       <main className={styles.mainContainer}>
         <h1>{tt("ui.verify.email.84fd", "Verify your email")}</h1>
-        <p>{tt("ui.verification.email.has.been.a364", "A verification email has been sent to the provided email. Click on the link in your email to verify your account.")}</p>
+        <p>{sentTo
+          ? tt('verify.sentTo', 'We sent a link to {email}. Open it to verify your account.').replace('{email}', sentTo)
+          : tt("ui.verification.email.has.been.a364", "A verification email has been sent to the provided email. Click on the link in your email to verify your account.")}</p>
+        {resent && <p role="status">{tt('verify.resentLine', 'A new link is on its way. It can take a minute; check your spam folder too.')}</p>}
 
-        <button className={`btn redBTN ${styles.resendBTN}`} onClick={handleResend} disabled={resendLoading}>
+        <button className={`btn redBTN ${styles.resendBTN}`} onClick={handleResend} disabled={resendLoading || cooldown.waiting}>
           {resendLoading ? <CircularProgress size={24} sx={{
           color: 'white'
-        }} /> : tx("Resend Link")}
+        }} /> : cooldown.waiting
+          ? tt('verify.resendIn', 'Send again in {n} seconds').replace('{n}', String(cooldown.left))
+          : tx("Resend Link")}
         </button> 
       </main>
 

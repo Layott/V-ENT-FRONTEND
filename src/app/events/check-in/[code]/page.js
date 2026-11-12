@@ -117,7 +117,7 @@ export default function SelfCheckIn(props) {
         'The organiser has not set a start time yet.'),
       TOO_EARLY: tt('checkIn.earlyReason', 'Check-in opens at {when}.')
         .replace('{when}', formatTime(state.opens_at)),
-      TOO_LATE: tt('checkIn.lateReason', 'Check-in closed at {when}.')
+      TOO_LATE: tt('checkIn.lateReason2', 'Check-in closed at {when}. Ask the door team if you think this is wrong.')
         .replace('{when}', formatTime(state.closes_at)),
     };
     return map[state.reason] || '';

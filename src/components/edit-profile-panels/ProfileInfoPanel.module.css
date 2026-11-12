@@ -253,8 +253,9 @@
 /* The way from the profile to the one place an email can actually be changed.
    A link, not a button: it goes somewhere. */
 .emailLink {
-  color: var(--v-ent-gold, #D4AF37);
+  color: var(--primary-bg);
   text-decoration: underline;
+  text-underline-offset: 2px;
 }
 
 .emailLink:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }

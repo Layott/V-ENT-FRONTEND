@@ -220,10 +220,10 @@ export default function FormatExplainer({
   const primary = playing
     ? { text: tt('explainer.pause', 'Pause'), act: player.pause }
     : mode === 'paused'
-      ? { text: tt('explainer.play', 'Play'), act: player.resume }
+      ? { text: tt('explainer.watch', 'Watch it'), act: player.resume }
       : mode === 'done'
         ? { text: tt('explainer.replay', 'Play again'), act: player.restart }
-        : { text: tt('explainer.play', 'Play'), act: player.restart };
+        : { text: tt('explainer.watch', 'Watch it'), act: player.restart };
 
   return (
     <div className={`${styles.player} ${broadcast ? styles.broadcast : ''} ${className || ''}`}>

@@ -61,14 +61,15 @@
 
 .backLink {
   align-self: flex-start;
-  color: var(--v-ent-gold);
+  color: var(--primary-bg);
   font-size: 0.85rem;
   text-decoration: none;
   margin-top: 0.15rem;
 }
 
 .backLink:hover {
-  color: var(--v-ent-light-gold);
+  color: var(--primary-bg);
+  text-decoration: underline;
 }
 
 /* -------------------------------------------------------------------- days */

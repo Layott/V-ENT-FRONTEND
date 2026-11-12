@@ -212,12 +212,13 @@
   background-color: rgba(255, 255, 255, 0.08);
 }
 
+/* The console's add and send actions are its main action, not money (S10). */
 .addBtn {
   display: inline-flex;
   align-items: center;
   gap: 0.45rem;
-  background-color: #E5B94E;
-  color: #1a1a1a;
+  background-color: var(--v-ent-red);
+  color: var(--primary-bg);
   font-family: 'ClashGrotesk-Variable', sans-serif;
   font-weight: 600;
   font-size: 0.85rem;
@@ -227,7 +228,7 @@
 }
 
 .addBtn:hover {
-  background-color: #f0c65f;
+  background-color: var(--v-ent-light-red);
 }
 
 .addBtn:disabled,

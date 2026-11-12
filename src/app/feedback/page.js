@@ -111,7 +111,7 @@ function FeedbackContent() {
               {tt('feedback.title', 'Tell us what is wrong')}
             </h1>
             <p className={styles.lede}>
-              {tt('feedback.lede', 'V-ENT is free while we build it, and the deal is that you use it hard and tell us what got in your way. Broken, confusing, missing, or something that works well and should not be changed: all of it is useful.')}
+              {tt('feedback.lede2', 'Tell us what is broken, confusing or missing, or what works and should stay as it is. Every message is read by the team.')}
             </p>
           </header>
 
@@ -200,9 +200,9 @@ function FeedbackContent() {
               {error && <p className={styles.error}>{error}</p>}
 
               <div className={styles.submitRow}>
-                <button type="submit" className={`${styles.send} grnBTN`}
+                <button type="submit" className={`${styles.send} redBTN`}
                         disabled={sending || message.trim().length < 10}>
-                  {sending ? tt('feedback.sending', 'Sending...') : tt('feedback.send', 'Send it')}
+                  {sending ? tt('feedback.sending', 'Sending...') : tt('feedback.send2', 'Send feedback')}
                 </button>
                 <p className={styles.note}>
                   {tt('feedback.note', 'You do not need an account to send this.')}

@@ -154,9 +154,6 @@ const PinPage = () => {
     // Set / change PIN form.
     content = <div className={styles.formCard}>
         <div className={styles.formCardHeader}>
-          <h2 className={styles.formCardTitle}>
-            {changing ? tx("Change wallet PIN") : tx("Set your wallet PIN")}
-          </h2>
           <p className={styles.formCardSub}>
             {changing ? tx("Enter your current PIN, then choose a new 4-digit PIN.") : tx("Choose a 4-digit PIN. You will use it to authorise sends and withdrawals.")}
           </p>

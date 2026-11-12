@@ -600,7 +600,7 @@ const StallPage = props => {
                                       {tt('stall.keep', 'Keep it')}
                                     </button>
                                   </>
-                                : <button type="button" className={styles.danger} disabled={busy}
+                                : <button type="button" className={p.sold > 0 ? styles.ghost : styles.danger} disabled={busy}
                                           onClick={() => setRemoving(p.id)}>
                                     {p.sold > 0 ? tt('stall.hide', 'Hide') : tt('ui.remove', 'Remove')}
                                   </button>}
@@ -693,7 +693,7 @@ const StallPage = props => {
                     </label>
                     <label className={styles.check}>
                       <input type="checkbox" checked={draft.can_deliver} onChange={set('can_deliver')} />
-                      <span>{tt('stall.pCanDeliver', 'This can be posted to somebody')}</span>
+                      <span>{tt('stall.pCanDeliver2', 'Can be delivered: a buyer can ask for it to be sent to them')}</span>
                     </label>
                   </div>
                   <div className={styles.formActions}>

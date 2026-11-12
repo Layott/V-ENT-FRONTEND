@@ -156,16 +156,26 @@
   background-color: rgba(255, 255, 255, 0.14);
 }
 
-.primaryBtn,
+/* Create is the page's one main action (red); Edit on each row is quiet
+   (Apple review S9 and S10: gold is money, and neither of these is). */
 .createBtn {
-  background-color: #E5B94E;
-  color: #1a1a1a;
+  background-color: var(--v-ent-red);
+  color: var(--primary-bg);
   font-weight: 600;
 }
 
-.primaryBtn:hover,
 .createBtn:hover {
-  background-color: #f0c65f;
+  background-color: var(--v-ent-light-red);
+}
+
+.primaryBtn {
+  background-color: #303136;
+  color: var(--primary-bg);
+  font-weight: 600;
+}
+
+.primaryBtn:hover {
+  background-color: #3a3b41;
 }
 
 /* Delete and Cancel event: a quiet red text button, set apart from View and

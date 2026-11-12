@@ -294,7 +294,7 @@ const EventsListingContent = () => {
                 <MdOutlineEvent className={styles.titleIcon} /> {tt("ui.events.c549", "Events")}
               </h1>
               <p className={styles.pageSub}>
-                {tt("ui.concerts.anime.cons.esports.f4bc", "Concerts, anime cons, esports finals, conventions - find your next plug.")}
+                {tt('events.pageSub2', 'Concerts, anime cons, esports finals and conventions: find your next event.')}
               </p>
             </div>
 

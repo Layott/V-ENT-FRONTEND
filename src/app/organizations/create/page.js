@@ -260,7 +260,7 @@ const CreateOrganizationContent = () => {
             <div>
               <h1 className={styles.wizardTitle}>{tt("ui.create.organization.a194", "Create Organization")}</h1>
               <p className={styles.wizardSubtitle}>
-                {tt("ui.launch.org.teams.tournaments.4f1c", "Launch your org - teams, tournaments, and brand in one flow.")}
+                {tt('org.createSub2', 'Set up your organization: its teams, its tournaments and its brand in one place.')}
               </p>
             </div>
             <div className={styles.headerActions}>

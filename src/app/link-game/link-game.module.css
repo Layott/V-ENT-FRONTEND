@@ -112,8 +112,8 @@
 }
 
 .primary {
-  background: var(--v-ent-gold);
-  color: #131316;
+  background: var(--v-ent-red);
+  color: var(--primary-bg);
   font-weight: 600;
 }
 

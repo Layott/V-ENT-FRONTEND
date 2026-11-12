@@ -1706,7 +1706,7 @@ export const ViewEventContent = ({
                           ? tt('tier.remaining', '{n} remaining').replace('{n}', formatNumber(t.available))
                           : tx("Sold out")}
                       </p>
-                      <button className={`${styles.tierBuyBtn} ${t.tier === 'general' ? 'goldBTN' : 'redBTN'}`} disabled={t.available === 0 || countdown?.ended || sessionStatus === 'loading'} onClick={() => {
+                      <button className={`${styles.tierBuyBtn} goldBTN`} disabled={t.available === 0 || countdown?.ended || sessionStatus === 'loading'} onClick={() => {
                   // Which checkout somebody gets must not depend on a race.
                   // While the session is still resolving there is no token
                   // yet, and deciding on that would send a signed-in member to

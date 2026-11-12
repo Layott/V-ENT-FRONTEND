@@ -869,7 +869,7 @@
 }
 
 .pagBtnActive {
-  background-color: var(--v-ent-red) !important;
+  background-color: #4a4c54 !important;
 
 }
 
@@ -1390,13 +1390,13 @@
 }
 
 .btnGrn {
-  background-color: var(--v-ent-gold);
+  background-color: var(--v-ent-red);
 
-  color: #fff;
+  color: var(--primary-bg);
 }
 
 .btnGrn:hover:not(:disabled) {
-  background-color: var(--v-ent-light-gold);
+  background-color: var(--v-ent-light-red);
 
 }
 

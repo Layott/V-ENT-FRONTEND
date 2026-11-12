@@ -9,6 +9,7 @@ import { FiEdit3 } from 'react-icons/fi';
 import styles from './team-profile.module.css';
 import { useT } from '@/i18n/LanguageProvider';
 import { useTx } from '@/i18n/LanguageProvider';
+import { signInHref, useViewer } from '@/lib/gating';
 const TeamProfileHero = ({
   team,
   isOwner,
@@ -19,6 +20,7 @@ const TeamProfileHero = ({
 }) => {
   const tx = useTx();
   const tt = useT();
+  const viewer = useViewer();
   const isMember = team.viewer_is_member ?? false;
   const pendingRequest = (team.viewer_request_status ?? requestState) === 'pending';
   const banner = team.banner || team.banner_url || team.team_banner;
@@ -78,7 +80,9 @@ const TeamProfileHero = ({
               </button>
               {pendingRequest ? <button type="button" className={`${styles.heroBtn} ${styles.heroBtnPrimary}`} disabled>
                   {tt("ui.request.sent.1689", "Request sent")}
-                </button> : open ? <button type="button" className={`${styles.heroBtn} ${styles.heroBtnPrimary}`} onClick={onRequestJoin} disabled={requestState === 'loading'}>
+                </button> : open && !viewer.loading && !viewer.signedIn ? <Link href={signInHref(`/teams/${team.slug || ''}`)} className={`${styles.heroBtn} ${styles.heroBtnPrimary}`}>
+                  {tt('team.signInToJoin', 'Sign in to join')}
+                </Link> : open ? <button type="button" className={`${styles.heroBtn} ${styles.heroBtnPrimary}`} onClick={onRequestJoin} disabled={requestState === 'loading' || viewer.loading}>
                   {requestState === 'loading' ? tx("Sending...") : tx("Request to join")}
                 </button> : <span>{tt("ui.not.accepting.members.98ed", "Not accepting members")}</span>}
             </>}
